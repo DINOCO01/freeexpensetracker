@@ -32,7 +32,7 @@ const structuredData = [
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "USD"
+      "priceCurrency": "INR"
     },
     "featureList": [
       "Live In-Browser Expense Tracking",
@@ -184,8 +184,45 @@ const structuredData = [
     {structuredData.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
+
+    <!-- Instant Dark Mode Init to Prevent Flash of Unstyled Content -->
+    <script is:inline>
+      (function() {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
-  <body class="min-h-screen bg-[#F8FAFC] text-[#0F172A] selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden w-full">
+  <body class="min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-slate-100 selection:bg-emerald-100 dark:selection:bg-emerald-900 selection:text-emerald-900 dark:selection:text-emerald-100 overflow-x-hidden w-full transition-colors duration-200">
     <slot />
+
+    <!-- Dark Mode Toggle Controller -->
+    <script is:inline>
+      function initThemeToggle() {
+        const toggleBtn = document.getElementById('btn-theme-toggle');
+        if (!toggleBtn || toggleBtn.dataset.themeBound) return;
+        toggleBtn.dataset.themeBound = 'true';
+
+        toggleBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.toggle('dark');
+          try {
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+          } catch (_) {}
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initThemeToggle);
+      } else {
+        initThemeToggle();
+      }
+    </script>
   </body>
 </html>

@@ -87,10 +87,11 @@ export function normalizeToMonthly(amount: number, frequency: Frequency): number
   }
 }
 
-export function formatCurrency(amount: number, currencyCode: string = 'USD'): string {
-  const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
+export function formatCurrency(amount: number, currencyCode: string = 'INR'): string {
+  const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.INR;
   const isWhole = Math.round(amount) === amount;
-  const formattedNumber = new Intl.NumberFormat('en-US', {
+  const locale = currencyCode === 'INR' ? 'en-IN' : 'en-US';
+  const formattedNumber = new Intl.NumberFormat(locale, {
     minimumFractionDigits: isWhole ? 0 : 2,
     maximumFractionDigits: 2
   }).format(amount);

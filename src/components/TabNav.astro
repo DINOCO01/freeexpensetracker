@@ -1,66 +1,136 @@
 ---
 ---
 
-<nav aria-label="Main Navigation Tabs" class="no-print overflow-x-auto scrollbar-none -mx-3 px-3 sm:mx-0 sm:px-0 py-1">
-  <div class="flex items-center justify-between gap-2.5 min-w-max md:min-w-0">
-    <!-- Core Financial Tools (Left Bar) -->
-    <div class="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200 shadow-2xs">
-      <!-- Tab 1: Live Expense Tracker (Active by default) -->
-      <button
-        type="button"
-        data-tab="tracker"
-        class="tab-btn active px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all bg-white text-emerald-800 border border-emerald-200 shadow-2xs cursor-pointer"
-      >
-        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-        <span>1. Live Tracker</span>
-      </button>
+<nav aria-label="Main Navigation Tabs" class="no-print w-full">
+  <div class="max-w-3xl mx-auto p-1.5 sm:p-2 rounded-2xl bg-slate-100/90 border border-slate-200/90 shadow-2xs">
+    <div class="grid grid-cols-2 gap-2 sm:gap-2.5">
+      <!-- Set 1 (Left Column): 2 tabs vertical + last tab placed below them -->
+      <div class="flex flex-col gap-2 sm:gap-2.5">
+        <!-- Tab 1: Live Expense Tracker (Active by default) -->
+        <button
+          type="button"
+          data-tab="tracker"
+          class="tab-btn active w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white text-emerald-800 border border-emerald-300 shadow-2xs cursor-pointer text-left"
+        >
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+            <span class="truncate">1. Live Tracker</span>
+          </div>
+        </button>
 
-      <!-- Tab 2: Free Templates (Google Sheets, Excel & Printables) -->
-      <button
-        type="button"
-        data-tab="templates"
-        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
-      >
-        <span class="text-sm">📋</span>
-        <span>2. Free Templates</span>
-        <span class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Sheets • Excel • PDF</span>
-      </button>
+        <!-- Tab 2: Free Templates -->
+        <button
+          type="button"
+          data-tab="templates"
+          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 shadow-2xs cursor-pointer text-left"
+        >
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span class="text-sm shrink-0">📋</span>
+            <span class="truncate">2. Free Templates</span>
+          </div>
+          <span class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+            Sheets • Excel • PDF
+          </span>
+        </button>
 
-      <!-- Tab 3: Debt Management -->
-      <button
-        type="button"
-        data-tab="debt"
-        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
-      >
-        <span class="text-sm">💳</span>
-        <span>3. Debt Management</span>
-      </button>
+        <!-- Tab 5: Knowledge & Blogs (Last tab placed below the first set) -->
+        <button
+          type="button"
+          data-tab="knowledge"
+          class="tab-btn capsule-tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs cursor-pointer text-left"
+          title="Financial Knowledge Center & Blog Guides"
+        >
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span class="text-sm shrink-0">📚</span>
+            <span class="truncate">Knowledge & Blogs</span>
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white text-emerald-800 border border-emerald-200 shrink-0">
+            Guides
+          </span>
+        </button>
+      </div>
 
-      <!-- Tab 4: Target & Budget Planning -->
-      <button
-        type="button"
-        data-tab="targets"
-        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
-      >
-        <span class="text-sm">🎯</span>
-        <span>4. Target Planning</span>
-      </button>
-    </div>
+      <!-- Set 2 (Right Column, parallel to earlier set): 2 tabs paired vertical -->
+      <div class="flex flex-col gap-2 sm:gap-2.5">
+        <!-- Tab 3: Debt Management -->
+        <button
+          type="button"
+          data-tab="debt"
+          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 shadow-2xs cursor-pointer text-left"
+        >
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span class="text-sm shrink-0">💳</span>
+            <span class="truncate">3. Debt Management</span>
+          </div>
+        </button>
 
-    <!-- Separate Small Capsule / Tab (Right Side): Combined Financial Knowledge & Blogs -->
-    <div class="shrink-0 flex items-center">
-      <button
-        type="button"
-        data-tab="knowledge"
-        class="tab-btn capsule-tab-btn px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-2xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs cursor-pointer"
-        title="Financial Knowledge Center & Blog Guides"
-      >
-        <span class="text-sm">📚</span>
-        <span>Knowledge & Blogs</span>
-        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white text-emerald-800 border border-emerald-200">
-          Guides
-        </span>
-      </button>
+        <!-- Tab 4: Target & Budget Planning -->
+        <button
+          type="button"
+          data-tab="targets"
+          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 shadow-2xs cursor-pointer text-left"
+        >
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span class="text-sm shrink-0">🎯</span>
+            <span class="truncate">4. Target Planning</span>
+          </div>
+        </button>
+
+        <!-- Parallel to Knowledge & Blogs: Currency Selector & Reset Button paired parallel with each other -->
+        <div class="grid grid-cols-2 gap-1.5 sm:gap-2 w-full">
+          <!-- Currency Selector Dropdown -->
+          <div class="relative w-full">
+            <label for="currency-selector" class="sr-only">Change Currency</label>
+            <div class="relative flex items-center h-full">
+              <select
+                id="currency-selector"
+                class="w-full h-full min-h-[38px] sm:min-h-[42px] text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-300 rounded-xl pl-2 sm:pl-2.5 pr-5 sm:pr-6 py-1.5 sm:py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none truncate"
+                title="Change Currency"
+              >
+                <option value="INR" selected>INR (₹)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="CAD">CAD (CA$)</option>
+                <option value="AUD">AUD (AU$)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="CHF">CHF (CHF)</option>
+                <option value="CNY">CNY (¥)</option>
+                <option value="SGD">SGD (S$)</option>
+                <option value="NZD">NZD (NZ$)</option>
+                <option value="AED">AED (AED)</option>
+                <option value="SAR">SAR (SAR)</option>
+                <option value="BRL">BRL (R$)</option>
+                <option value="MXN">MXN (Mex$)</option>
+                <option value="ZAR">ZAR (R)</option>
+                <option value="SEK">SEK (kr)</option>
+                <option value="KRW">KRW (₩)</option>
+                <option value="PHP">PHP (₱)</option>
+                <option value="MYR">MYR (RM)</option>
+                <option value="IDR">IDR (Rp)</option>
+                <option value="TRY">TRY (₺)</option>
+                <option value="PKR">PKR (Rs)</option>
+                <option value="BDT">BDT (৳)</option>
+                <option value="NGN">NGN (₦)</option>
+              </select>
+              <div class="pointer-events-none absolute right-1.5 sm:right-2 flex items-center text-slate-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reset Button -->
+          <button
+            type="button"
+            id="btn-open-reset-modal"
+            class="btn-open-reset-modal w-full h-full min-h-[38px] sm:min-h-[42px] text-xs font-semibold px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 shrink-0"
+            title="Reset All Tracker Data"
+          >
+            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

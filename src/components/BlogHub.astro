@@ -3,76 +3,83 @@
 
 <div class="space-y-6">
   <!-- Blog Hub Header -->
-  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+  <div class="bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
       <div>
         <div class="flex items-center gap-2">
-          <h2 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
-            📰 Financial Management & Wealth Articles
+          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+            📰 Financial Guidance & Wealth Literacy Articles
           </h2>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
-            Curated Guides
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 uppercase tracking-wider">
+            Advisory Insights
           </span>
         </div>
-        <p class="text-xs text-slate-600 mt-1">
-          In-depth guides, practical budgeting strategies, and behavioral psychology to help you make smarter money decisions.
+        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">
+          Practical strategies and educational frameworks structured around the <strong>Four Pillars of Sustainable Personal Finance</strong>.
         </p>
       </div>
 
-      <!-- Category Filter Pills -->
+      <!-- Category Filter Pills Aligned with Four Pillars -->
       <div class="flex items-center gap-1.5 flex-wrap">
         <button
           type="button"
           data-blog-filter="all"
-          class="btn-blog-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 text-white shadow-2xs cursor-pointer"
+          class="btn-blog-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 text-white shadow-2xs cursor-pointer whitespace-nowrap"
         >
-          All
+          All Articles
         </button>
         <button
           type="button"
-          data-blog-filter="debt"
-          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+          data-blog-filter="pillar-1"
+          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer whitespace-nowrap"
         >
-          Debt Payoff
+          Pillar 1: Cash Flow
         </button>
         <button
           type="button"
-          data-blog-filter="budgeting"
-          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+          data-blog-filter="pillar-2"
+          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer whitespace-nowrap"
         >
-          Budgeting
+          Pillar 2: Debt & Protection
         </button>
         <button
           type="button"
-          data-blog-filter="savings"
-          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+          data-blog-filter="pillar-3"
+          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer whitespace-nowrap"
         >
-          Saving Hacks
+          Pillar 3: Wealth Building
+        </button>
+        <button
+          type="button"
+          data-blog-filter="pillar-4"
+          class="btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer whitespace-nowrap"
+        >
+          Pillar 4: Preservation
         </button>
       </div>
     </div>
 
-    <!-- Featured Post Hero Card -->
-    <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+    <!-- Featured Post Hero Card (Financial Automation Blueprint) -->
+    <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200 dark:border-emerald-800/60 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
       <div class="md:col-span-8 space-y-2">
         <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white">
-            Editor's Pick
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-700 text-white">
+            Featured Advisory
           </span>
-          <span class="text-xs text-slate-500 font-medium">6 min read • Updated Weekly</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">6 min read • Automated Money Systems</span>
         </div>
-        <h3 class="text-xl font-extrabold text-slate-900 font-['Outfit',sans-serif] tracking-tight">
-          The 7 Money Habits That Keep People Broke (And How to Break Them Today)
+        <h3 class="text-xl font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
+          Automating Your Financial Life: How to Build a Frictionless Payday Routine
         </h3>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Most financial stress isn't caused by earning too little—it is driven by small, unexamined behavioral leaks: lifestyle creep, subscription amnesia, and paying yourself last. Here is the exact blueprint to reverse it.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          How establishing automated transfers on salary day removes willpower from savings, prevents bill payment oversights, and ensures investable margin is captured before lifestyle spending begins.
         </p>
       </div>
       <div class="md:col-span-4 flex justify-start md:justify-end">
         <button
           type="button"
           data-open-blog="blog-1"
-          class="btn-read-article px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
+          class="btn-read-article px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-750 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
         >
           <span>Read Full Article</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -83,116 +90,116 @@
 
   <!-- Articles Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-    <!-- Article 1: Debt Snowball vs Avalanche -->
-    <div class="blog-card bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all" data-category="debt">
+    <!-- Article 1: Pillar 1 Cash Flow Leaks -->
+    <div class="blog-card bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all" data-category="pillar-1">
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between text-[11px] text-slate-500">
-          <span class="px-2 py-0.5 rounded-md font-semibold bg-sky-50 text-sky-700 border border-sky-200">Debt Payoff</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded-md font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">Pillar 1: Cash Flow</span>
           <span>5 min read</span>
         </div>
-        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] leading-snug">
-          Debt Snowball vs. Avalanche: Which Strategy Actually Works?
+        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-snug">
+          Plugging Silent Cash Flow Leaks: Auditing Subscriptions & Lifestyle Creep
         </h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Mathematically, Avalanche saves more money in interest. But psychologically, Snowball has higher success rates. Discover how to pick the right method for your mindset.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          How unmonitored digital subscriptions, convenience surcharges, and lifestyle inflation quietly erode your monthly investable margin, and practical steps to reclaim it.
         </p>
       </div>
       <button
         type="button"
         data-open-blog="blog-2"
-        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer pt-2"
+        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer pt-2"
       >
         Read Guide <span aria-hidden="true">&rarr;</span>
       </button>
     </div>
 
-    <!-- Article 2: $1,000 Emergency Fund -->
-    <div class="blog-card bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all" data-category="savings">
+    <!-- Article 2: Pillar 2 Debt Avalanche vs Snowball -->
+    <div class="blog-card bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all" data-category="pillar-2">
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between text-[11px] text-slate-500">
-          <span class="px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Saving Hacks</span>
-          <span>4 min read</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded-md font-semibold bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">Pillar 2: Debt & Protection</span>
+          <span>5 min read</span>
         </div>
-        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] leading-snug">
-          How to Build a $1,000 Emergency Fund in 30 Days Without A Second Job
+        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-snug">
+          Strategic Debt Payoff: Mathematical Avalanche vs. Behavioral Snowball
         </h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          The first $1,000 is your psychological barrier against high-interest debt. Step-by-step audit steps to free up $250/week from existing monthly spending.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          An advisory evaluation comparing the mathematical benefits of clearing high-interest obligations first against the psychological momentum of rapid milestone closures.
         </p>
       </div>
       <button
         type="button"
         data-open-blog="blog-3"
-        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer pt-2"
+        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer pt-2"
       >
         Read Guide <span aria-hidden="true">&rarr;</span>
       </button>
     </div>
 
-    <!-- Article 3: Impulse Buying Rule -->
-    <div class="blog-card bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all" data-category="budgeting">
+    <!-- Article 3: Pillar 2 Emergency Shield -->
+    <div class="blog-card bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all" data-category="pillar-2">
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between text-[11px] text-slate-500">
-          <span class="px-2 py-0.5 rounded-md font-semibold bg-purple-50 text-purple-700 border border-purple-200">Budgeting</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded-md font-semibold bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">Pillar 2: Debt & Protection</span>
           <span>4 min read</span>
         </div>
-        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] leading-snug">
-          The 72-Hour Rule: The Brain Hack That Stops Impulse Buying
+        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-snug">
+          Building Your Emergency Shield: Sizing and Parking 3–6 Months of Living Costs
         </h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Dopamine drives modern online shopping cart conversions. Learn how introducing a simple 72-hour cooling-off window eliminates 80% of regretful Amazon purchases.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Why liquid reserves are your essential defense against high-interest borrowing, and how auto-sweep FDs or liquid funds provide immediate access without capital risk.
         </p>
       </div>
       <button
         type="button"
         data-open-blog="blog-4"
-        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer pt-2"
+        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer pt-2"
       >
         Read Guide <span aria-hidden="true">&rarr;</span>
       </button>
     </div>
 
-    <!-- Article 4: Zero-Based Budgeting -->
-    <div class="blog-card bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all" data-category="budgeting">
+    <!-- Article 4: Pillar 3 Compounding & Systematic Investing -->
+    <div class="blog-card bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all" data-category="pillar-3">
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between text-[11px] text-slate-500">
-          <span class="px-2 py-0.5 rounded-md font-semibold bg-purple-50 text-purple-700 border border-purple-200">Budgeting</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded-md font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">Pillar 3: Wealth Building</span>
           <span>5 min read</span>
         </div>
-        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] leading-snug">
-          Zero-Based Budgeting: Why Six-Figure Earners Still Feel Broke
+        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-snug">
+          The Mechanics of Compounding: Harnessing the Rule of 72 & Systematic Investing
         </h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Earning $120,000 without a plan leads to lifestyle inflation. Discover why assigning every single dollar a job before the month starts is the secret to real wealth creation.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          How automated regular contributions into diversified low-cost index funds leverage time horizons to build generational wealth without attempting to time market fluctuations.
         </p>
       </div>
       <button
         type="button"
         data-open-blog="blog-5"
-        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer pt-2"
+        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer pt-2"
       >
         Read Guide <span aria-hidden="true">&rarr;</span>
       </button>
     </div>
 
-    <!-- Article 5: High-Yield Savings Accounts -->
-    <div class="blog-card bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all" data-category="savings">
+    <!-- Article 5: Pillar 4 Preservation & Autonomy -->
+    <div class="blog-card bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all" data-category="pillar-4">
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between text-[11px] text-slate-500">
-          <span class="px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Saving Hacks</span>
-          <span>4 min read</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="px-2 py-0.5 rounded-md font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">Pillar 4: Preservation</span>
+          <span>5 min read</span>
         </div>
-        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] leading-snug">
-          High-Yield Savings Accounts: Stop Leaving Free Money in Checking
+        <h4 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-snug">
+          Defending Purchasing Power: Outpacing Inflation & Achieving Time Autonomy
         </h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Why let big commercial banks keep 5% interest while paying you 0.01%? The safety, liquidity, and setup process of modern FDIC-insured high-yield accounts explained.
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Understanding nominal vs. real returns, tax efficiency, and structuring your financial life so that work becomes an intentional choice rather than an ongoing financial necessity.
         </p>
       </div>
       <button
         type="button"
         data-open-blog="blog-6"
-        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer pt-2"
+        class="btn-read-article text-xs font-bold text-emerald-800 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer pt-2"
       >
         Read Guide <span aria-hidden="true">&rarr;</span>
       </button>
@@ -208,21 +215,21 @@
   aria-modal="true"
   aria-labelledby="reader-article-title"
 >
-  <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
-    <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+  <div class="bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
+    <div class="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
       <div>
-        <span id="reader-category-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span id="reader-category-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
           Budgeting
         </span>
-        <h3 id="reader-article-title" class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif] mt-1.5">
+        <h3 id="reader-article-title" class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] mt-1.5">
           Article Title
         </h3>
-        <p id="reader-meta-text" class="text-xs text-slate-500 mt-0.5">5 min read • By Financial Research Team</p>
+        <p id="reader-meta-text" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">5 min read • Practical Educational Guide</p>
       </div>
       <button
         type="button"
         id="btn-close-blog-reader"
-        class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg transition-colors cursor-pointer"
+        class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 rounded-lg transition-colors cursor-pointer"
         aria-label="Close article"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -230,15 +237,15 @@
     </div>
 
     <!-- Full Article Body -->
-    <div id="reader-article-content" class="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
+    <div id="reader-article-content" class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed space-y-3">
       <!-- Populated via JS -->
     </div>
 
-    <div class="border-t border-slate-100 pt-3 flex justify-end">
+    <div class="border-t border-slate-100 dark:border-slate-800 pt-3 flex justify-end">
       <button
         type="button"
         id="btn-done-reading"
-        class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+        class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer"
       >
         Close Article
       </button>

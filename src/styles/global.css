@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --bg-main: #f8fafc;
@@ -10,6 +12,19 @@
     --brand-primary: #059669;
     --brand-dark: #047857;
     --brand-light: #ecfdf5;
+    color-scheme: light;
+  }
+
+  .dark {
+    --bg-main: #090d16;
+    --surface-card: #111827;
+    --border-subtle: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --brand-primary: #10b981;
+    --brand-dark: #059669;
+    --brand-light: #064e3b;
+    color-scheme: dark;
   }
 
   body {
@@ -70,3 +85,158 @@
     display: none !important;
   }
 }
+
+/* --- Dark Mode Universal Styles --- */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #090d16 !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: #f8fafc;
+}
+
+/* Card surfaces and containers */
+html.dark .bg-white {
+  background-color: #111827 !important;
+}
+html.dark .bg-white\/70,
+html.dark .bg-white\/80,
+html.dark .bg-white\/90 {
+  background-color: rgba(17, 24, 39, 0.85) !important;
+}
+html.dark .bg-slate-50 {
+  background-color: #162032 !important;
+}
+html.dark .bg-slate-50\/50 {
+  background-color: rgba(22, 32, 50, 0.5) !important;
+}
+html.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+html.dark .bg-slate-100\/90,
+html.dark .bg-slate-100\/80 {
+  background-color: rgba(30, 41, 59, 0.85) !important;
+}
+html.dark .bg-slate-200 {
+  background-color: #334155 !important;
+}
+
+/* Borders */
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-200\/90 {
+  border-color: #1e293b !important;
+}
+html.dark .border-slate-300 {
+  border-color: #334155 !important;
+}
+html.dark .border-emerald-100,
+html.dark .border-emerald-200,
+html.dark .border-emerald-200\/80,
+html.dark .border-emerald-300 {
+  border-color: #064e3b !important;
+}
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+/* Emerald subtle tints in dark mode */
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/30,
+html.dark .bg-emerald-50\/50,
+html.dark .bg-emerald-50\/70,
+html.dark .bg-emerald-50\/80,
+html.dark .bg-emerald-50\/90 {
+  background-color: rgba(6, 78, 59, 0.35) !important;
+}
+html.dark .bg-emerald-100,
+html.dark .bg-emerald-100\/80 {
+  background-color: rgba(6, 78, 59, 0.5) !important;
+}
+html.dark .text-emerald-800,
+html.dark .text-emerald-900,
+html.dark .text-emerald-950 {
+  color: #34d399 !important;
+}
+
+/* Gradients in dark mode */
+html.dark .from-emerald-50 {
+  --tw-gradient-from: rgba(6, 78, 59, 0.35) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(6, 78, 59, 0)) !important;
+}
+html.dark .via-teal-50 {
+  --tw-gradient-to: rgba(19, 78, 74, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(19, 78, 74, 0.3), var(--tw-gradient-to) !important;
+}
+html.dark .to-emerald-50 {
+  --tw-gradient-to: rgba(6, 78, 59, 0.35) !important;
+}
+html.dark .to-teal-50 {
+  --tw-gradient-to: rgba(19, 78, 74, 0.35) !important;
+}
+
+/* Text colors */
+html.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+html.dark .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+html.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+html.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+html.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Hovers */
+html.dark .hover\:bg-white:hover {
+  background-color: #1e293b !important;
+}
+html.dark .hover\:bg-slate-50:hover {
+  background-color: #1e293b !important;
+}
+html.dark .hover\:bg-slate-100:hover {
+  background-color: #334155 !important;
+}
+html.dark .hover\:bg-emerald-100:hover {
+  background-color: rgba(6, 78, 59, 0.6) !important;
+}
+
+/* Form inputs & controls */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html.dark select,
+html.dark textarea {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Header & Footer */
+html.dark header {
+  background-color: rgba(9, 13, 22, 0.92) !important;
+  border-color: #1e293b !important;
+}
+html.dark footer {
+  background-color: #090d16 !important;
+  border-color: #1e293b !important;
+}
+

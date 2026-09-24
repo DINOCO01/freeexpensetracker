@@ -23,7 +23,7 @@ export function loadStoredState(): AppState {
       income: 0,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: 'INR',
       transactions: []
     };
   }
@@ -39,7 +39,7 @@ export function loadStoredState(): AppState {
       income: rawIncome !== null ? parseFloat(rawIncome) || 0 : 4200,
       frequency: rawFreq || 'monthly',
       model: rawModel || '50-30-20',
-      currency: rawCur || 'USD',
+      currency: rawCur || 'INR',
       transactions: rawTx
         ? JSON.parse(rawTx)
         : [
@@ -99,7 +99,7 @@ export function loadStoredState(): AppState {
       income: 4200,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: 'INR',
       transactions: []
     };
   }
@@ -127,7 +127,7 @@ export function clearAllStoredData(): void {
   }
 }
 
-export function exportTransactionsToCSV(transactions: Transaction[], currencySymbol: string = '$'): void {
+export function exportTransactionsToCSV(transactions: Transaction[], currencySymbol: string = '₹'): void {
   const headers = ['Transaction ID', 'Date', 'Expense Description', 'Category', `Amount (${currencySymbol})`, 'Source'];
   const rows = transactions.map((t) => [
     t.id,
