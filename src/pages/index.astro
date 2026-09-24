@@ -1,0 +1,1661 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import TrackingChoiceHero from '../components/TrackingChoiceHero.astro';
+import TabNav from '../components/TabNav.astro';
+import HeroSummary from '../components/HeroSummary.astro';
+import FinancialHealthCard from '../components/FinancialHealthCard.astro';
+import SmartSuggestions from '../components/SmartSuggestions.astro';
+import ExpenseLogger from '../components/ExpenseLogger.astro';
+import TransactionLedger from '../components/TransactionLedger.astro';
+import DebtManagement from '../components/DebtManagement.astro';
+import BudgetPlanning from '../components/BudgetPlanning.astro';
+import FinancialKnowledge from '../components/FinancialKnowledge.astro';
+import BlogHub from '../components/BlogHub.astro';
+import CompetitiveEdge from '../components/CompetitiveEdge.astro';
+import StatementImporterTab from '../components/StatementImporterTab.astro';
+import SpreadsheetsAndPrintable from '../components/SpreadsheetsAndPrintable.astro';
+import SEOContentSection from '../components/SEOContentSection.astro';
+import FAQSection from '../components/FAQSection.astro';
+import Footer from '../components/Footer.astro';
+import FileImportModal from '../components/FileImportModal.astro';
+import ResetModal from '../components/ResetModal.astro';
+---
+
+<Layout
+  title="Free Expense Tracker - Best Free Expense Tracker App, Spreadsheets & Templates"
+  description="Manage your finances with Free Expense Tracker. Download free expense tracker spreadsheet workbooks, copy free expense tracker Google Sheets templates, or use our live private web app with receipt OCR scanning. 100% free with zero accounts needed."
+  keywords="Free Expense Tracker, free expense tracker, best free expense tracker app, free expense tracker template, free expense tracker google sheets, best free expense tracker, free expense tracker spreadsheet"
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-8">
+    <!-- Hero Header & Value Proposition -->
+    <TrackingChoiceHero />
+
+    <!-- Navigation Tab Bar -->
+    <TabNav />
+
+    <!-- TAB 1: Live Expense Tracker & Smart Suggestions -->
+    <section id="tab-view-tracker" class="tab-view space-y-6">
+      <div id="live-tool-anchor"></div>
+
+      <!-- Parallel Top: Income Tracker & Financial Health Indicator Side-by-Side -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <HeroSummary />
+        <FinancialHealthCard />
+      </div>
+
+      <!-- Quick Expense Logger & Transaction Ledger Below Tracker -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-5">
+          <ExpenseLogger />
+        </div>
+        <div class="lg:col-span-7">
+          <TransactionLedger />
+        </div>
+      </div>
+
+      <!-- Smart Spending Suggestions & Alternatives in Last -->
+      <SmartSuggestions />
+    </section>
+
+    <!-- TAB 2: Free Templates (Google Sheets, Excel & Printables) -->
+    <section id="tab-view-templates" class="tab-view space-y-6 hidden">
+      <SpreadsheetsAndPrintable />
+    </section>
+
+    <!-- TAB 3: Universal Statement & Receipt Importer (Multi-file & Multi-format) -->
+    <section id="tab-view-import" class="tab-view space-y-6 hidden">
+      <StatementImporterTab />
+    </section>
+
+    <!-- TAB 4: Debt Management & Payoff Planner -->
+    <section id="tab-view-debt" class="tab-view space-y-8 hidden">
+      <DebtManagement />
+    </section>
+
+    <!-- TAB 3: Target & Budget Goal Planning -->
+    <section id="tab-view-targets" class="tab-view space-y-8 hidden">
+      <BudgetPlanning />
+    </section>
+
+    <!-- Combined TAB: Financial Knowledge & Educational Blogs -->
+    <section id="tab-view-knowledge" class="tab-view space-y-8 hidden">
+      <BlogHub />
+      <FinancialKnowledge />
+      <CompetitiveEdge />
+    </section>
+
+    <!-- Comprehensive On-Page SEO Educational & Explanatory Guide (800-1200 words) -->
+    <section id="section-seo-guide" class="pt-6">
+      <SEOContentSection />
+    </section>
+
+    <!-- SEO-Friendly Interactive FAQ Section with JSON-LD Schema -->
+    <section id="section-faq" class="pt-2">
+      <FAQSection />
+    </section>
+  </main>
+
+  <!-- Global SEO Footer -->
+  <Footer />
+
+  <!-- Modals -->
+  <FileImportModal />
+  <ResetModal />
+</Layout>
+
+<script>
+  import {
+    SUPPORTED_CURRENCIES,
+    formatCurrency,
+    normalizeToMonthly,
+    calculateFinancialHealthScore,
+    CATEGORY_TYPES,
+    CATEGORY_ICONS,
+    type Frequency,
+    type BudgetModel,
+    type Transaction,
+    type ExpenseCategory
+  } from '../utils/calculations';
+
+  import {
+    loadStoredState,
+    saveStoredState,
+    clearAllStoredData,
+    exportTransactionsToCSV,
+    type AppState
+  } from '../utils/storage';
+
+  import {
+    parseAndInterpretFile,
+    parseAndInterpretMultipleFiles,
+    type FileInterpretationResult,
+    type MultiFileInterpretationResult
+  } from '../utils/fileImporter';
+
+  import {
+    generateExcelTemplate,
+    openPrintableDocument
+  } from '../utils/templateDownloader';
+
+  // --- 1. State Interfaces & Initial Load ---
+  export interface DebtItem {
+    id: string;
+    name: string;
+    balance: number;
+    rate: number;
+    minimum: number;
+  }
+
+  export interface GoalItem {
+    id: string;
+    name: string;
+    target: number;
+    current: number;
+    monthly: number;
+  }
+
+  let state: AppState = loadStoredState();
+  let pendingImportResult: FileInterpretationResult | null = null;
+  let pendingTabImportResult: MultiFileInterpretationResult | null = null;
+
+  // Debts State
+  const DEBT_STORAGE_KEY = 'fet_debts_v4';
+  let debts: DebtItem[] = [];
+  try {
+    const rawDebts = localStorage.getItem(DEBT_STORAGE_KEY);
+    debts = rawDebts
+      ? JSON.parse(rawDebts)
+      : [
+          { id: 'debt-1', name: 'Chase Sapphire Credit Card', balance: 3800, rate: 22.9, minimum: 110 },
+          { id: 'debt-2', name: 'Auto Loan (Honda Civic)', balance: 11500, rate: 6.5, minimum: 290 },
+          { id: 'debt-3', name: 'Federal Student Loan', balance: 14200, rate: 4.8, minimum: 165 }
+        ];
+  } catch (e) {
+    debts = [];
+  }
+  let debtStrategy: 'avalanche' | 'snowball' = 'avalanche';
+  let extraMonthlyDebtPayment = 200;
+
+  // Goals State
+  const GOAL_STORAGE_KEY = 'fet_goals_v4';
+  let goals: GoalItem[] = [];
+  try {
+    const rawGoals = localStorage.getItem(GOAL_STORAGE_KEY);
+    goals = rawGoals
+      ? JSON.parse(rawGoals)
+      : [
+          { id: 'goal-1', name: '3-Month Emergency Cushion', target: 8000, current: 3200, monthly: 400 },
+          { id: 'goal-2', name: 'Home Down Payment Fund', target: 25000, current: 8500, monthly: 500 },
+          { id: 'goal-3', name: 'Summer Travel & Flight', target: 1800, current: 950, monthly: 200 }
+        ];
+  } catch (e) {
+    goals = [];
+  }
+
+  // --- 2. Blog Articles Full Text Database ---
+  const BLOG_ARTICLES: Record<string, { title: string; category: string; readTime: string; contentHtml: string }> = {
+    'blog-1': {
+      title: 'The 7 Money Habits That Keep People Broke (And How to Break Them Today)',
+      category: 'Budgeting & Mindset',
+      readTime: '6 min read',
+      contentHtml: `
+        <p>Most individuals who struggle with monthly finances do not have an income deficit—they suffer from behavioral leaks that silently siphon hundreds of dollars each month before wealth can compound.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">1. Lifestyle Inflation (The Golden Handcuffs)</h4>
+        <p>When salary increases from $50,000 to $70,000, human psychology immediately upgrades apartments, leases newer vehicles, and frequent costlier restaurants. Within three months, the extra $20,000 vanishes completely.</p>
+        <p><strong>The Fix:</strong> The 50% Rule for Raises. Whenever you receive a salary bump, bonus, or raise, immediately divert exactly 50% into automated investments before the new paycheck enters your checking account.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">2. Paying Yourself Last</h4>
+        <p>If you wait to save whatever is left over at the end of the month, the answer will always be zero. Human spending expands to fill the container of available liquidity (Parkinson's Law of Money).</p>
+        <p><strong>The Fix:</strong> Reverse budgeting. Automate your 20% savings transfer to execute on the exact day your paycheck clears.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">3. Subscription Amnesia</h4>
+        <p>The average American underestimates their monthly recurring subscriptions by over $130/month. Streaming apps, premium software, and trial memberships accumulate quietly.</p>
+        <p><strong>The Fix:</strong> Conduct a quarterly 15-minute credit card audit. Cancel every recurring subscription you have not used in the past 14 days.</p>
+      `
+    },
+    'blog-2': {
+      title: 'Debt Snowball vs. Avalanche: Which Strategy Actually Works?',
+      category: 'Debt Payoff',
+      readTime: '5 min read',
+      contentHtml: `
+        <p>When you are serious about becoming debt-free, choosing between the <strong>Debt Avalanche</strong> and <strong>Debt Snowball</strong> method is the most important strategic decision you will make.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">The Mathematical Champion: Debt Avalanche</h4>
+        <p>In the Avalanche method, you order all debts strictly by Annual Percentage Rate (APR), highest to lowest. You pay minimums on everything, throwing every single extra dollar at the debt with the highest interest.</p>
+        <p><strong>Pros:</strong> Minimizes lifetime interest payments and achieves total freedom in the shortest calendar days.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">The Psychological Champion: Debt Snowball</h4>
+        <p>Popularized by Dave Ramsey, the Snowball method orders debts from smallest remaining balance to largest balance, completely ignoring interest rates.</p>
+        <p><strong>Pros:</strong> When you wipe out a $500 balance in three weeks, your brain receives a surge of dopamine. You feel immediate victory and momentum, which prevents burnout during multi-year payoff plans.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">Verdict: Which Should You Use?</h4>
+        <p>If you are highly analytical and disciplined, choose <strong>Avalanche</strong>. If you feel overwhelmed, anxious, or unmotivated by your debts, choose <strong>Snowball</strong> for the fast psychological wins.</p>
+      `
+    },
+    'blog-3': {
+      title: 'How to Build a $1,000 Emergency Fund in 30 Days Without A Second Job',
+      category: 'Saving Hacks',
+      readTime: '4 min read',
+      contentHtml: `
+        <p>Over 56% of adults cannot cover an unexpected $1,000 expense from cash reserves. Without this basic barrier, a blown tire, plumbing leak, or emergency vet visit immediately lands on a 24% APR credit card, restarting the debt cycle.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">The 4-Week Rapid Capital Blueprint</h4>
+        <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-600 mt-1">
+          <li><strong>Week 1 ($250): Sell Unused Electronics & Wardrobe.</strong> Search closets for unused smartphones, tablets, video games, or designer jackets. List them on Facebook Marketplace or eBay for quick local cash.</li>
+          <li><strong>Week 2 ($250): The Pantry & Freezer Challenge.</strong> Plan all meals for 7 days exclusively around food already in your freezer, canned goods, and pantry. Skip supermarket trips to save $150–$250 in a single week.</li>
+          <li><strong>Week 3 ($250): Auto Insurance & Internet Renegotiation.</strong> Call your car insurance provider and request a quote comparison or raise deductibles from $250 to $1,000. Call your ISP and ask for retention discounts.</li>
+          <li><strong>Week 4 ($250): Pause Discretionary Dining & Rideshares.</strong> Commit to zero Uber Eats, DoorDash, and restaurant dining for 7 days. Brew coffee at home.</li>
+        </ul>
+        <p class="mt-2">Store this $1,000 in a separate high-yield savings account and label it strictly "DO NOT TOUCH UNLESS EMERGENCY".</p>
+      `
+    },
+    'blog-4': {
+      title: 'The 72-Hour Rule: The Brain Hack That Stops Impulse Buying',
+      category: 'Budgeting & Habits',
+      readTime: '4 min read',
+      contentHtml: `
+        <p>Modern e-commerce apps are engineered by behavioral psychologists to trigger impulsive dopamine rushes. 1-Click checkout, countdown timers, and "Only 2 left in stock" notices bypass the prefrontal cortex.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">How the 72-Hour Rule Works</h4>
+        <p>Whenever you see a non-essential item you want to purchase (clothing, tech gadgets, home decor, games) that costs over $30, apply a strict <strong>72-hour cooling-off window</strong>:</p>
+        <ol class="list-decimal list-inside space-y-1 text-xs text-slate-600 mt-1">
+          <li>Do not click "Buy Now". Add it to your cart or a private wishlist.</li>
+          <li>Close the browser tab or app completely.</li>
+          <li>Set a reminder 72 hours (3 days) into the future.</li>
+        </ol>
+        <p class="mt-2">In 80% of instances, when the notification triggers 3 days later, the emotional dopamine spike has dissipated, and you will willingly delete the item, saving hundreds of dollars effortlessly.</p>
+      `
+    },
+    'blog-5': {
+      title: 'Zero-Based Budgeting: Why Six-Figure Earners Still Feel Broke',
+      category: 'Budgeting',
+      readTime: '5 min read',
+      contentHtml: `
+        <p>A staggering 36% of individuals earning over $100,000 per year report living paycheck to paycheck. High income without deliberate architecture simply creates expensive habits.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">The Philosophy of Zero-Based Budgeting</h4>
+        <p>Zero-based budgeting does not mean you have zero dollars in your checking account. It means <strong>Income minus Allocation equals Zero</strong>:</p>
+        <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-mono text-xs my-2">
+          Monthly Net Income: $5,000 <br />
+          Needs & Bills: -$2,500 <br />
+          Wants & Fun: -$1,200 <br />
+          Investments: -$1,000 <br />
+          Sinking Fund: -$300 <br />
+          Remaining Unassigned: <strong>$0</strong>
+        </div>
+        <p>When every dollar has an assigned duty before the month begins, money stops vanishing on accidental frivolous spending.</p>
+      `
+    },
+    'blog-6': {
+      title: 'High-Yield Savings Accounts: Stop Leaving Free Money in Checking',
+      category: 'Saving Hacks',
+      readTime: '4 min read',
+      contentHtml: `
+        <p>Traditional brick-and-mortar commercial banks frequently pay an annualized return of 0.01% on checking and savings accounts. On a $10,000 emergency balance, you earn exactly $1.00 after 12 months.</p>
+        <h4 class="font-bold text-slate-900 mt-3 text-sm">The High-Yield Savings Account (HYSA) Advantage</h4>
+        <p>Modern online institutions (Ally, Marcus, Capital One 360, SoFi) pay between <strong>4.0% and 5.0% APY</strong> on consumer savings balances.</p>
+        <p>They are 100% FDIC-insured up to $250,000 per depositor, have zero monthly maintenance fees, and allow instant electronic transfers back to your checking account within 1–2 business days.</p>
+        <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-900 my-2">
+          $10,000 in traditional bank = $1/year <br />
+          $10,000 in a 4.5% HYSA = <strong>$450/year in passive compounding cash</strong>
+        </div>
+        <p>Opening an account takes less than 7 minutes online and puts risk-free cash directly into your wallet.</p>
+      `
+    }
+  };
+
+  // --- 3. DOM Elements ---
+  const currencySelector = document.getElementById('currency-selector') as HTMLSelectElement;
+  const inputIncome = document.getElementById('input-income-amount') as HTMLInputElement;
+  const incomeSlider = document.getElementById('income-range-slider') as HTMLInputElement;
+  const incomeNormalizedAmount = document.getElementById('income-normalized-amount');
+  const btnFreqs = document.querySelectorAll('.btn-freq');
+
+  const statTotalIncome = document.getElementById('stat-total-income');
+  const statTotalExpenses = document.getElementById('stat-total-expenses');
+  const statExpensesPct = document.getElementById('stat-expenses-pct');
+  const statRemainingBalance = document.getElementById('stat-remaining-balance');
+  const statCashflowLabel = document.getElementById('stat-cashflow-label');
+  const statSavingsRate = document.getElementById('stat-savings-rate');
+
+  // Health Card
+  const healthTierBadge = document.getElementById('health-tier-badge');
+  const healthTierText = document.getElementById('health-tier-text');
+  const healthScoreNumber = document.getElementById('health-score-number');
+  const scoreCircleStroke = document.getElementById('score-circle-stroke');
+  const scoreSavingsRateLabel = document.getElementById('score-savings-rate-label');
+  const barSavingsScore = document.getElementById('bar-savings-score');
+  const scoreFixedCostLabel = document.getElementById('score-fixed-cost-label');
+  const barFixedScore = document.getElementById('bar-fixed-score');
+  const scoreBufferLabel = document.getElementById('score-buffer-label');
+  const barBufferScore = document.getElementById('bar-buffer-score');
+  const healthRecommendationsList = document.getElementById('health-recommendations-list');
+
+  // Smart Suggestions
+  const smartSuggestionsContainer = document.getElementById('smart-suggestions-container');
+  const potentialSavingsTotal = document.getElementById('potential-savings-total');
+
+  // Logger Form
+  const formExpenseLogger = document.getElementById('form-expense-logger') as HTMLFormElement;
+  const inputItemName = document.getElementById('input-item-name') as HTMLInputElement;
+  const inputItemAmount = document.getElementById('input-item-amount') as HTMLInputElement;
+  const selectItemCategory = document.getElementById('select-item-category') as HTMLSelectElement;
+  const presetChips = document.querySelectorAll('.btn-preset-chip');
+  const btnScanReceiptLogger = document.getElementById('btn-scan-receipt-logger');
+  const inputReceiptPhoto = document.getElementById('input-receipt-photo') as HTMLInputElement;
+  const receiptScanningIndicator = document.getElementById('receipt-scanning-indicator');
+  const receiptOcrProgress = document.getElementById('receipt-ocr-progress');
+
+  // Ledger Elements
+  const transactionsTbody = document.getElementById('transactions-tbody');
+  const emptyLedgerState = document.getElementById('empty-ledger-state');
+  const txCountDisplay = document.getElementById('tx-count-display');
+  const searchTransactionsInput = document.getElementById('search-transactions') as HTMLInputElement;
+  const btnExportCsv = document.getElementById('btn-export-csv');
+
+  // Debt Management Elements
+  const statTotalDebt = document.getElementById('stat-total-debt');
+  const debtItemCount = document.getElementById('debt-item-count');
+  const statDtiRatio = document.getElementById('stat-dti-ratio');
+  const statDtiTier = document.getElementById('stat-dti-tier');
+  const statDebtFreeDate = document.getElementById('stat-debt-free-date');
+  const statDebtMonthsLeft = document.getElementById('stat-debt-months-left');
+  const statInterestSaved = document.getElementById('stat-interest-saved');
+  const extraPaymentLabel = document.getElementById('extra-payment-label');
+  const debtExtraSlider = document.getElementById('debt-extra-payment-slider') as HTMLInputElement;
+  const btnStratAvalanche = document.getElementById('btn-strat-avalanche');
+  const btnStratSnowball = document.getElementById('btn-strat-snowball');
+  const activeStrategyPill = document.getElementById('active-strategy-pill');
+  const debtsTbody = document.getElementById('debts-tbody');
+  const formAddDebt = document.getElementById('form-add-debt') as HTMLFormElement;
+  const inputDebtName = document.getElementById('input-debt-name') as HTMLInputElement;
+  const inputDebtBalance = document.getElementById('input-debt-balance') as HTMLInputElement;
+  const inputDebtRate = document.getElementById('input-debt-rate') as HTMLInputElement;
+  const inputDebtMinimum = document.getElementById('input-debt-minimum') as HTMLInputElement;
+
+  // Target & Budget Planning Elements
+  const efundMonthlyOutflow = document.getElementById('efund-monthly-outflow');
+  const targetEfund3mo = document.getElementById('target-efund-3mo');
+  const targetEfund6mo = document.getElementById('target-efund-6mo');
+  const goalsContainer = document.getElementById('goals-container');
+  const formAddGoal = document.getElementById('form-add-goal') as HTMLFormElement;
+  const inputGoalName = document.getElementById('input-goal-name') as HTMLInputElement;
+  const inputGoalTarget = document.getElementById('input-goal-target') as HTMLInputElement;
+  const inputGoalCurrent = document.getElementById('input-goal-current') as HTMLInputElement;
+  const inputGoalMonthly = document.getElementById('input-goal-monthly') as HTMLInputElement;
+  const btnScrollToAddGoal = document.getElementById('btn-scroll-to-add-goal');
+
+  // Blog Elements
+  const modalBlogReader = document.getElementById('modal-blog-reader');
+  const readerCategoryBadge = document.getElementById('reader-category-badge');
+  const readerArticleTitle = document.getElementById('reader-article-title');
+  const readerMetaText = document.getElementById('reader-meta-text');
+  const readerArticleContent = document.getElementById('reader-article-content');
+  const btnCloseBlogReader = document.getElementById('btn-close-blog-reader');
+  const btnDoneReading = document.getElementById('btn-done-reading');
+  const blogCards = document.querySelectorAll('.blog-card');
+  const blogFilterBtns = document.querySelectorAll('.btn-blog-filter');
+
+  // File Importer Modal Elements
+  const fileImportModal = document.getElementById('file-import-modal');
+  const btnCloseImportModal = document.getElementById('btn-close-import-modal');
+  const btnOpenImporterNav = document.getElementById('btn-open-file-importer-nav');
+  const btnHeroLaunchImport = document.getElementById('btn-hero-launch-import');
+  const btnOpenImporterLogger = document.getElementById('btn-open-importer-logger');
+  const importDropzone = document.getElementById('import-dropzone');
+  const importFileInput = document.getElementById('import-file-input') as HTMLInputElement;
+  const importPreviewBox = document.getElementById('import-preview-box');
+  const previewFileName = document.getElementById('preview-file-name');
+  const previewCount = document.getElementById('preview-count');
+  const previewTotal = document.getElementById('preview-total');
+  const previewTopCat = document.getElementById('preview-top-cat');
+  const previewInsightsList = document.getElementById('preview-insights-list');
+  const previewTableTbody = document.getElementById('preview-table-tbody');
+  const btnApplyReplace = document.getElementById('btn-apply-replace');
+  const btnApplyAppend = document.getElementById('btn-apply-append');
+  const importErrorMsg = document.getElementById('import-error-msg');
+
+  // Tab Importer Elements
+  const tabImporterDropzone = document.getElementById('tab-importer-dropzone');
+  const tabImporterFileInput = document.getElementById('tab-importer-file-input') as HTMLInputElement;
+  const tabImporterProgress = document.getElementById('tab-importer-progress');
+  const tabImporterProgressText = document.getElementById('tab-importer-progress-text');
+  const tabImporterProgressPct = document.getElementById('tab-importer-progress-pct');
+  const tabImporterProgressBar = document.getElementById('tab-importer-progress-bar');
+  const tabImporterError = document.getElementById('tab-importer-error');
+  const tabImporterResults = document.getElementById('tab-importer-results');
+  const tabImporterFilesChips = document.getElementById('tab-importer-files-chips');
+  const tabImporterFileCountBadge = document.getElementById('tab-importer-file-count-badge');
+  const tabResultRecordCount = document.getElementById('tab-result-record-count');
+  const tabResultTotalAmount = document.getElementById('tab-result-total-amount');
+  const tabResultTopCategory = document.getElementById('tab-result-top-category');
+  const tabResultTopCatSub = document.getElementById('tab-result-top-cat-sub');
+  const tabResultInsightsList = document.getElementById('tab-result-insights-list');
+  const tabResultTableCount = document.getElementById('tab-result-table-count');
+  const tabResultTableTbody = document.getElementById('tab-result-table-tbody');
+  const btnTabApplyReplace = document.getElementById('btn-tab-apply-replace');
+  const btnTabApplyAppend = document.getElementById('btn-tab-apply-append');
+  const btnTabResetImport = document.getElementById('btn-tab-reset-import');
+
+  // Reset Modal
+  const resetConfirmModal = document.getElementById('reset-confirm-modal');
+  const btnOpenResetModal = document.getElementById('btn-open-reset-modal');
+  const btnCancelReset = document.getElementById('btn-cancel-reset');
+  const btnConfirmResetBlank = document.getElementById('btn-confirm-reset-blank');
+  const btnRestoreSample = document.getElementById('btn-restore-sample');
+
+  // Tabs
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabViews = document.querySelectorAll('.tab-view');
+
+  // --- 4. Helper Functions ---
+  function getCurrencySymbol(): string {
+    const curr = SUPPORTED_CURRENCIES[state.currency] || SUPPORTED_CURRENCIES.USD;
+    return curr.symbol;
+  }
+
+  function formatMoney(amount: number): string {
+    return formatCurrency(amount, state.currency);
+  }
+
+  function getMonthlyIncome(): number {
+    return normalizeToMonthly(state.income, state.frequency);
+  }
+
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // --- 5. Render All Modules ---
+  function renderAll() {
+    const monthlyIncome = getMonthlyIncome();
+    const currSymbol = getCurrencySymbol();
+
+    // Sync currency labels
+    document.querySelectorAll('.currency-label').forEach((el) => {
+      el.textContent = currSymbol;
+    });
+
+    if (currencySelector && currencySelector.value !== state.currency) {
+      currencySelector.value = state.currency;
+    }
+
+    if (inputIncome && document.activeElement !== inputIncome) {
+      inputIncome.value = state.income ? state.income.toString() : '';
+    }
+
+    if (incomeSlider) {
+      incomeSlider.value = Math.min(500000, Math.max(0, monthlyIncome)).toString();
+    }
+
+    if (incomeNormalizedAmount) {
+      incomeNormalizedAmount.textContent = formatMoney(monthlyIncome);
+    }
+
+    btnFreqs.forEach((btn) => {
+      const freq = btn.getAttribute('data-freq');
+      if (freq === state.frequency) {
+        btn.className = 'btn-freq active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer';
+      } else {
+        btn.className = 'btn-freq px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+      }
+    });
+
+    // Compute category and total outflows
+    let totalSpent = 0;
+    let totalNeeds = 0;
+    let totalWants = 0;
+    let totalSavings = 0;
+    const catTotals: Record<ExpenseCategory, number> = {
+      Housing: 0,
+      Food: 0,
+      Transport: 0,
+      Utilities: 0,
+      Entertainment: 0,
+      Savings: 0,
+      Miscellany: 0
+    };
+
+    state.transactions.forEach((t) => {
+      totalSpent += t.amount;
+      catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+      const type = CATEGORY_TYPES[t.category] || 'want';
+      if (type === 'need') totalNeeds += t.amount;
+      else if (type === 'want') totalWants += t.amount;
+      else if (type === 'savings') totalSavings += t.amount;
+    });
+
+    const netCashflow = monthlyIncome - totalSpent;
+    const expensesPct = monthlyIncome > 0 ? Math.round((totalSpent / monthlyIncome) * 100) : 0;
+    const totalSavingsEffective = totalSavings + Math.max(0, netCashflow);
+    const savingsRatePct = monthlyIncome > 0 ? Math.round((totalSavingsEffective / monthlyIncome) * 100) : 0;
+
+    // Render KPI Cards
+    if (statTotalIncome) statTotalIncome.textContent = formatMoney(monthlyIncome);
+    if (statTotalExpenses) statTotalExpenses.textContent = formatMoney(totalSpent);
+    if (statExpensesPct) statExpensesPct.textContent = `${expensesPct}%`;
+    if (statRemainingBalance) {
+      statRemainingBalance.textContent = (netCashflow >= 0 ? '+' : '-') + formatMoney(Math.abs(netCashflow));
+      if (netCashflow < 0) {
+        statRemainingBalance.className = 'text-xl sm:text-2xl font-bold font-mono text-rose-600 tracking-tight';
+        if (statCashflowLabel) {
+          statCashflowLabel.textContent = 'Deficit / Shortfall';
+          statCashflowLabel.className = 'text-[11px] text-rose-600 font-semibold';
+        }
+      } else {
+        statRemainingBalance.className = 'text-xl sm:text-2xl font-bold font-mono text-emerald-700 tracking-tight';
+        if (statCashflowLabel) {
+          statCashflowLabel.textContent = 'Positive surplus';
+          statCashflowLabel.className = 'text-[11px] text-emerald-800 font-semibold';
+        }
+      }
+    }
+    if (statSavingsRate) {
+      statSavingsRate.textContent = `${savingsRatePct}%`;
+    }
+
+    // Financial Health Indicator
+    const health = calculateFinancialHealthScore(monthlyIncome, state.transactions);
+    if (healthScoreNumber) healthScoreNumber.textContent = health.score.toString();
+    if (healthTierText) healthTierText.textContent = health.tier;
+    if (healthTierBadge) {
+      healthTierBadge.style.backgroundColor = health.tierBg;
+      healthTierBadge.style.color = health.tierColor;
+      healthTierBadge.style.borderColor = health.tierBorder;
+    }
+    if (scoreCircleStroke) {
+      const circumference = 264;
+      const offset = circumference - (health.score / 100) * circumference;
+      scoreCircleStroke.style.strokeDashoffset = offset.toString();
+      scoreCircleStroke.style.stroke = health.tierColor;
+    }
+    if (scoreSavingsRateLabel) scoreSavingsRateLabel.textContent = `${health.savingsRateScore} / 40 pts (${health.savingsRatePct}%)`;
+    if (barSavingsScore) barSavingsScore.style.width = `${(health.savingsRateScore / 40) * 100}%`;
+    if (scoreFixedCostLabel) scoreFixedCostLabel.textContent = `${health.fixedCostScore} / 40 pts (${health.fixedCostPct}%)`;
+    if (barFixedScore) barFixedScore.style.width = `${(health.fixedCostScore / 40) * 100}%`;
+    if (scoreBufferLabel) scoreBufferLabel.textContent = `${health.bufferScore} / 20 pts (${health.bufferPct}%)`;
+    if (barBufferScore) barBufferScore.style.width = `${(health.bufferScore / 20) * 100}%`;
+
+    if (healthRecommendationsList) {
+      healthRecommendationsList.innerHTML = health.recommendations
+        .map((rec) => `<div class="flex items-start gap-2"><span class="text-emerald-700 font-bold">•</span><span>${rec}</span></div>`)
+        .join('');
+    }
+
+    // Dynamic Smart Suggestions & Alternatives
+    renderSmartSuggestions(catTotals, monthlyIncome, netCashflow);
+
+    // Ledger
+    renderLedger();
+
+    // Debt Management
+    renderDebtManagement(monthlyIncome);
+
+    // Target Planning
+    renderBudgetPlanning(totalSpent);
+  }
+
+  // --- 6. Smart Suggestions & Alternatives Engine ---
+  function renderSmartSuggestions(
+    catTotals: Record<ExpenseCategory, number>,
+    monthlyIncome: number,
+    netCashflow: number
+  ) {
+    if (!smartSuggestionsContainer) return;
+
+    interface SuggestionItem {
+      category: string;
+      title: string;
+      currentProblem: string;
+      alternativeSolution: string;
+      estimatedSavings: number;
+      tag: string;
+    }
+
+    const suggestions: SuggestionItem[] = [];
+
+    // Food & Dining Alternative
+    if (catTotals.Food > 250) {
+      suggestions.push({
+        category: 'Food & Groceries',
+        title: 'Batch Cooking & Store-Brand Swapping',
+        currentProblem: `You have spent ${formatMoney(catTotals.Food)} on food and groceries.`,
+        alternativeSolution: 'Replace 2 restaurant dinners per week with batch home-cooked meals, and switch 4 pantry staples (pasta, oats, milk, spices) to supermarket private labels.',
+        estimatedSavings: 160,
+        tag: 'High Impact'
+      });
+    }
+
+    // Subscriptions / Entertainment Alternative
+    if (catTotals.Entertainment > 80 || catTotals.Miscellany > 100) {
+      suggestions.push({
+        category: 'Entertainment & Discretionary',
+        title: 'Streaming & Digital Subscription Rotation',
+        currentProblem: `Discretionary and entertainment spending is currently ${formatMoney(catTotals.Entertainment + catTotals.Miscellany)}.`,
+        alternativeSolution: 'Rotate subscriptions so you maintain only 1 active video streaming platform each month. Cancel neglected memberships before the auto-renew billing cycle.',
+        estimatedSavings: 45,
+        tag: 'Quick Win'
+      });
+    }
+
+    // Utilities Alternative
+    if (catTotals.Utilities > 120) {
+      suggestions.push({
+        category: 'Utilities & Bills',
+        title: 'Home Energy Audit & Broadband Retention Rate',
+        currentProblem: `Utilities and recurring connectivity bills account for ${formatMoney(catTotals.Utilities)}.`,
+        alternativeSolution: 'Call your internet service provider asking for the retention promo rate, and install programmable night thermostat setbacks of 3°F.',
+        estimatedSavings: 50,
+        tag: 'Recurring'
+      });
+    }
+
+    // Transport Alternative
+    if (catTotals.Transport > 140) {
+      suggestions.push({
+        category: 'Transport & Fuel',
+        title: 'Fuel Cash-Back & Insurance Deductible Optimization',
+        currentProblem: `Transportation expenses are currently ${formatMoney(catTotals.Transport)}.`,
+        alternativeSolution: 'Consolidate multiple weekly errand trips, compare collision insurance deductibles, and use gas cash-back rewards apps.',
+        estimatedSavings: 60,
+        tag: 'Easy Switch'
+      });
+    }
+
+    // Surplus High-Yield Savings Alternative
+    if (netCashflow > 200) {
+      suggestions.push({
+        category: 'Cash Surplus Optimization',
+        title: 'High-Yield Savings Account (HYSA) Transfer',
+        currentProblem: `You have a healthy surplus of +${formatMoney(netCashflow)} remaining unassigned in your checking account.`,
+        alternativeSolution: 'Standard checking accounts yield 0.01%. Move your monthly surplus to an FDIC-insured 4.5% HYSA to earn passive monthly interest without market volatility.',
+        estimatedSavings: Math.round((netCashflow * 0.045) / 12),
+        tag: 'Passive Wealth'
+      });
+    }
+
+    // Calculate total potential monthly savings
+    const totalPotential = suggestions.reduce((sum, s) => sum + s.estimatedSavings, 0);
+    if (potentialSavingsTotal) {
+      potentialSavingsTotal.textContent = `+${formatMoney(totalPotential)}/mo`;
+    }
+
+    if (suggestions.length === 0) {
+      smartSuggestionsContainer.innerHTML = `
+        <div class="col-span-2 p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-200">
+          🎉 Great budget discipline! No immediate spending anomalies detected. Log additional expenses to receive customized cost-saving alternatives.
+        </div>
+      `;
+      return;
+    }
+
+    smartSuggestionsContainer.innerHTML = suggestions
+      .map(
+        (s) => `
+      <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/90 space-y-2 hover:border-slate-300 transition-colors">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">
+            ${s.tag}
+          </span>
+          <span class="text-xs font-bold font-mono text-emerald-700">
+            Save ~${formatMoney(s.estimatedSavings)}/mo
+          </span>
+        </div>
+        <h4 class="text-xs font-bold text-slate-900">${s.title}</h4>
+        <p class="text-[11px] text-slate-500">${s.currentProblem}</p>
+        <div class="p-2.5 rounded-lg bg-white border border-slate-200/80 text-[11px] text-slate-700 leading-relaxed font-medium">
+          <strong class="text-emerald-800">Actionable Switch:</strong> ${s.alternativeSolution}
+        </div>
+      </div>
+    `
+      )
+      .join('');
+  }
+
+  // --- 7. Debt Management Engine ---
+  function renderDebtManagement(monthlyIncome: number) {
+    if (!debtsTbody) return;
+
+    // Sort debts based on active strategy
+    const sortedDebts = [...debts].sort((a, b) => {
+      if (debtStrategy === 'avalanche') {
+        return b.rate - a.rate; // highest APR first
+      } else {
+        return a.balance - b.balance; // lowest balance first
+      }
+    });
+
+    const totalDebtAmount = debts.reduce((sum, d) => sum + d.balance, 0);
+    const totalMinimums = debts.reduce((sum, d) => sum + d.minimum, 0);
+
+    if (statTotalDebt) statTotalDebt.textContent = formatMoney(totalDebtAmount);
+    if (debtItemCount) debtItemCount.textContent = debts.length.toString();
+
+    // Debt-to-Income (DTI)
+    const dtiRatio = monthlyIncome > 0 ? Math.round((totalMinimums / monthlyIncome) * 100) : 0;
+    if (statDtiRatio) statDtiRatio.textContent = `${dtiRatio}%`;
+    if (statDtiTier) {
+      if (dtiRatio <= 36) {
+        statDtiTier.textContent = 'Healthy Range (<36%)';
+        statDtiTier.className = 'text-[11px] text-emerald-700 font-semibold';
+      } else if (dtiRatio <= 43) {
+        statDtiTier.textContent = 'Moderate DTI (36–43%)';
+        statDtiTier.className = 'text-[11px] text-amber-600 font-semibold';
+      } else {
+        statDtiTier.textContent = 'High Debt Burden (>43%)';
+        statDtiTier.className = 'text-[11px] text-rose-600 font-semibold';
+      }
+    }
+
+    // Payoff Timeline & Interest Saved Simulation
+    const totalMonthlyDebtBudget = totalMinimums + extraMonthlyDebtPayment;
+    let monthsToPayoff = 0;
+    let totalInterestBase = 0;
+    let totalInterestAccelerated = 0;
+
+    if (totalMonthlyDebtBudget > 0 && totalDebtAmount > 0) {
+      // Simplified amortized estimate
+      const avgRate = debts.reduce((acc, d) => acc + (d.rate * d.balance), 0) / (totalDebtAmount || 1) / 100 / 12;
+      monthsToPayoff = Math.max(1, Math.ceil(totalDebtAmount / totalMonthlyDebtBudget));
+      totalInterestAccelerated = totalDebtAmount * avgRate * (monthsToPayoff / 2);
+      const monthsWithoutExtra = Math.max(1, Math.ceil(totalDebtAmount / Math.max(1, totalMinimums)));
+      totalInterestBase = totalDebtAmount * avgRate * (monthsWithoutExtra / 2);
+    }
+
+    const interestSaved = Math.max(0, Math.round(totalInterestBase - totalInterestAccelerated));
+
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + monthsToPayoff);
+    const dateFormatted = futureDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+    if (statDebtFreeDate) statDebtFreeDate.textContent = totalDebtAmount > 0 ? dateFormatted : 'Debt Free!';
+    if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = totalDebtAmount > 0 ? `${monthsToPayoff} months remaining` : '0 balances';
+    if (statInterestSaved) statInterestSaved.textContent = formatMoney(interestSaved);
+
+    if (extraPaymentLabel) extraPaymentLabel.textContent = formatMoney(extraMonthlyDebtPayment);
+
+    // Active strategy pill
+    if (activeStrategyPill) {
+      activeStrategyPill.textContent = debtStrategy === 'avalanche' ? 'Avalanche (Highest APR)' : 'Snowball (Lowest Balance)';
+    }
+
+    if (sortedDebts.length === 0) {
+      debtsTbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="py-6 text-center text-xs text-slate-500">
+            No debt accounts recorded. You are consumer debt-free! Use the form on the left to add loans.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    debtsTbody.innerHTML = sortedDebts
+      .map(
+        (d, index) => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-2.5 px-3 font-mono font-bold text-emerald-800">#${index + 1}</td>
+        <td class="py-2.5 px-3 font-medium text-slate-900">${escapeHtml(d.name)}</td>
+        <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${formatMoney(d.balance)}</td>
+        <td class="py-2.5 px-3 text-right font-mono font-semibold text-rose-600">${d.rate}%</td>
+        <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatMoney(d.minimum)}/mo</td>
+        <td class="py-2.5 px-3 text-center">
+          <button
+            type="button"
+            data-delete-debt-id="${d.id}"
+            class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+            title="Delete debt"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `
+      )
+      .join('');
+
+    document.querySelectorAll('.btn-delete-debt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-delete-debt-id');
+        if (!id) return;
+        debts = debts.filter((d) => d.id !== id);
+        localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+        renderAll();
+      });
+    });
+  }
+
+  // --- 8. Target & Budget Planning Engine ---
+  function renderBudgetPlanning(totalMonthlyExpenses: number) {
+    // Emergency Fund Benchmark
+    if (efundMonthlyOutflow) efundMonthlyOutflow.textContent = `${formatMoney(totalMonthlyExpenses)}/mo`;
+    if (targetEfund3mo) targetEfund3mo.textContent = formatMoney(totalMonthlyExpenses * 3);
+    if (targetEfund6mo) targetEfund6mo.textContent = formatMoney(totalMonthlyExpenses * 6);
+
+    // Render Active Goals
+    if (!goalsContainer) return;
+
+    if (goals.length === 0) {
+      goalsContainer.innerHTML = `
+        <div class="col-span-3 p-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-200">
+          No savings targets created yet. Use the form below to set up your first goal!
+        </div>
+      `;
+      return;
+    }
+
+    goalsContainer.innerHTML = goals
+      .map((g) => {
+        const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
+        const remaining = Math.max(0, g.target - g.current);
+        const monthsLeft = g.monthly > 0 ? Math.ceil(remaining / g.monthly) : 0;
+
+        return `
+        <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-3 shadow-xs">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-900">${escapeHtml(g.name)}</h4>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+              ${pct}% Done
+            </span>
+          </div>
+
+          <div class="flex justify-between items-baseline text-xs font-mono">
+            <span class="font-bold text-slate-900">${formatMoney(g.current)}</span>
+            <span class="text-slate-500">Target: ${formatMoney(g.target)}</span>
+          </div>
+
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+          </div>
+
+          <div class="flex justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+            <span>+${formatMoney(g.monthly)}/mo</span>
+            <span>${monthsLeft > 0 ? `${monthsLeft} mos to goal` : 'Goal Reached!'}</span>
+          </div>
+        </div>
+      `;
+      })
+      .join('');
+  }
+
+  // --- 9. Ledger Table Renderer ---
+  function renderLedger() {
+    if (!transactionsTbody) return;
+
+    const searchTerm = (searchTransactionsInput?.value || '').toLowerCase().trim();
+    const filtered = state.transactions.filter(
+      (t) =>
+        t.name.toLowerCase().includes(searchTerm) ||
+        t.category.toLowerCase().includes(searchTerm) ||
+        t.date.includes(searchTerm)
+    );
+
+    if (txCountDisplay) {
+      txCountDisplay.textContent = `${state.transactions.length} ${state.transactions.length === 1 ? 'entry' : 'entries'}`;
+    }
+
+    if (filtered.length === 0) {
+      transactionsTbody.innerHTML = '';
+      emptyLedgerState?.classList.remove('hidden');
+      return;
+    }
+
+    emptyLedgerState?.classList.add('hidden');
+
+    transactionsTbody.innerHTML = filtered
+      .map(
+        (t) => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${t.date}</td>
+        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(t.name)}">
+          ${escapeHtml(t.name)}
+        </td>
+        <td class="py-2 px-3 whitespace-nowrap">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            ${CATEGORY_ICONS[t.category] || '📦'} ${t.category}
+          </span>
+        </td>
+        <td class="py-2 px-3 whitespace-nowrap">
+          ${
+            t.source === 'imported'
+              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">file</span>`
+              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">manual</span>`
+          }
+        </td>
+        <td class="py-2 px-3 text-right font-mono font-bold text-slate-900 whitespace-nowrap">
+          ${formatMoney(t.amount)}
+        </td>
+        <td class="py-2 px-3 text-center">
+          <button
+            type="button"
+            data-delete-id="${t.id}"
+            class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+            title="Delete entry"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `
+      )
+      .join('');
+
+    document.querySelectorAll('.btn-delete-tx').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-delete-id');
+        if (!id) return;
+        state.transactions = state.transactions.filter((tx) => tx.id !== id);
+        saveStoredState({ transactions: state.transactions });
+        renderAll();
+      });
+    });
+  }
+
+  // --- 10. Event Listeners ---
+
+  // Currency
+  currencySelector?.addEventListener('change', () => {
+    state.currency = currencySelector.value;
+    saveStoredState({ currency: state.currency });
+    renderAll();
+  });
+
+  // Income Input
+  inputIncome?.addEventListener('input', () => {
+    state.income = parseFloat(inputIncome.value) || 0;
+    saveStoredState({ income: state.income });
+    renderAll();
+  });
+
+  // Income Slider
+  incomeSlider?.addEventListener('input', () => {
+    const val = parseFloat(incomeSlider.value) || 0;
+    if (state.frequency === 'monthly') {
+      state.income = val;
+    } else if (state.frequency === 'bi-weekly') {
+      state.income = Math.round((val * 12) / 26);
+    } else if (state.frequency === 'weekly') {
+      state.income = Math.round((val * 12) / 52);
+    }
+    saveStoredState({ income: state.income });
+    renderAll();
+  });
+
+  // Frequency Buttons
+  btnFreqs.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const freq = btn.getAttribute('data-freq') as Frequency;
+      if (freq) {
+        state.frequency = freq;
+        saveStoredState({ frequency: state.frequency });
+        renderAll();
+      }
+    });
+  });
+
+  // Expense Logger Submit
+  formExpenseLogger?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = inputItemName.value.trim();
+    const amount = parseFloat(inputItemAmount.value);
+    const category = selectItemCategory.value as ExpenseCategory;
+
+    if (!name || isNaN(amount) || amount <= 0) return;
+
+    const newTx: Transaction = {
+      id: `tx-${Date.now()}`,
+      name,
+      amount,
+      category,
+      date: new Date().toISOString().split('T')[0],
+      source: 'manual'
+    };
+
+    state.transactions.unshift(newTx);
+    saveStoredState({ transactions: state.transactions });
+
+    inputItemName.value = '';
+    inputItemAmount.value = '';
+    renderAll();
+  });
+
+  // Preset Chips
+  presetChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const name = chip.getAttribute('data-preset-name');
+      const amount = chip.getAttribute('data-preset-amount');
+      const cat = chip.getAttribute('data-preset-category');
+
+      if (name && inputItemName) inputItemName.value = name;
+      if (amount && inputItemAmount) inputItemAmount.value = amount;
+      if (cat && selectItemCategory) selectItemCategory.value = cat;
+
+      inputItemAmount?.focus();
+    });
+  });
+
+  // Receipt Photo OCR Scanner from Quick Logger
+  btnScanReceiptLogger?.addEventListener('click', () => {
+    inputReceiptPhoto?.click();
+  });
+
+  inputReceiptPhoto?.addEventListener('change', async () => {
+    if (!inputReceiptPhoto.files || inputReceiptPhoto.files.length === 0) return;
+    const file = inputReceiptPhoto.files[0];
+
+    receiptScanningIndicator?.classList.remove('hidden');
+    if (receiptOcrProgress) receiptOcrProgress.textContent = '10%';
+
+    try {
+      const { scanReceiptImage } = await import('../utils/receiptScanner');
+      const result = await scanReceiptImage(file, (progress) => {
+        if (receiptOcrProgress) receiptOcrProgress.textContent = `${progress}%`;
+      });
+
+      if (inputItemName) inputItemName.value = result.merchantName;
+      if (inputItemAmount) inputItemAmount.value = result.amount.toString();
+      if (selectItemCategory) selectItemCategory.value = result.category;
+
+      inputItemAmount?.focus();
+    } catch (err: any) {
+      alert(err.message || 'Failed to scan receipt image. Please ensure image is well-lit and legible.');
+    } finally {
+      receiptScanningIndicator?.classList.add('hidden');
+      inputReceiptPhoto.value = '';
+    }
+  });
+
+  // Search Transactions
+  searchTransactionsInput?.addEventListener('input', () => {
+    renderLedger();
+  });
+
+  // CSV Export
+  btnExportCsv?.addEventListener('click', () => {
+    exportTransactionsToCSV(state.transactions, getCurrencySymbol());
+  });
+
+  // Debt Strategy Buttons
+  btnStratAvalanche?.addEventListener('click', () => {
+    debtStrategy = 'avalanche';
+    btnStratAvalanche.className = 'debt-strat-btn active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer';
+    btnStratSnowball?.classList.remove('active', 'bg-white', 'text-emerald-800', 'shadow-2xs');
+    btnStratSnowball?.classList.add('text-slate-600');
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  btnStratSnowball?.addEventListener('click', () => {
+    debtStrategy = 'snowball';
+    btnStratSnowball.className = 'debt-strat-btn active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer';
+    btnStratAvalanche?.classList.remove('active', 'bg-white', 'text-emerald-800', 'shadow-2xs');
+    btnStratAvalanche?.classList.add('text-slate-600');
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  debtExtraSlider?.addEventListener('input', () => {
+    extraMonthlyDebtPayment = parseFloat(debtExtraSlider.value) || 0;
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  // Add Debt Form
+  formAddDebt?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = inputDebtName.value.trim();
+    const balance = parseFloat(inputDebtBalance.value) || 0;
+    const rate = parseFloat(inputDebtRate.value) || 0;
+    const minimum = parseFloat(inputDebtMinimum.value) || 0;
+
+    if (!name || balance <= 0 || minimum <= 0) return;
+
+    debts.push({
+      id: `debt-${Date.now()}`,
+      name,
+      balance,
+      rate,
+      minimum
+    });
+
+    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+    inputDebtName.value = '';
+    inputDebtBalance.value = '';
+    inputDebtRate.value = '';
+    inputDebtMinimum.value = '';
+    renderAll();
+  });
+
+  // Add Goal Form
+  formAddGoal?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = inputGoalName.value.trim();
+    const target = parseFloat(inputGoalTarget.value) || 0;
+    const current = parseFloat(inputGoalCurrent.value) || 0;
+    const monthly = parseFloat(inputGoalMonthly.value) || 0;
+
+    if (!name || target <= 0) return;
+
+    goals.push({
+      id: `goal-${Date.now()}`,
+      name,
+      target,
+      current,
+      monthly
+    });
+
+    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    inputGoalName.value = '';
+    inputGoalTarget.value = '';
+    inputGoalCurrent.value = '';
+    inputGoalMonthly.value = '';
+    renderAll();
+  });
+
+  btnScrollToAddGoal?.addEventListener('click', () => {
+    const el = document.getElementById('section-add-goal');
+    el?.scrollIntoView({ behavior: 'smooth' });
+    inputGoalName?.focus();
+  });
+
+  // Blog Reader Actions
+  const openArticleReader = (blogId: string) => {
+    const article = BLOG_ARTICLES[blogId];
+    if (!article || !modalBlogReader) return;
+
+    if (readerCategoryBadge) readerCategoryBadge.textContent = article.category;
+    if (readerArticleTitle) readerArticleTitle.textContent = article.title;
+    if (readerMetaText) readerMetaText.textContent = `${article.readTime} • Practical Financial Guide`;
+    if (readerArticleContent) readerArticleContent.innerHTML = article.contentHtml;
+
+    modalBlogReader.classList.remove('hidden');
+  };
+
+  const closeArticleReader = () => {
+    modalBlogReader?.classList.add('hidden');
+  };
+
+  document.querySelectorAll('.btn-read-article').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const blogId = btn.getAttribute('data-open-blog');
+      if (blogId) openArticleReader(blogId);
+    });
+  });
+
+  btnCloseBlogReader?.addEventListener('click', closeArticleReader);
+  btnDoneReading?.addEventListener('click', closeArticleReader);
+  modalBlogReader?.addEventListener('click', (e) => {
+    if (e.target === modalBlogReader) closeArticleReader();
+  });
+
+  // Blog Category Filters
+  blogFilterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-blog-filter');
+      blogFilterBtns.forEach((b) => {
+        b.className = 'btn-blog-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer';
+      });
+      btn.className = 'btn-blog-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 text-white shadow-2xs cursor-pointer';
+
+      blogCards.forEach((card) => {
+        const cat = card.getAttribute('data-category');
+        if (filter === 'all' || cat === filter) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Reset Modal
+  btnOpenResetModal?.addEventListener('click', () => {
+    resetConfirmModal?.classList.remove('hidden');
+  });
+
+  btnCancelReset?.addEventListener('click', () => {
+    resetConfirmModal?.classList.add('hidden');
+  });
+
+  resetConfirmModal?.addEventListener('click', (e) => {
+    if (e.target === resetConfirmModal) resetConfirmModal.classList.add('hidden');
+  });
+
+  btnConfirmResetBlank?.addEventListener('click', () => {
+    clearAllStoredData();
+    localStorage.removeItem(DEBT_STORAGE_KEY);
+    localStorage.removeItem(GOAL_STORAGE_KEY);
+    state = {
+      income: 0,
+      frequency: 'monthly',
+      model: '50-30-20',
+      currency: 'USD',
+      transactions: []
+    };
+    debts = [];
+    goals = [];
+    saveStoredState(state);
+    resetConfirmModal?.classList.add('hidden');
+    renderAll();
+  });
+
+  btnRestoreSample?.addEventListener('click', () => {
+    clearAllStoredData();
+    state = {
+      income: 4200,
+      frequency: 'monthly',
+      model: '50-30-20',
+      currency: 'USD',
+      transactions: [
+        { id: 'tx-1', name: 'Apartment Rent', amount: 1350, category: 'Housing', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-2', name: 'Weekly Supermarket Haul', amount: 380, category: 'Food', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-3', name: 'Electric & High-Speed Internet', amount: 145, category: 'Utilities', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-4', name: 'Car Gas & Metro Pass', amount: 160, category: 'Transport', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-5', name: 'Streaming Subscriptions & Dining Out', amount: 120, category: 'Entertainment', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-6', name: 'Emergency Fund Transfer', amount: 450, category: 'Savings', date: new Date().toISOString().split('T')[0], source: 'manual' }
+      ]
+    };
+    debts = [
+      { id: 'debt-1', name: 'Chase Sapphire Credit Card', balance: 3800, rate: 22.9, minimum: 110 },
+      { id: 'debt-2', name: 'Auto Loan (Honda Civic)', balance: 11500, rate: 6.5, minimum: 290 },
+      { id: 'debt-3', name: 'Federal Student Loan', balance: 14200, rate: 4.8, minimum: 165 }
+    ];
+    goals = [
+      { id: 'goal-1', name: '3-Month Emergency Cushion', target: 8000, current: 3200, monthly: 400 },
+      { id: 'goal-2', name: 'Home Down Payment Fund', target: 25000, current: 8500, monthly: 500 },
+      { id: 'goal-3', name: 'Summer Travel & Flight', target: 1800, current: 950, monthly: 200 }
+    ];
+    saveStoredState(state);
+    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    resetConfirmModal?.classList.add('hidden');
+    renderAll();
+  });
+
+  // File Importer Modal Triggers
+  const openImportModal = () => {
+    fileImportModal?.classList.remove('hidden');
+    if (importErrorMsg) importErrorMsg.classList.add('hidden');
+  };
+
+  const closeImportModal = () => {
+    fileImportModal?.classList.add('hidden');
+    pendingImportResult = null;
+    if (importPreviewBox) importPreviewBox.classList.add('hidden');
+    if (importFileInput) importFileInput.value = '';
+  };
+
+  btnOpenImporterNav?.addEventListener('click', () => {
+    switchTab('import');
+    const tabImportEl = document.getElementById('tab-view-import');
+    tabImportEl?.scrollIntoView({ behavior: 'smooth' });
+  });
+  btnHeroLaunchImport?.addEventListener('click', openImportModal);
+  btnOpenImporterLogger?.addEventListener('click', openImportModal);
+  btnCloseImportModal?.addEventListener('click', closeImportModal);
+
+  fileImportModal?.addEventListener('click', (e) => {
+    if (e.target === fileImportModal) closeImportModal();
+  });
+
+  importDropzone?.addEventListener('click', () => {
+    importFileInput?.click();
+  });
+
+  importDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    importDropzone.classList.add('border-emerald-600', 'bg-emerald-50/50');
+  });
+
+  importDropzone?.addEventListener('dragleave', () => {
+    importDropzone.classList.remove('border-emerald-600', 'bg-emerald-50/50');
+  });
+
+  importDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    importDropzone.classList.remove('border-emerald-600', 'bg-emerald-50/50');
+    if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+      handleSelectedFile(e.dataTransfer.files);
+    }
+  });
+
+  importFileInput?.addEventListener('change', () => {
+    if (importFileInput.files && importFileInput.files.length > 0) {
+      handleSelectedFile(importFileInput.files);
+    }
+  });
+
+  async function handleSelectedFile(files: FileList | File[]) {
+    const fileList = Array.from(files);
+    if (fileList.length === 0) return;
+    if (importErrorMsg) importErrorMsg.classList.add('hidden');
+    try {
+      const result = await parseAndInterpretMultipleFiles(fileList);
+      pendingImportResult = result;
+
+      if (previewFileName) previewFileName.textContent = fileList.length === 1 ? fileList[0].name : `${fileList.length} files`;
+      if (previewCount) previewCount.textContent = result.recordCount.toString();
+      if (previewTotal) previewTotal.textContent = formatMoney(result.totalAmount);
+      if (previewTopCat) {
+        previewTopCat.textContent = result.topCategory
+          ? `${result.topCategory.category} (${result.topCategory.percentage}%)`
+          : 'N/A';
+      }
+
+      if (previewInsightsList) {
+        previewInsightsList.innerHTML = result.insights
+          .map((item) => `<div class="flex items-start gap-1.5"><span class="text-emerald-700 font-bold">•</span><span>${item}</span></div>`)
+          .join('');
+      }
+
+      if (previewTableTbody) {
+        previewTableTbody.innerHTML = result.transactions
+          .slice(0, 5)
+          .map(
+            (t) => `
+          <tr class="hover:bg-slate-50">
+            <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${t.date}</td>
+            <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(t.name)}</td>
+            <td class="py-1.5 px-3"><span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${t.category}</span></td>
+            <td class="py-1.5 px-3 font-mono font-bold text-right text-rose-600">${formatMoney(t.amount)}</td>
+          </tr>
+        `
+          )
+          .join('');
+      }
+
+      if (importPreviewBox) importPreviewBox.classList.remove('hidden');
+    } catch (err: any) {
+      if (importErrorMsg) {
+        importErrorMsg.textContent = err.message || 'Failed to read file. Please ensure it has column headers and valid amounts.';
+        importErrorMsg.classList.remove('hidden');
+      }
+    }
+  }
+
+  btnApplyReplace?.addEventListener('click', () => {
+    if (!pendingImportResult) return;
+    state.transactions = [...pendingImportResult.transactions];
+    saveStoredState({ transactions: state.transactions });
+    closeImportModal();
+    renderAll();
+    switchTab('tracker');
+    const anchor = document.getElementById('live-tool-anchor');
+    anchor?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  btnApplyAppend?.addEventListener('click', () => {
+    if (!pendingImportResult) return;
+    state.transactions = [...pendingImportResult.transactions, ...state.transactions];
+    saveStoredState({ transactions: state.transactions });
+    closeImportModal();
+    renderAll();
+    switchTab('tracker');
+    const anchor = document.getElementById('live-tool-anchor');
+    anchor?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Tab Universal Statement & Receipt Importer Logic
+  tabImporterDropzone?.addEventListener('click', () => {
+    tabImporterFileInput?.click();
+  });
+
+  tabImporterDropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    tabImporterDropzone.classList.add('border-emerald-600', 'bg-emerald-50/40');
+  });
+
+  tabImporterDropzone?.addEventListener('dragleave', () => {
+    tabImporterDropzone.classList.remove('border-emerald-600', 'bg-emerald-50/40');
+  });
+
+  tabImporterDropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    tabImporterDropzone.classList.remove('border-emerald-600', 'bg-emerald-50/40');
+    if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+      handleTabSelectedFiles(e.dataTransfer.files);
+    }
+  });
+
+  tabImporterFileInput?.addEventListener('change', () => {
+    if (tabImporterFileInput.files && tabImporterFileInput.files.length > 0) {
+      handleTabSelectedFiles(tabImporterFileInput.files);
+    }
+  });
+
+  async function handleTabSelectedFiles(files: FileList | File[]) {
+    const fileArray = Array.from(files);
+    if (fileArray.length === 0) return;
+
+    if (tabImporterError) tabImporterError.classList.add('hidden');
+    if (tabImporterProgress) tabImporterProgress.classList.remove('hidden');
+    if (tabImporterResults) tabImporterResults.classList.add('hidden');
+
+    try {
+      const result = await parseAndInterpretMultipleFiles(fileArray, (current, total, name) => {
+        const pct = Math.round((current / total) * 100);
+        if (tabImporterProgressText) tabImporterProgressText.textContent = `Analyzing ${name} (${current} of ${total})...`;
+        if (tabImporterProgressPct) tabImporterProgressPct.textContent = `${pct}%`;
+        if (tabImporterProgressBar) (tabImporterProgressBar as HTMLElement).style.width = `${pct}%`;
+      });
+
+      pendingTabImportResult = result;
+
+      // Populate file chips
+      if (tabImporterFileCountBadge) tabImporterFileCountBadge.textContent = `${result.successfulFiles}/${result.fileCount} files parsed`;
+      if (tabImporterFilesChips) {
+        tabImporterFilesChips.innerHTML = result.fileSummaries.map((f) => {
+          if (f.status === 'success') {
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <span class="text-xs">✅</span>
+              <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
+              <span class="text-[10px] text-emerald-700">(${f.recordCount} items • ${formatMoney(f.amount)})</span>
+            </span>`;
+          } else {
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200" title="${escapeHtml(f.error || '')}">
+              <span class="text-xs">⚠️</span>
+              <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
+              <span class="text-[10px] text-rose-600">(${escapeHtml(f.error || 'Failed')})</span>
+            </span>`;
+          }
+        }).join('');
+      }
+
+      // Populate metrics
+      if (tabResultRecordCount) tabResultRecordCount.textContent = result.recordCount.toString();
+      if (tabResultTotalAmount) tabResultTotalAmount.textContent = formatMoney(result.totalAmount);
+      if (tabResultTopCategory) {
+        tabResultTopCategory.textContent = result.topCategory ? result.topCategory.category : 'N/A';
+      }
+      if (tabResultTopCatSub) {
+        tabResultTopCatSub.textContent = result.topCategory
+          ? `${result.topCategory.percentage}% of total spend (${formatMoney(result.topCategory.amount)})`
+          : '0% of total spend';
+      }
+
+      // Populate insights
+      if (tabResultInsightsList) {
+        tabResultInsightsList.innerHTML = result.insights.map((item) => `
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold shrink-0">•</span>
+            <span>${item}</span>
+          </div>
+        `).join('');
+      }
+
+      // Populate preview table
+      if (tabResultTableCount) tabResultTableCount.textContent = result.transactions.length.toString();
+      if (tabResultTableTbody) {
+        tabResultTableTbody.innerHTML = result.transactions.map((t) => `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${t.date}</td>
+            <td class="py-2 px-3 font-medium text-slate-900 font-sans">${escapeHtml(t.name)}</td>
+            <td class="py-2 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                ${t.category}
+              </span>
+            </td>
+            <td class="py-2 px-3 text-right font-mono font-bold text-rose-600">${formatMoney(t.amount)}</td>
+          </tr>
+        `).join('');
+      }
+
+      if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
+      if (tabImporterResults) tabImporterResults.classList.remove('hidden');
+    } catch (err: any) {
+      if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
+      if (tabImporterError) {
+        tabImporterError.textContent = err?.message || 'Error processing uploaded files. Please check file format.';
+        tabImporterError.classList.remove('hidden');
+      }
+    }
+  }
+
+  btnTabApplyReplace?.addEventListener('click', () => {
+    if (!pendingTabImportResult) return;
+    state.transactions = [...pendingTabImportResult.transactions];
+    saveStoredState({ transactions: state.transactions });
+    renderAll();
+    switchTab('tracker');
+    const anchor = document.getElementById('live-tool-anchor');
+    anchor?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  btnTabApplyAppend?.addEventListener('click', () => {
+    if (!pendingTabImportResult) return;
+    state.transactions = [...pendingTabImportResult.transactions, ...state.transactions];
+    saveStoredState({ transactions: state.transactions });
+    renderAll();
+    switchTab('tracker');
+    const anchor = document.getElementById('live-tool-anchor');
+    anchor?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  btnTabResetImport?.addEventListener('click', () => {
+    pendingTabImportResult = null;
+    if (tabImporterResults) tabImporterResults.classList.add('hidden');
+    if (tabImporterFileInput) tabImporterFileInput.value = '';
+    if (tabImporterError) tabImporterError.classList.add('hidden');
+  });
+
+  // Tab Navigation
+  function switchTab(tabId: string) {
+    tabButtons.forEach((btn) => {
+      const target = btn.getAttribute('data-tab');
+      const isCapsule = btn.classList.contains('capsule-tab-btn');
+
+      if (target === tabId) {
+        if (isCapsule) {
+          btn.className = 'tab-btn active capsule-tab-btn px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all bg-emerald-700 text-white border border-emerald-800 shadow-xs cursor-pointer';
+        } else {
+          btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all bg-white text-emerald-800 border border-emerald-200 shadow-2xs cursor-pointer';
+        }
+      } else {
+        if (isCapsule) {
+          btn.className = 'tab-btn capsule-tab-btn px-4 py-2 rounded-2xl text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs cursor-pointer';
+        } else {
+          btn.className = 'tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer';
+        }
+      }
+    });
+
+    if (btnOpenImporterNav) {
+      if (tabId === 'import') {
+        btnOpenImporterNav.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 text-white border border-emerald-800 transition-all shadow-xs cursor-pointer';
+      } else {
+        btnOpenImporterNav.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition-all shadow-2xs cursor-pointer';
+      }
+    }
+
+    tabViews.forEach((view) => {
+      if (view.id === `tab-view-${tabId}`) {
+        view.classList.remove('hidden');
+      } else {
+        view.classList.add('hidden');
+      }
+    });
+  }
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+      if (tabId) switchTab(tabId);
+    });
+  });
+
+  // --- Templates Hub Handlers ---
+  const tmplFilterBtns = document.querySelectorAll('.btn-tmpl-filter');
+  const templateCards = document.querySelectorAll('.template-card');
+  const inputSearchTemplates = document.getElementById('input-search-templates') as HTMLInputElement;
+  const templatesEmptyState = document.getElementById('templates-empty-state');
+  const btnTriggerTemplates = document.querySelectorAll('.btn-trigger-template');
+  const btnSwitchToImporterFromTemplates = document.getElementById('btn-switch-to-importer-from-templates');
+
+  let currentTmplFilter = 'all';
+
+  function filterTemplates() {
+    const query = (inputSearchTemplates?.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+
+    templateCards.forEach((card) => {
+      const cat = card.getAttribute('data-category') || '';
+      const title = card.getAttribute('data-title') || '';
+      const desc = card.getAttribute('data-desc') || '';
+
+      const matchesCat = currentTmplFilter === 'all' || cat === currentTmplFilter;
+      const matchesQuery = !query || title.includes(query) || desc.includes(query) || cat.includes(query);
+
+      if (matchesCat && matchesQuery) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    if (templatesEmptyState) {
+      if (visibleCount === 0) {
+        templatesEmptyState.classList.remove('hidden');
+      } else {
+        templatesEmptyState.classList.add('hidden');
+      }
+    }
+  }
+
+  tmplFilterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentTmplFilter = btn.getAttribute('data-template-filter') || 'all';
+      tmplFilterBtns.forEach((b) => {
+        b.className = 'btn-tmpl-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5';
+      });
+      btn.className = 'btn-tmpl-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 text-white shadow-2xs cursor-pointer whitespace-nowrap flex items-center gap-1.5';
+      filterTemplates();
+    });
+  });
+
+  inputSearchTemplates?.addEventListener('input', () => {
+    filterTemplates();
+  });
+
+  btnTriggerTemplates.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tmplId = btn.getAttribute('data-id') || '';
+      const tmplType = btn.getAttribute('data-type');
+      const tmplUrl = btn.getAttribute('data-url');
+
+      if (tmplType === 'google-sheet' && tmplUrl) {
+        window.open(tmplUrl, '_blank', 'noopener,noreferrer');
+      } else if (tmplType === 'excel-download') {
+        generateExcelTemplate(tmplId);
+      } else if (tmplType === 'printable') {
+        openPrintableDocument(tmplId);
+      }
+    });
+  });
+
+  btnSwitchToImporterFromTemplates?.addEventListener('click', () => {
+    switchTab('import');
+    const tabImportEl = document.getElementById('tab-view-import');
+    tabImportEl?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Initial Render
+  renderAll();
+</script>

@@ -1,0 +1,66 @@
+---
+---
+
+<nav aria-label="Main Navigation Tabs" class="no-print overflow-x-auto scrollbar-none -mx-3 px-3 sm:mx-0 sm:px-0 py-1">
+  <div class="flex items-center justify-between gap-2.5 min-w-max md:min-w-0">
+    <!-- Core Financial Tools (Left Bar) -->
+    <div class="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200 shadow-2xs">
+      <!-- Tab 1: Live Expense Tracker (Active by default) -->
+      <button
+        type="button"
+        data-tab="tracker"
+        class="tab-btn active px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all bg-white text-emerald-800 border border-emerald-200 shadow-2xs cursor-pointer"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>1. Live Tracker</span>
+      </button>
+
+      <!-- Tab 2: Free Templates (Google Sheets, Excel & Printables) -->
+      <button
+        type="button"
+        data-tab="templates"
+        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
+      >
+        <span class="text-sm">📋</span>
+        <span>2. Free Templates</span>
+        <span class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">Sheets • Excel • PDF</span>
+      </button>
+
+      <!-- Tab 3: Debt Management -->
+      <button
+        type="button"
+        data-tab="debt"
+        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
+      >
+        <span class="text-sm">💳</span>
+        <span>3. Debt Management</span>
+      </button>
+
+      <!-- Tab 4: Target & Budget Planning -->
+      <button
+        type="button"
+        data-tab="targets"
+        class="tab-btn px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all text-slate-600 hover:text-slate-900 hover:bg-white/70 cursor-pointer"
+      >
+        <span class="text-sm">🎯</span>
+        <span>4. Target Planning</span>
+      </button>
+    </div>
+
+    <!-- Separate Small Capsule / Tab (Right Side): Combined Financial Knowledge & Blogs -->
+    <div class="shrink-0 flex items-center">
+      <button
+        type="button"
+        data-tab="knowledge"
+        class="tab-btn capsule-tab-btn px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-2xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs cursor-pointer"
+        title="Financial Knowledge Center & Blog Guides"
+      >
+        <span class="text-sm">📚</span>
+        <span>Knowledge & Blogs</span>
+        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white text-emerald-800 border border-emerald-200">
+          Guides
+        </span>
+      </button>
+    </div>
+  </div>
+</nav>

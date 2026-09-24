@@ -1,0 +1,175 @@
+---
+export interface FAQItem {
+  question: string;
+  answer: string;
+  category: string;
+}
+
+export const FAQ_DATA: FAQItem[] = [
+  {
+    question: "Is there a free expense tracker app?",
+    answer: "Yes. FreeExpenseTracker.com is a 100% free expense tracker web app that requires no paid subscription, no account registration, and no credit card. It runs directly in your web browser with offline support, automatic receipt photo OCR scanning, dynamic 50/30/20 budget calculations, and exportable ledgers.",
+    category: "General & Pricing"
+  },
+  {
+    question: "Where can I get a free expense tracker template?",
+    answer: "You can download free expense tracker templates directly from FreeExpenseTracker.com in our Free Templates hub. We provide pre-built Google Sheets templates with one-click copy links, formulated Microsoft Excel (.xlsx) workbooks with automated SUM and variance formulas, and printable monthly PDF expense booklets designed for ink-saving physical tracking.",
+    category: "Templates & Sheets"
+  },
+  {
+    question: "How do I make my own expense tracker?",
+    answer: "To make your own expense tracker, start by determining your essential tracking columns: Date, Merchant/Description, Category (Housing, Food, Utilities, Transportation, Entertainment, Savings), Payment Method (Cash, Credit, Debit), and Amount. Next, choose your preferred format—such as a spreadsheet in Microsoft Excel or Google Sheets using SUMIF and variance formulas, or a physical notebook ledger with ruled rows. Alternatively, you can use FreeExpenseTracker.com to customize an automated, pre-configured tracker with zero setup time.",
+    category: "How-To & DIY"
+  },
+  {
+    question: "Are expense tracking apps safe?",
+    answer: "Traditional expense tracking apps that connect directly to your bank account via third-party aggregators carry privacy risks, as they often store credentials or monetize aggregated user spending habits. In contrast, client-side tools like FreeExpenseTracker.com are completely safe because all financial data, receipt scans, and uploaded statements are processed locally in your browser memory using WebAssembly and Web Workers. No sensitive financial information is ever uploaded to or stored on external servers.",
+    category: "Privacy & Security"
+  },
+  {
+    question: "How to track expenses for free?",
+    answer: "To track expenses for free: (1) Establish your net monthly income and set fixed category limits (e.g., using the 50/30/20 rule: 50% Needs, 30% Wants, 20% Savings). (2) Record daily purchases as they happen using FreeExpenseTracker.com's instant receipt scanner or manual quick logger. (3) Import monthly PDF bank statements or Excel CSV downloads to auto-categorize recurring outflows. (4) Review your weekly cash flow and financial health score to eliminate unnecessary subscriptions and prevent lifestyle creep.",
+    category: "How-To & DIY"
+  },
+  {
+    question: "Can you provide an example of an expense tracker?",
+    answer: "A practical example of an expense tracker is FreeExpenseTracker.com's Live Ledger. Each entry records the date (e.g., 2026-09-15), payee or merchant (e.g., Trader Joe's), category (e.g., Food), payment type (e.g., Debit Card), and outflow amount (e.g., $84.50). The tracker automatically subtracts these outflows from your normalized monthly income, plots your spending across a visual category breakdown chart, and benchmarks your savings rate against healthy financial ratios.",
+    category: "General & Examples"
+  },
+  {
+    question: "What are the benefits of using an expense tracker?",
+    answer: "The main benefits of using an expense tracker include: (1) Eliminating financial blind spots and identifying hidden money leaks like forgotten recurring subscriptions. (2) Accelerating debt payoff by routing surplus cash into Debt Snowball or Debt Avalanche strategies. (3) Building an emergency runway of 3 to 6 months of living expenses. (4) Reducing financial stress through automated clarity on exact cash flow. (5) Achieving major milestones like home down payments, retirement contributions, and vacation savings.",
+    category: "Financial Strategy"
+  },
+  {
+    question: "What is the best simple app for tracking expenses?",
+    answer: "The best simple app for tracking expenses is FreeExpenseTracker.com. It offers a clean, minimalist user interface with zero clutter, zero ads, and zero account sign-up hurdles. You can start logging expenses instantly, simulate income scenarios with an interactive slider up to $500,000/month, scan receipt photos with AI OCR, and switch seamlessly between 25 global currencies—all with 100% private, client-side security.",
+    category: "App Comparison"
+  }
+];
+
+// Generate JSON-LD schema
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": FAQ_DATA.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+};
+---
+
+<section id="faq-section" class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8">
+  <!-- FAQ Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-5 sm:pb-6">
+    <div class="space-y-1.5">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span>❓</span>
+        <span>Expert Personal Finance Answers</span>
+      </div>
+      <h2 class="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Frequently Asked Questions About Expense Tracking
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-600 max-w-2xl">
+        Find authoritative answers regarding free expense tracking apps, spreadsheet templates, DIY workflows, security, and proven wealth-building techniques.
+      </p>
+    </div>
+
+    <!-- Live Filter Input -->
+    <div class="w-full md:w-72 relative">
+      <input
+        type="text"
+        id="faq-search-input"
+        placeholder="Filter questions (e.g. template, safe)..."
+        class="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
+      />
+      <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- FAQ Accordion List -->
+  <div id="faq-items-container" class="space-y-3">
+    {FAQ_DATA.map((item, index) => (
+      <details
+        class="faq-item group border border-slate-200 hover:border-emerald-300 rounded-2xl p-3.5 sm:p-5 transition-all bg-white hover:bg-emerald-50/20 open:bg-slate-50/50 open:border-emerald-400 shadow-2xs"
+        data-question={item.question.toLowerCase()}
+        data-answer={item.answer.toLowerCase()}
+      >
+        <summary class="flex items-start sm:items-center justify-between gap-3 font-bold text-slate-900 cursor-pointer list-none select-none text-xs sm:text-base font-['Outfit',sans-serif]">
+          <span class="flex items-start sm:items-center gap-2.5 sm:gap-3">
+            <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+              Q{index + 1}
+            </span>
+            <span class="group-hover:text-emerald-900 transition-colors">
+              {item.question}
+            </span>
+          </span>
+          <span class="w-6 h-6 rounded-full bg-slate-100 group-hover:bg-emerald-100 text-slate-500 group-hover:text-emerald-800 flex items-center justify-center shrink-0 transition-transform group-open:rotate-180 mt-0.5 sm:mt-0">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+        </summary>
+        <div class="mt-3.5 pt-3.5 border-t border-slate-200/80 text-xs sm:text-sm text-slate-600 leading-relaxed space-y-2">
+          <p>{item.answer}</p>
+          <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-400 font-mono">
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">Topic: {item.category}</span>
+            <span>•</span>
+            <span class="text-emerald-700 font-medium">Verified for accuracy</span>
+          </div>
+        </div>
+      </details>
+    ))}
+  </div>
+
+  <!-- Empty Search Results -->
+  <div id="faq-empty-state" class="hidden p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+    <div class="text-2xl">🔍</div>
+    <div class="text-sm font-bold text-slate-800">No matching questions found</div>
+    <p class="text-xs text-slate-500">Try searching for keywords like "template", "safe", "DIY", "app", or "free".</p>
+  </div>
+
+  <!-- Structured Data JSON-LD for Google Rich Results -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</section>
+
+<script>
+  const faqSearchInput = document.getElementById('faq-search-input') as HTMLInputElement;
+  const faqItems = document.querySelectorAll('.faq-item');
+  const faqEmptyState = document.getElementById('faq-empty-state');
+
+  faqSearchInput?.addEventListener('input', () => {
+    const query = faqSearchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    faqItems.forEach((el) => {
+      const q = el.getAttribute('data-question') || '';
+      const a = el.getAttribute('data-answer') || '';
+
+      if (!query || q.includes(query) || a.includes(query)) {
+        el.classList.remove('hidden');
+        visibleCount++;
+        if (query) {
+          (el as HTMLDetailsElement).open = true;
+        }
+      } else {
+        el.classList.add('hidden');
+        (el as HTMLDetailsElement).open = false;
+      }
+    });
+
+    if (faqEmptyState) {
+      if (visibleCount === 0) {
+        faqEmptyState.classList.remove('hidden');
+      } else {
+        faqEmptyState.classList.add('hidden');
+      }
+    }
+  });
+</script>

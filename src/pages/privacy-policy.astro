@@ -1,0 +1,160 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Privacy Policy - Free Expense Tracker | 100% Client-Side Privacy & Zero Data Collection"
+  description="Read our comprehensive Privacy Policy. Free Expense Tracker operates 100% client-side with zero accounts, zero database uploads, and full user data sovereignty."
+  canonicalUrl="https://freexpensetracker.com/privacy-policy"
+>
+  <Navbar />
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+      <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold">Privacy Policy</span>
+    </nav>
+
+    <!-- Header -->
+    <section class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>Privacy First Architecture</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Privacy Policy
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 font-mono">
+        Last Updated: September 2026 • Effective Date: September 2026
+      </p>
+    </section>
+
+    <!-- Executive Privacy Summary Card -->
+    <section class="p-6 sm:p-8 rounded-3xl bg-emerald-50/80 border border-emerald-200 text-slate-800 space-y-4 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white text-emerald-700 flex items-center justify-center font-bold text-xl border border-emerald-200 shadow-2xs">
+          🛡️
+        </div>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif] text-slate-900">
+          Executive Privacy Summary
+        </h2>
+      </div>
+      <p class="text-xs sm:text-sm leading-relaxed text-slate-700">
+        At <strong>FreeExpenseTracker.com</strong>, we hold a radical commitment to user privacy: <strong>We do not collect, monetize, transmit, or store your personal financial data on any external server or database.</strong> All data entry, receipt scans, income calculations, and spreadsheets operate entirely within your browser memory.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+        <div class="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs flex items-center gap-2 font-medium">
+          <span class="text-emerald-600 font-bold text-base">✓</span> Zero Account Creation
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs flex items-center gap-2 font-medium">
+          <span class="text-emerald-600 font-bold text-base">✓</span> Zero Bank Password Access
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-emerald-200/80 shadow-2xs flex items-center gap-2 font-medium">
+          <span class="text-emerald-600 font-bold text-base">✓</span> Zero Third-Party Data Sales
+        </div>
+      </div>
+    </section>
+
+    <!-- Comprehensive Policy Content -->
+    <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 text-slate-700 leading-relaxed text-sm sm:text-base">
+      <!-- Section 1 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          1. Information We Do Not Collect
+        </h2>
+        <p>
+          Unlike conventional budgeting platforms, FreeExpenseTracker.com does not require an account, username, password, email address, phone number, or payment method to use any tool. Specifically, we never collect:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600">
+          <li>Bank account numbers, routing numbers, or login credentials.</li>
+          <li>Credit card, debit card, or payment authentication details.</li>
+          <li>Government identification numbers, Social Security Numbers (SSN), or national tax IDs.</li>
+          <li>Personal identifying information (PII) including legal names, physical addresses, or employer records.</li>
+          <li>Individual transaction records, receipt photos, or uploaded PDF bank statements.</li>
+        </ul>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          2. How Client-Side Storage Operates
+        </h2>
+        <p>
+          When you enter your take-home pay, record daily expenses, set budget targets, or simulate debt payoff schedules, that information is stored locally on your device via standard HTML5 <code class="font-mono text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded text-xs">localStorage</code>:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600">
+          <li><strong>Local Isolation:</strong> Your financial data remains inside your browser's private application sandbox. It cannot be accessed by other websites or read across different devices.</li>
+          <li><strong>No Server Syncing:</strong> When your device interacts with our website, only static HTML, CSS, and JavaScript files are delivered to your browser. No financial payloads are ever posted back to our hosting infrastructure.</li>
+        </ul>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          3. Receipt Photo Scanning & File Parsing
+        </h2>
+        <p>
+          Our Universal Importer and Receipt Scanner allow you to scan receipt photos (JPEG, PNG, HEIC, WebP, etc.) and parse bank statements (PDF, Excel, CSV):
+        </p>
+        <p class="text-xs sm:text-sm text-slate-600">
+          All image optical character recognition (OCR) and file parsing routines are executed entirely on your CPU via client-side WebAssembly and browser Web Workers. Your receipts, bills, and statements are never transmitted over the internet or uploaded to cloud storage buckets.
+        </p>
+      </section>
+
+      <!-- Section 4 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          4. Cookies & Third-Party Tracking
+        </h2>
+        <p>
+          FreeExpenseTracker.com does not deploy cross-site advertising cookies, behavioral tracking pixels, or fingerprinting scripts. We do not participate in advertising networks or data broker exchanges. Any cookies or local storage keys used are strictly operational (for example, preserving your active currency preference across sessions).
+        </p>
+      </section>
+
+      <!-- Section 5 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          5. User Control & Data Erasure
+        </h2>
+        <p>
+          Because all data resides exclusively in your browser, you maintain total sovereignty over your records at all times:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600">
+          <li><strong>Instant Wipe:</strong> Click the red <strong>Reset</strong> button in the top navigation bar at any time to permanently wipe all stored income, transactions, and debt schedules.</li>
+          <li><strong>Browser Clearing:</strong> Clearing your browser history, cache, or site data for <code class="font-mono text-slate-800">freexpensetracker.com</code> immediately deletes all stored information.</li>
+          <li><strong>Data Portability:</strong> You can export your full transaction ledger as a standard CSV or Excel (.xlsx) file at any moment for offline backup.</li>
+        </ul>
+      </section>
+
+      <!-- Section 6 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          6. Compliance with GDPR & CCPA
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Under the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA), individuals have rights concerning access, rectification, portability, and erasure of personal data. Because FreeExpenseTracker.com does not collect, identify, or store any personal data on remote servers, your right to erasure is satisfied directly on your device via our one-click Reset feature.
+        </p>
+      </section>
+
+      <!-- Section 7 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          7. Contacting Us
+        </h2>
+        <p>
+          If you have questions, feedback, or concerns regarding our privacy architecture, you may reach out directly to our team:
+        </p>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 font-mono">
+          <div>Email: <a href="mailto:privacy@freexpensetracker.com" class="text-emerald-700 font-bold hover:underline">privacy@freexpensetracker.com</a></div>
+          <div>Website: <a href="https://freexpensetracker.com" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>

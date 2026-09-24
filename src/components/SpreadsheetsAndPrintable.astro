@@ -1,0 +1,200 @@
+---
+import { TEMPLATES_DATA } from '../utils/templateDownloader';
+---
+
+<div class="space-y-6">
+  <!-- Top Banner & Intro -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-base border border-emerald-200">
+          📋
+        </span>
+        <h2 class="text-xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Free Budget & Expense Tracker Templates
+        </h2>
+        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+          100% Free • Ready to Use
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600">
+        Choose from functional cloud spreadsheets (Google Sheets), downloadable Excel (.xlsx) workbooks with pre-programmed formulas, or ink-friendly printable PDF booklets.
+      </p>
+    </div>
+
+    <!-- Quick guarantee -->
+    <div class="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+      <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span>Formulas Pre-Configured • No Sign-Up Needed</span>
+    </div>
+  </div>
+
+  <!-- Search & Category Filter Toolbar -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+    <!-- Category Filter Buttons -->
+    <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto scrollbar-none pb-1 sm:pb-0">
+      <button
+        type="button"
+        data-template-filter="all"
+        class="btn-tmpl-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-700 text-white shadow-2xs cursor-pointer whitespace-nowrap"
+      >
+        All Templates ({TEMPLATES_DATA.length})
+      </button>
+      <button
+        type="button"
+        data-template-filter="google-sheets"
+        class="btn-tmpl-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+      >
+        <span>📊</span>
+        <span>Google Sheets (4)</span>
+      </button>
+      <button
+        type="button"
+        data-template-filter="excel"
+        class="btn-tmpl-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+      >
+        <span>📗</span>
+        <span>Microsoft Excel (4)</span>
+      </button>
+      <button
+        type="button"
+        data-template-filter="printable"
+        class="btn-tmpl-filter px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+      >
+        <span>🖨️</span>
+        <span>Printable PDFs (6)</span>
+      </button>
+    </div>
+
+    <!-- Keyword Search -->
+    <div class="relative w-full sm:w-64">
+      <input
+        type="text"
+        id="input-search-templates"
+        placeholder="Search templates (e.g. 50/30/20, debt)..."
+        class="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
+      />
+      <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Templates Cards Grid -->
+  <div id="templates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {TEMPLATES_DATA.map((tmpl) => (
+      <div
+        class="template-card bg-white border border-slate-200 hover:border-emerald-300 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+        data-category={tmpl.category}
+        data-title={tmpl.title.toLowerCase()}
+        data-desc={tmpl.description.toLowerCase()}
+      >
+        <div class="space-y-3">
+          <!-- Top Row: Icon + Software Badge -->
+          <div class="flex items-center justify-between">
+            <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 group-hover:scale-105 transition-transform flex items-center justify-center text-xl shadow-2xs">
+              {tmpl.icon}
+            </div>
+
+            {tmpl.category === 'google-sheets' && (
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                Google Sheets
+              </span>
+            )}
+
+            {tmpl.category === 'excel' && (
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-teal-800 border border-teal-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+                Excel (.xlsx)
+              </span>
+            )}
+
+            {tmpl.category === 'printable' && (
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-800 border border-rose-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+                Printable PDF
+              </span>
+            )}
+          </div>
+
+          <!-- Title & Description -->
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-900 transition-colors font-['Outfit',sans-serif]">
+              {tmpl.title}
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              {tmpl.description}
+            </p>
+          </div>
+
+          <!-- Feature Pills -->
+          <div class="space-y-1.5 pt-1">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Features</div>
+            <ul class="space-y-1 text-xs text-slate-700">
+              {tmpl.features.map((feat) => (
+                <li class="flex items-center gap-1.5 text-[11px]">
+                  <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Action Button Section -->
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+          <span class="text-[10px] text-slate-500 font-mono">
+            {tmpl.fileSize || tmpl.software.split('(')[0].trim()}
+          </span>
+
+          <button
+            type="button"
+            class="btn-trigger-template px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-emerald-700 transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5"
+            data-id={tmpl.id}
+            data-type={tmpl.actionType}
+            data-url={tmpl.targetUrl || ''}
+          >
+            <span>{tmpl.actionLabel}</span>
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Empty Search Results -->
+  <div id="templates-empty-state" class="hidden p-8 text-center bg-white border border-slate-200 rounded-2xl space-y-2">
+    <div class="text-3xl">🔍</div>
+    <div class="text-sm font-bold text-slate-800">No matching templates found</div>
+    <p class="text-xs text-slate-500">Try searching for keywords like "50/30/20", "monthly", "debt", "excel", or "printable".</p>
+  </div>
+
+  <!-- Helpful Workflow Tip Box -->
+  <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3.5">
+      <div class="w-10 h-10 rounded-xl bg-white text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200 shadow-2xs font-bold text-lg">
+        🔄
+      </div>
+      <div class="space-y-0.5">
+        <h4 class="text-xs sm:text-sm font-bold text-slate-900">
+          Already filled out an Excel or CSV template?
+        </h4>
+        <p class="text-xs text-slate-600">
+          You can drag and drop your completed spreadsheet into our <strong class="text-slate-900">Universal Statement Importer</strong> in the top menu to view real-time charts and financial health metrics!
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      id="btn-switch-to-importer-from-templates"
+      class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-900 bg-white hover:bg-emerald-50 border border-emerald-300 shadow-2xs transition-colors cursor-pointer"
+    >
+      Open Statement Importer 📥
+    </button>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+---
+---
+
+<div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <h3 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif] flex items-center gap-2">
+          <span>💡</span> Smart Spending Suggestions & Alternatives
+        </h3>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">
+          Live AI Advisor
+        </span>
+      </div>
+      <p class="text-xs text-slate-600 mt-0.5">
+        Personalized money-saving alternatives and actionable switches derived directly from your recorded expenses.
+      </p>
+    </div>
+
+    <!-- Potential monthly savings summary badge -->
+    <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200">
+      <span class="text-xs text-emerald-800 font-medium">Potential Monthly Savings:</span>
+      <span id="potential-savings-total" class="text-sm font-bold font-mono text-emerald-700">+$290/mo</span>
+    </div>
+  </div>
+
+  <!-- Dynamic Suggestions Grid -->
+  <div id="smart-suggestions-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Populated dynamically via JS based on user expense categories -->
+  </div>
+</div>

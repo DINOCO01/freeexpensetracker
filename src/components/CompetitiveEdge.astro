@@ -1,0 +1,152 @@
+---
+---
+
+<div class="space-y-6">
+  <!-- Comparison Matrix -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+    <div class="border-b border-slate-100 pb-3">
+      <div class="flex items-center gap-2">
+        <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Why Free Expense Tracker Outperforms Other Tools
+        </h3>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          vs. Traditional Tools & Platforms
+        </span>
+      </div>
+      <p class="text-xs text-slate-600 mt-1">
+        We analyzed conventional budgeting platforms and online financial worksheets to build a modern, truly private, zero-friction financial planner.
+      </p>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+      <table class="w-full min-w-[620px] text-left border-collapse text-xs">
+        <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
+          <tr>
+            <th class="py-3 px-4">Evaluation Criteria</th>
+            <th class="py-3 px-4 text-emerald-900 bg-emerald-50/70">Free Expense Tracker (freexpensetracker.com)</th>
+            <th class="py-3 px-4 text-slate-500">Traditional Budgeting Sites</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-slate-700">
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Privacy & Data Storage</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              100% Client-Side (<code class="text-[11px] font-mono">localStorage</code>). No signup, no email capture, zero tracking.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              Funnels users toward debt consolidation phone calls and lead-generation intake forms.
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Bank & File Import</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              Drop Excel (<code class="text-[11px] font-mono">.xlsx</code>) or CSV files with auto-categorization & live insights.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              No file import capability. Requires tedious manual typing of every single bill.
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Budget Frameworks</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              4 Dynamic Models: 50/30/20, 70/20/10, 80/20, and Zero-Based Budgeting.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              Rigid, predefined static expense categories with no model flexibility.
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Interactive Simulation</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              Real-time income range sliders, instant SVG charts, and interactive dial updates.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              Static text forms with slow page reloads and no visual simulation.
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Multi-Modal Export</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              Live web app + Formula-ready Excel download + High-contrast printable booklet.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              Basic generic PDF downloads with no formula capabilities.
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-slate-900">Financial Health Score</td>
+            <td class="py-3 px-4 font-semibold text-emerald-800 bg-emerald-50/30">
+              Algorithmic 0–100 score dial evaluating savings rate, fixed burdens, and cashflow buffers.
+            </td>
+            <td class="py-3 px-4 text-slate-500">
+              Subjective questionnaires designed to steer users to credit counselors.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Educational Guide Drawer -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h4 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif]">
+          The 4 Pillars of Sustainable Personal Finance
+        </h4>
+        <p class="text-xs text-slate-600 mt-0.5">
+          Essential rules to maintain a score above 85 on the Financial Health Indicator.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        id="btn-toggle-guides"
+        class="text-xs font-bold text-emerald-800 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
+      >
+        <span id="guides-toggle-text">Show Guide</span>
+        <svg id="guides-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+    </div>
+
+    <!-- Collapsible Content -->
+    <div id="guides-drawer-content" class="hidden pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+        <h5 class="font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-emerald-700">1.</span> Cap Fixed Needs at 50%
+        </h5>
+        <p class="text-slate-600 leading-relaxed">
+          Housing, utilities, and debt minimums should not exceed half of your take-home pay. If rent exceeds 35%, finding room to save becomes mathematically challenging.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+        <h5 class="font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-emerald-700">2.</span> Pay Yourself First
+        </h5>
+        <p class="text-slate-600 leading-relaxed">
+          Instead of saving whatever remains at the end of the month, automate your 20% savings transfer on the morning of payday into an untouched high-yield account.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+        <h5 class="font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-emerald-700">3.</span> Maintain a 1-Month Buffer
+        </h5>
+        <p class="text-slate-600 leading-relaxed">
+          Living paycheck to paycheck causes intense cognitive fatigue. Keeping a 10–15% unallocated buffer inside your checking account prevents overdrafts and credit card reliance.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+        <h5 class="font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-emerald-700">4.</span> Review Weekly, Not Annually
+        </h5>
+        <p class="text-slate-600 leading-relaxed">
+          Spending drifts when ignored. A quick 3-minute weekly review using our Live Web Tracker or Printable Booklet keeps lifestyle creep in check before it becomes financial stress.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

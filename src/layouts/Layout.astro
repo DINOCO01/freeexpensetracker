@@ -1,0 +1,191 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  title = "Free Expense Tracker - Best Free Expense Tracker App, Spreadsheets & Templates",
+  description = "Manage your finances with Free Expense Tracker. Download free expense tracker spreadsheet workbooks, copy free expense tracker Google Sheets templates, or use our live private web app with receipt OCR scanning. 100% free with zero accounts needed.",
+  keywords = "Free Expense Tracker, free expense tracker, best free expense tracker app, free expense tracker template, free expense tracker google sheets, best free expense tracker, free expense tracker spreadsheet, budget planner, personal finance app, receipt scanner",
+  canonicalUrl = "https://freexpensetracker.com/"
+} = Astro.props;
+
+const siteUrl = "https://freexpensetracker.com";
+const ogImageUrl = `${siteUrl}/og-image.svg`;
+
+// JSON-LD Structured Data: WebApplication, WebSite, and FAQPage
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Free Expense Tracker",
+    "url": siteUrl,
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "description": description,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Live In-Browser Expense Tracking",
+      "Multi-Format Receipt Photo OCR Scanner",
+      "Free Expense Tracker Google Sheets Templates",
+      "Free Expense Tracker Spreadsheet in Excel (.xlsx)",
+      "Printable Monthly PDF Expense Booklets",
+      "Debt Snowball & Avalanche Payoff Calculator",
+      "50/30/20 Target Savings Goal Planner",
+      "100% Client-Side Private Storage"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Free Expense Tracker",
+    "url": siteUrl,
+    "description": description,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": `${siteUrl}/?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is there a free expense tracker app?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. FreeExpenseTracker.com is a 100% free expense tracker web app that requires no paid subscription, no account registration, and no credit card. It runs directly in your web browser with offline support, automatic receipt photo OCR scanning, dynamic 50/30/20 budget calculations, and exportable ledgers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where can I get a free expense tracker template?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can download free expense tracker templates directly from FreeExpenseTracker.com in our Free Templates hub. We provide pre-built Google Sheets templates with one-click copy links, formulated Microsoft Excel (.xlsx) workbooks with automated SUM and variance formulas, and printable monthly PDF expense booklets designed for ink-saving physical tracking."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I make my own expense tracker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To make your own expense tracker, start by determining your essential tracking columns: Date, Merchant/Description, Category (Housing, Food, Utilities, Transportation, Entertainment, Savings), Payment Method (Cash, Credit, Debit), and Amount. Next, choose your preferred format—such as a spreadsheet in Microsoft Excel or Google Sheets using SUMIF and variance formulas, or a physical notebook ledger with ruled rows. Alternatively, you can use FreeExpenseTracker.com to customize an automated, pre-configured tracker with zero setup time."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are expense tracking apps safe?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Traditional expense tracking apps that connect directly to your bank account via third-party aggregators carry privacy risks, as they often store credentials or monetize aggregated user spending habits. In contrast, client-side tools like FreeExpenseTracker.com are completely safe because all financial data, receipt scans, and uploaded statements are processed locally in your browser memory using WebAssembly and Web Workers. No sensitive financial information is ever uploaded to or stored on external servers."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How to track expenses for free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "To track expenses for free: (1) Establish your net monthly income and set fixed category limits (e.g., using the 50/30/20 rule: 50% Needs, 30% Wants, 20% Savings). (2) Record daily purchases as they happen using FreeExpenseTracker.com's instant receipt scanner or manual quick logger. (3) Import monthly PDF bank statements or Excel CSV downloads to auto-categorize recurring outflows. (4) Review your weekly cash flow and financial health score to eliminate unnecessary subscriptions and prevent lifestyle creep."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can you provide an example of an expense tracker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A practical example of an expense tracker is FreeExpenseTracker.com's Live Ledger. Each entry records the date (e.g., 2026-09-15), payee or merchant (e.g., Trader Joe's), category (e.g., Food), payment type (e.g., Debit Card), and outflow amount (e.g., $84.50). The tracker automatically subtracts these outflows from your normalized monthly income, plots your spending across a visual category breakdown chart, and benchmarks your savings rate against healthy financial ratios."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the benefits of using an expense tracker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The main benefits of using an expense tracker include: (1) Eliminating financial blind spots and identifying hidden money leaks like forgotten recurring subscriptions. (2) Accelerating debt payoff by routing surplus cash into Debt Snowball or Debt Avalanche strategies. (3) Building an emergency runway of 3 to 6 months of living expenses. (4) Reducing financial stress through automated clarity on exact cash flow. (5) Achieving major milestones like home down payments, retirement contributions, and vacation savings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best simple app for tracking expenses?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The best simple app for tracking expenses is FreeExpenseTracker.com. It offers a clean, minimalist user interface with zero clutter, zero ads, and zero account sign-up hurdles. You can start logging expenses instantly, simulate income scenarios with an interactive slider up to $500,000/month, scan receipt photos with AI OCR, and switch seamlessly between 25 global currencies—all with 100% private, client-side security."
+        }
+      }
+    ]
+  }
+];
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth overflow-x-hidden">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="freexpensetracker.com" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Free Expense Tracker" />
+    <meta name="theme-color" content="#0f766e" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Free Expense Tracker" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content="Free Expense Tracker - Best Free Expense Tracker App & Spreadsheets" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@freexpensetrack" />
+    <meta name="twitter:creator" content="@freexpensetrack" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Free Expense Tracker - Best Free Expense Tracker App & Spreadsheets" />
+
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JSON-LD Structured Data Schema -->
+    {structuredData.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-[#F8FAFC] text-[#0F172A] selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden w-full">
+    <slot />
+  </body>
+</html>

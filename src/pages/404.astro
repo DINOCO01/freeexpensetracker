@@ -1,0 +1,79 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="404 - Page Not Found | Free Expense Tracker"
+  description="The requested page could not be found. Return to Free Expense Tracker to access our live private web app and free budgeting spreadsheet templates."
+  canonicalUrl="https://freexpensetracker.com/404"
+>
+  <Navbar />
+
+  <main class="min-h-[65vh] flex items-center justify-center px-4 sm:px-6 py-12">
+    <div class="max-w-xl w-full text-center space-y-8">
+      <!-- Visual Error Badge -->
+      <div class="relative mx-auto w-28 h-28 flex items-center justify-center">
+        <div class="absolute inset-0 rounded-3xl bg-emerald-100/60 animate-pulse"></div>
+        <div class="relative w-24 h-24 rounded-2xl bg-white border border-emerald-200 shadow-sm flex flex-col items-center justify-center space-y-1">
+          <span class="text-3xl">🔍</span>
+          <span class="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            Error 404
+          </span>
+        </div>
+      </div>
+
+      <!-- Text Content -->
+      <div class="space-y-3">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+          Ledger Entry Not Found
+        </h1>
+        <p class="text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
+          The page or resource you are looking for has been moved, renamed, or does not exist in our system.
+        </p>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a
+          href="/"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Return to Live Tracker
+        </a>
+        <a
+          href="/#tab-view-templates"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm transition-all border border-slate-300 shadow-2xs flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>📋</span>
+          Browse Free Templates
+        </a>
+      </div>
+
+      <!-- Help Shortcuts -->
+      <div class="pt-6 border-t border-slate-200/80">
+        <p class="text-xs text-slate-500 mb-3">Popular pages you might be looking for:</p>
+        <div class="flex items-center justify-center gap-2 flex-wrap text-xs font-medium">
+          <a href="/about-us" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+            About Us
+          </a>
+          <a href="/#section-faq" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+            FAQ
+          </a>
+          <a href="/privacy-policy" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+            Privacy Policy
+          </a>
+          <a href="/contact-us" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

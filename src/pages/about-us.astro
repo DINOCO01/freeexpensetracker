@@ -1,0 +1,154 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="About Us - Free Expense Tracker | Mission, Architecture & Privacy Philosophy"
+  description="Discover the story behind Free Expense Tracker. Learn why we built a 100% free, client-side personal finance tool with zero logins, no ads, and private local storage."
+  canonicalUrl="https://freexpensetracker.com/about-us"
+>
+  <Navbar />
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+      <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold">About Us</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <section class="space-y-4 text-center sm:text-left">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>Democratizing Financial Freedom</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Building the Internet's Most Transparent & Private Expense Tracker
+      </h1>
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+        We believe taking control of your personal finances should not require surrendering your sensitive bank passwords, enduring intrusive ads, or paying monthly subscriptions.
+      </p>
+    </section>
+
+    <!-- Key Metrics Grid -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-700">$0.00</div>
+        <div class="text-xs font-bold text-slate-900">Always Free</div>
+        <div class="text-[10px] text-slate-500">No hidden paywalls</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900">100%</div>
+        <div class="text-xs font-bold text-slate-900">Client-Side</div>
+        <div class="text-[10px] text-slate-500">Zero database tracking</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-700">25+</div>
+        <div class="text-xs font-bold text-slate-900">Currencies</div>
+        <div class="text-[10px] text-slate-500">Global compatibility</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold font-mono text-slate-900">0</div>
+        <div class="text-xs font-bold text-slate-900">Accounts Needed</div>
+        <div class="text-[10px] text-slate-500">Instant browser access</div>
+      </div>
+    </section>
+
+    <!-- Our Origin Story -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6 text-slate-700 leading-relaxed text-sm sm:text-base">
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+        Why We Built FreeExpenseTracker.com
+      </h2>
+      <p>
+        The modern financial technology landscape is broken. Traditional budgeting apps that started as user-friendly utilities have evolved into commercial marketing funnels. Today, logging a simple grocery bill often requires linking bank credentials through third-party data aggregators, enduring predatory credit card promotions, and paying $8 to $15 per month just to view your own cash flow.
+      </p>
+      <p>
+        We asked a simple question: <strong>Why does a tool that calculates income minus expenses need to know your identity, sell your spending habits, or charge you a recurring fee?</strong>
+      </p>
+      <p>
+        <strong>Free Expense Tracker</strong> was created as the direct antidote. By leveraging modern browser capabilities—including WebAssembly, Web Workers, and client-side encryption—we engineered a full-featured personal finance hub that executes entirely on your device.
+      </p>
+
+      <div class="border-l-4 border-emerald-600 pl-4 py-1 bg-emerald-50/50 rounded-r-xl my-4 text-slate-800 text-sm italic">
+        "Your financial records belong exclusively to you. Not to an advertising network, not to a credit bureau, and not on our servers."
+      </div>
+    </section>
+
+    <!-- The 4 Core Architectural Pillars -->
+    <section class="space-y-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+        Our Core Principles
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-lg border border-emerald-200">
+            🔒
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">1. Strict Client-Side Privacy</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            All transaction ledgers, income simulations, and debt payoff timelines are stored exclusively in your device's browser memory (<code class="font-mono text-emerald-800 bg-emerald-50 px-1 py-0.5 rounded">localStorage</code>). When you close the browser, your data remains safely with you.
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-lg border border-emerald-200">
+            ⚡
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">2. Local AI & OCR Processing</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            When you snap a receipt photo or drop an Excel/PDF statement, text extraction and coordinate recognition happen inside your browser using client-side OCR. No receipts or bank statements are ever transmitted over the network.
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-lg border border-emerald-200">
+            📊
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">3. Multi-Format Flexibility</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            We don't lock you into a single interface. Alongside our live web tracker, we provide free downloadable Microsoft Excel workbooks, one-click Google Sheets templates, and printable PDF ledgers to fit any budgeting workflow.
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-lg border border-emerald-200">
+            🌱
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">4. Educational Wealth Building</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Budgeting without strategy is merely record-keeping. We combine practical expense tracking with proven financial frameworks—including the 50/30/20 rule, Debt Avalanche & Snowball payoff calculators, and emergency fund safety net targets.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="bg-gradient-to-tr from-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-10 shadow-lg text-center space-y-5">
+      <h2 class="text-2xl sm:text-3xl font-bold font-['Outfit',sans-serif]">
+        Ready to Master Your Personal Finances?
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+        Start tracking spending immediately with our interactive live web application, or copy our free spreadsheet templates with zero sign-up friction.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <a
+          href="/#tab-view-tracker"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm transition-all shadow-md"
+        >
+          Launch Live Tracker
+        </a>
+        <a
+          href="/#tab-view-templates"
+          class="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm transition-all border border-white/20"
+        >
+          Browse Free Templates
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

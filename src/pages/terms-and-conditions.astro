@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Terms & Conditions - Free Expense Tracker | Usage Terms & Financial Disclaimer"
+  description="Review the Terms and Conditions for Free Expense Tracker. Understand user guidelines, template licensing, and our educational financial disclaimer."
+  canonicalUrl="https://freexpensetracker.com/terms-and-conditions"
+>
+  <Navbar />
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+      <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold">Terms & Conditions</span>
+    </nav>
+
+    <!-- Header -->
+    <section class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>Transparent Guidelines</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Terms & Conditions
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 font-mono">
+        Last Updated: September 2026 • Effective Date: September 2026
+      </p>
+    </section>
+
+    <!-- Financial Disclaimer Alert Box -->
+    <section class="p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3 shadow-xs">
+      <div class="flex items-center gap-2.5 font-bold text-base font-['Outfit',sans-serif]">
+        <span class="text-xl">⚠️</span> Important Financial Disclaimer
+      </div>
+      <p class="text-xs sm:text-sm leading-relaxed text-amber-800">
+        The tools, spreadsheets, debt calculators, budget simulations, and financial articles provided on <strong>FreeExpenseTracker.com</strong> are published strictly for general educational, personal organizational, and informational purposes. <strong>FreeExpenseTracker.com does not provide certified financial planning, tax, accounting, or legal advice.</strong> Users should consult with a qualified, licensed financial advisor or accountant prior to making major financial, investment, or debt consolidation decisions.
+      </p>
+    </section>
+
+    <!-- Detailed Terms -->
+    <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 text-slate-700 leading-relaxed text-sm sm:text-base">
+      <!-- Section 1 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          1. Acceptance of Terms
+        </h2>
+        <p>
+          By accessing, browsing, or using FreeExpenseTracker.com, you acknowledge that you have read, understood, and agreed to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree to these terms, you should discontinue using the website immediately.
+        </p>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          2. Free License & Permitted Use
+        </h2>
+        <p>
+          We grant you a non-exclusive, worldwide, royalty-free, revocable license to access our live web calculators and download our budgeting templates (Google Sheets, Microsoft Excel .xlsx, and printable PDFs) subject to the following conditions:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600">
+          <li><strong>Personal & Household Use:</strong> You may freely use, modify, edit, and duplicate our templates for managing individual or household finances.</li>
+          <li><strong>Commercial Restriction:</strong> You may not repackage, sublicense, resell, or distribute our proprietary templates on commercial digital marketplaces without prior written permission.</li>
+          <li><strong>System Integrity:</strong> You agree not to attempt to reverse engineer, disrupt, or inject malicious code into our web application.</li>
+        </ul>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          3. Client-Side Data Sovereignty & Backup Responsibility
+        </h2>
+        <p>
+          FreeExpenseTracker.com operates on a 100% client-side privacy architecture. Because all data is stored exclusively in your local device's browser cache (<code class="font-mono text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded text-xs">localStorage</code>) and never on our servers:
+        </p>
+        <p class="text-xs sm:text-sm text-slate-600">
+          <strong>You are solely responsible for creating regular backups of your transaction data.</strong> We provide built-in CSV and Excel (.xlsx) export capabilities in the Transaction Ledger. FreeExpenseTracker.com is not liable for data loss caused by clearing browser cookies/site storage, switching devices, operating in private/incognito mode, or hardware failures.
+        </p>
+      </section>
+
+      <!-- Section 4 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          4. Disclaimer of Warranties
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          The services, templates, algorithms, OCR scanners, and calculations provided on FreeExpenseTracker.com are offered on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis, without warranties of any kind, whether express, statutory, or implied. While we strive for formula accuracy and reliable client-side execution, we make no representations or warranties regarding mathematical completeness, browser compatibility, or fitness for a particular purpose.
+        </p>
+      </section>
+
+      <!-- Section 5 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          5. Limitation of Liability
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          To the maximum extent permitted by applicable law, in no event shall FreeExpenseTracker.com, its creators, developers, or affiliates be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising out of your access to, use of, or inability to use the site or its downloadable templates.
+        </p>
+      </section>
+
+      <!-- Section 6 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          6. Third-Party Links & Platforms
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Our website includes external links to third-party services, such as Google Sheets copy links and Microsoft Excel formats. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party websites or services.
+        </p>
+      </section>
+
+      <!-- Section 7 -->
+      <section class="space-y-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          7. Contact Information
+        </h2>
+        <p>
+          For inquiries or questions regarding these Terms & Conditions, please contact:
+        </p>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 font-mono">
+          <div>Email: <a href="mailto:legal@freexpensetracker.com" class="text-emerald-700 font-bold hover:underline">legal@freexpensetracker.com</a></div>
+          <div>Website: <a href="https://freexpensetracker.com" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
