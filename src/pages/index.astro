@@ -131,6 +131,8 @@ import ResetModal from '../components/ResetModal.astro';
   import {
     parseAndInterpretFile,
     parseAndInterpretMultipleFiles,
+    buildFileInterpretationInsights,
+    buildMultiFileInsights,
     type FileInterpretationResult,
     type MultiFileInterpretationResult
   } from '../utils/fileImporter';
@@ -448,6 +450,7 @@ import ResetModal from '../components/ResetModal.astro';
   const tabImporterFileCountBadge = document.getElementById('tab-importer-file-count-badge');
   const tabResultRecordCount = document.getElementById('tab-result-record-count');
   const tabResultTotalAmount = document.getElementById('tab-result-total-amount');
+  const tabResultTotalInflow = document.getElementById('tab-result-total-inflow');
   const tabResultTopCategory = document.getElementById('tab-result-top-category');
   const tabResultTopCatSub = document.getElementById('tab-result-top-cat-sub');
   const tabResultInsightsList = document.getElementById('tab-result-insights-list');
@@ -1179,6 +1182,14 @@ import ResetModal from '../components/ResetModal.astro';
         renderAll();
       });
     });
+
+    // Update importer tab and modal if results are loaded
+    if (pendingTabImportResult) {
+      renderTabImporterResults();
+    }
+    if (pendingImportResult) {
+      renderModalImporterResults();
+    }
   }
 
   // --- 10. Event Listeners ---
@@ -1605,51 +1616,59 @@ import ResetModal from '../components/ResetModal.astro';
     }
   });
 
+  function renderModalImporterResults() {
+    if (!pendingImportResult) return;
+    const result = pendingImportResult;
+    const freshInsights = buildFileInterpretationInsights(result, state.currency);
+
+    if (previewCount) previewCount.textContent = result.recordCount.toString();
+    if (previewTotal) previewTotal.textContent = formatMoney(result.totalAmount);
+    if (previewTopCat) {
+      previewTopCat.textContent = result.topCategory
+        ? `${result.topCategory.category} (${result.topCategory.percentage}%)`
+        : 'N/A';
+    }
+
+    if (previewInsightsList) {
+      previewInsightsList.innerHTML = freshInsights
+        .map((item) => `<div class="flex items-start gap-1.5"><span class="text-emerald-700 font-bold">•</span><span>${escapeHtml(item)}</span></div>`)
+        .join('');
+    }
+
+    if (previewTableTbody) {
+      previewTableTbody.innerHTML = result.transactions
+        .slice(0, 5)
+        .map(
+          (t) => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${t.date}</td>
+          <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(t.name)}</td>
+          <td class="py-1.5 px-3">
+            ${t.type === 'income'
+              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">💵 Income</span>`
+              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${t.category}</span>`
+            }
+          </td>
+          <td class="py-1.5 px-3 font-mono font-bold text-right ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
+            ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+          </td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+  }
+
   async function handleSelectedFile(files: FileList | File[]) {
     const fileList = Array.from(files);
     if (fileList.length === 0) return;
     if (importErrorMsg) importErrorMsg.classList.add('hidden');
     try {
-      const result = await parseAndInterpretMultipleFiles(fileList);
+      const result = await parseAndInterpretMultipleFiles(fileList, undefined, state.currency);
       pendingImportResult = result;
 
       if (previewFileName) previewFileName.textContent = fileList.length === 1 ? fileList[0].name : `${fileList.length} files`;
-      if (previewCount) previewCount.textContent = result.recordCount.toString();
-      if (previewTotal) previewTotal.textContent = formatMoney(result.totalAmount);
-      if (previewTopCat) {
-        previewTopCat.textContent = result.topCategory
-          ? `${result.topCategory.category} (${result.topCategory.percentage}%)`
-          : 'N/A';
-      }
-
-      if (previewInsightsList) {
-        previewInsightsList.innerHTML = result.insights
-          .map((item) => `<div class="flex items-start gap-1.5"><span class="text-emerald-700 font-bold">•</span><span>${item}</span></div>`)
-          .join('');
-      }
-
-      if (previewTableTbody) {
-        previewTableTbody.innerHTML = result.transactions
-          .slice(0, 5)
-          .map(
-            (t) => `
-          <tr class="hover:bg-slate-50">
-            <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${t.date}</td>
-            <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(t.name)}</td>
-            <td class="py-1.5 px-3">
-              ${t.type === 'income'
-                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">💵 Income</span>`
-                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${t.category}</span>`
-              }
-            </td>
-            <td class="py-1.5 px-3 font-mono font-bold text-right ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
-              ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
-            </td>
-          </tr>
-        `
-          )
-          .join('');
-      }
+      renderModalImporterResults();
 
       if (importPreviewBox) importPreviewBox.classList.remove('hidden');
     } catch (err: any) {
@@ -1710,6 +1729,82 @@ import ResetModal from '../components/ResetModal.astro';
     }
   });
 
+  function renderTabImporterResults() {
+    if (!pendingTabImportResult) return;
+    const result = pendingTabImportResult;
+    const freshInsights = buildMultiFileInsights(result, state.currency);
+
+    // Populate file chips
+    if (tabImporterFileCountBadge) {
+      tabImporterFileCountBadge.textContent = `${result.successfulFiles}/${result.fileCount} files parsed`;
+    }
+
+    if (tabImporterFilesChips) {
+      tabImporterFilesChips.innerHTML = result.fileSummaries.map((f) => {
+        if (f.status === 'success') {
+          return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span class="text-xs">✅</span>
+            <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
+            <span class="text-[10px] text-emerald-700">(${f.recordCount} items • ${formatMoney(f.amount)})</span>
+          </span>`;
+        } else {
+          return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200" title="${escapeHtml(f.error || '')}">
+            <span class="text-xs">⚠️</span>
+            <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
+            <span class="text-[10px] text-rose-600">(${escapeHtml(f.error || 'Failed')})</span>
+          </span>`;
+        }
+      }).join('');
+    }
+
+    // Populate metrics
+    if (tabResultRecordCount) tabResultRecordCount.textContent = result.recordCount.toString();
+    if (tabResultTotalAmount) tabResultTotalAmount.textContent = formatMoney(result.totalAmount);
+    if (tabResultTotalInflow) tabResultTotalInflow.textContent = formatMoney(result.totalInflow || 0);
+    if (tabResultTopCategory) {
+      tabResultTopCategory.textContent = result.topCategory ? result.topCategory.category : 'N/A';
+    }
+    if (tabResultTopCatSub) {
+      tabResultTopCatSub.textContent = result.topCategory
+        ? `${result.topCategory.percentage}% of total spend (${formatMoney(result.topCategory.amount)})`
+        : '0% of total spend';
+    }
+
+    // Populate insights
+    if (tabResultInsightsList) {
+      tabResultInsightsList.innerHTML = freshInsights.map((item) => `
+        <div class="flex items-start gap-2">
+          <span class="text-emerald-700 font-bold shrink-0">•</span>
+          <span>${escapeHtml(item)}</span>
+        </div>
+      `).join('');
+    }
+
+    // Populate preview table
+    if (tabResultTableCount) tabResultTableCount.textContent = result.transactions.length.toString();
+    if (tabResultTableTbody) {
+      tabResultTableTbody.innerHTML = result.transactions.map((t) => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${t.date}</td>
+          <td class="py-2 px-3 font-medium text-slate-900 font-sans">${escapeHtml(t.name)}</td>
+          <td class="py-2 px-3">
+            ${t.type === 'income'
+              ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  💵 Income
+                </span>`
+              : `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  ${t.category}
+                </span>`
+            }
+          </td>
+          <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
+            ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+          </td>
+        </tr>
+      `).join('');
+    }
+  }
+
   async function handleTabSelectedFiles(files: FileList | File[]) {
     const fileArray = Array.from(files);
     if (fileArray.length === 0) return;
@@ -1724,75 +1819,10 @@ import ResetModal from '../components/ResetModal.astro';
         if (tabImporterProgressText) tabImporterProgressText.textContent = `Analyzing ${name} (${current} of ${total})...`;
         if (tabImporterProgressPct) tabImporterProgressPct.textContent = `${pct}%`;
         if (tabImporterProgressBar) (tabImporterProgressBar as HTMLElement).style.width = `${pct}%`;
-      });
+      }, state.currency);
 
       pendingTabImportResult = result;
-
-      // Populate file chips
-      if (tabImporterFileCountBadge) tabImporterFileCountBadge.textContent = `${result.successfulFiles}/${result.fileCount} files parsed`;
-      if (tabImporterFilesChips) {
-        tabImporterFilesChips.innerHTML = result.fileSummaries.map((f) => {
-          if (f.status === 'success') {
-            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <span class="text-xs">✅</span>
-              <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
-              <span class="text-[10px] text-emerald-700">(${f.recordCount} items • ${formatMoney(f.amount)})</span>
-            </span>`;
-          } else {
-            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200" title="${escapeHtml(f.error || '')}">
-              <span class="text-xs">⚠️</span>
-              <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
-              <span class="text-[10px] text-rose-600">(${escapeHtml(f.error || 'Failed')})</span>
-            </span>`;
-          }
-        }).join('');
-      }
-
-      // Populate metrics
-      if (tabResultRecordCount) tabResultRecordCount.textContent = result.recordCount.toString();
-      if (tabResultTotalAmount) tabResultTotalAmount.textContent = formatMoney(result.totalAmount);
-      if (tabResultTopCategory) {
-        tabResultTopCategory.textContent = result.topCategory ? result.topCategory.category : 'N/A';
-      }
-      if (tabResultTopCatSub) {
-        tabResultTopCatSub.textContent = result.topCategory
-          ? `${result.topCategory.percentage}% of total spend (${formatMoney(result.topCategory.amount)})`
-          : '0% of total spend';
-      }
-
-      // Populate insights
-      if (tabResultInsightsList) {
-        tabResultInsightsList.innerHTML = result.insights.map((item) => `
-          <div class="flex items-start gap-2">
-            <span class="text-emerald-700 font-bold shrink-0">•</span>
-            <span>${item}</span>
-          </div>
-        `).join('');
-      }
-
-      // Populate preview table
-      if (tabResultTableCount) tabResultTableCount.textContent = result.transactions.length.toString();
-      if (tabResultTableTbody) {
-        tabResultTableTbody.innerHTML = result.transactions.map((t) => `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${t.date}</td>
-            <td class="py-2 px-3 font-medium text-slate-900 font-sans">${escapeHtml(t.name)}</td>
-            <td class="py-2 px-3">
-              ${t.type === 'income'
-                ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                    💵 Income
-                  </span>`
-                : `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-                    ${t.category}
-                  </span>`
-              }
-            </td>
-            <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
-              ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
-            </td>
-          </tr>
-        `).join('');
-      }
+      renderTabImporterResults();
 
       if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
       if (tabImporterResults) tabImporterResults.classList.remove('hidden');

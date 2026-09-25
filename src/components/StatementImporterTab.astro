@@ -139,7 +139,7 @@
     </div>
 
     <!-- Aggregated Metrics Highlights -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
         <div class="text-xs text-slate-500 font-medium">Extracted Records</div>
         <div id="tab-result-record-count" class="text-2xl font-extrabold font-mono text-slate-900 mt-1">0</div>
@@ -148,8 +148,14 @@
 
       <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
         <div class="text-xs text-slate-500 font-medium">Total Outflow Amount</div>
-        <div id="tab-result-total-amount" class="text-2xl font-extrabold font-mono text-rose-600 mt-1">$0.00</div>
+        <div id="tab-result-total-amount" class="text-2xl font-extrabold font-mono text-rose-600 mt-1">—</div>
         <div class="text-[11px] text-slate-500 mt-0.5">Parsed expense transactions</div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+        <div class="text-xs text-slate-500 font-medium">Total Inflow Amount</div>
+        <div id="tab-result-total-inflow" class="text-2xl font-extrabold font-mono text-emerald-600 mt-1">—</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Parsed deposits & income</div>
       </div>
 
       <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">

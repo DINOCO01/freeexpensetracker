@@ -148,32 +148,22 @@ export async function scanReceiptImage(
     .filter((l) => l.length > 0);
 
   // 1. Detect if Transaction is Income or Expense
-  const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(rawText);
+  const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay|inflow)\b/i.test(rawText);
   const type: 'expense' | 'income' = isIncome ? 'income' : 'expense';
 
   // 2. Detect Merchant / Payee / Source Name
   let merchantName = '';
 
-  if (isIncome) {
-    if (/\b(salary|payroll|paycheck)\b/i.test(rawText)) merchantName = 'Salary / Payroll Deposit';
-    else if (/\b(refund|cashback)\b/i.test(rawText)) merchantName = 'Refund / Cashback';
-    else if (/\b(dividend|interest)\b/i.test(rawText)) merchantName = 'Investment Dividend / Interest';
-    else if (/\b(freelance|client)\b/i.test(rawText)) merchantName = 'Client / Freelance Payment';
-    else merchantName = 'Direct Deposit / Income';
-  }
-
   // Check known brands first
-  if (!merchantName) {
-    for (const store of COMMON_STORE_NAMES) {
-      const regex = new RegExp(`\\b${store}\\b`, 'i');
-      if (regex.test(rawText)) {
-        merchantName = store;
-        break;
-      }
+  for (const store of COMMON_STORE_NAMES) {
+    const regex = new RegExp(`\\b${store}\\b`, 'i');
+    if (regex.test(rawText)) {
+      merchantName = store;
+      break;
     }
   }
 
-  // Fallback: look at top 5 lines
+  // Fallback: look at top 6 lines
   if (!merchantName) {
     for (let i = 0; i < Math.min(6, lines.length); i++) {
       const line = lines[i];
@@ -181,14 +171,14 @@ export async function scanReceiptImage(
         /^\d+[\s\w]+(st|ave|blvd|rd|dr|lane|hwy|way)/i.test(line) ||
         /(tel|phone|fax|\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4})/i.test(line) ||
         /(www\.|http|\.com|\.org|\.net)/i.test(line) ||
-        /(receipt|invoice|tax\s*invoice|order|welcome|guest|register|cashier)/i.test(line) ||
+        /(receipt|invoice|tax\s*invoice|order|welcome|guest|register|cashier|statement|account|summary)/i.test(line) ||
         line.length < 3
       ) {
         continue;
       }
 
       const clean = line.replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
-      if (clean.length >= 3) {
+      if (clean.length >= 3 && !/^(date|amount|total|balance|page|statement)/i.test(clean)) {
         merchantName = clean;
         break;
       }
@@ -196,61 +186,32 @@ export async function scanReceiptImage(
   }
 
   if (!merchantName) {
-    merchantName = isIncome ? 'Income Payment' : 'Store / Merchant Receipt';
+    merchantName = isIncome ? 'Income / Deposit Payment' : 'Store / Merchant Receipt';
   }
 
-  // 3. Detect Date
+  // 3. Detect Date using universal date regex and normalizer
   let dateStr = new Date().toISOString().split('T')[0];
-  const dateRegex = /\b(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{2,4})?|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b/i;
-
-  for (const line of lines) {
-    const match = line.match(dateRegex);
-    if (match) {
-      const parsed = new Date(match[0]);
-      if (!isNaN(parsed.getTime())) {
-        dateStr = parsed.toISOString().split('T')[0];
-        break;
-      }
-    }
+  const { STATEMENT_DATE_REGEX, normalizeDate, extractAmountsFromText } = await import('./fileImporter');
+  const dateMatch = rawText.match(STATEMENT_DATE_REGEX);
+  if (dateMatch) {
+    dateStr = normalizeDate(dateMatch[0]);
   }
 
-  // 4. Detect Total Amount
+  // 4. Detect Total Amount using universal amount extractor
   let amount = 0;
-  const amountRegex = isIncome
-    ? /(?:deposit|net\s*pay|gross\s*pay|salary|amount|credit|refund|total|paid|balance)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i
-    : /(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i;
+  const allAmounts = extractAmountsFromText(rawText);
 
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i];
-    const match = line.match(amountRegex);
-    if (match) {
-      const numStr = match[1].replace(/[^0-9.]/g, '');
-      const parsed = parseFloat(numStr);
-      if (!isNaN(parsed) && parsed > 0) {
-        amount = parsed;
-        break;
-      }
+  // Check for lines with total / amount / deposit keywords
+  const totalMatch = rawText.match(/(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total|deposit|salary|net\s*pay)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/i);
+  if (totalMatch) {
+    const parsed = extractAmountsFromText(totalMatch[0]);
+    if (parsed.length > 0) {
+      amount = Math.abs(parsed[0].value);
     }
   }
 
-  // Fallback: search all lines for amounts and take largest (excluding likely subtotal/tax)
-  if (amount <= 0) {
-    const allAmounts: number[] = [];
-    const standaloneAmtRegex = /(?:[$€£₹¥])?\s*(\d{1,4}(?:,\d{3})*\.\d{2})\b/g;
-
-    for (const line of lines) {
-      let m;
-      while ((m = standaloneAmtRegex.exec(line)) !== null) {
-        const val = parseFloat(m[1].replace(/,/g, ''));
-        if (!isNaN(val) && val > 0 && val < 500000) {
-          allAmounts.push(val);
-        }
-      }
-    }
-
-    if (allAmounts.length > 0) {
-      amount = Math.max(...allAmounts);
-    }
+  if (amount <= 0 && allAmounts.length > 0) {
+    amount = Math.max(...allAmounts.map((a) => Math.abs(a.value)));
   }
 
   // 5. Categorize
@@ -259,13 +220,14 @@ export async function scanReceiptImage(
 
   // 6. Line items extract
   const lineItems: { name: string; amount: number }[] = [];
-  const lineItemPattern = /^([a-zA-Z0-9\s&'-]{3,25})\s+[$€£₹¥]?\s*(\d+\.\d{2})$/;
+  const lineItemPattern = /^([a-zA-Z0-9\s&'-]{3,25})\s+[$€£₹¥]?\s*(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)$/;
 
   for (const line of lines) {
     const itemMatch = line.match(lineItemPattern);
     if (itemMatch) {
       const itemName = itemMatch[1].trim();
-      const itemAmt = parseFloat(itemMatch[2]);
+      const numPart = itemMatch[2].replace(/,/g, '');
+      const itemAmt = parseFloat(numPart);
       if (itemName && !isNaN(itemAmt) && (amount === 0 || itemAmt < amount)) {
         lineItems.push({ name: itemName, amount: itemAmt });
       }

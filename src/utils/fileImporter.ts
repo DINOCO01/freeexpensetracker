@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import * as pdfjsLib from 'pdfjs-dist';
-import type { ExpenseCategory, Transaction } from './calculations';
+import { formatCurrency, type ExpenseCategory, type Transaction } from './calculations';
 
 // Initialize PDF.js worker
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
@@ -13,7 +13,8 @@ if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
 
 export interface FileInterpretationResult {
   recordCount: number;
-  totalAmount: number;
+  totalAmount: number; // Total outflow (expenses)
+  totalInflow?: number; // Total inflow (deposits/income)
   categoryBreakdown: Record<ExpenseCategory, number>;
   topCategory: { category: ExpenseCategory; amount: number; percentage: number } | null;
   highestExpense: { name: string; amount: number; date: string } | null;
@@ -46,51 +47,281 @@ export function autoCategorizeExpense(description: string): ExpenseCategory {
   return 'Miscellany';
 }
 
+export function buildFileInterpretationInsights(
+  result: {
+    recordCount: number;
+    totalAmount: number;
+    totalInflow?: number;
+    topCategory: { category: ExpenseCategory; amount: number; percentage: number } | null;
+    highestExpense: { name: string; amount: number; date: string } | null;
+    earliestDate: string;
+    latestDate: string;
+    transactions?: Transaction[];
+  },
+  currencyCode: string = 'INR'
+): string[] {
+  const insights: string[] = [];
+  const incomeTxCount = result.transactions?.filter((t) => t.type === 'income').length ?? 0;
+  const expenseTxCount = result.transactions ? result.transactions.length - incomeTxCount : result.recordCount;
+
+  if (result.transactions && result.transactions.length > 1) {
+    insights.push(
+      `Extracted ${result.recordCount} record(s) from statement (${expenseTxCount} expense(s), ${incomeTxCount} income / deposit(s)).`
+    );
+  } else {
+    insights.push(
+      `Successfully processed ${result.recordCount} transaction record(s).`
+    );
+  }
+
+  if (result.totalAmount > 0) {
+    insights.push(`Total expense outflows: ${formatCurrency(result.totalAmount, currencyCode)}.`);
+  }
+  if ((result.totalInflow || 0) > 0) {
+    insights.push(`Total income inflows: ${formatCurrency(result.totalInflow || 0, currencyCode)}.`);
+  }
+  if (result.topCategory && result.topCategory.amount > 0) {
+    insights.push(
+      `Largest expense category: ${result.topCategory.category} (${result.topCategory.percentage}% of outflow, ${formatCurrency(result.topCategory.amount, currencyCode)}).`
+    );
+  }
+  if (result.highestExpense && result.highestExpense.amount > 0) {
+    insights.push(
+      `Largest single outflow: "${result.highestExpense.name}" (${formatCurrency(result.highestExpense.amount, currencyCode)}) on ${result.highestExpense.date}.`
+    );
+  }
+  if (result.earliestDate && result.earliestDate !== 'N/A' && result.latestDate && result.latestDate !== 'N/A') {
+    insights.push(`Statement timeframe: ${result.earliestDate} through ${result.latestDate}.`);
+  }
+
+  return insights;
+}
+
+export function buildMultiFileInsights(
+  result: {
+    successfulFiles: number;
+    fileCount: number;
+    recordCount: number;
+    totalAmount: number;
+    totalInflow?: number;
+    topCategory: { category: ExpenseCategory; amount: number; percentage: number } | null;
+    highestExpense: { name: string; amount: number; date: string } | null;
+    earliestDate?: string;
+    latestDate?: string;
+    transactions?: Transaction[];
+  },
+  currencyCode: string = 'INR'
+): string[] {
+  const insights: string[] = [
+    `Successfully processed ${result.successfulFiles} of ${result.fileCount} file(s), extracting ${result.recordCount} transactions totaling ${formatCurrency(result.totalAmount, currencyCode)} in outflows.`
+  ];
+
+  if ((result.totalInflow || 0) > 0) {
+    insights.push(`Total income / deposits detected: ${formatCurrency(result.totalInflow || 0, currencyCode)}.`);
+  }
+
+  if (result.topCategory && result.topCategory.percentage > 0) {
+    insights.push(
+      `Top spending category across all files: ${result.topCategory.category} (${result.topCategory.percentage}% of outflow, ${formatCurrency(result.topCategory.amount, currencyCode)}).`
+    );
+  }
+
+  if (result.highestExpense) {
+    insights.push(
+      `Single largest outflow: "${result.highestExpense.name}" for ${formatCurrency(result.highestExpense.amount, currencyCode)} on ${result.highestExpense.date}.`
+    );
+  }
+
+  if (result.earliestDate && result.earliestDate !== 'N/A' && result.latestDate && result.latestDate !== 'N/A') {
+    insights.push(`Date range: ${result.earliestDate} to ${result.latestDate}.`);
+  }
+
+  return insights;
+}
+
+export const STATEMENT_DATE_REGEX = /\b(\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}[-/.\s](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[-/.\s]\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{2,4})?)\b/i;
+
+export function normalizeDate(dateStr: string): string {
+  if (!dateStr) return new Date().toISOString().split('T')[0];
+  const trimmed = dateStr.trim();
+
+  // 1. Check YYYY-MM-DD or YYYY/MM/DD or YYYY.MM.DD
+  const ymdMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (ymdMatch) {
+    const y = parseInt(ymdMatch[1], 10);
+    const m = parseInt(ymdMatch[2], 10);
+    const d = parseInt(ymdMatch[3], 10);
+    if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+  }
+
+  // 2. Check DD-Mon-YYYY (e.g. 15-Sep-2026, 01 Sep 2026, 15/Sep/2026)
+  const dMonYMatch = trimmed.match(/^(\d{1,2})[-/.\s]([a-zA-Z]{3,9})[-/.\s](\d{2,4})$/i);
+  if (dMonYMatch) {
+    let d = parseInt(dMonYMatch[1], 10);
+    const mon = dMonYMatch[2].toLowerCase().slice(0, 3);
+    let y = parseInt(dMonYMatch[3], 10);
+    if (y < 100) y += 2000;
+    const months: Record<string, string> = {
+      jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+      jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
+    };
+    if (months[mon] && d >= 1 && d <= 31) {
+      return `${y}-${months[mon]}-${String(d).padStart(2, '0')}`;
+    }
+  }
+
+  // 3. Check Mon DD, YYYY (e.g. Sep 15, 2026, September 15 2026)
+  const monDYMatch = trimmed.match(/^([a-zA-Z]{3,9})\s+(\d{1,2})(?:,?\s+(\d{2,4}))?$/i);
+  if (monDYMatch) {
+    const mon = monDYMatch[1].toLowerCase().slice(0, 3);
+    let d = parseInt(monDYMatch[2], 10);
+    let y = monDYMatch[3] ? parseInt(monDYMatch[3], 10) : new Date().getFullYear();
+    if (y < 100) y += 2000;
+    const months: Record<string, string> = {
+      jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+      jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
+    };
+    if (months[mon] && d >= 1 && d <= 31) {
+      return `${y}-${months[mon]}-${String(d).padStart(2, '0')}`;
+    }
+  }
+
+  // 4. Check DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+  const dmyMatch = trimmed.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/);
+  if (dmyMatch) {
+    let part1 = parseInt(dmyMatch[1], 10);
+    let part2 = parseInt(dmyMatch[2], 10);
+    let y = parseInt(dmyMatch[3], 10);
+    if (y < 100) y += 2000;
+
+    let d = part1;
+    let m = part2;
+    if (part2 > 12 && part1 <= 12) {
+      m = part1;
+      d = part2;
+    }
+
+    if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+  }
+
+  return trimmed.slice(0, 10);
+}
+
+export const AMOUNT_REGEX_GLOBAL = /(?:(?:₹|Rs\.?|INR|\$|€|£|CA\$|AU\$)\s*)?(?:-|\()?(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d{2,}(?:\.\d{1,2})?|\d+\.\d{1,2})(?:\))?\s*(?:cr|dr)?\b/gi;
+
+export function extractAmountsFromText(text: string, dateStr?: string): { raw: string; value: number; index: number }[] {
+  let cleanText = text;
+  if (dateStr) {
+    cleanText = cleanText.replace(dateStr, ' ');
+  }
+
+  const results: { raw: string; value: number; index: number }[] = [];
+  const regex = new RegExp(AMOUNT_REGEX_GLOBAL.source, 'gi');
+  let match;
+  while ((match = regex.exec(cleanText)) !== null) {
+    const raw = match[0].trim();
+    const numPart = match[1].replace(/,/g, '');
+    const val = parseFloat(numPart);
+    if (isNaN(val) || val <= 0) continue;
+    if (val > 10000000 && !/\.\d{2}/.test(raw)) continue;
+
+    const isDr = /dr\b/i.test(raw) || /^\(/.test(raw) || raw.includes('-');
+    results.push({
+      raw,
+      value: isDr ? -val : val,
+      index: match.index
+    });
+  }
+  return results;
+}
+
+export function classifyTransactionType(text: string): 'expense' | 'income' {
+  const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay|inflow|cr\b|credit)\b/i.test(text);
+  const isExpense = /\b(debit|withdrawal|dr\b|payment|pos|atm|purchase|fee|charge|outflow|spent)\b/i.test(text);
+
+  if (isIncome && !isExpense) return 'income';
+  if (isExpense && !isIncome) return 'expense';
+  if (/\b(salary|payroll|paycheck|dividend|refund|cashback|bonus)\b/i.test(text)) return 'income';
+  if (/\b(cr\b|credit\b)/i.test(text) && !/\b(credit\s*card)\b/i.test(text)) return 'income';
+  return 'expense';
+}
+
 /**
- * Robust Bank Statement & Receipt PDF Parser:
- * Reads text coordinates, parses multi-line statements, single receipts, invoices,
- * and falls back seamlessly to optical recognition (OCR) if scanned or image-based.
+ * Robust Multi-Tier Statement & Receipt PDF Parser:
+ * Tier 1: Coordinate-aware Row & Column Table Parser
+ * Tier 2: Date-Delimited Segment Fallback (handles imperfect table layout)
+ * Tier 3: Single Receipt / Invoice Parser
+ * Tier 4: Scanned Image PDF OCR fallback
  */
-async function parsePdfStatement(file: File): Promise<FileInterpretationResult> {
+async function parsePdfStatement(file: File, currencyCode: string = 'INR'): Promise<FileInterpretationResult> {
   const buffer = await file.arrayBuffer();
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
   const pdfDoc = await loadingTask.promise;
 
-  const rawLines: string[] = [];
+  interface PdfCell {
+    text: string;
+    x: number;
+    y: number;
+    width: number;
+  }
+
+  const allPageRows: { page: number; rowText: string; cells: PdfCell[]; y: number }[] = [];
+  let fullDocText = '';
 
   for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
     const page = await pdfDoc.getPage(pageNum);
     const textContent = await page.getTextContent();
-
-    // Group text items by vertical Y position (within 6px threshold)
-    const lineMap: Map<number, { x: number; text: string }[]> = new Map();
+    const pageCells: PdfCell[] = [];
 
     for (const item of textContent.items as any[]) {
-      if (!item.str || !item.str.trim()) continue;
-      const x = item.transform[4];
-      const y = Math.round(item.transform[5] / 6) * 6; // snap to nearest 6px
-
-      if (!lineMap.has(y)) {
-        lineMap.set(y, []);
-      }
-      lineMap.get(y)!.push({ x, text: item.str.trim() });
+      if (!item || typeof item.str !== 'string') continue;
+      const str = item.str.trim();
+      if (!str) continue;
+      const x = item.transform ? item.transform[4] : 0;
+      const y = item.transform ? item.transform[5] : 0;
+      pageCells.push({ text: str, x, y, width: item.width || 0 });
     }
 
-    // Sort lines from top of page to bottom (descending Y coordinate)
-    const sortedY = Array.from(lineMap.keys()).sort((a, b) => b - a);
+    if (pageCells.length === 0) continue;
 
-    for (const y of sortedY) {
-      const itemsOnLine = lineMap.get(y)!;
-      itemsOnLine.sort((a, b) => a.x - b.x);
-      const lineText = itemsOnLine.map((i) => i.text).join(' ');
-      if (lineText.length > 2) {
-        rawLines.push(lineText);
+    // Cluster items into rows by vertical proximity (within 7 points)
+    pageCells.sort((a, b) => b.y - a.y);
+    const pageRows: PdfCell[][] = [];
+
+    for (const cell of pageCells) {
+      const existing = pageRows.find((r) => Math.abs(r[0].y - cell.y) <= 7);
+      if (existing) {
+        existing.push(cell);
+      } else {
+        pageRows.push([cell]);
+      }
+    }
+
+    // Sort rows top-to-bottom
+    pageRows.sort((a, b) => b[0].y - a[0].y);
+
+    // Sort cells in each row left-to-right
+    for (const r of pageRows) {
+      r.sort((a, b) => a.x - b.x);
+      const rowText = r.map((c) => c.text).join(' ');
+      if (rowText.length > 1) {
+        allPageRows.push({
+          page: pageNum,
+          rowText,
+          cells: r,
+          y: r[0].y
+        });
+        fullDocText += '\n' + rowText;
       }
     }
   }
 
-  // If PDF has no digital text layer (e.g. scanned receipt/photo saved as PDF), run OCR
-  if (rawLines.length === 0) {
+  // Scanned PDF check: if digital text is empty, fall back to canvas OCR
+  if (fullDocText.trim().length < 25) {
     const { scanReceiptImage } = await import('./receiptScanner');
     const scanned = await scanReceiptImage(file);
     const tx: Transaction = {
@@ -104,19 +335,16 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
     };
 
     const categoryTotals: Record<ExpenseCategory, number> = {
-      Housing: 0,
-      Food: 0,
-      Transport: 0,
-      Utilities: 0,
-      Entertainment: 0,
-      Savings: 0,
-      Miscellany: 0
+      Housing: 0, Food: 0, Transport: 0, Utilities: 0,
+      Entertainment: 0, Savings: 0, Miscellany: 0
     };
     categoryTotals[scanned.category] = scanned.amount;
 
+    const isIncome = scanned.type === 'income';
     return {
       recordCount: 1,
-      totalAmount: scanned.amount,
+      totalAmount: isIncome ? 0 : scanned.amount,
+      totalInflow: isIncome ? scanned.amount : 0,
       categoryBreakdown: categoryTotals,
       topCategory: { category: scanned.category, amount: scanned.amount, percentage: 100 },
       highestExpense: { name: scanned.merchantName, amount: scanned.amount, date: scanned.date },
@@ -124,160 +352,228 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
       latestDate: scanned.date,
       insights: [
         `Processed scanned PDF receipt via optical recognition: "${scanned.merchantName}".`,
-        `Extracted amount: $${scanned.amount.toFixed(2)} (${scanned.type === 'income' ? 'Income' : scanned.category}).`
+        `Extracted amount: ${formatCurrency(scanned.amount, currencyCode)} (${isIncome ? 'Income' : scanned.category}).`
       ],
       transactions: [tx]
     };
   }
 
-  // Regex patterns for Date, Amount, and Non-transaction lines
-  const dateRegex = /\b(\d{1,2}[/-]\d{1,2}(?:[/-]\d{2,4})?|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{2,4})?|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b/i;
-  const amountRegex = /(?:[$€£₹¥]|CA\$|AU\$)?\s*(-?\d{1,3}(?:,\d{3})*\.\d{2}|-?\d+\.\d{2})\b/;
+  const transactions: Transaction[] = [];
+  const datesFound: string[] = [];
   const ignorePatterns = /(balance\s*forward|account\s*summary|statement\s*period|page\s*\d+\s*of|minimum\s*payment|payment\s*due|interest\s*charge|annual\s*percentage|total\s*fees|credit\s*limit)/i;
 
-  const transactions: Transaction[] = [];
-  let totalAmount = 0;
-  const categoryTotals: Record<ExpenseCategory, number> = {
-    Housing: 0,
-    Food: 0,
-    Transport: 0,
-    Utilities: 0,
-    Entertainment: 0,
-    Savings: 0,
-    Miscellany: 0
-  };
+  // Detect column header X coordinates if table headers are present
+  let creditColX: number | null = null;
+  let debitColX: number | null = null;
+  let balanceColX: number | null = null;
 
-  let highestExpense: { name: string; amount: number; date: string } | null = null;
-  const datesFound: string[] = [];
+  for (const { cells } of allPageRows.slice(0, 20)) {
+    for (const cell of cells) {
+      const lower = cell.text.toLowerCase();
+      if (/(credit|deposit|inflow|income)/i.test(lower) && !/(card|limit)/i.test(lower)) {
+        creditColX = cell.x;
+      }
+      if (/(debit|withdrawal|outflow|expense)/i.test(lower)) {
+        debitColX = cell.x;
+      }
+      if (/balance/i.test(lower)) {
+        balanceColX = cell.x;
+      }
+    }
+    if (debitColX !== null || creditColX !== null) break;
+  }
 
-  // Pass 1: Parse standard multi-line transactions with dates and amounts
-  for (const line of rawLines) {
-    if (ignorePatterns.test(line)) continue;
+  // --- TIER 1: Row-by-Row Table Parsing ---
+  for (const { rowText, cells } of allPageRows) {
+    if (ignorePatterns.test(rowText)) continue;
 
-    const dateMatch = line.match(dateRegex);
-    const amountMatch = line.match(amountRegex);
+    const dateMatch = rowText.match(STATEMENT_DATE_REGEX);
+    if (!dateMatch) {
+      // Continuation line for previous transaction description
+      if (transactions.length > 0 && rowText.length > 3 && !/page\s*\d+/i.test(rowText)) {
+        const lastTx = transactions[transactions.length - 1];
+        if (lastTx.name.length < 90) {
+          lastTx.name = `${lastTx.name} ${rowText.trim()}`.replace(/\s+/g, ' ');
+        }
+      }
+      continue;
+    }
 
-    if (dateMatch && amountMatch) {
-      const rawAmtStr = amountMatch[1].replace(/,/g, '');
-      const parsedAmt = Math.abs(parseFloat(rawAmtStr));
+    const rawDateStr = dateMatch[0];
+    const stdDate = normalizeDate(rawDateStr);
+    const dateYear = parseInt(stdDate.slice(0, 4), 10) || undefined;
 
-      if (isNaN(parsedAmt) || parsedAmt <= 0) continue;
+    // Find all amounts in this row
+    const foundAmounts = extractAmountsFromText(rowText, dateYear);
+    if (foundAmounts.length === 0) continue;
 
-      let desc = line
-        .replace(dateMatch[0], '')
-        .replace(amountMatch[0], '')
-        .replace(/[#*$\t]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+    let txAmount = 0;
+    let isIncome = false;
 
-      if (!desc || desc.length < 2) {
-        desc = `Transaction #${transactions.length + 1}`;
+    if (foundAmounts.length === 1) {
+      txAmount = Math.abs(foundAmounts[0].value);
+      isIncome = foundAmounts[0].value > 0 && classifyTransactionType(rowText) === 'income';
+    } else {
+      // Multiple amounts on the row (e.g. [Debit, Credit, Balance] or [Amount, Balance])
+      if (creditColX !== null || debitColX !== null) {
+        for (const fa of foundAmounts) {
+          const matchingCell = cells.find((c) => c.text.includes(fa.raw.replace(/[^0-9.]/g, '')));
+          const cellX = matchingCell ? matchingCell.x : 0;
+
+          if (balanceColX !== null && Math.abs(cellX - balanceColX) < 40) {
+            continue;
+          }
+          if (creditColX !== null && Math.abs(cellX - creditColX) < 50) {
+            txAmount = Math.abs(fa.value);
+            isIncome = true;
+            break;
+          }
+          if (debitColX !== null && Math.abs(cellX - debitColX) < 50) {
+            txAmount = Math.abs(fa.value);
+            isIncome = false;
+            break;
+          }
+        }
       }
 
-      let dateStr = new Date().toISOString().split('T')[0];
-      const parsedDate = new Date(dateMatch[0]);
-      if (!isNaN(parsedDate.getTime())) {
-        dateStr = parsedDate.toISOString().split('T')[0];
-      } else {
-        dateStr = dateMatch[0].trim();
+      if (txAmount === 0) {
+        // The last amount is running balance; the first amount is the transaction amount
+        const candidate = foundAmounts[0];
+        txAmount = Math.abs(candidate.value);
+        isIncome = candidate.value > 0 && classifyTransactionType(rowText) === 'income';
       }
-      datesFound.push(dateStr);
+    }
 
-      const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(desc) || /\b(cr|credit)\b/i.test(line);
-      const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
-      const category = isIncome ? 'Savings' : autoCategorizeExpense(desc);
+    if (txAmount <= 0) continue;
 
-      transactions.push({
-        id: `pdf-${Date.now()}-${transactions.length}`,
-        name: desc,
-        amount: Math.round(parsedAmt * 100) / 100,
-        category,
-        date: dateStr,
-        source: 'imported',
-        type: txType
-      });
+    // Clean description: remove date, amounts, and extra symbols
+    let desc = rowText.replace(rawDateStr, '');
+    for (const fa of foundAmounts) {
+      desc = desc.replace(fa.raw, '');
+    }
+    desc = desc.replace(/[#*$\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
 
-      totalAmount += parsedAmt;
-      categoryTotals[category] += parsedAmt;
+    if (!desc || desc.length < 2) {
+      desc = isIncome ? 'Income / Deposit' : `Transaction #${transactions.length + 1}`;
+    }
 
-      if (!highestExpense || parsedAmt > highestExpense.amount) {
-        highestExpense = {
+    const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+    const category: ExpenseCategory = isIncome ? 'Savings' : autoCategorizeExpense(desc);
+
+    transactions.push({
+      id: `pdf-${Date.now()}-${transactions.length}`,
+      name: desc,
+      amount: Math.round(txAmount * 100) / 100,
+      category,
+      date: stdDate,
+      source: 'imported',
+      type: txType
+    });
+    datesFound.push(stdDate);
+  }
+
+  // --- TIER 2: Date-Delimited Segment Fallback (if Tier 1 extracted fewer than 2 transactions) ---
+  if (transactions.length < 2) {
+    const dateMatches: { text: string; index: number }[] = [];
+    const dateRegexGlobal = new RegExp(STATEMENT_DATE_REGEX.source, 'gi');
+    let m;
+    while ((m = dateRegexGlobal.exec(fullDocText)) !== null) {
+      dateMatches.push({ text: m[0], index: m.index });
+    }
+
+    if (dateMatches.length >= 2) {
+      transactions.length = 0;
+      datesFound.length = 0;
+
+      for (let i = 0; i < dateMatches.length; i++) {
+        const curDate = dateMatches[i];
+        const nextIndex = i + 1 < dateMatches.length ? dateMatches[i + 1].index : fullDocText.length;
+        const segment = fullDocText.slice(curDate.index, nextIndex).trim();
+
+        const stdDate = normalizeDate(curDate.text);
+        const dateYear = parseInt(stdDate.slice(0, 4), 10) || undefined;
+        const segAmounts = extractAmountsFromText(segment, dateYear);
+
+        if (segAmounts.length === 0) continue;
+
+        const chosenAmt = segAmounts[0];
+        const txAmount = Math.abs(chosenAmt.value);
+        if (txAmount <= 0) continue;
+
+        const isIncome = chosenAmt.value > 0 && classifyTransactionType(segment) === 'income';
+
+        let desc = segment.replace(curDate.text, '');
+        for (const fa of segAmounts) {
+          desc = desc.replace(fa.raw, '');
+        }
+        desc = desc.split('\n')[0].replace(/[#*$\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!desc || desc.length < 2) {
+          desc = isIncome ? 'Income / Deposit' : `Transaction #${transactions.length + 1}`;
+        }
+
+        const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+        const category: ExpenseCategory = isIncome ? 'Savings' : autoCategorizeExpense(desc);
+
+        transactions.push({
+          id: `pdf-seg-${Date.now()}-${transactions.length}`,
           name: desc,
-          amount: Math.round(parsedAmt * 100) / 100,
-          date: dateStr
-        };
+          amount: Math.round(txAmount * 100) / 100,
+          category,
+          date: stdDate,
+          source: 'imported',
+          type: txType
+        });
+        datesFound.push(stdDate);
       }
     }
   }
 
-  // Pass 2: If line-by-line format yielded no items (e.g. single receipt, bill, or invoice in PDF format)
+  // --- TIER 3: Single Receipt / Invoice / Document Parser (if still 0 transactions) ---
   if (transactions.length === 0) {
-    const fullText = rawLines.join(' ');
-    const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(fullText);
+    const dateMatch = fullDocText.match(STATEMENT_DATE_REGEX);
+    const docDate = dateMatch ? normalizeDate(dateMatch[0]) : new Date().toISOString().split('T')[0];
+    const isIncome = classifyTransactionType(fullDocText) === 'income';
     const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
 
-    let docDate = new Date().toISOString().split('T')[0];
-    const docDateMatch = fullText.match(dateRegex);
-    if (docDateMatch) {
-      const parsed = new Date(docDateMatch[0]);
-      if (!isNaN(parsed.getTime())) docDate = parsed.toISOString().split('T')[0];
-    }
-
-    let docName = isIncome ? 'Income Document / Deposit' : 'PDF Receipt / Invoice';
-    for (const line of rawLines.slice(0, 6)) {
-      const clean = line.replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
+    let docName = '';
+    for (const { rowText } of allPageRows.slice(0, 6)) {
+      const clean = rowText.replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
       if (clean.length >= 3 && !/^(statement|account|page|invoice|receipt|date|total)/i.test(clean)) {
         docName = clean;
         break;
       }
     }
-
-    const amountRegexTotal = isIncome
-      ? /(?:deposit|net\s*pay|gross\s*pay|salary|amount|credit|refund|total|paid|balance)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i
-      : /(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i;
-
-    let docAmount = 0;
-    for (let i = rawLines.length - 1; i >= 0; i--) {
-      const match = rawLines[i].match(amountRegexTotal);
-      if (match) {
-        const num = parseFloat(match[1].replace(/[^0-9.]/g, ''));
-        if (!isNaN(num) && num > 0) {
-          docAmount = num;
-          break;
-        }
-      }
+    if (!docName) {
+      docName = isIncome ? 'Income / Deposit Payment' : 'PDF Receipt / Invoice';
     }
 
-    if (docAmount <= 0) {
-      const allAmts: number[] = [];
-      const stRegex = /(?:[$€£₹¥])?\s*(\d{1,4}(?:,\d{3})*\.\d{2})\b/g;
-      for (const line of rawLines) {
-        let m;
-        while ((m = stRegex.exec(line)) !== null) {
-          const val = parseFloat(m[1].replace(/,/g, ''));
-          if (!isNaN(val) && val > 0 && val < 500000) allAmts.push(val);
-        }
+    const allDocAmounts = extractAmountsFromText(fullDocText);
+    let docAmount = 0;
+
+    if (allDocAmounts.length > 0) {
+      const totalMatch = fullDocText.match(/(?:total|amount\s*due|net\s*pay|grand\s*total|balance\s*due|deposit)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/i);
+      if (totalMatch) {
+        const parsed = extractAmountsFromText(totalMatch[0]);
+        if (parsed.length > 0) docAmount = Math.abs(parsed[0].value);
       }
-      if (allAmts.length > 0) docAmount = Math.max(...allAmts);
+      if (docAmount <= 0) {
+        docAmount = Math.max(...allDocAmounts.map((a) => Math.abs(a.value)));
+      }
     }
 
     if (docAmount > 0) {
-      const cat = isIncome ? 'Savings' : autoCategorizeExpense(`${docName} ${fullText}`);
+      const category: ExpenseCategory = isIncome ? 'Savings' : autoCategorizeExpense(`${docName} ${fullDocText}`);
       transactions.push({
-        id: `pdf-${Date.now()}-1`,
+        id: `pdf-doc-${Date.now()}`,
         name: docName,
         amount: Math.round(docAmount * 100) / 100,
-        category: cat,
+        category,
         date: docDate,
         source: 'imported',
         type: txType
       });
-      totalAmount = docAmount;
-      categoryTotals[cat] = docAmount;
-      highestExpense = { name: docName, amount: docAmount, date: docDate };
       datesFound.push(docDate);
     } else {
-      // Pass 3: Fall back to full optical scan of PDF
       const { scanReceiptImage } = await import('./receiptScanner');
       const scanned = await scanReceiptImage(file);
       transactions.push({
@@ -289,9 +585,6 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
         source: 'imported',
         type: scanned.type || 'expense'
       });
-      totalAmount = scanned.amount;
-      categoryTotals[scanned.category] = scanned.amount;
-      highestExpense = { name: scanned.merchantName, amount: scanned.amount, date: scanned.date };
       datesFound.push(scanned.date);
     }
   }
@@ -299,6 +592,27 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
   datesFound.sort();
   const earliestDate = datesFound[0] || 'N/A';
   const latestDate = datesFound[datesFound.length - 1] || 'N/A';
+
+  const categoryTotals: Record<ExpenseCategory, number> = {
+    Housing: 0, Food: 0, Transport: 0, Utilities: 0,
+    Entertainment: 0, Savings: 0, Miscellany: 0
+  };
+
+  let totalExpenseAmount = 0;
+  let totalIncomeAmount = 0;
+  let highestExpense: { name: string; amount: number; date: string } | null = null;
+
+  for (const t of transactions) {
+    if (t.type === 'income') {
+      totalIncomeAmount += t.amount;
+    } else {
+      totalExpenseAmount += t.amount;
+      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+      if (!highestExpense || t.amount > highestExpense.amount) {
+        highestExpense = { name: t.name, amount: t.amount, date: t.date };
+      }
+    }
+  }
 
   let topCategory: FileInterpretationResult['topCategory'] = null;
   let maxCatAmount = 0;
@@ -308,35 +622,29 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
       topCategory = {
         category: cat,
         amount: Math.round(amt * 100) / 100,
-        percentage: totalAmount > 0 ? Math.round((amt / totalAmount) * 100) : 0
+        percentage: totalExpenseAmount > 0 ? Math.round((amt / totalExpenseAmount) * 100) : 0
       };
     }
   }
 
   const incomeTxCount = transactions.filter((t) => t.type === 'income').length;
-  const insights: string[] = [
-    `Extracted ${transactions.length} record(s) totaling $${totalAmount.toFixed(2)} from PDF file.`
-  ];
+  const expenseTxCount = transactions.filter((t) => t.type !== 'income').length;
 
-  if (incomeTxCount > 0) {
-    insights.push(`Identified ${incomeTxCount} income / deposit record(s).`);
-  }
-
-  if (topCategory && topCategory.percentage > 0) {
-    insights.push(
-      `Largest category is ${topCategory.category} (${topCategory.percentage}%, $${topCategory.amount.toFixed(2)}).`
-    );
-  }
-
-  if (highestExpense) {
-    insights.push(
-      `Largest individual transaction: "${highestExpense.name}" for $${highestExpense.amount.toFixed(2)}.`
-    );
-  }
+  const insights = buildFileInterpretationInsights({
+    recordCount: transactions.length,
+    totalAmount: totalExpenseAmount,
+    totalInflow: totalIncomeAmount,
+    topCategory,
+    highestExpense,
+    earliestDate,
+    latestDate,
+    transactions
+  }, currencyCode);
 
   return {
     recordCount: transactions.length,
-    totalAmount: Math.round(totalAmount * 100) / 100,
+    totalAmount: Math.round(totalExpenseAmount * 100) / 100,
+    totalInflow: Math.round(totalIncomeAmount * 100) / 100,
     categoryBreakdown: categoryTotals,
     topCategory,
     highestExpense,
@@ -350,7 +658,7 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
 /**
  * Universal Parser supporting Excel (.xlsx, .xls), CSV, PDF statements, and Receipt photos.
  */
-export async function parseAndInterpretFile(file: File): Promise<FileInterpretationResult> {
+export async function parseAndInterpretFile(file: File, currencyCode: string = 'INR'): Promise<FileInterpretationResult> {
   const fileName = file.name.toLowerCase();
 
   // If Photo / Image receipt (any image format: PNG, JPG, WebP, HEIC, HEIF, BMP, TIFF, GIF, AVIF, SVG, etc.)
@@ -380,9 +688,11 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
     };
     categoryTotals[receipt.category] = receipt.amount;
 
+    const isIncome = receipt.type === 'income';
     return {
       recordCount: 1,
-      totalAmount: receipt.amount,
+      totalAmount: isIncome ? 0 : receipt.amount,
+      totalInflow: isIncome ? receipt.amount : 0,
       categoryBreakdown: categoryTotals,
       topCategory: { category: receipt.category, amount: receipt.amount, percentage: 100 },
       highestExpense: { name: receipt.merchantName, amount: receipt.amount, date: receipt.date },
@@ -390,7 +700,7 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
       latestDate: receipt.date,
       insights: [
         `Recognized receipt/document from "${receipt.merchantName}".`,
-        `Extracted amount: $${receipt.amount.toFixed(2)} (${receipt.type === 'income' ? 'Income' : receipt.category}).`,
+        `Extracted amount: ${formatCurrency(receipt.amount, currencyCode)} (${isIncome ? 'Income' : receipt.category}).`,
         receipt.confidence > 0 ? `Scan confidence: ${receipt.confidence}%.` : 'Image text processed.'
       ],
       transactions: [tx]
@@ -399,7 +709,7 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
 
   // If PDF statement
   if (fileName.endsWith('.pdf') || file.type === 'application/pdf') {
-    return await parsePdfStatement(file);
+    return await parsePdfStatement(file, currencyCode);
   }
 
   // Otherwise, handle Excel / CSV via SheetJS
@@ -545,28 +855,31 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
     }
   }
 
-  const insights: string[] = [];
-  insights.push(`Successfully interpreted ${transactions.length} spending records totaling $${totalAmount.toFixed(2)}.`);
-
-  if (topCategory && topCategory.percentage > 0) {
-    insights.push(
-      `Your largest expense category is ${topCategory.category}, accounting for ${topCategory.percentage}% ($${topCategory.amount.toFixed(2)}) of total outflow.`
-    );
+  let totalExpenseAmount = 0;
+  let totalIncomeAmount = 0;
+  for (const t of transactions) {
+    if (t.type === 'income') {
+      totalIncomeAmount += t.amount;
+    } else {
+      totalExpenseAmount += t.amount;
+    }
   }
 
-  if (highestExpense) {
-    insights.push(
-      `Largest individual transaction recorded: "${highestExpense.name}" for $${highestExpense.amount.toFixed(2)} on ${highestExpense.date}.`
-    );
-  }
-
-  if (earliestDate !== 'N/A' && latestDate !== 'N/A') {
-    insights.push(`Statement timeframe spans from ${earliestDate} through ${latestDate}.`);
-  }
+  const insights = buildFileInterpretationInsights({
+    recordCount: transactions.length,
+    totalAmount: totalExpenseAmount,
+    totalInflow: totalIncomeAmount,
+    topCategory,
+    highestExpense,
+    earliestDate,
+    latestDate,
+    transactions
+  }, currencyCode);
 
   return {
     recordCount: transactions.length,
-    totalAmount: Math.round(totalAmount * 100) / 100,
+    totalAmount: Math.round(totalExpenseAmount * 100) / 100,
+    totalInflow: Math.round(totalIncomeAmount * 100) / 100,
     categoryBreakdown: categoryTotals,
     topCategory,
     highestExpense,
@@ -596,7 +909,8 @@ export interface MultiFileInterpretationResult extends FileInterpretationResult 
  */
 export async function parseAndInterpretMultipleFiles(
   files: File[],
-  onProgress?: (current: number, total: number, fileName: string) => void
+  onProgress?: (current: number, total: number, fileName: string) => void,
+  currencyCode: string = 'INR'
 ): Promise<MultiFileInterpretationResult> {
   if (!files || files.length === 0) {
     throw new Error('Please select at least one file to interpret.');
@@ -624,7 +938,7 @@ export async function parseAndInterpretMultipleFiles(
     onProgress?.(i + 1, files.length, file.name);
 
     try {
-      const res = await parseAndInterpretFile(file);
+      const res = await parseAndInterpretFile(file, currencyCode);
       successfulFiles++;
       fileSummaries.push({
         name: file.name,
@@ -670,8 +984,16 @@ export async function parseAndInterpretMultipleFiles(
   // Sort transactions by date descending
   allTransactions.sort((a, b) => b.date.localeCompare(a.date));
 
-  // Compute total amount
-  const totalAmount = allTransactions.reduce((acc, t) => acc + t.amount, 0);
+  // Compute total outflow and total inflow
+  let totalExpenseAmount = 0;
+  let totalIncomeAmount = 0;
+  for (const t of allTransactions) {
+    if (t.type === 'income') {
+      totalIncomeAmount += t.amount;
+    } else {
+      totalExpenseAmount += t.amount;
+    }
+  }
 
   // Top category
   let topCategory: FileInterpretationResult['topCategory'] = null;
@@ -682,7 +1004,7 @@ export async function parseAndInterpretMultipleFiles(
       topCategory = {
         category: cat,
         amount: Math.round(amt * 100) / 100,
-        percentage: totalAmount > 0 ? Math.round((amt / totalAmount) * 100) : 0
+        percentage: totalExpenseAmount > 0 ? Math.round((amt / totalExpenseAmount) * 100) : 0
       };
     }
   }
@@ -691,23 +1013,23 @@ export async function parseAndInterpretMultipleFiles(
   const earliestDate = allDates[0] || 'N/A';
   const latestDate = allDates[allDates.length - 1] || 'N/A';
 
-  const insights: string[] = [
-    `Successfully processed ${successfulFiles} of ${files.length} file(s), extracting ${allTransactions.length} transactions totaling $${totalAmount.toFixed(2)}.`
-  ];
-
-  if (topCategory && topCategory.percentage > 0) {
-    insights.push(
-      `Top spending category across all files: ${topCategory.category} (${topCategory.percentage}% of total, $${topCategory.amount.toFixed(2)}).`
-    );
-  }
-
-  if (highestExpense) {
-    insights.push(`Single largest transaction: "${highestExpense.name}" for $${highestExpense.amount.toFixed(2)} on ${highestExpense.date}.`);
-  }
+  const insights = buildMultiFileInsights({
+    successfulFiles,
+    fileCount: files.length,
+    recordCount: allTransactions.length,
+    totalAmount: totalExpenseAmount,
+    totalInflow: totalIncomeAmount,
+    topCategory,
+    highestExpense,
+    earliestDate,
+    latestDate,
+    transactions: allTransactions
+  }, currencyCode);
 
   return {
     recordCount: allTransactions.length,
-    totalAmount: Math.round(totalAmount * 100) / 100,
+    totalAmount: Math.round(totalExpenseAmount * 100) / 100,
+    totalInflow: Math.round(totalIncomeAmount * 100) / 100,
     categoryBreakdown: categoryTotals,
     topCategory,
     highestExpense,
