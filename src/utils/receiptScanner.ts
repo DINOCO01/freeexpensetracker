@@ -1,6 +1,16 @@
 import Tesseract from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist';
 import { type ExpenseCategory } from './calculations';
 import { autoCategorizeExpense } from './fileImporter';
+
+// Ensure PDF.js worker is initialized
+if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+  try {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+  } catch (e) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '6.3.289'}/build/pdf.worker.min.mjs`;
+  }
+}
 
 export interface ScannedReceiptResult {
   merchantName: string;
@@ -11,6 +21,7 @@ export interface ScannedReceiptResult {
   imageUrl: string;
   confidence: number;
   lineItems: { name: string; amount: number }[];
+  type: 'expense' | 'income';
 }
 
 const COMMON_STORE_NAMES = [
@@ -54,39 +65,118 @@ export async function scanReceiptImage(
   file: File,
   onProgress?: (progress: number, status: string) => void
 ): Promise<ScannedReceiptResult> {
-  const imageUrl = URL.createObjectURL(file);
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  let rawText = '';
+  let confidence = 85;
+  let imageUrl = '';
 
-  const { data } = await Tesseract.recognize(file, 'eng', {
-    logger: (m) => {
-      if (onProgress && m.status === 'recognizing text') {
-        onProgress(Math.round((m.progress || 0) * 100), m.status);
+  if (isPdf) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+      const pdfDoc = await loadingTask.promise;
+      const numPages = Math.min(3, pdfDoc.numPages);
+      let extractedPdfText = '';
+
+      for (let p = 1; p <= numPages; p++) {
+        const page = await pdfDoc.getPage(p);
+        const textContent = await page.getTextContent();
+        const pageLines = textContent.items
+          .map((item: any) => item.str || '')
+          .filter((s: string) => s.trim().length > 0)
+          .join(' ');
+        if (pageLines.trim()) {
+          extractedPdfText += '\n' + pageLines;
+        }
       }
-    }
-  });
 
-  const rawText = data.text || '';
+      if (extractedPdfText.trim().length > 20) {
+        rawText = extractedPdfText;
+        confidence = 95;
+      } else {
+        // Scanned PDF receipt without digital text layer: render page 1 to canvas and run OCR
+        const page = await pdfDoc.getPage(1);
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          try {
+            imageUrl = canvas.toDataURL('image/jpeg', 0.85);
+          } catch {
+            imageUrl = '';
+          }
+          const { data } = await Tesseract.recognize(canvas, 'eng', {
+            logger: (m) => {
+              if (onProgress && m.status === 'recognizing text') {
+                onProgress(Math.round((m.progress || 0) * 100), m.status);
+              }
+            }
+          });
+          rawText = data.text || '';
+          confidence = Math.round(data.confidence || 85);
+        }
+      }
+    } catch (pdfErr: any) {
+      console.warn('PDF direct read fallback:', pdfErr);
+    }
+  } else {
+    // Normal Image (PNG, JPG, WebP, etc.)
+    try {
+      imageUrl = URL.createObjectURL(file);
+    } catch {
+      imageUrl = '';
+    }
+
+    const { data } = await Tesseract.recognize(file, 'eng', {
+      logger: (m) => {
+        if (onProgress && m.status === 'recognizing text') {
+          onProgress(Math.round((m.progress || 0) * 100), m.status);
+        }
+      }
+    });
+
+    rawText = data.text || '';
+    confidence = Math.round(data.confidence || 85);
+  }
+
   const lines = rawText
     .split('\n')
     .map((l) => l.trim())
     .filter((l) => l.length > 0);
 
-  // 1. Detect Merchant Name
+  // 1. Detect if Transaction is Income or Expense
+  const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(rawText);
+  const type: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+
+  // 2. Detect Merchant / Payee / Source Name
   let merchantName = '';
 
+  if (isIncome) {
+    if (/\b(salary|payroll|paycheck)\b/i.test(rawText)) merchantName = 'Salary / Payroll Deposit';
+    else if (/\b(refund|cashback)\b/i.test(rawText)) merchantName = 'Refund / Cashback';
+    else if (/\b(dividend|interest)\b/i.test(rawText)) merchantName = 'Investment Dividend / Interest';
+    else if (/\b(freelance|client)\b/i.test(rawText)) merchantName = 'Client / Freelance Payment';
+    else merchantName = 'Direct Deposit / Income';
+  }
+
   // Check known brands first
-  for (const store of COMMON_STORE_NAMES) {
-    const regex = new RegExp(`\\b${store}\\b`, 'i');
-    if (regex.test(rawText)) {
-      merchantName = store;
-      break;
+  if (!merchantName) {
+    for (const store of COMMON_STORE_NAMES) {
+      const regex = new RegExp(`\\b${store}\\b`, 'i');
+      if (regex.test(rawText)) {
+        merchantName = store;
+        break;
+      }
     }
   }
 
-  // Fallback: look at top 4 lines
+  // Fallback: look at top 5 lines
   if (!merchantName) {
-    for (let i = 0; i < Math.min(5, lines.length); i++) {
+    for (let i = 0; i < Math.min(6, lines.length); i++) {
       const line = lines[i];
-      // Skip addresses, phone numbers, website URLs, or generic receipt words
       if (
         /^\d+[\s\w]+(st|ave|blvd|rd|dr|lane|hwy|way)/i.test(line) ||
         /(tel|phone|fax|\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4})/i.test(line) ||
@@ -97,7 +187,6 @@ export async function scanReceiptImage(
         continue;
       }
 
-      // Clean line
       const clean = line.replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
       if (clean.length >= 3) {
         merchantName = clean;
@@ -107,10 +196,10 @@ export async function scanReceiptImage(
   }
 
   if (!merchantName) {
-    merchantName = 'Store / Merchant Receipt';
+    merchantName = isIncome ? 'Income Payment' : 'Store / Merchant Receipt';
   }
 
-  // 2. Detect Date
+  // 3. Detect Date
   let dateStr = new Date().toISOString().split('T')[0];
   const dateRegex = /\b(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:,?\s+\d{2,4})?|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b/i;
 
@@ -125,9 +214,11 @@ export async function scanReceiptImage(
     }
   }
 
-  // 3. Detect Total Amount
+  // 4. Detect Total Amount
   let amount = 0;
-  const amountRegex = /(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i;
+  const amountRegex = isIncome
+    ? /(?:deposit|net\s*pay|gross\s*pay|salary|amount|credit|refund|total|paid|balance)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i
+    : /(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i;
 
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
@@ -151,7 +242,7 @@ export async function scanReceiptImage(
       let m;
       while ((m = standaloneAmtRegex.exec(line)) !== null) {
         const val = parseFloat(m[1].replace(/,/g, ''));
-        if (!isNaN(val) && val > 0 && val < 50000) {
+        if (!isNaN(val) && val > 0 && val < 500000) {
           allAmounts.push(val);
         }
       }
@@ -162,11 +253,11 @@ export async function scanReceiptImage(
     }
   }
 
-  // 4. Auto-Categorize
+  // 5. Categorize
   const combinedContext = `${merchantName} ${rawText}`;
-  const category = autoCategorizeExpense(combinedContext);
+  const category = isIncome ? 'Savings' : autoCategorizeExpense(combinedContext);
 
-  // 5. Line items extract (bonus)
+  // 6. Line items extract
   const lineItems: { name: string; amount: number }[] = [];
   const lineItemPattern = /^([a-zA-Z0-9\s&'-]{3,25})\s+[$€£₹¥]?\s*(\d+\.\d{2})$/;
 
@@ -175,7 +266,7 @@ export async function scanReceiptImage(
     if (itemMatch) {
       const itemName = itemMatch[1].trim();
       const itemAmt = parseFloat(itemMatch[2]);
-      if (itemName && !isNaN(itemAmt) && itemAmt < amount) {
+      if (itemName && !isNaN(itemAmt) && (amount === 0 || itemAmt < amount)) {
         lineItems.push({ name: itemName, amount: itemAmt });
       }
     }
@@ -188,7 +279,8 @@ export async function scanReceiptImage(
     category,
     rawText,
     imageUrl,
-    confidence: Math.round(data.confidence || 85),
-    lineItems
+    confidence,
+    lineItems,
+    type
   };
 }

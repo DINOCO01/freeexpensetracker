@@ -52,6 +52,7 @@ export interface Transaction {
   category: ExpenseCategory;
   date: string;
   source?: 'manual' | 'imported';
+  type?: 'expense' | 'income';
 }
 
 export const CATEGORY_TYPES: Record<ExpenseCategory, CategoryType> = {
@@ -210,6 +211,7 @@ export function calculateFinancialHealthScore(
   let totalSavings = 0;
 
   for (const t of transactions) {
+    if (t.type === 'income') continue;
     totalSpent += t.amount;
     const type = CATEGORY_TYPES[t.category] || 'want';
     if (type === 'need') totalNeeds += t.amount;

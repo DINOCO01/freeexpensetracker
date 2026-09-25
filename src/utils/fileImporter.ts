@@ -5,12 +5,9 @@ import type { ExpenseCategory, Transaction } from './calculations';
 // Initialize PDF.js worker
 if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
   try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.mjs',
-      import.meta.url
-    ).toString();
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
   } catch (e) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '6.3.289'}/build/pdf.worker.min.mjs`;
   }
 }
 
@@ -50,8 +47,9 @@ export function autoCategorizeExpense(description: string): ExpenseCategory {
 }
 
 /**
- * Parses Bank Statements in PDF format by extracting text coordinates,
- * reconstructing transaction line items, and extracting dates, descriptions, and debits.
+ * Robust Bank Statement & Receipt PDF Parser:
+ * Reads text coordinates, parses multi-line statements, single receipts, invoices,
+ * and falls back seamlessly to optical recognition (OCR) if scanned or image-based.
  */
 async function parsePdfStatement(file: File): Promise<FileInterpretationResult> {
   const buffer = await file.arrayBuffer();
@@ -64,13 +62,13 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
     const page = await pdfDoc.getPage(pageNum);
     const textContent = await page.getTextContent();
 
-    // Group text items by vertical Y position (within 4px threshold)
+    // Group text items by vertical Y position (within 6px threshold)
     const lineMap: Map<number, { x: number; text: string }[]> = new Map();
 
     for (const item of textContent.items as any[]) {
       if (!item.str || !item.str.trim()) continue;
       const x = item.transform[4];
-      const y = Math.round(item.transform[5] / 4) * 4; // snap to nearest 4px
+      const y = Math.round(item.transform[5] / 6) * 6; // snap to nearest 6px
 
       if (!lineMap.has(y)) {
         lineMap.set(y, []);
@@ -83,17 +81,53 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
 
     for (const y of sortedY) {
       const itemsOnLine = lineMap.get(y)!;
-      // Sort items horizontally from left to right
       itemsOnLine.sort((a, b) => a.x - b.x);
       const lineText = itemsOnLine.map((i) => i.text).join(' ');
-      if (lineText.length > 5) {
+      if (lineText.length > 2) {
         rawLines.push(lineText);
       }
     }
   }
 
+  // If PDF has no digital text layer (e.g. scanned receipt/photo saved as PDF), run OCR
   if (rawLines.length === 0) {
-    throw new Error('Could not extract readable text layers from this PDF. Please ensure it is a digital statement, not a scanned image.');
+    const { scanReceiptImage } = await import('./receiptScanner');
+    const scanned = await scanReceiptImage(file);
+    const tx: Transaction = {
+      id: `pdf-ocr-${Date.now()}`,
+      name: scanned.merchantName,
+      amount: scanned.amount,
+      category: scanned.category,
+      date: scanned.date,
+      source: 'imported',
+      type: scanned.type || 'expense'
+    };
+
+    const categoryTotals: Record<ExpenseCategory, number> = {
+      Housing: 0,
+      Food: 0,
+      Transport: 0,
+      Utilities: 0,
+      Entertainment: 0,
+      Savings: 0,
+      Miscellany: 0
+    };
+    categoryTotals[scanned.category] = scanned.amount;
+
+    return {
+      recordCount: 1,
+      totalAmount: scanned.amount,
+      categoryBreakdown: categoryTotals,
+      topCategory: { category: scanned.category, amount: scanned.amount, percentage: 100 },
+      highestExpense: { name: scanned.merchantName, amount: scanned.amount, date: scanned.date },
+      earliestDate: scanned.date,
+      latestDate: scanned.date,
+      insights: [
+        `Processed scanned PDF receipt via optical recognition: "${scanned.merchantName}".`,
+        `Extracted amount: $${scanned.amount.toFixed(2)} (${scanned.type === 'income' ? 'Income' : scanned.category}).`
+      ],
+      transactions: [tx]
+    };
   }
 
   // Regex patterns for Date, Amount, and Non-transaction lines
@@ -116,6 +150,7 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
   let highestExpense: { name: string; amount: number; date: string } | null = null;
   const datesFound: string[] = [];
 
+  // Pass 1: Parse standard multi-line transactions with dates and amounts
   for (const line of rawLines) {
     if (ignorePatterns.test(line)) continue;
 
@@ -128,7 +163,6 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
 
       if (isNaN(parsedAmt) || parsedAmt <= 0) continue;
 
-      // Extract description: remove date and amount strings from line
       let desc = line
         .replace(dateMatch[0], '')
         .replace(amountMatch[0], '')
@@ -140,7 +174,6 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
         desc = `Transaction #${transactions.length + 1}`;
       }
 
-      // Format date
       let dateStr = new Date().toISOString().split('T')[0];
       const parsedDate = new Date(dateMatch[0]);
       if (!isNaN(parsedDate.getTime())) {
@@ -150,7 +183,9 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
       }
       datesFound.push(dateStr);
 
-      const category = autoCategorizeExpense(desc);
+      const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(desc) || /\b(cr|credit)\b/i.test(line);
+      const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+      const category = isIncome ? 'Savings' : autoCategorizeExpense(desc);
 
       transactions.push({
         id: `pdf-${Date.now()}-${transactions.length}`,
@@ -158,7 +193,8 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
         amount: Math.round(parsedAmt * 100) / 100,
         category,
         date: dateStr,
-        source: 'imported'
+        source: 'imported',
+        type: txType
       });
 
       totalAmount += parsedAmt;
@@ -174,8 +210,90 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
     }
   }
 
+  // Pass 2: If line-by-line format yielded no items (e.g. single receipt, bill, or invoice in PDF format)
   if (transactions.length === 0) {
-    throw new Error('No valid transaction line items could be parsed from the PDF. Please check the PDF format or upload an Excel/CSV export.');
+    const fullText = rawLines.join(' ');
+    const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(fullText);
+    const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+
+    let docDate = new Date().toISOString().split('T')[0];
+    const docDateMatch = fullText.match(dateRegex);
+    if (docDateMatch) {
+      const parsed = new Date(docDateMatch[0]);
+      if (!isNaN(parsed.getTime())) docDate = parsed.toISOString().split('T')[0];
+    }
+
+    let docName = isIncome ? 'Income Document / Deposit' : 'PDF Receipt / Invoice';
+    for (const line of rawLines.slice(0, 6)) {
+      const clean = line.replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
+      if (clean.length >= 3 && !/^(statement|account|page|invoice|receipt|date|total)/i.test(clean)) {
+        docName = clean;
+        break;
+      }
+    }
+
+    const amountRegexTotal = isIncome
+      ? /(?:deposit|net\s*pay|gross\s*pay|salary|amount|credit|refund|total|paid|balance)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i
+      : /(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,4}(?:,\d{3})*\.\d{2})/i;
+
+    let docAmount = 0;
+    for (let i = rawLines.length - 1; i >= 0; i--) {
+      const match = rawLines[i].match(amountRegexTotal);
+      if (match) {
+        const num = parseFloat(match[1].replace(/[^0-9.]/g, ''));
+        if (!isNaN(num) && num > 0) {
+          docAmount = num;
+          break;
+        }
+      }
+    }
+
+    if (docAmount <= 0) {
+      const allAmts: number[] = [];
+      const stRegex = /(?:[$€£₹¥])?\s*(\d{1,4}(?:,\d{3})*\.\d{2})\b/g;
+      for (const line of rawLines) {
+        let m;
+        while ((m = stRegex.exec(line)) !== null) {
+          const val = parseFloat(m[1].replace(/,/g, ''));
+          if (!isNaN(val) && val > 0 && val < 500000) allAmts.push(val);
+        }
+      }
+      if (allAmts.length > 0) docAmount = Math.max(...allAmts);
+    }
+
+    if (docAmount > 0) {
+      const cat = isIncome ? 'Savings' : autoCategorizeExpense(`${docName} ${fullText}`);
+      transactions.push({
+        id: `pdf-${Date.now()}-1`,
+        name: docName,
+        amount: Math.round(docAmount * 100) / 100,
+        category: cat,
+        date: docDate,
+        source: 'imported',
+        type: txType
+      });
+      totalAmount = docAmount;
+      categoryTotals[cat] = docAmount;
+      highestExpense = { name: docName, amount: docAmount, date: docDate };
+      datesFound.push(docDate);
+    } else {
+      // Pass 3: Fall back to full optical scan of PDF
+      const { scanReceiptImage } = await import('./receiptScanner');
+      const scanned = await scanReceiptImage(file);
+      transactions.push({
+        id: `pdf-ocr-${Date.now()}`,
+        name: scanned.merchantName,
+        amount: scanned.amount,
+        category: scanned.category,
+        date: scanned.date,
+        source: 'imported',
+        type: scanned.type || 'expense'
+      });
+      totalAmount = scanned.amount;
+      categoryTotals[scanned.category] = scanned.amount;
+      highestExpense = { name: scanned.merchantName, amount: scanned.amount, date: scanned.date };
+      datesFound.push(scanned.date);
+    }
   }
 
   datesFound.sort();
@@ -195,13 +313,18 @@ async function parsePdfStatement(file: File): Promise<FileInterpretationResult> 
     }
   }
 
+  const incomeTxCount = transactions.filter((t) => t.type === 'income').length;
   const insights: string[] = [
-    `Extracted ${transactions.length} records totaling $${totalAmount.toFixed(2)} from PDF statement.`
+    `Extracted ${transactions.length} record(s) totaling $${totalAmount.toFixed(2)} from PDF file.`
   ];
+
+  if (incomeTxCount > 0) {
+    insights.push(`Identified ${incomeTxCount} income / deposit record(s).`);
+  }
 
   if (topCategory && topCategory.percentage > 0) {
     insights.push(
-      `Your largest expense category is ${topCategory.category} (${topCategory.percentage}% of outflows, $${topCategory.amount.toFixed(2)}).`
+      `Largest category is ${topCategory.category} (${topCategory.percentage}%, $${topCategory.amount.toFixed(2)}).`
     );
   }
 
@@ -242,7 +365,8 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
       amount: receipt.amount,
       category: receipt.category,
       date: receipt.date,
-      source: 'imported'
+      source: 'imported',
+      type: receipt.type || 'expense'
     };
 
     const categoryTotals: Record<ExpenseCategory, number> = {
@@ -265,8 +389,8 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
       earliestDate: receipt.date,
       latestDate: receipt.date,
       insights: [
-        `OCR successfully recognized receipt bill from "${receipt.merchantName}".`,
-        `Extracted total amount: $${receipt.amount.toFixed(2)} auto-classified as "${receipt.category}".`,
+        `Recognized receipt/document from "${receipt.merchantName}".`,
+        `Extracted amount: $${receipt.amount.toFixed(2)} (${receipt.type === 'income' ? 'Income' : receipt.category}).`,
         receipt.confidence > 0 ? `Scan confidence: ${receipt.confidence}%.` : 'Image text processed.'
       ],
       transactions: [tx]
@@ -374,7 +498,9 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
 
     datesFound.push(dateStr);
 
-    const category = autoCategorizeExpense(rawName);
+    const isIncome = /\b(salary|payroll|paycheck|direct\s*deposit|deposit|dividend|interest\s*credit|interest\s*earned|refund|cashback|bonus|stipend|freelance|client\s*payment|payment\s*received|received\s*from|credit\s*memo|net\s*pay)\b/i.test(rawName);
+    const txType: 'expense' | 'income' = isIncome ? 'income' : 'expense';
+    const category = isIncome ? 'Savings' : autoCategorizeExpense(rawName);
 
     transactions.push({
       id: `imp-${Date.now()}-${transactions.length}`,
@@ -382,7 +508,8 @@ export async function parseAndInterpretFile(file: File): Promise<FileInterpretat
       amount: Math.round(cleanAmount * 100) / 100,
       category,
       date: dateStr,
-      source: 'imported'
+      source: 'imported',
+      type: txType
     });
 
     totalAmount += cleanAmount;

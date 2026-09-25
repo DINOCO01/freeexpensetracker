@@ -526,8 +526,9 @@ import ResetModal from '../components/ResetModal.astro';
       }
     });
 
-    // Compute category and total outflows
+    // Compute category, total outflows, and total income from transactions
     let totalSpent = 0;
+    let totalIncomeFromTx = 0;
     let totalNeeds = 0;
     let totalWants = 0;
     let totalSavings = 0;
@@ -542,21 +543,26 @@ import ResetModal from '../components/ResetModal.astro';
     };
 
     state.transactions.forEach((t) => {
-      totalSpent += t.amount;
-      catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
-      const type = CATEGORY_TYPES[t.category] || 'want';
-      if (type === 'need') totalNeeds += t.amount;
-      else if (type === 'want') totalWants += t.amount;
-      else if (type === 'savings') totalSavings += t.amount;
+      if (t.type === 'income') {
+        totalIncomeFromTx += t.amount;
+      } else {
+        totalSpent += t.amount;
+        catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
+        const type = CATEGORY_TYPES[t.category] || 'want';
+        if (type === 'need') totalNeeds += t.amount;
+        else if (type === 'want') totalWants += t.amount;
+        else if (type === 'savings') totalSavings += t.amount;
+      }
     });
 
-    const netCashflow = monthlyIncome - totalSpent;
-    const expensesPct = monthlyIncome > 0 ? Math.round((totalSpent / monthlyIncome) * 100) : 0;
+    const effectiveTotalIncome = monthlyIncome + totalIncomeFromTx;
+    const netCashflow = effectiveTotalIncome - totalSpent;
+    const expensesPct = effectiveTotalIncome > 0 ? Math.round((totalSpent / effectiveTotalIncome) * 100) : 0;
     const totalSavingsEffective = totalSavings + Math.max(0, netCashflow);
-    const savingsRatePct = monthlyIncome > 0 ? Math.round((totalSavingsEffective / monthlyIncome) * 100) : 0;
+    const savingsRatePct = effectiveTotalIncome > 0 ? Math.round((totalSavingsEffective / effectiveTotalIncome) * 100) : 0;
 
     // Render KPI Cards
-    if (statTotalIncome) statTotalIncome.textContent = formatMoney(monthlyIncome);
+    if (statTotalIncome) statTotalIncome.textContent = formatMoney(effectiveTotalIncome);
     if (statTotalExpenses) statTotalExpenses.textContent = formatMoney(totalSpent);
     if (statExpensesPct) statExpensesPct.textContent = `${expensesPct}%`;
     if (statRemainingBalance) {
@@ -580,7 +586,7 @@ import ResetModal from '../components/ResetModal.astro';
     }
 
     // Financial Health Indicator
-    const health = calculateFinancialHealthScore(monthlyIncome, state.transactions);
+    const health = calculateFinancialHealthScore(effectiveTotalIncome, state.transactions);
     if (healthScoreNumber) healthScoreNumber.textContent = health.score.toString();
     if (healthTierText) healthTierText.textContent = health.tier;
     if (healthTierBadge) {
@@ -608,13 +614,13 @@ import ResetModal from '../components/ResetModal.astro';
     }
 
     // Dynamic Smart Suggestions & Alternatives
-    renderSmartSuggestions(catTotals, monthlyIncome, netCashflow);
+    renderSmartSuggestions(catTotals, effectiveTotalIncome, netCashflow);
 
     // Ledger
     renderLedger();
 
     // Debt Management
-    renderDebtManagement(monthlyIncome);
+    renderDebtManagement(effectiveTotalIncome);
 
     // Target Planning
     renderBudgetPlanning(totalSpent);
@@ -1130,9 +1136,14 @@ import ResetModal from '../components/ResetModal.astro';
           ${escapeHtml(t.name)}
         </td>
         <td class="py-2 px-3 whitespace-nowrap">
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-            ${CATEGORY_ICONS[t.category] || '📦'} ${t.category}
-          </span>
+          ${t.type === 'income'
+            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                💵 Income
+              </span>`
+            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                ${CATEGORY_ICONS[t.category] || '📦'} ${t.category}
+              </span>`
+          }
         </td>
         <td class="py-2 px-3 whitespace-nowrap">
           ${
@@ -1141,8 +1152,8 @@ import ResetModal from '../components/ResetModal.astro';
               : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">manual</span>`
           }
         </td>
-        <td class="py-2 px-3 text-right font-mono font-bold text-slate-900 whitespace-nowrap">
-          ${formatMoney(t.amount)}
+        <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
+          ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
         </td>
         <td class="py-2 px-3 text-center">
           <button
@@ -1272,8 +1283,26 @@ import ResetModal from '../components/ResetModal.astro';
       });
 
       if (inputItemName) inputItemName.value = result.merchantName;
-      if (inputItemAmount) inputItemAmount.value = result.amount.toString();
+      if (inputItemAmount) inputItemAmount.value = result.amount > 0 ? result.amount.toString() : '';
       if (selectItemCategory) selectItemCategory.value = result.category;
+
+      // Immediately extract and reflect transaction into Ledger & Tracker
+      const txType = result.type || 'expense';
+      if (result.amount > 0) {
+        const newTx: Transaction = {
+          id: `rcpt-${Date.now()}`,
+          name: result.merchantName || (txType === 'income' ? 'Income Payment' : 'Receipt Entry'),
+          amount: result.amount,
+          category: result.category,
+          date: result.date || new Date().toISOString().split('T')[0],
+          source: 'imported',
+          type: txType
+        };
+
+        state.transactions.unshift(newTx);
+        saveStoredState({ transactions: state.transactions });
+        renderAll();
+      }
 
       inputItemAmount?.focus();
     } catch (err: any) {
@@ -1607,8 +1636,15 @@ import ResetModal from '../components/ResetModal.astro';
           <tr class="hover:bg-slate-50">
             <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${t.date}</td>
             <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(t.name)}</td>
-            <td class="py-1.5 px-3"><span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${t.category}</span></td>
-            <td class="py-1.5 px-3 font-mono font-bold text-right text-rose-600">${formatMoney(t.amount)}</td>
+            <td class="py-1.5 px-3">
+              ${t.type === 'income'
+                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">💵 Income</span>`
+                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${t.category}</span>`
+              }
+            </td>
+            <td class="py-1.5 px-3 font-mono font-bold text-right ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
+              ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+            </td>
           </tr>
         `
           )
@@ -1742,11 +1778,18 @@ import ResetModal from '../components/ResetModal.astro';
             <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${t.date}</td>
             <td class="py-2 px-3 font-medium text-slate-900 font-sans">${escapeHtml(t.name)}</td>
             <td class="py-2 px-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-                ${t.category}
-              </span>
+              ${t.type === 'income'
+                ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                    💵 Income
+                  </span>`
+                : `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    ${t.category}
+                  </span>`
+              }
             </td>
-            <td class="py-2 px-3 text-right font-mono font-bold text-rose-600">${formatMoney(t.amount)}</td>
+            <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
+              ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+            </td>
           </tr>
         `).join('');
       }
