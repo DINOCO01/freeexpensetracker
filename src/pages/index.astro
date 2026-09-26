@@ -423,7 +423,6 @@ import ResetModal from '../components/ResetModal.astro';
   const btnCloseImportModal = document.getElementById('btn-close-import-modal');
   const btnOpenImporterNav = document.getElementById('btn-open-file-importer-nav');
   const btnHeroLaunchImport = document.getElementById('btn-hero-launch-import');
-  const btnOpenImporterLogger = document.getElementById('btn-open-importer-logger');
   const importDropzone = document.getElementById('import-dropzone');
   const importFileInput = document.getElementById('import-file-input') as HTMLInputElement;
   const importPreviewBox = document.getElementById('import-preview-box');
@@ -1585,7 +1584,6 @@ import ResetModal from '../components/ResetModal.astro';
     tabImportEl?.scrollIntoView({ behavior: 'smooth' });
   });
   btnHeroLaunchImport?.addEventListener('click', openImportModal);
-  btnOpenImporterLogger?.addEventListener('click', openImportModal);
   btnCloseImportModal?.addEventListener('click', closeImportModal);
 
   fileImportModal?.addEventListener('click', (e) => {
