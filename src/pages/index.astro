@@ -1237,6 +1237,9 @@ import ResetModal from '../components/ResetModal.astro';
     });
   });
 
+  // Pending Receipt OCR metadata for Quick Expense Logger
+  let pendingReceiptMeta: { date?: string; type?: 'expense' | 'income'; source?: 'imported' } | null = null;
+
   // Expense Logger Submit
   formExpenseLogger?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1246,18 +1249,25 @@ import ResetModal from '../components/ResetModal.astro';
 
     if (!name || isNaN(amount) || amount <= 0) return;
 
+    const txType = pendingReceiptMeta?.type || 'expense';
+    const txDate = pendingReceiptMeta?.date || new Date().toISOString().split('T')[0];
+    const txSource = pendingReceiptMeta?.source || 'manual';
+    const txId = pendingReceiptMeta ? `rcpt-${Date.now()}` : `tx-${Date.now()}`;
+
     const newTx: Transaction = {
-      id: `tx-${Date.now()}`,
+      id: txId,
       name,
       amount,
       category,
-      date: new Date().toISOString().split('T')[0],
-      source: 'manual'
+      date: txDate,
+      source: txSource,
+      type: txType
     };
 
     state.transactions.unshift(newTx);
     saveStoredState({ transactions: state.transactions });
 
+    pendingReceiptMeta = null;
     inputItemName.value = '';
     inputItemAmount.value = '';
     renderAll();
@@ -1266,6 +1276,7 @@ import ResetModal from '../components/ResetModal.astro';
   // Preset Chips
   presetChips.forEach((chip) => {
     chip.addEventListener('click', () => {
+      pendingReceiptMeta = null;
       const name = chip.getAttribute('data-preset-name');
       const amount = chip.getAttribute('data-preset-amount');
       const cat = chip.getAttribute('data-preset-category');
@@ -1280,6 +1291,7 @@ import ResetModal from '../components/ResetModal.astro';
 
   // Clear Quick Expense Logger entry
   btnClearLogger?.addEventListener('click', () => {
+    pendingReceiptMeta = null;
     if (inputItemName) inputItemName.value = '';
     if (inputItemAmount) inputItemAmount.value = '';
     if (selectItemCategory) selectItemCategory.value = 'Food';
@@ -1310,23 +1322,11 @@ import ResetModal from '../components/ResetModal.astro';
       if (inputItemAmount) inputItemAmount.value = result.amount > 0 ? result.amount.toString() : '';
       if (selectItemCategory) selectItemCategory.value = result.category;
 
-      // Immediately extract and reflect transaction into Ledger & Tracker
-      const txType = result.type || 'expense';
-      if (result.amount > 0) {
-        const newTx: Transaction = {
-          id: `rcpt-${Date.now()}`,
-          name: result.merchantName || (txType === 'income' ? 'Income Payment' : 'Receipt Entry'),
-          amount: result.amount,
-          category: result.category,
-          date: result.date || new Date().toISOString().split('T')[0],
-          source: 'imported',
-          type: txType
-        };
-
-        state.transactions.unshift(newTx);
-        saveStoredState({ transactions: state.transactions });
-        renderAll();
-      }
+      pendingReceiptMeta = {
+        date: result.date || undefined,
+        type: result.type || 'expense',
+        source: 'imported'
+      };
 
       inputItemAmount?.focus();
     } catch (err: any) {

@@ -1,239 +1,365 @@
-import { extractMerchantName, inferReceiptCategory } from '../src/utils/receiptScanner';
+import {
+  extractMerchantName,
+  inferReceiptCategory,
+  extractReceiptAmount,
+  extractReceiptDate,
+  detectTransactionType
+} from '../src/utils/receiptScanner';
 
 interface TestCase {
   name: string;
   lines: string[];
   expectedMerchant: string;
+  expectedAmount: number;
+  expectedDate?: string;
   expectedCategory: string;
+  expectedType: 'expense' | 'income';
   forbiddenPrefix?: string;
+  forbiddenMerchantSubstrings?: string[];
+  forbiddenAmountValues?: number[];
   isIncome?: boolean;
 }
 
 const testCases: TestCase[] = [
+  // 1. ₹291 Flipkart payment
   {
-    name: 'Provider Name Labeled Field - Must return ONLY value, never label',
+    name: 'Flipkart Payment (₹291 Expense, UPI ID & Ref Noise)',
+    lines: [
+      'Paytm Payments Bank',
+      'Paid Successfully',
+      '12:30 PM, 24 Sep 2026',
+      '₹291',
+      'To: Flipkart Payments',
+      'UPI ID: flipkart@axl',
+      'Bank Ref: 426819283746',
+      'Debited from: SBI A/c No. ...7890',
+      'Share receipt'
+    ],
+    expectedMerchant: 'Flipkart Payments',
+    expectedAmount: 291,
+    expectedDate: '2026-09-24',
+    expectedCategory: 'Miscellany',
+    expectedType: 'expense',
+    forbiddenPrefix: 'To',
+    forbiddenMerchantSubstrings: ['Paytm', 'Paid Successfully', 'Share receipt'],
+    forbiddenAmountValues: [7, 7890, 426819283746, 2026]
+  },
+
+  // 2. ₹350 Money Received from Aditya
+  {
+    name: 'Money Received from Aditya (₹350 Income, Timestamp & User Recipient Rejection)',
+    lines: [
+      'Google Pay',
+      'Money Received',
+      '02:15 PM, 24 Sep 2026',
+      '₹350',
+      'From: Aditya Upadhyay',
+      'UPI ID: aditya@okaxis',
+      'Transaction ID: T260924153022',
+      'Credited to: HDFC Bank - 0456',
+      'To: My Account'
+    ],
+    expectedMerchant: 'Aditya Upadhyay',
+    expectedAmount: 350,
+    expectedDate: '2026-09-24',
+    expectedCategory: 'Income',
+    expectedType: 'income',
+    isIncome: true,
+    forbiddenPrefix: 'From',
+    forbiddenMerchantSubstrings: ['Google Pay', 'Money Received', 'My Account', 'HDFC Bank'],
+    forbiddenAmountValues: [2, 456, 2026]
+  },
+
+  // 3. ₹189 Jio recharge
+  {
+    name: 'Jio Recharge (₹189 Expense, Mobile Number & Account Suffix Noise)',
+    lines: [
+      'Paytm',
+      'Bill Payment Successful',
+      '₹189',
+      'To: Jio Prepaid Recharges',
+      'Mobile Number: 9811223344',
+      'Txn ID: 429182746198',
+      'Debited from A/c ...1092',
+      'Date: 25-Sep-2026'
+    ],
+    expectedMerchant: 'Jio Prepaid Recharges',
+    expectedAmount: 189,
+    expectedDate: '2026-09-25',
+    expectedCategory: 'Utilities',
+    expectedType: 'expense',
+    forbiddenPrefix: 'To',
+    forbiddenAmountValues: [10, 1092, 9811223344, 2026]
+  },
+
+  // 4. ₹620.01 Tira Beauty
+  {
+    name: 'Tira Beauty (₹620.01 Exact Decimal, Order ID & UPI Ref Noise)',
+    lines: [
+      'Payment Successful',
+      '05:40 PM, 23 Sep 2026',
+      '₹620.01',
+      'Paid to: Tira Beauty',
+      'Order ID: TB-992182',
+      'UPI Ref: 429182736152',
+      'View history'
+    ],
+    expectedMerchant: 'Tira Beauty',
+    expectedAmount: 620.01,
+    expectedDate: '2026-09-23',
+    expectedCategory: 'Miscellany',
+    expectedType: 'expense',
+    forbiddenPrefix: 'Paid to',
+    forbiddenMerchantSubstrings: ['View history', 'Payment Successful'],
+    forbiddenAmountValues: [6, 2026, 429182736152]
+  },
+
+  // 5. ₹9 One Delhi
+  {
+    name: 'One Delhi (₹9 Single-Digit Whole Number, Bus Route & Ticket ID Noise)',
+    lines: [
+      'Payment Successful',
+      '₹9',
+      'To: One Delhi',
+      'Bus Route: 534',
+      'Ticket ID: DL-2026-5',
+      'Debited from Paytm Wallet',
+      'Date: 26-Sep-2026'
+    ],
+    expectedMerchant: 'One Delhi',
+    expectedAmount: 9,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Transport',
+    expectedType: 'expense',
+    forbiddenPrefix: 'To',
+    forbiddenAmountValues: [5, 534, 2026]
+  },
+
+  // 6. ₹30 Indal
+  {
+    name: 'Indal (₹30 Small Amount, Masked Bank Account Suffix 8443 Rejection)',
+    lines: [
+      'PhonePe',
+      'Paid Successfully',
+      '09:15 AM, 25 Sep 2026',
+      '₹30',
+      'To: Indal',
+      'UPI ID: indal@ybl',
+      'Debited from: State Bank of India - 8443',
+      'Txn ID: 429182746198'
+    ],
+    expectedMerchant: 'Indal',
+    expectedAmount: 30,
+    expectedDate: '2026-09-25',
+    expectedCategory: 'Miscellany',
+    expectedType: 'expense',
+    forbiddenPrefix: 'To',
+    forbiddenMerchantSubstrings: ['PhonePe', 'Paid Successfully', 'State Bank of India'],
+    forbiddenAmountValues: [8443, 8, 443, 2026]
+  },
+
+  // 7. General Utility Bill (Tata Power Delhi)
+  {
+    name: 'Tata Power Delhi Utility Bill (₹780.00, CA & Consumer Number)',
     lines: [
       'Bill Payment Details',
       'Provider Name: Tata Power - Delhi (TP)',
       'Consumer Number: 10928374',
-      'Amount Due: ₹780.00',
+      'CA Number: 6001298471',
+      'Bill Date: 12-Sep-2026',
+      'Due Date: 28-Sep-2026',
+      'Bill Amount: ₹780.00',
       'Transaction Status: Success'
     ],
     expectedMerchant: 'Tata Power - Delhi (TP)',
+    expectedAmount: 780.00,
+    expectedDate: '2026-09-12',
     expectedCategory: 'Utilities',
-    forbiddenPrefix: 'Provider Name'
+    expectedType: 'expense',
+    forbiddenPrefix: 'Provider Name',
+    forbiddenAmountValues: [10928374, 6001298471, 2026]
   },
+
+  // 8. General Transport / Ride Receipt (Uber)
   {
-    name: 'Merchant Name Labeled Field',
+    name: 'Uber Transport Receipt (₹392.50, Fare & Toll)',
     lines: [
-      'Order Confirmation',
-      'Merchant Name: Big Bazaar Supermarket',
-      'Order ID: OD-8823',
-      'Grand Total: 1,450.00'
+      'Uber India Systems Pvt Ltd',
+      'Trip Date: 18-Sep-2026',
+      'Pick up: Terminal 3 Delhi Airport',
+      'Drop off: Sector 62 Noida',
+      'Ride Fare: ₹342.50',
+      'Toll Charges: ₹50.00',
+      'Total Amount: ₹392.50',
+      'Payment Method: UPI',
+      'Open maps',
+      'Need help?'
     ],
-    expectedMerchant: 'Big Bazaar Supermarket',
-    expectedCategory: 'Food',
-    forbiddenPrefix: 'Merchant Name'
+    expectedMerchant: 'Uber India Systems Pvt Ltd',
+    expectedAmount: 392.50,
+    expectedDate: '2026-09-18',
+    expectedCategory: 'Transport',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Open maps', 'Need help'],
+    forbiddenAmountValues: [342.50, 50.00, 2026]
   },
+
+  // 9. Indian Comma Formatting (₹1,20,000 Income)
   {
-    name: 'Seller Labeled Field',
+    name: 'Indian Comma Formatting (₹1,20,000 Money Received)',
     lines: [
-      'Tax Invoice',
-      'Seller: CloudTail India Pvt Ltd',
-      'Invoice No: INV-9912',
-      'Final Amount: 620.00'
+      'PhonePe Business',
+      'Money Received',
+      '₹1,20,000',
+      'Received from: Acme Tech Solutions Pvt Ltd',
+      'Credited to: State Bank of India - 4321',
+      'UTR: 991823746192',
+      'Date: 24-Sep-2026'
     ],
-    expectedMerchant: 'CloudTail India Pvt Ltd',
-    expectedCategory: 'Miscellany',
-    forbiddenPrefix: 'Seller'
+    expectedMerchant: 'Acme Tech Solutions Pvt Ltd',
+    expectedAmount: 120000,
+    expectedDate: '2026-09-24',
+    expectedCategory: 'Income',
+    expectedType: 'income',
+    isIncome: true,
+    forbiddenPrefix: 'Received from',
+    forbiddenMerchantSubstrings: ['State Bank of India', 'PhonePe Business', 'Money Received'],
+    forbiddenAmountValues: [4321, 991823746192, 2026]
   },
+
+  // 10. Large Amount with Comma (₹1,500 Fuel Station)
   {
-    name: 'Store Labeled Field',
+    name: 'Fuel Filling Station (₹1,500, Pump & Nozzle Noise)',
     lines: [
-      'Receipt Slip',
-      'Store: Reliance Fresh Groceries',
+      'Indian Oil Corporation Filling Station',
+      'Pump No: 02',
+      'Nozzle: 01',
+      'Rate/Ltr: ₹94.50',
+      'Volume: 15.87 L',
+      'Amount Paid: ₹1,500',
+      'Payment Method: UPI',
+      'Txn ID: IOCL-20260918',
+      'Date: 18-Sep-2026'
+    ],
+    expectedMerchant: 'Indian Oil Corporation Filling Station',
+    expectedAmount: 1500,
+    expectedDate: '2026-09-18',
+    expectedCategory: 'Transport',
+    expectedType: 'expense',
+    forbiddenAmountValues: [2, 1, 94.50, 15.87, 2026]
+  },
+
+  // 11. Multi-number Grocery Receipt with Cashback Mention
+  {
+    name: 'Supermarket Header (₹140.00 with Cashback Mention)',
+    lines: [
+      'Reliance Fresh Groceries',
       'Cashier: 04',
-      'Total: 340.00'
+      'Date: 10-Sep-2026',
+      '1x Milk Packet      60.00',
+      '2x Brown Bread     80.00',
+      'Cashback Earned: ₹20.00',
+      'Total Amount Paid: ₹140.00'
     ],
     expectedMerchant: 'Reliance Fresh Groceries',
+    expectedAmount: 140.00,
+    expectedDate: '2026-09-10',
     expectedCategory: 'Food',
-    forbiddenPrefix: 'Store'
+    expectedType: 'expense',
+    forbiddenAmountValues: [20.00, 60.00, 80.00, 4]
   },
+
+  // 12. Corporate Payroll Direct Deposit (Income)
   {
-    name: 'Vendor Labeled Field',
-    lines: [
-      'Utility Bill Receipt',
-      'Vendor: Metro Water Board',
-      'Connection ID: W-99128',
-      'Amount Payable: 450.00'
-    ],
-    expectedMerchant: 'Metro Water Board',
-    expectedCategory: 'Utilities',
-    forbiddenPrefix: 'Vendor'
-  },
-  {
-    name: 'Biller Labeled Field',
-    lines: [
-      'Bill Payment Confirmation',
-      'Biller: Apex Energy Ltd',
-      'Consumer ID: 10928374',
-      'Amount Due: ₹3,800.00'
-    ],
-    expectedMerchant: 'Apex Energy Ltd',
-    expectedCategory: 'Utilities',
-    forbiddenPrefix: 'Biller'
-  },
-  {
-    name: 'Payee Labeled Field',
-    lines: [
-      'Payment Details',
-      'Payee: Dr. Sharma Dental Clinic',
-      'Txn ID: TXN443322',
-      'Total Amount: 500.00'
-    ],
-    expectedMerchant: 'Dr. Sharma Dental Clinic',
-    expectedCategory: 'Miscellany',
-    forbiddenPrefix: 'Payee'
-  },
-  {
-    name: 'Supplier Labeled Field',
-    lines: [
-      'Commercial Invoice',
-      'Supplier: ABC Pharma Supplies',
-      'PO Number: PO-1029',
-      'Net Total: 2,100.00'
-    ],
-    expectedMerchant: 'ABC Pharma Supplies',
-    expectedCategory: 'Miscellany',
-    forbiddenPrefix: 'Supplier'
-  },
-  {
-    name: 'Paid To Labeled Field',
-    lines: [
-      'Payment Receipt',
-      'Paid To: Green Grocers Mart',
-      'Payment Mode: UPI',
-      'Amount: 180.00'
-    ],
-    expectedMerchant: 'Green Grocers Mart',
-    expectedCategory: 'Food',
-    forbiddenPrefix: 'Paid To'
-  },
-  {
-    name: 'Payment Receipt with Multiline Label and Status Header',
-    lines: [
-      'Payment Successful',
-      '04:15 PM, 24 Sep 2026',
-      '₹780',
-      'Paid to',
-      'Tata Power - Mumbai',
-      'Txn ID: T260924161599882233',
-      'UTR: 426819283746',
-      'Debited from: HDFC Bank'
-    ],
-    expectedMerchant: 'Tata Power - Mumbai',
-    expectedCategory: 'Utilities',
-    forbiddenPrefix: 'Paid to'
-  },
-  {
-    name: 'Restaurant / Cafe Header Receipt',
-    lines: [
-      'THE BLUE BISTRO & KITCHEN',
-      'Plot 45, Sector 18, Commercial Belt',
-      'TAX INVOICE',
-      '1x Pasta Arbiata    250.00',
-      '1x Peach Ice Tea    150.00',
-      'Subtotal            400.00',
-      'Grand Total:        400.00'
-    ],
-    expectedMerchant: 'THE BLUE BISTRO & KITCHEN',
-    expectedCategory: 'Food'
-  },
-  {
-    name: 'Fuel / Gas Station Receipt',
-    lines: [
-      'Shell Petroleum Filling Station',
-      'Highway NH-48',
-      'Fuel: Power Petrol',
-      'Total Amount Payable: 1,500.00'
-    ],
-    expectedMerchant: 'Shell Petroleum Filling Station',
-    expectedCategory: 'Transport'
-  },
-  {
-    name: 'Payment App Slip - Should Not Select Payment Platform as Merchant',
-    lines: [
-      'PhonePe',
-      'Payment Successful',
-      'Paid to: Dr. Sharma Dental Clinic',
-      'Txn ID: 98127391823719',
-      'UTR: 426819283746',
-      'Total Amount: 500.00'
-    ],
-    expectedMerchant: 'Dr. Sharma Dental Clinic',
-    expectedCategory: 'Miscellany'
-  },
-  {
-    name: 'Housing Society Maintenance Receipt',
-    lines: [
-      'Sunrise Apartments Housing Society',
-      'Society Maintenance - September 2026',
-      'Flat No: A-402',
-      'Total Payable: 4,500.00'
-    ],
-    expectedMerchant: 'Sunrise Apartments Housing Society',
-    expectedCategory: 'Housing'
-  },
-  {
-    name: 'Cinema / Entertainment Ticket Slip',
-    lines: [
-      'PVR Cinemas Multiplex',
-      'Screen 3 - Audi 2',
-      'Tickets: 2',
-      'Final Total: 650.00'
-    ],
-    expectedMerchant: 'PVR Cinemas Multiplex',
-    expectedCategory: 'Entertainment'
-  },
-  {
-    name: 'Income Deposit Slip',
+    name: 'Corporate Payroll Direct Deposit (₹75,000 Income)',
     lines: [
       'Corporate Payroll Direct Deposit',
       'Employee ID: EMP9982',
+      'Date: 30-Sep-2026',
       'Net Pay: 75,000.00'
     ],
     expectedMerchant: 'Corporate Payroll Direct Deposit',
+    expectedAmount: 75000.00,
+    expectedDate: '2026-09-30',
     expectedCategory: 'Income',
+    expectedType: 'income',
     isIncome: true
   }
 ];
 
 function runTests() {
-  console.log('--- GENERALIZED RECEIPT OCR EXTRACTION REGRESSION TESTS ---\n');
+  console.log('=== GENERALIZED RECEIPT OCR EXTRACTION REGRESSION TESTS ===\n');
   let passed = 0;
   let failed = 0;
 
   for (const tc of testCases) {
     const rawText = tc.lines.join('\n');
-    const merchant = extractMerchantName(tc.lines, rawText, !!tc.isIncome);
-    const category = inferReceiptCategory(merchant, rawText, !!tc.isIncome);
+    const detectedType = detectTransactionType(rawText, tc.lines);
+    const isIncome = tc.isIncome !== undefined ? tc.isIncome : detectedType === 'income';
+    const merchant = extractMerchantName(tc.lines, rawText, isIncome);
+    const amount = extractReceiptAmount(rawText, tc.lines);
+    const date = extractReceiptDate(rawText, tc.lines);
+    const category = inferReceiptCategory(merchant, rawText, isIncome);
 
+    const typePass = tc.expectedType ? detectedType === tc.expectedType : true;
     const merchantPass = merchant.toLowerCase() === tc.expectedMerchant.toLowerCase();
+    const amountPass = Math.abs(amount - tc.expectedAmount) < 0.01;
     const categoryPass = category === tc.expectedCategory;
+    const datePass = tc.expectedDate ? date === tc.expectedDate : true;
+
     const prefixPass = tc.forbiddenPrefix
       ? !merchant.toLowerCase().startsWith(tc.forbiddenPrefix.toLowerCase())
       : true;
 
-    if (merchantPass && categoryPass && prefixPass) {
+    const forbiddenMerchantPass = tc.forbiddenMerchantSubstrings
+      ? !tc.forbiddenMerchantSubstrings.some((sub) =>
+          merchant.toLowerCase().includes(sub.toLowerCase())
+        )
+      : true;
+
+    const forbiddenAmountPass = tc.forbiddenAmountValues
+      ? !tc.forbiddenAmountValues.some((v) => Math.abs(amount - v) < 0.01)
+      : true;
+
+    const allPassed =
+      typePass &&
+      merchantPass &&
+      amountPass &&
+      categoryPass &&
+      datePass &&
+      prefixPass &&
+      forbiddenMerchantPass &&
+      forbiddenAmountPass;
+
+    if (allPassed) {
       console.log(`[PASS] ${tc.name}`);
-      console.log(`       Merchant: "${merchant}" | Category: ${category}`);
+      console.log(`       Type: ${detectedType} | Merchant: "${merchant}" | Amount: ₹${amount} | Date: ${date} | Category: ${category}`);
       passed++;
     } else {
       console.error(`[FAIL] ${tc.name}`);
-      console.error(`       Expected Merchant: "${tc.expectedMerchant}", Got: "${merchant}"`);
-      console.error(`       Expected Category: "${tc.expectedCategory}", Got: "${category}"`);
+      if (!typePass) {
+        console.error(`       Expected Type: "${tc.expectedType}", Got: "${detectedType}"`);
+      }
+      if (!merchantPass) {
+        console.error(`       Expected Merchant: "${tc.expectedMerchant}", Got: "${merchant}"`);
+      }
+      if (!amountPass) {
+        console.error(`       Expected Amount: ₹${tc.expectedAmount}, Got: ₹${amount}`);
+      }
+      if (!datePass) {
+        console.error(`       Expected Date: ${tc.expectedDate}, Got: ${date}`);
+      }
+      if (!categoryPass) {
+        console.error(`       Expected Category: "${tc.expectedCategory}", Got: "${category}"`);
+      }
       if (!prefixPass) {
         console.error(`       Failed: Merchant contained forbidden label prefix "${tc.forbiddenPrefix}"`);
+      }
+      if (!forbiddenMerchantPass) {
+        console.error(`       Failed: Merchant contained forbidden substring from UI/Noise`);
+      }
+      if (!forbiddenAmountPass) {
+        console.error(`       Failed: Amount selected was a forbidden ID/Date/Year/Number!`);
       }
       failed++;
     }

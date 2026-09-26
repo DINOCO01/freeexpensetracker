@@ -1,0 +1,75 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1451 >>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 50 700 Tm (Date) Tj
+1 0 0 1 120 700 Tm (Transaction Description) Tj
+1 0 0 1 260 700 Tm (Reference) Tj
+1 0 0 1 340 700 Tm (Debit (₹)) Tj
+1 0 0 1 420 700 Tm (Credit (₹)) Tj
+1 0 0 1 500 700 Tm (Balance (₹)) Tj
+1 0 0 1 50 670 Tm (01-Sep-2026) Tj
+1 0 0 1 120 670 Tm (Salary Credit) Tj
+1 0 0 1 260 670 Tm (REF1001) Tj
+1 0 0 1 420 670 Tm (62,000.00) Tj
+1 0 0 1 500 670 Tm (72,400.00) Tj
+1 0 0 1 50 640 Tm (04-Sep-2026) Tj
+1 0 0 1 120 640 Tm (Fresh Basket Grocery) Tj
+1 0 0 1 260 640 Tm (REF1002) Tj
+1 0 0 1 340 640 Tm (2,345.50) Tj
+1 0 0 1 500 640 Tm (70,054.50) Tj
+1 0 0 1 50 610 Tm (07-Sep-2026) Tj
+1 0 0 1 120 610 Tm (Airport Cab) Tj
+1 0 0 1 260 610 Tm (REF1003) Tj
+1 0 0 1 340 610 Tm (875.00) Tj
+1 0 0 1 500 610 Tm (69,179.50) Tj
+1 0 0 1 50 580 Tm (11-Sep-2026) Tj
+1 0 0 1 120 580 Tm (Credit Card Cashback) Tj
+1 0 0 1 260 580 Tm (REF1004) Tj
+1 0 0 1 420 580 Tm (1,250.00) Tj
+1 0 0 1 500 580 Tm (70,429.50) Tj
+1 0 0 1 50 550 Tm (16-Sep-2026) Tj
+1 0 0 1 120 550 Tm (Electricity Bill) Tj
+1 0 0 1 260 550 Tm (REF1005) Tj
+1 0 0 1 340 550 Tm (2,100.00) Tj
+1 0 0 1 500 550 Tm (9,077.00) Tj
+1 0 0 1 50 520 Tm (22-Sep-2026) Tj
+1 0 0 1 120 520 Tm (Gym Membership) Tj
+1 0 0 1 260 520 Tm (REF1006) Tj
+1 0 0 1 340 520 Tm (1,800.00) Tj
+1 0 0 1 500 520 Tm (9,165.00) Tj
+1 0 0 1 50 490 Tm (28-Sep-2026) Tj
+1 0 0 1 120 490 Tm (Bank Interest) Tj
+1 0 0 1 260 490 Tm (REF1007) Tj
+1 0 0 1 420 490 Tm (385.75) Tj
+1 0 0 1 500 490 Tm (9,228.00) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000234 00000 n 
+0000000287 + 1451 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+500
+%%EOF
