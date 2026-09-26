@@ -361,6 +361,7 @@ import ResetModal from '../components/ResetModal.astro';
   const selectItemCategory = document.getElementById('select-item-category') as HTMLSelectElement;
   const presetChips = document.querySelectorAll('.btn-preset-chip');
   const btnScanReceiptLogger = document.getElementById('btn-scan-receipt-logger');
+  const btnClearLogger = document.getElementById('btn-clear-logger');
   const inputReceiptPhoto = document.getElementById('input-receipt-photo') as HTMLInputElement;
   const receiptScanningIndicator = document.getElementById('receipt-scanning-indicator');
   const receiptOcrProgress = document.getElementById('receipt-ocr-progress');
@@ -1275,6 +1276,16 @@ import ResetModal from '../components/ResetModal.astro';
 
       inputItemAmount?.focus();
     });
+  });
+
+  // Clear Quick Expense Logger entry
+  btnClearLogger?.addEventListener('click', () => {
+    if (inputItemName) inputItemName.value = '';
+    if (inputItemAmount) inputItemAmount.value = '';
+    if (selectItemCategory) selectItemCategory.value = 'Food';
+    if (inputReceiptPhoto) inputReceiptPhoto.value = '';
+    receiptScanningIndicator?.classList.add('hidden');
+    if (receiptOcrProgress) receiptOcrProgress.textContent = '0%';
   });
 
   // Receipt Photo OCR Scanner from Quick Logger
