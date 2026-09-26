@@ -31,14 +31,14 @@
   </div>
 
   <!-- Supported Formats Bar -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
     <div class="p-3 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-2xs">
       <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-sm font-bold border border-blue-200">
         📸
       </div>
       <div>
-        <div class="text-xs font-bold text-slate-900">Any Image Format</div>
-        <div class="text-[10px] text-slate-500 font-mono">PNG, JPG, WebP, HEIC, TIFF, BMP, GIF, AVIF</div>
+        <div class="text-xs font-bold text-slate-900">Receipts & Images</div>
+        <div class="text-[10px] text-slate-500 font-mono">PNG, JPG, WebP, HEIC, TIFF</div>
       </div>
     </div>
 
@@ -47,8 +47,8 @@
         📄
       </div>
       <div>
-        <div class="text-xs font-bold text-slate-900">PDF Bank Statements</div>
-        <div class="text-[10px] text-slate-500 font-mono">Auto table coordinate reading</div>
+        <div class="text-xs font-bold text-slate-900">PDF Statements</div>
+        <div class="text-[10px] text-slate-500 font-mono">Spatial column coordinate reading</div>
       </div>
     </div>
 
@@ -57,18 +57,28 @@
         📊
       </div>
       <div>
-        <div class="text-xs font-bold text-slate-900">Excel & CSV Spreadsheets</div>
+        <div class="text-xs font-bold text-slate-900">Excel & CSV</div>
         <div class="text-[10px] text-slate-500 font-mono">.xlsx, .xls, .csv statements</div>
       </div>
     </div>
 
     <div class="p-3 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-2xs">
+      <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center text-sm font-bold border border-teal-200">
+        🌐
+      </div>
+      <div>
+        <div class="text-xs font-bold text-slate-900">Google Sheets</div>
+        <div class="text-[10px] text-slate-500 font-mono">URL or XLSX/CSV fallback</div>
+      </div>
+    </div>
+
+    <div class="p-3 bg-white border border-slate-200 rounded-xl flex items-center gap-2.5 shadow-2xs col-span-2 sm:col-span-1">
       <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-bold border border-purple-200">
         ⚡
       </div>
       <div>
         <div class="text-xs font-bold text-slate-900">Multi-File Batch</div>
-        <div class="text-[10px] text-slate-500 font-mono">Select or drop multiple at once</div>
+        <div class="text-[10px] text-slate-500 font-mono">Simultaneous mixed uploads</div>
       </div>
     </div>
   </div>
@@ -105,6 +115,37 @@
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
       <span>Browse Multiple Files</span>
     </div>
+  </div>
+
+  <!-- Google Sheets Direct URL Import Section -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs border border-teal-200">
+          🌐
+        </span>
+        <span class="text-xs font-bold text-slate-900">Or Import from Google Sheets URL</span>
+      </div>
+      <span class="text-[11px] text-slate-500">Public or shared sheet link</span>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <input
+        type="url"
+        id="tab-importer-sheet-url"
+        placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs0.../edit#gid=0"
+        class="flex-1 px-3.5 py-2 rounded-xl text-xs border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-mono text-slate-800"
+      />
+      <button
+        type="button"
+        id="btn-tab-import-sheet"
+        class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+      >
+        <span>Fetch Sheet</span>
+      </button>
+    </div>
+    <p class="text-[11px] text-slate-500">
+      💡 <strong>Tip:</strong> Ensure your Google Sheet is set to <em>"Anyone with the link can view"</em>. For private sheets, download as CSV or Excel (<strong>File → Download</strong>) and drop the file above.
+    </p>
   </div>
 
   <!-- Processing State Banner -->
@@ -187,14 +228,14 @@
           id="btn-tab-apply-replace"
           class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer"
         >
-          🔄 Replace Tracker
+          🔄 Replace
         </button>
         <button
           type="button"
           id="btn-tab-apply-append"
           class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1.5"
         >
-          <span>➕ Append to Tracker</span>
+          <span>➕ Add to Tracker</span>
         </button>
         <button
           type="button"
@@ -223,7 +264,10 @@
               <th class="py-2.5 px-3">Date</th>
               <th class="py-2.5 px-3">Description / Merchant</th>
               <th class="py-2.5 px-3">Category</th>
+              <th class="py-2.5 px-3">Type</th>
               <th class="py-2.5 px-3 text-right">Amount</th>
+              <th class="py-2.5 px-3">Source</th>
+              <th class="py-2.5 px-3 text-center">Status</th>
             </tr>
           </thead>
           <tbody id="tab-result-table-tbody" class="divide-y divide-slate-100 font-mono">

@@ -456,6 +456,8 @@ import ResetModal from '../components/ResetModal.astro';
   const tabResultInsightsList = document.getElementById('tab-result-insights-list');
   const tabResultTableCount = document.getElementById('tab-result-table-count');
   const tabResultTableTbody = document.getElementById('tab-result-table-tbody');
+  const tabImporterSheetUrl = document.getElementById('tab-importer-sheet-url') as HTMLInputElement | null;
+  const btnTabImportSheet = document.getElementById('btn-tab-import-sheet');
   const btnTabApplyReplace = document.getElementById('btn-tab-apply-replace');
   const btnTabApplyAppend = document.getElementById('btn-tab-apply-append');
   const btnTabResetImport = document.getElementById('btn-tab-reset-import');
@@ -542,7 +544,8 @@ import ResetModal from '../components/ResetModal.astro';
       Utilities: 0,
       Entertainment: 0,
       Savings: 0,
-      Miscellany: 0
+      Miscellany: 0,
+      Income: 0
     };
 
     state.transactions.forEach((t) => {
@@ -1745,11 +1748,17 @@ import ResetModal from '../components/ResetModal.astro';
           return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
             <span class="text-xs">✅</span>
             <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
-            <span class="text-[10px] text-emerald-700">(${f.recordCount} items • ${formatMoney(f.amount)})</span>
+            <span class="text-[10px] text-emerald-700">(${f.recordCount} items • ${formatMoney(f.outflowAmount)})</span>
+          </span>`;
+        } else if (f.status === 'warning') {
+          return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-50 text-amber-900 border border-amber-300" title="${escapeHtml(f.warnings?.join(', ') || '')}">
+            <span class="text-xs">⚠️</span>
+            <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
+            <span class="text-[10px] text-amber-700">(${f.recordCount} items • review advised)</span>
           </span>`;
         } else {
           return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200" title="${escapeHtml(f.error || '')}">
-            <span class="text-xs">⚠️</span>
+            <span class="text-xs">❌</span>
             <strong class="font-mono text-slate-800">${escapeHtml(f.name)}</strong>
             <span class="text-[10px] text-rose-600">(${escapeHtml(f.error || 'Failed')})</span>
           </span>`;
@@ -1788,25 +1797,43 @@ import ResetModal from '../components/ResetModal.astro';
           <td class="py-2 px-3 text-slate-500 font-mono text-[11px]">${t.date}</td>
           <td class="py-2 px-3 font-medium text-slate-900 font-sans">${escapeHtml(t.name)}</td>
           <td class="py-2 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+              ${escapeHtml(t.category)}
+            </span>
+          </td>
+          <td class="py-2 px-3">
             ${t.type === 'income'
               ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  💵 Income
+                  Income
                 </span>`
-              : `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-                  ${t.category}
+              : `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-800 border border-rose-200">
+                  Expense
                 </span>`
             }
           </td>
           <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
             ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
           </td>
+          <td class="py-2 px-3 font-mono text-[10px] text-slate-500 max-w-[120px] truncate" title="${escapeHtml(t.sourceFile || t.sourceType || 'imported')}">
+            ${escapeHtml(t.sourceFile || t.sourceType || 'imported')}
+          </td>
+          <td class="py-2 px-3 text-center">
+            ${t.needsReview
+              ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-900 border border-amber-300" title="${escapeHtml(t.warningReason || 'Check amount')}">
+                  ⚠️ Review
+                </span>`
+              : `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  ✓ OK
+                </span>`
+            }
+          </td>
         </tr>
       `).join('');
     }
   }
 
-  async function handleTabSelectedFiles(files: FileList | File[]) {
-    const fileArray = Array.from(files);
+  async function handleTabSelectedFiles(files: FileList | File[] | (File | string)[]) {
+    const fileArray = Array.from(files as any[]);
     if (fileArray.length === 0) return;
 
     if (tabImporterError) tabImporterError.classList.add('hidden');
@@ -1814,7 +1841,7 @@ import ResetModal from '../components/ResetModal.astro';
     if (tabImporterResults) tabImporterResults.classList.add('hidden');
 
     try {
-      const result = await parseAndInterpretMultipleFiles(fileArray, (current, total, name) => {
+      const result = await parseAndInterpretMultipleFiles(fileArray as (File | string)[], (current, total, name) => {
         const pct = Math.round((current / total) * 100);
         if (tabImporterProgressText) tabImporterProgressText.textContent = `Analyzing ${name} (${current} of ${total})...`;
         if (tabImporterProgressPct) tabImporterProgressPct.textContent = `${pct}%`;
@@ -1834,6 +1861,18 @@ import ResetModal from '../components/ResetModal.astro';
       }
     }
   }
+
+  btnTabImportSheet?.addEventListener('click', () => {
+    const url = tabImporterSheetUrl?.value?.trim();
+    if (!url) {
+      if (tabImporterError) {
+        tabImporterError.textContent = 'Please enter a valid Google Sheets URL.';
+        tabImporterError.classList.remove('hidden');
+      }
+      return;
+    }
+    handleTabSelectedFiles([url]);
+  });
 
   btnTabApplyReplace?.addEventListener('click', () => {
     if (!pendingTabImportResult) return;

@@ -1,13 +1,16 @@
 export type Frequency = 'monthly' | 'bi-weekly' | 'weekly';
 export type BudgetModel = '50-30-20' | '70-20-10' | '80-20' | 'zero-based';
-export type ExpenseCategory =
+export type StandardExpenseCategory =
   | 'Housing'
   | 'Food'
   | 'Transport'
   | 'Utilities'
   | 'Entertainment'
   | 'Savings'
-  | 'Miscellany';
+  | 'Miscellany'
+  | 'Income';
+
+export type ExpenseCategory = StandardExpenseCategory | (string & {});
 
 export type CategoryType = 'need' | 'want' | 'savings';
 
@@ -53,26 +56,36 @@ export interface Transaction {
   date: string;
   source?: 'manual' | 'imported';
   type?: 'expense' | 'income';
+  currency?: string;
+  sourceFile?: string;
+  sourceType?: 'pdf' | 'excel' | 'csv' | 'image' | 'sheets';
+  confidence?: number;
+  needsReview?: boolean;
+  warningReason?: string;
 }
 
-export const CATEGORY_TYPES: Record<ExpenseCategory, CategoryType> = {
+export const CATEGORY_TYPES: Record<string, CategoryType> = {
   Housing: 'need',
   Food: 'need',
   Transport: 'need',
   Utilities: 'need',
   Entertainment: 'want',
   Miscellany: 'want',
-  Savings: 'savings'
+  Savings: 'savings',
+  Income: 'savings',
+  'Health & Fitness': 'want'
 };
 
-export const CATEGORY_ICONS: Record<ExpenseCategory, string> = {
+export const CATEGORY_ICONS: Record<string, string> = {
   Housing: '🏠',
   Food: '🥗',
   Transport: '🚗',
   Utilities: '⚡',
   Entertainment: '🎟️',
   Savings: '🏦',
-  Miscellany: '📦'
+  Miscellany: '📦',
+  Income: '💵',
+  'Health & Fitness': '🏋️'
 };
 
 export function normalizeToMonthly(amount: number, frequency: Frequency): number {

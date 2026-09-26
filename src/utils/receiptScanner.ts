@@ -61,6 +61,80 @@ const COMMON_STORE_NAMES = [
   '7-Eleven'
 ];
 
+// 1. Explicit Total Labels ordered by precedence
+const EXPLICIT_TOTAL_TIER1_PATTERNS = [
+  /\b(?:grand\s*total)\b/i,
+  /\b(?:final\s*total)\b/i,
+  /\b(?:net\s*total)\b/i,
+  /\b(?:amount\s*due)\b/i,
+  /\b(?:total\s*due)\b/i,
+  /\b(?:balance\s*due)\b/i,
+  /\b(?:amount\s*payable)\b/i,
+  /\b(?:total\s*payable)\b/i,
+  /\b(?:net\s*amount)\b/i,
+  /\b(?:payable)\b/i,
+  /\b(?:total)\b/i
+];
+
+const EXPLICIT_TOTAL_TIER2_PATTERNS = [
+  /\b(?:total\s*amount)\b/i,
+  /\b(?:bill\s*total)\b/i,
+  /\b(?:invoice\s*total)\b/i,
+  /\b(?:net\s*pay)\b/i,
+  /\b(?:total\s*charges?)\b/i,
+  /\b(?:amount\s*paid)\b/i,
+  /\b(?:paid\s*amount)\b/i,
+  /\b(?:paid)\b/i,
+  /\b(?:charges?)\b/i,
+  /\b(?:deposit)\b/i
+];
+
+// Patterns that identify lines representing non-final-total values that must be avoided
+const NON_TOTAL_LINE_PATTERNS = [
+  /\b(?:sub\s*-?\s*total|subtotal|gross\s*total|items?\s*total)\b/i,
+  /\b(?:cgst|sgst|igst|gst|vat|sales\s*tax|service\s*tax|tax)\b/i,
+  /\b(?:discount|disc\b|rebate|savings|offer|coupon|less\b)/i,
+  /\b(?:service\s*charge|service\s*fee|delivery\s*fee|delivery\s*charge|tip|gratuity|round\s*off)\b/i,
+  /\b(?:cash\s*tendered|cash\s*given|change\s*due|change\s*returned|balance\s*return(?:ed)?)\b/i,
+  /\b(?:invoice\s*no|bill\s*no|order\s*no|table\s*no|token\s*no|pos\s*no|terminal|cashier|gstin|pan|cin|fssai)\b/i,
+  /\b(?:tel|phone|ph\b|mobile|fax|contact|helpline|support)\b/i,
+  /\b(?:qty|quantity|rate|pcs|items?)\b/i
+];
+
+function parseReceiptMonetaryValue(str: string): number | null {
+  if (!str) return null;
+  let clean = str.trim();
+  clean = clean.replace(/^[₹$€£¥\s]+/, '');
+  clean = clean.replace(/^(?:rs\.?|inr)\s*/i, '');
+  clean = clean.replace(/^[%Xx*?~#§]+\s*/, '');
+
+  // Indian format: 1,50,000.50 or 2,746.50
+  if (/^\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?$/.test(clean)) {
+    const val = parseFloat(clean.replace(/,/g, ''));
+    return isNaN(val) ? null : val;
+  }
+  // Standard decimal or integer
+  if (/^\d+(?:\.\d{1,2})?$/.test(clean)) {
+    const val = parseFloat(clean);
+    return isNaN(val) ? null : val;
+  }
+  return null;
+}
+
+function extractReceiptLineAmounts(line: string): { raw: string; value: number }[] {
+  const results: { raw: string; value: number }[] = [];
+  const regex = /(?:[₹$€£¥]|rs\.?|inr|[%Xx*?~#§])?\s*(\d+(?:,\d+)*(?:\.\d+)?)/gi;
+  let match;
+  while ((match = regex.exec(line)) !== null) {
+    const raw = match[0].trim();
+    const val = parseReceiptMonetaryValue(raw);
+    if (val !== null && val > 0) {
+      results.push({ raw, value: val });
+    }
+  }
+  return results;
+}
+
 export async function scanReceiptImage(
   file: File,
   onProgress?: (progress: number, status: string) => void
@@ -130,7 +204,8 @@ export async function scanReceiptImage(
       imageUrl = '';
     }
 
-    const { data } = await Tesseract.recognize(file, 'eng', {
+    const imageInput: any = typeof Buffer !== 'undefined' && (file as any).buffer ? (file as any).buffer : file;
+    const { data } = await Tesseract.recognize(imageInput, 'eng', {
       logger: (m) => {
         if (onProgress && m.status === 'recognizing text') {
           onProgress(Math.round((m.progress || 0) * 100), m.status);
@@ -197,42 +272,155 @@ export async function scanReceiptImage(
     dateStr = normalizeDate(dateMatch[0]);
   }
 
-  // 4. Detect Total Amount using universal amount extractor
-  let amount = 0;
-  const allAmounts = extractAmountsFromText(rawText);
-
-  // Check for lines with total / amount / deposit keywords
-  const totalMatch = rawText.match(/(?:total|amount|balance|due|net|charge|visa|mastercard|debit|paid|grand\s*total|deposit|salary|net\s*pay)\s*[:$]?\s*([$€£₹¥]?\s*\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/i);
-  if (totalMatch) {
-    const parsed = extractAmountsFromText(totalMatch[0]);
-    if (parsed.length > 0) {
-      amount = Math.abs(parsed[0].value);
-    }
-  }
-
-  if (amount <= 0 && allAmounts.length > 0) {
-    amount = Math.max(...allAmounts.map((a) => Math.abs(a.value)));
-  }
-
-  // 5. Categorize
-  const combinedContext = `${merchantName} ${rawText}`;
-  const category = isIncome ? 'Savings' : autoCategorizeExpense(combinedContext);
-
-  // 6. Line items extract
+  // 4. Line Items Extraction
   const lineItems: { name: string; amount: number }[] = [];
-  const lineItemPattern = /^([a-zA-Z0-9\s&'-]{3,25})\s+[$€£₹¥]?\s*(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)$/;
+  const lineItemPattern = /^([a-zA-Z0-9\s&'.-]{2,35})\s+(?:[₹$€£¥]|rs\.?|inr|[%Xx*?~#§])?\s*(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2}))$/i;
 
-  for (const line of lines) {
-    const itemMatch = line.match(lineItemPattern);
-    if (itemMatch) {
-      const itemName = itemMatch[1].trim();
-      const numPart = itemMatch[2].replace(/,/g, '');
-      const itemAmt = parseFloat(numPart);
-      if (itemName && !isNaN(itemAmt) && (amount === 0 || itemAmt < amount)) {
-        lineItems.push({ name: itemName, amount: itemAmt });
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isExcluded =
+      NON_TOTAL_LINE_PATTERNS.some((p) => p.test(line)) ||
+      EXPLICIT_TOTAL_TIER1_PATTERNS.some((p) => p.test(line)) ||
+      EXPLICIT_TOTAL_TIER2_PATTERNS.some((p) => p.test(line)) ||
+      /^(date|time|payment|merchant|thank|welcome|subtotal)/i.test(line);
+
+    if (isExcluded) continue;
+
+    const m = line.match(lineItemPattern);
+    if (m) {
+      const name = m[1].replace(/[^a-zA-Z0-9\s&'-]/g, '').trim();
+      const numPart = m[2].replace(/,/g, '');
+      const amt = parseFloat(numPart);
+      if (name.length >= 2 && !isNaN(amt) && amt > 0) {
+        lineItems.push({ name, amount: amt });
       }
     }
   }
+
+  const lineItemsSum = Math.round(lineItems.reduce((acc, it) => acc + it.amount, 0) * 100) / 100;
+
+  // Check for explicit subtotal and tax amounts
+  let subtotalAmount = 0;
+  let taxAmount = 0;
+  for (const line of lines) {
+    if (/\b(?:sub\s*-?\s*total|subtotal|items?\s*total)\b/i.test(line)) {
+      const amts = extractReceiptLineAmounts(line);
+      if (amts.length > 0) subtotalAmount = amts[amts.length - 1].value;
+    }
+    if (/\b(?:cgst|sgst|igst|gst|vat|tax)\b/i.test(line) && !/tax\s*invoice/i.test(line)) {
+      const amts = extractReceiptLineAmounts(line);
+      if (amts.length > 0) taxAmount += amts[amts.length - 1].value;
+    }
+  }
+  const calculatedTotal = subtotalAmount > 0 ? subtotalAmount + taxAmount : lineItemsSum;
+
+  // 5. Detect Total Amount using Priority Architecture & Spatial Proximity
+  interface CandidateTotal {
+    amount: number;
+    rawString: string;
+    lineIndex: number;
+    score: number;
+    label: string;
+  }
+
+  const candidates: CandidateTotal[] = [];
+  const totalDocLines = lines.length;
+
+  lines.forEach((line, idx) => {
+    // Skip if line represents non-total lines (subtotal, tax, discount, invoice number, phone, etc.)
+    if (NON_TOTAL_LINE_PATTERNS.some((p) => p.test(line))) return;
+
+    // Check Tier 1 explicit total labels
+    let matchedTier = 0;
+    let matchedLabel = '';
+    for (const pat of EXPLICIT_TOTAL_TIER1_PATTERNS) {
+      const m = line.match(pat);
+      if (m) {
+        matchedTier = 1;
+        matchedLabel = m[0].toUpperCase();
+        break;
+      }
+    }
+
+    // Check Tier 2 secondary total labels
+    if (matchedTier === 0) {
+      for (const pat of EXPLICIT_TOTAL_TIER2_PATTERNS) {
+        const m = line.match(pat);
+        if (m) {
+          matchedTier = 2;
+          matchedLabel = m[0].toUpperCase();
+          break;
+        }
+      }
+    }
+
+    if (matchedTier > 0) {
+      let amountsOnLine = extractReceiptLineAmounts(line);
+      let targetLineIndex = idx;
+
+      // If no amount on this line, inspect the immediate next line
+      if (amountsOnLine.length === 0 && idx + 1 < totalDocLines) {
+        const nextLine = lines[idx + 1];
+        if (!NON_TOTAL_LINE_PATTERNS.some((p) => p.test(nextLine))) {
+          amountsOnLine = extractReceiptLineAmounts(nextLine);
+          targetLineIndex = idx + 1;
+        }
+      }
+
+      amountsOnLine.forEach((amtObj) => {
+        let val = amtObj.value;
+
+        // Proximity and document position scoring (totals typically appear in lower half)
+        const posRatio = targetLineIndex / Math.max(1, totalDocLines - 1);
+        let score = (matchedTier === 1 ? 100 : 50) + Math.round(posRatio * 30);
+
+        // Verification against line items / subtotal + tax
+        const baselineTotal = calculatedTotal > 0 ? calculatedTotal : lineItemsSum;
+        if (baselineTotal > 0) {
+          if (Math.abs(val - baselineTotal) < 0.01) {
+            score += 150;
+          } else {
+            // Check if val ends with baselineTotal due to OCR currency glyph artifact (e.g. '3' for '₹')
+            const valIntStr = Math.round(val * 100).toString();
+            const baseIntStr = Math.round(baselineTotal * 100).toString();
+            if (valIntStr.endsWith(baseIntStr) && valIntStr.length > baseIntStr.length) {
+              const prefix = valIntStr.slice(0, valIntStr.length - baseIntStr.length);
+              if (prefix.length === 1 && /[1-9]/.test(prefix)) {
+                val = baselineTotal;
+                score += 180;
+              }
+            }
+          }
+        }
+
+        candidates.push({
+          amount: val,
+          rawString: amtObj.raw,
+          lineIndex: targetLineIndex,
+          score,
+          label: matchedLabel
+        });
+      });
+    }
+  });
+
+  let amount = 0;
+  if (candidates.length > 0) {
+    candidates.sort((a, b) => b.score - a.score);
+    amount = candidates[0].amount;
+  } else if (lineItemsSum > 0) {
+    amount = lineItemsSum;
+  } else {
+    // Universal amount extractor fallback only if no total label or line items could be identified
+    const allAmounts = extractAmountsFromText(rawText);
+    if (allAmounts.length > 0) {
+      amount = Math.max(...allAmounts.map((a) => Math.abs(a.value)));
+    }
+  }
+
+  // 6. Categorize
+  const combinedContext = `${merchantName} ${rawText}`;
+  const category = isIncome ? 'Savings' : autoCategorizeExpense(combinedContext);
 
   return {
     merchantName,
