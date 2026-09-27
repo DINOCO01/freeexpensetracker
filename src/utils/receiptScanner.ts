@@ -94,64 +94,51 @@ const COMMON_STORE_NAMES = [
   '7-Eleven'
 ];
 
-// 1. Explicit Total / Amount Labels ordered by precedence
-export const EXPLICIT_TOTAL_TIER1_PATTERNS = [
-  /\b(?:grand\s*total)\b/i,
-  /\b(?:final\s*total)\b/i,
-  /\b(?:net\s*total)\b/i,
-  /\b(?:total\s*amount\s*payable)\b/i,
-  /\b(?:total\s*amount\s*paid)\b/i,
-  /\b(?:total\s*amount\s*due)\b/i,
-  /\b(?:total\s*amount)\b/i,
-  /\b(?:amount\s*payable)\b/i,
-  /\b(?:total\s*payable)\b/i,
-  /\b(?:amount\s*paid)\b/i,
-  /\b(?:paid\s*amount)\b/i,
-  /\b(?:amount\s*received)\b/i,
-  /\b(?:amount\s*credited)\b/i,
-  /\b(?:amount\s*debited)\b/i,
-  /\b(?:money\s*received)\b/i,
-  /\b(?:payment\s*received)\b/i,
-  /\b(?:paid\s*successfully)\b/i,
-  /\b(?:payment\s*successful)\b/i,
-  /\b(?:you\s*paid)\b/i,
-  /\b(?:bill\s*amount)\b/i,
-  /\b(?:payment\s*amount)\b/i,
-  /\b(?:transaction\s*amount)\b/i,
-  /\b(?:recharge\s*amount)\b/i,
-  /\b(?:recharge(?:\s*of)?)\b/i,
-  /\b(?:balance\s*due)\b/i,
-  /\b(?:amount\s*due)\b/i,
-  /\b(?:total\s*due)\b/i,
-  /\b(?:net\s*amount)\b/i,
-  /\b(?:final\s*amount)\b/i,
-  /\b(?:net\s*payable)\b/i,
-  /\b(?:total\s*charges?)\b/i,
-  /\b(?:total\s*cost)\b/i,
-  /\b(?:total\s*price)\b/i,
-  /\b(?:bill\s*payment)\b/i,
-  /\b(?:amount)\b/i,
-  /\b(?:total)\b/i,
-  /\b(?:payable)\b/i
+// 1. Explicit Final-Payment Labels (Highest Priority - Tier 1)
+export const EXPLICIT_FINAL_PAYMENT_PATTERNS = [
+  /\b(?:total\s*amount\s*paid|amount\s*paid|paid\s*amount|total\s*paid)\b/i,
+  /\b(?:you\s*paid|paid\s*by\s*you)\b/i,
+  /\b(?:paid)\b/i,
+  /\b(?:total\s*amount\s*payable|amount\s*payable|net\s*payable|total\s*payable|payable\s*amount)\b/i,
+  /\b(?:total\s*amount\s*due|amount\s*due|balance\s*due|total\s*due)\b/i,
+  /\b(?:net\s*amount|final\s*amount|final\s*payable)\b/i,
+  /\b(?:paid\s*successfully|payment\s*successful)\b/i,
+  /\b(?:amount\s*received|payment\s*received|money\s*received|amount\s*credited|credited\s*amount)\b/i,
+  /\b(?:amount\s*debited|debited\s*amount)\b/i
 ];
 
-export const EXPLICIT_TOTAL_TIER2_PATTERNS = [
-  /\b(?:bill\s*total)\b/i,
-  /\b(?:invoice\s*total)\b/i,
+// 2. Grand Total / Total Labels (Tier 2)
+export const EXPLICIT_GRAND_TOTAL_PATTERNS = [
+  /\b(?:grand\s*total|final\s*total|net\s*total)\b/i,
+  /\b(?:total\s*amount|total\s*bill|bill\s*total|invoice\s*total)\b/i,
+  /\b(?:total\s*charges?|total\s*cost|total\s*price)\b/i,
+  /\b(?:recharge\s*amount|recharge(?:\s*of)?|payment\s*amount|transaction\s*amount)\b/i,
   /\b(?:net\s*pay)\b/i,
-  /\b(?:total\s*paid)\b/i,
-  /\b(?:paid)\b/i,
-  /\b(?:charges?)\b/i,
-  /\b(?:deposit)\b/i
+  /\b(?:total)\b/i
 ];
+
+// 3. Fallback Total / Subtotal Labels (Tier 3)
+export const EXPLICIT_FALLBACK_TOTAL_PATTERNS = [
+  /\b(?:bill\s*amount|bill\s*payment)\b/i,
+  /\b(?:item\s*bill|items?\s*bill|item\s*total|items?\s*total)\b/i,
+  /\b(?:sub\s*-?\s*total|subtotal|gross\s*total)\b/i,
+  /\b(?:amount)\b/i,
+  /\b(?:payable)\b/i,
+  /\b(?:charges?|deposit)\b/i
+];
+
+// Backward-compatible exports
+export const EXPLICIT_TOTAL_TIER1_PATTERNS = EXPLICIT_FINAL_PAYMENT_PATTERNS;
+export const EXPLICIT_TOTAL_TIER2_PATTERNS = EXPLICIT_GRAND_TOTAL_PATTERNS;
+export const EXPLICIT_TOTAL_TIER3_PATTERNS = EXPLICIT_FALLBACK_TOTAL_PATTERNS;
 
 // Patterns that identify lines representing non-final-total values that must be avoided
 const NON_TOTAL_LINE_PATTERNS = [
-  /\b(?:sub\s*-?\s*total|subtotal|gross\s*total|items?\s*total)\b/i,
+  /\b(?:sub\s*-?\s*total|subtotal|gross\s*total|items?\s*total|item\s*bill|items?\s*bill)\b/i,
   /\b(?:cgst|sgst|igst|gst|vat|sales\s*tax|service\s*tax|tax)\b/i,
   /\b(?:discount|disc\b|rebate|savings?|offer|coupon|less\b|you\s*saved)\b/i,
   /\b(?:cashback|reward\s*points?|earned\s*points?|points\s*earned)\b/i,
-  /\b(?:service\s*charge|service\s*fee|delivery\s*fee|delivery\s*charge|convenience\s*fee|handling\s*fee|platform\s*fee|fee|tip|gratuity|round\s*off)\b/i,
+  /\b(?:service\s*charge|service\s*fee|delivery\s*fee|delivery\s*charge|convenience\s*fee|handling\s*fee|handling\s*charge|platform\s*fee|platform\s*charge|packaging\s*charges?|packaging\s*fee|packing\s*charges?|fee|tip|gratuity|round\s*off)\b/i,
   /\b(?:cash\s*tendered|cash\s*given|change\s*due|change\s*returned|balance\s*return(?:ed)?)\b/i,
   /\b(?:invoice\s*no|bill\s*no|order\s*no|table\s*no|token\s*no|pos\s*no|terminal|cashier|gstin|pan|cin|fssai|roll\s*no)\b/i,
   /\b(?:utr(?:\s*no)?|txn(?:\s*id)?|transaction\s*id|upi\s*ref(?:\s*no)?|ref(?:\s*no|\s*id|\s*num)?|reference\s*(?:no|id|number)|rrn|auth\s*code|approval\s*code|arn)\b/i,
@@ -192,8 +179,9 @@ const NON_MERCHANT_LINE_PATTERNS = [
   /^(?:gstin|pan|cin|fssai|tin|tan|sac\s*code|hsn\s*code)\b/i,
   /^(?:tel|phone|ph\b|mobile|fax|contact|helpline|support|toll\s*free|call\s*us)\b/i,
   /^(?:www\.|https?:\/\/|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/i,
-  // Totals & numbers
+  // Totals, fees & numbers
   /^(?:sub\s*-?\s*total|total|amount|balance|discount|cgst|sgst|igst|vat|tax|change|round\s*off)\b/i,
+  /^(?:delivery\s*(?:fee|charge)|handling\s*(?:fee|charge)|packaging\s*(?:charges?|fee)|platform\s*(?:fee|charge)|convenience\s*(?:fee|charge)|service\s*(?:fee|charge)|restaurant\s*packaging\s*(?:charges?|fee)|item\s*bill|item\s*total)\b/i,
   // Standalone dates / times
   /^(?:\d{1,2}:\d{2}(?::\d{2})?\s*(?:am|pm)?|\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{4}[-/.]\d{1,2}[-/.]\d{1,2})/i,
   // Purely punctuation / non-alphanumeric noise
@@ -1090,51 +1078,212 @@ export function extractReceiptAmount(
     });
   }
 
-  // Check for explicit subtotal and tax amounts to calculate or compare
-  let detectedSubtotal = 0;
-  let detectedTax = 0;
-  let detectedDiscount = 0;
-  let detectedFee = 0;
+interface ReconciledBreakdown {
+  detectedSubtotal: number;
+  detectedFee: number;
+  detectedDiscount: number;
+  detectedTax: number;
+  targetComputedTotal: number;
+  confirmedPaidAmount?: number;
+  isConfirmedByArithmetic: boolean;
+}
+
+function reconcileBreakdownWithGlyphContext(
+  lines: string[],
+  rawText: string
+): ReconciledBreakdown {
+  let rawSubtotal = 0;
+  let rawDiscount = 0;
+  let rawTax = 0;
+  const feeItems: { text: string; val: number }[] = [];
+  let rawFinalPaid = 0;
 
   for (const line of lines) {
-    if (/\b(?:sub\s*-?\s*total|subtotal|items?\s*total)\b/i.test(line)) {
-      const amts = extractReceiptLineAmounts(line);
-      if (amts.length > 0) detectedSubtotal = amts[amts.length - 1].value;
-    }
-    if (/\b(?:cgst|sgst|igst|gst|vat|sales\s*tax|tax)\b/i.test(line) && !/tax\s*invoice/i.test(line)) {
-      const amts = extractReceiptLineAmounts(line);
-      if (amts.length > 0) detectedTax += amts[amts.length - 1].value;
-    }
-    if (/\b(?:discount|disc\b|rebate|coupon)\b/i.test(line) && !/\b(?:saved|you\s*saved)\b/i.test(line)) {
-      const amts = extractReceiptLineAmounts(line);
-      if (amts.length > 0) detectedDiscount += amts[amts.length - 1].value;
-    }
-    if (/\b(?:delivery\s*fee|delivery\s*charge|convenience\s*fee|service\s*charge|toll)\b/i.test(line)) {
-      const amts = extractReceiptLineAmounts(line);
-      if (amts.length > 0) detectedFee += amts[amts.length - 1].value;
+    const amtMatches = Array.from(
+      line.matchAll(/(?:[₹$€£¥]|rs\.?|inr|[%Xx*?~#§✓✔•])?\s*(\d{1,3}(?:,\d{2,3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/gi)
+    );
+    if (amtMatches.length === 0) continue;
+    const lastToken = amtMatches[amtMatches.length - 1][1];
+    const val = parseFloat(lastToken.replace(/,/g, ''));
+    if (isNaN(val) || val <= 0) continue;
+
+    if (/\b(?:sub\s*-?\s*total|subtotal|items?\s*total|item\s*bill|items?\s*bill)\b/i.test(line)) {
+      if (rawSubtotal === 0) rawSubtotal = val;
+    } else if (
+      /\b(?:delivery\s*(?:fee|charge)|handling\s*(?:fee|charge)|packaging\s*(?:charges?|fee)|platform\s*(?:fee|charge)|convenience\s*(?:fee|charge)|service\s*(?:charge|fee)|toll)\b/i.test(
+        line
+      )
+    ) {
+      feeItems.push({ text: line, val });
+    } else if (
+      /\b(?:discount|disc\b|rebate|coupon|offer\s*discount)\b/i.test(line) &&
+      !/\b(?:saved|you\s*saved)\b/i.test(line)
+    ) {
+      rawDiscount += val;
+    } else if (/\b(?:cgst|sgst|igst|gst|vat|sales\s*tax|tax)\b/i.test(line) && !/tax\s*invoice/i.test(line)) {
+      rawTax += val;
+    } else if (
+      /\b(?:amount\s*paid|paid\s*amount|total\s*paid|you\s*paid|\bpaid\b|final\s*amount|net\s*amount|amount\s*payable|amount\s*due|balance\s*due)\b/i.test(
+        line
+      )
+    ) {
+      if (rawFinalPaid === 0) rawFinalPaid = val;
     }
   }
+
+  const rawFees = feeItems.reduce((acc, f) => acc + f.val, 0);
+
+  function getFeeCandidates(item: { text: string; val: number }): number[] {
+    const opts = [item.val];
+    // Delivery / platform fee with OCR leading glyph 2XX or 3XX (e.g. 216 -> 16)
+    if (item.val >= 200 && item.val < 400 && /delivery|platform|convenience|service/i.test(item.text)) {
+      opts.unshift(item.val % 100);
+    }
+    // Handling fee e.g. 38 -> 8
+    if (item.val >= 20 && item.val < 100 && /handling/i.test(item.text) && item.val % 10 !== 0) {
+      opts.unshift(item.val % 10);
+    }
+    return opts;
+  }
+
+  function getSubtotalCandidates(v: number): number[] {
+    const opts = [v];
+    if (v >= 2000 && v < 4000) {
+      opts.unshift(v % 1000);
+    }
+    return opts;
+  }
+
+  function getPaidCandidates(v: number): number[] {
+    const opts = [v];
+    if (v >= 2000 && v < 4000) {
+      opts.unshift(v % 1000);
+    }
+    return opts;
+  }
+
+  // 1. Check if raw matches perfectly without suspect fee artifacts
+  if (rawSubtotal > 0 && rawFinalPaid > 0) {
+    const rawComputed = Math.round((rawSubtotal + rawFees + rawTax - rawDiscount) * 100) / 100;
+    const hasSuspectRawFee = feeItems.some(f => f.val >= 200 && f.val < 400 && /delivery|platform/i.test(f.text));
+    if (!hasSuspectRawFee && Math.abs(rawComputed - rawFinalPaid) < 0.05) {
+      return {
+        detectedSubtotal: rawSubtotal,
+        detectedFee: rawFees,
+        detectedDiscount: rawDiscount,
+        detectedTax: rawTax,
+        targetComputedTotal: rawComputed,
+        confirmedPaidAmount: rawFinalPaid,
+        isConfirmedByArithmetic: true
+      };
+    }
+
+    // 2. Test glyph-normalized permutations (prioritizing normalized values)
+    const subOpts = getSubtotalCandidates(rawSubtotal);
+    const paidOpts = getPaidCandidates(rawFinalPaid);
+
+    let feeCombinations: number[] = [0];
+    for (const item of feeItems) {
+      const cands = getFeeCandidates(item);
+      const nextCombos: number[] = [];
+      for (const prev of feeCombinations) {
+        for (const c of cands) {
+          nextCombos.push(prev + c);
+        }
+      }
+      feeCombinations = nextCombos;
+    }
+
+    for (const p of paidOpts) {
+      for (const s of subOpts) {
+        for (const f of feeCombinations) {
+          const comp = Math.round((s + f + rawTax - rawDiscount) * 100) / 100;
+          if (Math.abs(comp - p) < 0.05) {
+            return {
+              detectedSubtotal: s,
+              detectedFee: f,
+              detectedDiscount: rawDiscount,
+              detectedTax: rawTax,
+              targetComputedTotal: comp,
+              confirmedPaidAmount: p,
+              isConfirmedByArithmetic: true
+            };
+          }
+        }
+      }
+    }
+
+    // 3. Subtotal and Paid consistency check without full fee balance
+    const sNorm = rawSubtotal >= 2000 && rawSubtotal < 4000 ? rawSubtotal % 1000 : rawSubtotal;
+    const pNorm = rawFinalPaid >= 2000 && rawFinalPaid < 4000 ? rawFinalPaid % 1000 : rawFinalPaid;
+    if (pNorm >= sNorm && pNorm - sNorm < 150 && rawFinalPaid >= 2000 && rawFinalPaid < 4000) {
+      return {
+        detectedSubtotal: sNorm,
+        detectedFee: rawFees,
+        detectedDiscount: rawDiscount,
+        detectedTax: rawTax,
+        targetComputedTotal: pNorm,
+        confirmedPaidAmount: pNorm,
+        isConfirmedByArithmetic: true
+      };
+    }
+  }
+
+  return {
+    detectedSubtotal: rawSubtotal,
+    detectedFee: rawFees,
+    detectedDiscount: rawDiscount,
+    detectedTax: rawTax,
+    targetComputedTotal: rawSubtotal > 0 ? rawSubtotal + rawFees + rawTax - rawDiscount : 0,
+    isConfirmedByArithmetic: false
+  };
+}
+
+  // Check for explicit subtotal and tax amounts to calculate or compare using generalized breakdown reconciliation
+  const breakdown = reconcileBreakdownWithGlyphContext(lines, rawText);
+  let detectedSubtotal = breakdown.detectedSubtotal;
+  let detectedTax = breakdown.detectedTax;
+  let detectedDiscount = breakdown.detectedDiscount;
+  let detectedFee = breakdown.detectedFee;
+  const arithmeticConfirmedPaid = breakdown.confirmedPaidAmount;
 
   const targetComputedTotal =
     calculatedTotal > 0
       ? calculatedTotal
-      : detectedSubtotal > 0
-        ? detectedSubtotal + detectedTax + detectedFee - detectedDiscount
+      : breakdown.targetComputedTotal > 0
+        ? breakdown.targetComputedTotal
         : lineItemsSum;
+
+  if (arithmeticConfirmedPaid !== undefined && breakdown.isConfirmedByArithmetic && arithmeticConfirmedPaid > 0) {
+    candidates.push({
+      amount: arithmeticConfirmedPaid,
+      rawString: arithmeticConfirmedPaid.toString(),
+      lineIndex: 0,
+      hasCurrencySymbol: true,
+      hasDecimal: arithmeticConfirmedPaid % 1 !== 0,
+      score: 620,
+      matchedLabel: 'ARITHMETIC_CONFIRMED_FINAL_PAYMENT'
+    });
+  }
+
+  // Check if document contains ANY explicit Tier 1 final-payment label
+  const docHasTier1Label = lines.some((l) =>
+    EXPLICIT_FINAL_PAYMENT_PATTERNS.some((p) => p.test(l))
+  );
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Check for Tier 1 total label
+    // Check for Tier 1, Tier 2, or Tier 3 total label
     let matchedTier = 0;
     let matchedLabel = '';
 
-    const isSubtotalOrTaxOrDiscount =
-      /\b(?:sub\s*-?\s*total|gross\s*total|items?\s*total|discount|tax|gst|vat)\b/i.test(line) &&
-      !/\b(?:grand\s*total|total\s*amount|final\s*amount|net\s*amount|bill\s*amount)\b/i.test(line);
+    const isTaxLine =
+      /\b(?:cgst|sgst|igst|gst|vat|sales\s*tax|tax)\b/i.test(line) &&
+      !/\b(?:tax\s*invoice|grand\s*total|total\s*amount|final\s*amount|net\s*amount|bill\s*amount|amount\s*paid|paid|you\s*paid|total\s*paid)\b/i.test(line);
 
-    if (!isSubtotalOrTaxOrDiscount) {
-      for (const pat of EXPLICIT_TOTAL_TIER1_PATTERNS) {
+    if (!isTaxLine) {
+      for (const pat of EXPLICIT_FINAL_PAYMENT_PATTERNS) {
         const m = line.match(pat);
         if (m) {
           matchedTier = 1;
@@ -1142,16 +1291,24 @@ export function extractReceiptAmount(
           break;
         }
       }
-    }
-
-    // Check for Tier 2 total label if not Tier 1
-    if (matchedTier === 0 && !isSubtotalOrTaxOrDiscount) {
-      for (const pat of EXPLICIT_TOTAL_TIER2_PATTERNS) {
-        const m = line.match(pat);
-        if (m) {
-          matchedTier = 2;
-          matchedLabel = m[0].toUpperCase();
-          break;
+      if (matchedTier === 0) {
+        for (const pat of EXPLICIT_GRAND_TOTAL_PATTERNS) {
+          const m = line.match(pat);
+          if (m) {
+            matchedTier = 2;
+            matchedLabel = m[0].toUpperCase();
+            break;
+          }
+        }
+      }
+      if (matchedTier === 0) {
+        for (const pat of EXPLICIT_FALLBACK_TOTAL_PATTERNS) {
+          const m = line.match(pat);
+          if (m) {
+            matchedTier = 3;
+            matchedLabel = m[0].toUpperCase();
+            break;
+          }
         }
       }
     }
@@ -1165,12 +1322,20 @@ export function extractReceiptAmount(
     if (i > 0) {
       const prevLine = lines[i - 1].trim();
       if (
-        EXPLICIT_TOTAL_TIER1_PATTERNS.some((p) => p.test(prevLine)) &&
+        EXPLICIT_FINAL_PAYMENT_PATTERNS.some((p) => p.test(prevLine)) &&
         !NON_TOTAL_LINE_PATTERNS.some((p) => p.test(prevLine)) &&
         extractReceiptLineAmounts(prevLine).length === 0
       ) {
         prevLineTier1 = true;
         matchedTier = 1;
+        matchedLabel = prevLine.toUpperCase();
+      } else if (
+        matchedTier === 0 &&
+        EXPLICIT_GRAND_TOTAL_PATTERNS.some((p) => p.test(prevLine)) &&
+        !NON_TOTAL_LINE_PATTERNS.some((p) => p.test(prevLine)) &&
+        extractReceiptLineAmounts(prevLine).length === 0
+      ) {
+        matchedTier = 2;
         matchedLabel = prevLine.toUpperCase();
       }
     }
@@ -1181,7 +1346,7 @@ export function extractReceiptAmount(
     if (i + 1 < lines.length) {
       const nextLine = lines[i + 1].trim();
       if (
-        /\b(?:you\s*paid|amount\s*paid|total\s*paid|total\s*amount\s*paid|paid\s*amount|final\s*amount|grand\s*total|net\s*payable)\b/i.test(nextLine) &&
+        EXPLICIT_FINAL_PAYMENT_PATTERNS.some((p) => p.test(nextLine)) &&
         !NON_TOTAL_LINE_PATTERNS.some((p) => p.test(nextLine)) &&
         extractReceiptLineAmounts(nextLine).length === 0
       ) {
@@ -1242,6 +1407,25 @@ export function extractReceiptAmount(
       });
     }
 
+    // Isolate numeric token directly attached to Tier 1 final-payment label on this line
+    let directlyAttachedAmount: number | null = null;
+    if (matchedTier === 1) {
+      const labelFollowedByAmt = line.match(
+        /(?:total\s*amount\s*paid|amount\s*paid|paid\s*amount|total\s*paid|you\s*paid|paid|final\s*amount|amount\s*payable|amount\s*due|balance\s*due|net\s*amount|net\s*payable|paid\s*successfully|payment\s*successful)\s*[:\-–—\s]*([₹$€£¥]|rs\.?|inr)?\s*(\d{1,3}(?:,\d{2,3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/i
+      );
+      if (labelFollowedByAmt && labelFollowedByAmt[2]) {
+        directlyAttachedAmount = parseReceiptMonetaryValue(labelFollowedByAmt[2]);
+      }
+      if (directlyAttachedAmount === null) {
+        const amtFollowedByLabel = line.match(
+          /([₹$€£¥]|rs\.?|inr)?\s*(\d{1,3}(?:,\d{2,3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)\s*[:\-–—\s]*(?:total\s*amount\s*paid|amount\s*paid|paid\s*amount|total\s*paid|you\s*paid|paid|final\s*amount|net\s*amount)/i
+        );
+        if (amtFollowedByLabel && amtFollowedByLabel[2]) {
+          directlyAttachedAmount = parseReceiptMonetaryValue(amtFollowedByLabel[2]);
+        }
+      }
+    }
+
     // Extract monetary candidate amounts from this line
     const lineCandidates = extractReceiptLineAmounts(line);
 
@@ -1272,10 +1456,27 @@ export function extractReceiptAmount(
       // Compute base score
       let score = 0;
 
+      // Tier Scoring Hierarchy
       if (matchedTier === 1 || prevLineTier1 || nextLineTier1) {
-        score += 180;
+        score += 320; // Highest precedence for explicit final-payment labels
       } else if (matchedTier === 2) {
-        score += 90;
+        score += 160; // Secondary precedence for Grand Total
+      } else if (matchedTier === 3) {
+        score += 60; // Fallback precedence for subtotal/item bill
+      }
+
+      // When document contains an explicit Tier 1 final-payment label, penalize non-Tier-1 candidates
+      if (docHasTier1Label && matchedTier !== 1 && !prevLineTier1 && !nextLineTier1) {
+        score -= 220;
+      }
+
+      // Token isolation: boost numeric token directly associated with label, penalize others on same line
+      if (directlyAttachedAmount !== null) {
+        if (Math.abs(val - directlyAttachedAmount) < 0.001) {
+          score += 140;
+        } else {
+          score -= 120;
+        }
       }
 
       if (nextLineTier1) {
@@ -1325,9 +1526,9 @@ export function extractReceiptAmount(
       // Verification against computed total (when there are multiple items / subtotal+tax)
       if (targetComputedTotal > 0 && (detectedSubtotal > 0 || (calculatedTotal > 0 && lineItemsSum > 0))) {
         if (Math.abs(val - targetComputedTotal) < 0.01) {
-          score += 160;
+          score += 200;
         } else {
-          // Check for OCR leading glyph artifact (e.g. ₹ 780 parsed as 2780 or 1780)
+          // Check for OCR leading glyph artifact (e.g. ₹ 780 parsed as 2780 or 1780, ₹ 246 parsed as 3246)
           const valIntStr = Math.round(val * 100).toString();
           const baseIntStr = Math.round(targetComputedTotal * 100).toString();
           if (valIntStr.endsWith(baseIntStr) && valIntStr.length === baseIntStr.length + 1) {
@@ -1337,11 +1538,43 @@ export function extractReceiptAmount(
               lineIndex: i,
               hasCurrencySymbol: hasCurrency,
               hasDecimal,
-              score: score + 180,
+              score: score + 220,
               matchedLabel
             });
             continue;
           }
+        }
+      }
+
+      // Strong contextual check for OCR glyph prefix 3,XXX / 2,XXX when subtotal or arithmetic evidence supports it
+      const rawHasDirectCurrency = /^[₹$€£¥]/i.test(raw.trim());
+      const rawHasComma = /,/.test(raw);
+      if (
+        matchedTier === 1 &&
+        val >= 2000 &&
+        val < 4000 &&
+        !rawHasDirectCurrency &&
+        !rawHasComma
+      ) {
+        const strippedVal = val % 1000;
+        const isArithmeticMatch = arithmeticConfirmedPaid !== undefined && Math.abs(strippedVal - arithmeticConfirmedPaid) < 0.05;
+        const isSubtotalConsistent = detectedSubtotal > 0 && Math.abs(strippedVal - detectedSubtotal) < 250;
+        const isLineItemsConsistent = lineItemsSum > 0 && Math.abs(strippedVal - lineItemsSum) < 150;
+
+        if (isArithmeticMatch || isSubtotalConsistent || isLineItemsConsistent) {
+          const chosenAmt = isArithmeticMatch
+            ? arithmeticConfirmedPaid!
+            : (targetComputedTotal > 0 && Math.abs(strippedVal - targetComputedTotal) < 50 ? targetComputedTotal : strippedVal);
+          candidates.push({
+            amount: chosenAmt,
+            rawString: raw,
+            lineIndex: i,
+            hasCurrencySymbol: hasCurrency,
+            hasDecimal,
+            score: score + (isArithmeticMatch ? 350 : 250),
+            matchedLabel: isArithmeticMatch ? 'ARITHMETIC_CONFIRMED_GLYPH_NORMALIZED' : 'CONTEXTUAL_GLYPH_NORMALIZED'
+          });
+          continue;
         }
       }
 

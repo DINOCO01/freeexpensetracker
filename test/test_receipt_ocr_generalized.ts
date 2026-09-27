@@ -284,6 +284,157 @@ const testCases: TestCase[] = [
     expectedCategory: 'Income',
     expectedType: 'income',
     isIncome: true
+  },
+
+  // 13. Instamart Receipt ₹246
+  {
+    name: 'Instamart Receipt (₹246 Expense, Fees & Discount Breakdown)',
+    lines: [
+      'Swiggy Instamart',
+      'Date: 26-Sep-2026',
+      'Item Bill ₹234',
+      'Delivery Fee ₹16',
+      'Handling Fee ₹12',
+      'Offer Discount -₹16',
+      'Amount Paid ₹246'
+    ],
+    expectedMerchant: 'Swiggy Instamart',
+    expectedAmount: 246,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Delivery Fee', 'Handling Fee', 'Offer Discount', 'Item Bill', 'Amount Paid']
+  },
+
+  // 14. Instamart Receipt with OCR Concatenation Error ₹3,246 -> ₹246
+  {
+    name: 'Instamart Receipt (₹246 Expense, OCR Concatenation Error ₹3,246 Protection)',
+    lines: [
+      'Swiggy Instamart',
+      'Date: 26-Sep-2026',
+      'Item Bill ₹234',
+      'Delivery Fee ₹16',
+      'Handling Fee ₹12',
+      'Offer Discount -₹16',
+      'Amount Paid ₹3,246'
+    ],
+    expectedMerchant: 'Swiggy Instamart',
+    expectedAmount: 246,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Delivery Fee', 'Handling Fee', 'Offer Discount', 'Item Bill', 'Amount Paid']
+  },
+
+  // 15. Instamart Receipt ₹282
+  {
+    name: 'Instamart Receipt (₹282 Expense, Fees & Discount Breakdown)',
+    lines: [
+      'Swiggy Instamart',
+      'Date: 26-Sep-2026',
+      'Item Bill ₹270',
+      'Delivery Fee ₹16',
+      'Handling Fee ₹12',
+      'Offer Discount -₹16',
+      'Amount Paid ₹282'
+    ],
+    expectedMerchant: 'Swiggy Instamart',
+    expectedAmount: 282,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Delivery Fee', 'Handling Fee', 'Offer Discount', 'Item Bill', 'Amount Paid']
+  },
+
+  // 16. Instamart Receipt with OCR Concatenation Error ₹3,282 -> ₹282
+  {
+    name: 'Instamart Receipt (₹282 Expense, OCR Concatenation Error ₹3,282 Protection)',
+    lines: [
+      'Swiggy Instamart',
+      'Date: 26-Sep-2026',
+      'Item Bill ₹270',
+      'Delivery Fee ₹16',
+      'Handling Fee ₹12',
+      'Offer Discount -₹16',
+      'Amount Paid ₹3,282'
+    ],
+    expectedMerchant: 'Swiggy Instamart',
+    expectedAmount: 282,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Delivery Fee', 'Handling Fee', 'Offer Discount', 'Item Bill', 'Amount Paid']
+  },
+
+  // 17. Swiggy Receipt ₹271.36
+  {
+    name: 'Swiggy Receipt (₹271.36 Expense, Grand Total ₹492.16 with Coupons Precedence)',
+    lines: [
+      'Swiggy Order Receipt',
+      'Order Date: 26-Sep-2026',
+      'Grand total ₹492.16',
+      'Coupon -₹120',
+      'Coupon -₹100.80',
+      'Paid ₹271.36'
+    ],
+    expectedMerchant: 'Swiggy Order Receipt',
+    expectedAmount: 271.36,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Grand total', 'Coupon', 'Paid']
+  },
+
+  // 18. Swiggy Receipt ₹207.54
+  {
+    name: 'Swiggy Receipt (₹207.54 Expense, Grand Total ₹347.54 with Coupon Precedence)',
+    lines: [
+      'Swiggy Order Receipt',
+      'Order Date: 26-Sep-2026',
+      'Grand total ₹347.54',
+      'Coupon -₹140',
+      'Paid ₹207.54'
+    ],
+    expectedMerchant: 'Swiggy Order Receipt',
+    expectedAmount: 207.54,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Grand total', 'Coupon', 'Paid']
+  },
+
+  // 19. Swiggy Receipt ₹208.99
+  {
+    name: 'Swiggy Receipt (₹208.99 Expense, Grand Total ₹233.99 with Discount Precedence)',
+    lines: [
+      'Swiggy Order Receipt',
+      'Order Date: 26-Sep-2026',
+      'Grand total ₹233.99',
+      'Discount -₹25',
+      'Paid ₹208.99'
+    ],
+    expectedMerchant: 'Swiggy Order Receipt',
+    expectedAmount: 208.99,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Grand total', 'Discount', 'Paid']
+  },
+
+  // 20. Instamart Receipt ₹127
+  {
+    name: 'Instamart Receipt (₹127 Expense, Direct Final Payment)',
+    lines: [
+      'Instamart Groceries',
+      'Date: 26-Sep-2026',
+      'Amount Paid ₹127'
+    ],
+    expectedMerchant: 'Instamart Groceries',
+    expectedAmount: 127,
+    expectedDate: '2026-09-26',
+    expectedCategory: 'Food',
+    expectedType: 'expense',
+    forbiddenMerchantSubstrings: ['Amount Paid']
   }
 ];
 

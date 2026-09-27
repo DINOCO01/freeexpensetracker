@@ -88,7 +88,10 @@ function simulateSubmitLoggerBrowserHandler(state: SimulatedFormState) {
 }
 
 async function verifyGrowwReceipt() {
-  const filePath = 'C:\\Users\\princ\\Desktop\\test files\\STRESS TEST\\WhatsApp Image 2026-09-26 at 17.49.36.jpeg';
+  let filePath = 'C:\\Users\\princ\\Desktop\\test files\\STRESS TEST\\WhatsApp Image 2026-09-26 at 17.49.36.jpeg';
+  if (!fs.existsSync(filePath)) {
+    filePath = 'C:\\Users\\princ\\Desktop\\WhatsApp Image 2026-09-26 at 17.49.36.jpeg';
+  }
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
