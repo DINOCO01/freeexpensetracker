@@ -143,6 +143,16 @@ const structuredData = [
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="generator" content={Astro.generator} />
     
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XR6MG2FM4M"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-XR6MG2FM4M');
+    </script>
+    
     <!-- Primary SEO Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
