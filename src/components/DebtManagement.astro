@@ -276,8 +276,13 @@
         </span>
       </div>
 
+      <!-- Payment Rollover Planning Callout (Visible when debts are paid off or extra payment active) -->
+      <div id="debt-rollover-banner" class="hidden p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs">
+        <!-- Dynamically rendered -->
+      </div>
+
       <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-        <table class="w-full min-w-[500px] text-left text-xs">
+        <table class="w-full min-w-[520px] text-left text-xs">
           <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
             <tr>
               <th class="py-2.5 px-3">Priority</th>
@@ -285,13 +290,39 @@
               <th class="py-2.5 px-3 text-right">Outstanding Principal</th>
               <th class="py-2.5 px-3 text-right">Interest Rate</th>
               <th class="py-2.5 px-3 text-right">Monthly EMI</th>
-              <th class="py-2.5 px-3 text-center">Action</th>
+              <th class="py-2.5 px-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody id="debts-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
             <!-- Dynamically populated via JS without demo rows -->
           </tbody>
         </table>
+      </div>
+
+      <!-- Paid Off Accounts Section -->
+      <div id="container-paid-debts" class="hidden pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-1.5">
+            <span>🎉</span> Paid Off Accounts (<span id="count-paid-debts">0</span>)
+          </h4>
+          <span class="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">Monthly EMI capacity freed up</span>
+        </div>
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+          <table class="w-full min-w-[500px] text-left text-xs">
+            <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
+              <tr>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3">Loan / Debt Name</th>
+                <th class="py-2.5 px-3 text-right">Original Principal</th>
+                <th class="py-2.5 px-3 text-right">Freed Monthly EMI</th>
+                <th class="py-2.5 px-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="paid-debts-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

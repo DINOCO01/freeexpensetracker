@@ -20,6 +20,8 @@ import FAQSection from '../components/FAQSection.astro';
 import Footer from '../components/Footer.astro';
 import FileImportModal from '../components/FileImportModal.astro';
 import ResetModal from '../components/ResetModal.astro';
+import GoalContributionModal from '../components/GoalContributionModal.astro';
+import DebtPaymentModal from '../components/DebtPaymentModal.astro';
 ---
 
 <Layout
@@ -104,6 +106,8 @@ import ResetModal from '../components/ResetModal.astro';
   <!-- Modals -->
   <FileImportModal />
   <ResetModal />
+  <GoalContributionModal />
+  <DebtPaymentModal />
 </Layout>
 
 <script>
@@ -143,12 +147,39 @@ import ResetModal from '../components/ResetModal.astro';
   } from '../utils/templateDownloader';
 
   // --- 1. State Interfaces & Initial Load ---
+  export interface DebtPaymentRecord {
+    id: string;
+    date: string; // "YYYY-MM-DD"
+    month?: string; // "YYYY-MM"
+    totalPayment: number;
+    principalPaid: number;
+    interestPaid: number;
+    extraPrepayment: number;
+    notes?: string;
+  }
+
   export interface DebtItem {
     id: string;
     name: string;
-    balance: number;
-    rate: number;
-    minimum: number;
+    debtName?: string;
+    originalPrincipal: number;
+    currentOutstandingPrincipal: number;
+    balance: number; // Synchronized with currentOutstandingPrincipal for backwards compatibility
+    interestRate: number;
+    rate: number; // Synchronized with interestRate
+    monthlyEMI: number;
+    minimum: number; // Synchronized with monthlyEMI
+    paymentHistory?: DebtPaymentRecord[];
+    active?: boolean;
+    paidOff?: boolean;
+  }
+
+  export interface GoalContribution {
+    id?: string;
+    date?: string; // "YYYY-MM-DD"
+    month: string; // "YYYY-MM"
+    planned?: number;
+    actual: number;
   }
 
   export interface GoalItem {
@@ -156,7 +187,9 @@ import ResetModal from '../components/ResetModal.astro';
     name: string;
     target: number;
     current: number;
+    initialAmount?: number;
     monthly: number;
+    contributions?: GoalContribution[];
   }
 
   let state: AppState = loadStoredState();
@@ -171,7 +204,43 @@ import ResetModal from '../components/ResetModal.astro';
     if (rawDebts) {
       const parsed = JSON.parse(rawDebts);
       debts = Array.isArray(parsed)
-        ? parsed.filter((d: DebtItem) => !['debt-1', 'debt-2', 'debt-3'].includes(d.id))
+        ? parsed
+            .filter((d: any) => !['debt-1', 'debt-2', 'debt-3'].includes(d.id))
+            .map((d: any) => {
+              const orig = Number(d.originalPrincipal ?? d.balance ?? 0);
+              const curr = Number(d.currentOutstandingPrincipal ?? d.balance ?? orig);
+              const rateVal = Number(d.interestRate ?? d.rate ?? 0);
+              const emiVal = Number(d.monthlyEMI ?? d.minimum ?? 0);
+              const nameStr = String(d.name || d.debtName || 'Loan Account');
+              const rawHistory = Array.isArray(d.paymentHistory) ? d.paymentHistory : [];
+              const paymentHistory: DebtPaymentRecord[] = rawHistory.map((p: any, idx: number) => ({
+                id: p.id || `pay-${d.id}-${idx}-${p.date || 'unknown'}`,
+                date: p.date || new Date().toISOString().slice(0, 10),
+                month: p.month || (p.date ? p.date.slice(0, 7) : new Date().toISOString().slice(0, 7)),
+                totalPayment: Number(p.totalPayment ?? p.amount ?? 0),
+                principalPaid: Number(p.principalPaid ?? 0),
+                interestPaid: Number(p.interestPaid ?? 0),
+                extraPrepayment: Number(p.extraPrepayment ?? 0),
+                notes: p.notes || ''
+              }));
+              const isPaid = d.paidOff === true || curr <= 0;
+              const normalizedCurr = isPaid ? 0 : Math.max(0, curr);
+              return {
+                id: d.id,
+                name: nameStr,
+                debtName: nameStr,
+                originalPrincipal: orig,
+                currentOutstandingPrincipal: normalizedCurr,
+                balance: normalizedCurr,
+                interestRate: rateVal,
+                rate: rateVal,
+                monthlyEMI: emiVal,
+                minimum: emiVal,
+                paymentHistory,
+                active: !isPaid,
+                paidOff: isPaid
+              };
+            })
         : [];
     } else {
       debts = [];
@@ -190,7 +259,32 @@ import ResetModal from '../components/ResetModal.astro';
     if (rawGoals) {
       const parsed = JSON.parse(rawGoals);
       goals = Array.isArray(parsed)
-        ? parsed.filter((g: GoalItem) => !['goal-1', 'goal-2', 'goal-3'].includes(g.id))
+        ? parsed
+            .filter((g: GoalItem) => !['goal-1', 'goal-2', 'goal-3'].includes(g.id))
+            .map((g: GoalItem) => {
+              const rawContribs = Array.isArray(g.contributions) ? g.contributions : [];
+              const contributions: GoalContribution[] = rawContribs.map((c: any, idx: number) => {
+                const month = c.month || (c.date ? c.date.slice(0, 7) : new Date().toISOString().slice(0, 7));
+                const date = c.date || `${month}-01`;
+                const actual = Number(c.actual ?? c.amount) || 0;
+                const id = c.id || `contrib-${g.id}-${idx}-${date}`;
+                return {
+                  id,
+                  date,
+                  month,
+                  actual,
+                  planned: typeof c.planned === 'number' ? c.planned : g.monthly
+                };
+              });
+              const initialAmount = typeof g.initialAmount === 'number' ? g.initialAmount : (g.current || 0);
+              const totalActual = contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+              return {
+                ...g,
+                contributions,
+                initialAmount,
+                current: initialAmount + totalActual
+              };
+            })
         : [];
     } else {
       goals = [];
@@ -396,6 +490,34 @@ import ResetModal from '../components/ResetModal.astro';
   const inputDebtRate = document.getElementById('input-debt-rate') as HTMLInputElement;
   const inputDebtMinimum = document.getElementById('input-debt-minimum') as HTMLInputElement;
 
+  // Debt Payment Modal & Rollover Elements
+  const debtPaymentModal = document.getElementById('debt-payment-modal');
+  const btnCloseDebtPaymentModal = document.getElementById('btn-close-debt-payment-modal');
+  const btnCancelDebtPayment = document.getElementById('btn-cancel-debt-payment');
+  const formDebtPayment = document.getElementById('form-debt-payment') as HTMLFormElement | null;
+  const inputDebtPaymentDebtId = document.getElementById('input-debt-payment-debt-id') as HTMLInputElement | null;
+  const inputDebtPaymentDate = document.getElementById('input-debt-payment-date') as HTMLInputElement | null;
+  const inputDebtPaymentTotal = document.getElementById('input-debt-payment-total') as HTMLInputElement | null;
+  const inputDebtPaymentPrincipal = document.getElementById('input-debt-payment-principal') as HTMLInputElement | null;
+  const inputDebtPaymentInterest = document.getElementById('input-debt-payment-interest') as HTMLInputElement | null;
+  const inputDebtPaymentExtra = document.getElementById('input-debt-payment-extra') as HTMLInputElement | null;
+  const inputDebtPaymentNotes = document.getElementById('input-debt-payment-notes') as HTMLInputElement | null;
+  const btnDebtEstimateSplit = document.getElementById('btn-debt-estimate-split');
+  const modalDebtName = document.getElementById('modal-debt-name');
+  const modalDebtCurrentPrincipal = document.getElementById('modal-debt-current-principal');
+  const modalDebtRateEmi = document.getElementById('modal-debt-rate-emi');
+  const modalDebtHistoryCount = document.getElementById('modal-debt-history-count');
+  const modalDebtHistoryTbody = document.getElementById('modal-debt-history-tbody');
+  const displayPaymentPrincipalReduction = document.getElementById('display-payment-principal-reduction');
+  const displayPaymentNewBalance = document.getElementById('display-payment-new-balance');
+  const paymentEstimateNotice = document.getElementById('payment-estimate-notice');
+  const debtPaymentErrorMsg = document.getElementById('debt-payment-error-msg');
+  const btnSaveDebtPayment = document.getElementById('btn-save-debt-payment') as HTMLButtonElement | null;
+  const debtRolloverBanner = document.getElementById('debt-rollover-banner');
+  const containerPaidDebts = document.getElementById('container-paid-debts');
+  const countPaidDebts = document.getElementById('count-paid-debts');
+  const paidDebtsTbody = document.getElementById('paid-debts-tbody');
+
   // Target & Budget Planning Elements
   const efundMonthlyOutflow = document.getElementById('efund-monthly-outflow');
   const targetEfund3mo = document.getElementById('target-efund-3mo');
@@ -407,6 +529,29 @@ import ResetModal from '../components/ResetModal.astro';
   const inputGoalCurrent = document.getElementById('input-goal-current') as HTMLInputElement;
   const inputGoalMonthly = document.getElementById('input-goal-monthly') as HTMLInputElement;
   const btnScrollToAddGoal = document.getElementById('btn-scroll-to-add-goal');
+
+  // Goal Contribution Modal Elements
+  const goalContributionModal = document.getElementById('goal-contribution-modal');
+  const btnCloseContributionModal = document.getElementById('btn-close-contribution-modal');
+  const btnCancelContribution = document.getElementById('btn-cancel-contribution');
+  const formGoalContribution = document.getElementById('form-goal-contribution') as HTMLFormElement | null;
+  const inputContribGoalId = document.getElementById('input-contrib-goal-id') as HTMLInputElement | null;
+  const inputContribEntryId = document.getElementById('input-contrib-entry-id') as HTMLInputElement | null;
+  const inputContribDate = document.getElementById('input-contrib-date') as HTMLInputElement | null;
+  const inputContribMonth = document.getElementById('input-contrib-month') as HTMLInputElement | null;
+  const inputContribActual = document.getElementById('input-contrib-actual') as HTMLInputElement | null;
+  const modalContribGoalName = document.getElementById('modal-contrib-goal-name');
+  const modalContributionTitle = document.getElementById('modal-contribution-title');
+  const displayContribPlanned = document.getElementById('display-contrib-planned');
+  const displayContribRemaining = document.getElementById('display-contrib-remaining');
+  const displayContribMonthActual = document.getElementById('display-contrib-month-actual');
+  const contribDiffFeedback = document.getElementById('contrib-diff-feedback');
+  const contribErrorMsg = document.getElementById('contrib-error-msg');
+  const btnSubmitContribution = document.getElementById('btn-submit-contribution') as HTMLButtonElement | null;
+  const btnToggleEditPlan = document.getElementById('btn-toggle-edit-plan');
+  const containerEditPlan = document.getElementById('container-edit-plan');
+  const inputEditPlanValue = document.getElementById('input-edit-plan-value') as HTMLInputElement | null;
+  const btnSavePlanValue = document.getElementById('btn-save-plan-value');
 
   // Blog Elements
   const modalBlogReader = document.getElementById('modal-blog-reader');
@@ -494,6 +639,31 @@ import ResetModal from '../components/ResetModal.astro';
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  function formatMonthYear(monthStr: string): string {
+    if (!monthStr || !monthStr.includes('-')) return monthStr;
+    const parts = monthStr.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    if (isNaN(year) || isNaN(month)) return monthStr;
+    const date = new Date(year, month - 1, 1);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  }
+
+  function formatDateDisplay(dateStr: string): string {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const day = parseInt(parts[2], 10);
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        const d = new Date(year, month - 1, day);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    }
+    return dateStr;
   }
 
   // --- 5. Render All Modules ---
@@ -806,66 +976,93 @@ import ResetModal from '../components/ResetModal.astro';
   function renderDebtManagement(monthlyIncome: number) {
     if (!debtsTbody) return;
 
-    // Sort debts based on active debt payoff model
-    const sortedDebts = [...debts].sort((a, b) => {
+    // Separate active debts from paid-off accounts
+    const activeDebts = debts.filter((d) => !d.paidOff && d.currentOutstandingPrincipal > 0);
+    const paidDebts = debts.filter((d) => d.paidOff || d.currentOutstandingPrincipal <= 0);
+
+    // Sum monthly EMI capacity freed up by paid-off accounts
+    const freedMonthlyEMI = paidDebts.reduce((sum, d) => sum + d.monthlyEMI, 0);
+
+    // Sort active debts dynamically based on CURRENT outstanding balance / rate / EMI
+    const sortedDebts = [...activeDebts].sort((a, b) => {
       if (debtStrategy === 'avalanche') {
-        return b.rate - a.rate; // highest interest rate p.a. first
+        return b.interestRate - a.interestRate; // highest interest rate p.a. first
       } else if (debtStrategy === 'snowball') {
-        return a.balance - b.balance; // lowest principal balance first
+        return a.currentOutstandingPrincipal - b.currentOutstandingPrincipal; // lowest CURRENT principal balance first
       } else {
-        return b.minimum - a.minimum; // highest monthly EMI first (FOIR cash-flow relief)
+        return b.monthlyEMI - a.monthlyEMI; // highest monthly EMI first (FOIR cash-flow relief)
       }
     });
 
-    const totalDebtAmount = debts.reduce((sum, d) => sum + d.balance, 0);
-    const totalMinimums = debts.reduce((sum, d) => sum + d.minimum, 0);
+    const totalDebtAmount = activeDebts.reduce((sum, d) => sum + d.currentOutstandingPrincipal, 0);
+    const totalMinimums = activeDebts.reduce((sum, d) => sum + d.monthlyEMI, 0);
 
     if (statTotalDebt) statTotalDebt.textContent = formatMoney(totalDebtAmount);
-    if (debtItemCount) debtItemCount.textContent = debts.length.toString();
+    if (debtItemCount) debtItemCount.textContent = activeDebts.length.toString();
 
-    // FOIR / Debt-to-Income
-    const dtiRatio = monthlyIncome > 0 ? Math.round((totalMinimums / monthlyIncome) * 100) : 0;
-    if (statDtiRatio) statDtiRatio.textContent = `${dtiRatio}%`;
-    if (statDtiTier) {
-      if (debts.length === 0) {
+    // Zero-debt empty state handling (Fix empty-state behavior per requirements)
+    if (activeDebts.length === 0) {
+      if (statDtiRatio) statDtiRatio.textContent = '0%';
+      if (statDtiTier) {
         statDtiTier.textContent = 'No active debt';
-        statDtiTier.className = 'text-[11px] text-slate-500 font-semibold';
-      } else if (dtiRatio <= 40) {
-        statDtiTier.textContent = 'Comfortable Range (<40%)';
-        statDtiTier.className = 'text-[11px] text-emerald-700 font-semibold';
-      } else if (dtiRatio <= 50) {
-        statDtiTier.textContent = 'Moderate FOIR (40–50%)';
-        statDtiTier.className = 'text-[11px] text-amber-600 font-semibold';
-      } else {
-        statDtiTier.textContent = 'High Debt Burden (>50%)';
-        statDtiTier.className = 'text-[11px] text-rose-600 font-semibold';
+        statDtiTier.className = 'text-[11px] text-slate-500 dark:text-slate-400 font-semibold';
       }
+      if (statDebtFreeDate) statDebtFreeDate.textContent = '—';
+      if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = '—';
+      if (statInterestSaved) statInterestSaved.textContent = formatMoney(0);
+      if (debtExtraSlider) debtExtraSlider.disabled = true;
+      if (inputDebtExtraNumber) {
+        inputDebtExtraNumber.disabled = true;
+        inputDebtExtraNumber.title = 'Add a debt account to enable extra payments.';
+      }
+    } else {
+      if (debtExtraSlider) debtExtraSlider.disabled = false;
+      if (inputDebtExtraNumber) {
+        inputDebtExtraNumber.disabled = false;
+        inputDebtExtraNumber.title = '';
+      }
+
+      // FOIR / Debt-to-Income
+      const dtiRatio = monthlyIncome > 0 ? Math.round((totalMinimums / monthlyIncome) * 100) : 0;
+      if (statDtiRatio) statDtiRatio.textContent = `${dtiRatio}%`;
+      if (statDtiTier) {
+        if (dtiRatio <= 40) {
+          statDtiTier.textContent = 'Comfortable Range (<40%)';
+          statDtiTier.className = 'text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold';
+        } else if (dtiRatio <= 50) {
+          statDtiTier.textContent = 'Moderate FOIR (40–50%)';
+          statDtiTier.className = 'text-[11px] text-amber-600 dark:text-amber-400 font-semibold';
+        } else {
+          statDtiTier.textContent = 'High Debt Burden (>50%)';
+          statDtiTier.className = 'text-[11px] text-rose-600 dark:text-rose-400 font-semibold';
+        }
+      }
+
+      // Payoff Timeline & Interest Saved Simulation with Rollover + Extra Pre-payments
+      const totalMonthlyDebtBudget = totalMinimums + extraMonthlyDebtPayment + freedMonthlyEMI;
+      let monthsToPayoff = 0;
+      let totalInterestBase = 0;
+      let totalInterestAccelerated = 0;
+
+      if (totalMonthlyDebtBudget > 0 && totalDebtAmount > 0) {
+        const avgRate = activeDebts.reduce((acc, d) => acc + (d.interestRate * d.currentOutstandingPrincipal), 0) / (totalDebtAmount || 1) / 100 / 12;
+        monthsToPayoff = Math.max(1, Math.ceil(totalDebtAmount / totalMonthlyDebtBudget));
+        totalInterestAccelerated = totalDebtAmount * avgRate * (monthsToPayoff / 2);
+        const minDivisor = totalMinimums > 0 ? totalMinimums : totalMonthlyDebtBudget;
+        const monthsWithoutExtra = Math.max(1, Math.ceil(totalDebtAmount / minDivisor));
+        totalInterestBase = totalDebtAmount * avgRate * (monthsWithoutExtra / 2);
+      }
+
+      const interestSaved = Math.max(0, Math.round(totalInterestBase - totalInterestAccelerated));
+
+      const futureDate = new Date();
+      futureDate.setMonth(futureDate.getMonth() + monthsToPayoff);
+      const dateFormatted = futureDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+
+      if (statDebtFreeDate) statDebtFreeDate.textContent = totalDebtAmount > 0 ? dateFormatted : '—';
+      if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = totalDebtAmount > 0 ? `${monthsToPayoff} months remaining` : '—';
+      if (statInterestSaved) statInterestSaved.textContent = formatMoney(interestSaved);
     }
-
-    // Payoff Timeline & Interest Saved Simulation
-    const totalMonthlyDebtBudget = totalMinimums + extraMonthlyDebtPayment;
-    let monthsToPayoff = 0;
-    let totalInterestBase = 0;
-    let totalInterestAccelerated = 0;
-
-    if (totalMonthlyDebtBudget > 0 && totalDebtAmount > 0) {
-      const avgRate = debts.reduce((acc, d) => acc + (d.rate * d.balance), 0) / (totalDebtAmount || 1) / 100 / 12;
-      monthsToPayoff = Math.max(1, Math.ceil(totalDebtAmount / totalMonthlyDebtBudget));
-      totalInterestAccelerated = totalDebtAmount * avgRate * (monthsToPayoff / 2);
-      const minDivisor = totalMinimums > 0 ? totalMinimums : totalMonthlyDebtBudget;
-      const monthsWithoutExtra = Math.max(1, Math.ceil(totalDebtAmount / minDivisor));
-      totalInterestBase = totalDebtAmount * avgRate * (monthsWithoutExtra / 2);
-    }
-
-    const interestSaved = Math.max(0, Math.round(totalInterestBase - totalInterestAccelerated));
-
-    const futureDate = new Date();
-    futureDate.setMonth(futureDate.getMonth() + monthsToPayoff);
-    const dateFormatted = futureDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-
-    if (statDebtFreeDate) statDebtFreeDate.textContent = totalDebtAmount > 0 ? dateFormatted : '—';
-    if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = totalDebtAmount > 0 ? `${monthsToPayoff} months remaining` : '0 months';
-    if (statInterestSaved) statInterestSaved.textContent = formatMoney(interestSaved);
 
     if (extraPaymentLabel) extraPaymentLabel.textContent = formatMoney(extraMonthlyDebtPayment);
     if (inputDebtExtraNumber && document.activeElement !== inputDebtExtraNumber) {
@@ -966,56 +1163,193 @@ import ResetModal from '../components/ResetModal.astro';
       }
     }
 
-    // Empty state without demo loans
+    // Payment Rollover Planning Banner (Section 7)
+    if (debtRolloverBanner) {
+      if (sortedDebts.length > 0 && (freedMonthlyEMI > 0 || extraMonthlyDebtPayment > 0)) {
+        const topDebt = sortedDebts[0];
+        const extraForTop = extraMonthlyDebtPayment + freedMonthlyEMI;
+        const totalPlannedForTop = topDebt.monthlyEMI + extraForTop;
+
+        debtRolloverBanner.classList.remove('hidden');
+        debtRolloverBanner.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-0.5">
+              <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+                <span>🚀</span> Payoff Acceleration Target: <span class="text-emerald-700 dark:text-emerald-400 font-extrabold">${escapeHtml(topDebt.name)}</span>
+              </div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-300">
+                ${freedMonthlyEMI > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(freedMonthlyEMI)}/mo</strong> freed from paid-off account(s) + ` : ''}
+                ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mo</strong> extra pre-payment` : '₹0 extra pre-payment'}
+                rolled into your top target.
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 font-mono text-[11px] bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/70 shrink-0 shadow-2xs">
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Required EMI</span><span class="font-bold text-slate-800 dark:text-slate-200">${formatMoney(topDebt.monthlyEMI)}</span></div>
+              <span class="text-slate-400 font-bold">+</span>
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Extra / Rollover</span><span class="font-bold text-emerald-700 dark:text-emerald-400">+${formatMoney(extraForTop)}</span></div>
+              <span class="text-slate-400 font-bold">=</span>
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Total Planned</span><span class="font-extrabold text-slate-900 dark:text-slate-100">${formatMoney(totalPlannedForTop)}/mo</span></div>
+            </div>
+          </div>
+        `;
+      } else {
+        debtRolloverBanner.classList.add('hidden');
+      }
+    }
+
+    // Empty state without debts
     if (sortedDebts.length === 0) {
       debtsTbody.innerHTML = `
         <tr>
           <td colspan="6" class="py-10 text-center text-xs text-slate-500 dark:text-slate-400">
             <div class="space-y-1.5 max-w-sm mx-auto">
-              <div class="text-2xl">📋</div>
-              <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">No Active Loans or Debts Recorded</div>
+              <div class="text-2xl">${paidDebts.length > 0 ? '🎉' : '📋'}</div>
+              <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">
+                ${paidDebts.length > 0 ? 'All Recorded Debts are Paid Off!' : 'No Active Loans or Debts Recorded'}
+              </div>
               <p class="text-slate-500 dark:text-slate-400 text-[11px]">
-                Add your credit card dues, personal loans, car/two-wheeler EMIs, or home loans using the form on the left to view your prioritized payoff order.
+                ${paidDebts.length > 0
+                  ? 'Congratulations! You have cleared all your active loan accounts. See the Paid Off Accounts section below.'
+                  : 'Add your credit card dues, personal loans, car/two-wheeler EMIs, or home loans using the form on the left to view your prioritized payoff order.'}
               </p>
             </div>
           </td>
         </tr>
       `;
-      return;
+    } else {
+      debtsTbody.innerHTML = sortedDebts
+        .map(
+          (d, index) => {
+            let reasonTag = '';
+            if (index === 0) {
+              if (debtStrategy === 'avalanche') reasonTag = '<span class="text-[9px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded ml-1.5">Top Rate</span>';
+              else if (debtStrategy === 'snowball') reasonTag = '<span class="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded ml-1.5">Lowest Balance</span>';
+              else reasonTag = '<span class="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded ml-1.5">Highest EMI</span>';
+            }
+
+            const origNote = d.originalPrincipal > d.currentOutstandingPrincipal
+              ? `<span class="block text-[10px] text-slate-400 dark:text-slate-500 font-normal">Orig: ${formatMoney(d.originalPrincipal)}</span>`
+              : '';
+
+            const historyCount = d.paymentHistory?.length || 0;
+
+            return `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+          <td class="py-2.5 px-3 font-mono font-bold text-emerald-800 dark:text-emerald-400 whitespace-nowrap">#${index + 1}${reasonTag}</td>
+          <td class="py-2.5 px-3 font-medium text-slate-900 dark:text-slate-100">
+            ${escapeHtml(d.name)}
+            ${origNote}
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">${formatMoney(d.currentOutstandingPrincipal)}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">${d.interestRate}%</td>
+          <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-300 whitespace-nowrap">${formatMoney(d.monthlyEMI)}/mo</td>
+          <td class="py-2.5 px-3 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1.5">
+              <button
+                type="button"
+                data-record-payment-id="${d.id}"
+                class="btn-record-debt-payment px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors cursor-pointer shadow-2xs"
+                title="Record monthly payment / principal reduction"
+              >
+                Record Payment
+              </button>
+              <button
+                type="button"
+                data-history-debt-id="${d.id}"
+                class="btn-history-debt text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer"
+                title="View Payment History (${historyCount} records)"
+                aria-label="View Payment History"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </button>
+              <button
+                type="button"
+                data-delete-debt-id="${d.id}"
+                class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+                title="Delete debt account"
+                aria-label="Delete debt account"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+          }
+        )
+        .join('');
     }
 
-    debtsTbody.innerHTML = sortedDebts
-      .map(
-        (d, index) => {
-          let reasonTag = '';
-          if (index === 0) {
-            if (debtStrategy === 'avalanche') reasonTag = '<span class="text-[9px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded ml-1.5">Top Rate</span>';
-            else if (debtStrategy === 'snowball') reasonTag = '<span class="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded ml-1.5">Lowest Balance</span>';
-            else reasonTag = '<span class="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded ml-1.5">Highest EMI</span>';
-          }
+    // Render Paid Off Accounts Section (Section 6)
+    if (containerPaidDebts && paidDebtsTbody) {
+      if (paidDebts.length > 0) {
+        containerPaidDebts.classList.remove('hidden');
+        if (countPaidDebts) countPaidDebts.textContent = paidDebts.length.toString();
+        paidDebtsTbody.innerHTML = paidDebts
+          .map((d) => {
+            const historyCount = d.paymentHistory?.length || 0;
+            return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+              <td class="py-2.5 px-3">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                  ✓ Paid Off
+                </span>
+              </td>
+              <td class="py-2.5 px-3 font-medium text-slate-900 dark:text-slate-100">${escapeHtml(d.name)}</td>
+              <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300">${formatMoney(d.originalPrincipal)}</td>
+              <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">+${formatMoney(d.monthlyEMI)}/mo</td>
+              <td class="py-2.5 px-3 text-center">
+                <div class="flex items-center justify-center gap-1.5">
+                  <button
+                    type="button"
+                    data-history-debt-id="${d.id}"
+                    class="btn-history-debt px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  >
+                    History (${historyCount})
+                  </button>
+                  <button
+                    type="button"
+                    data-reopen-debt-id="${d.id}"
+                    class="btn-reopen-debt text-slate-400 hover:text-emerald-600 p-1 rounded-md transition-colors cursor-pointer"
+                    title="Reopen account / adjust balance"
+                    aria-label="Reopen account"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                  </button>
+                  <button
+                    type="button"
+                    data-delete-debt-id="${d.id}"
+                    class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+                    title="Delete debt record"
+                    aria-label="Delete debt record"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+          })
+          .join('');
+      } else {
+        containerPaidDebts.classList.add('hidden');
+      }
+    }
 
-          return `
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-        <td class="py-2.5 px-3 font-mono font-bold text-emerald-800 dark:text-emerald-400">#${index + 1}${reasonTag}</td>
-        <td class="py-2.5 px-3 font-medium text-slate-900 dark:text-slate-100">${escapeHtml(d.name)}</td>
-        <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100">${formatMoney(d.balance)}</td>
-        <td class="py-2.5 px-3 text-right font-mono font-semibold text-rose-600 dark:text-rose-400">${d.rate}%</td>
-        <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-300">${formatMoney(d.minimum)}/mo</td>
-        <td class="py-2.5 px-3 text-center">
-          <button
-            type="button"
-            data-delete-debt-id="${d.id}"
-            class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-            title="Delete debt"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
-        </td>
-      </tr>
-    `;
-        }
-      )
-      .join('');
+    // Attach Event Listeners to Debt Table Buttons
+    document.querySelectorAll('.btn-record-debt-payment').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-record-payment-id');
+        if (id) openDebtPaymentModal(id, false);
+      });
+    });
+
+    document.querySelectorAll('.btn-history-debt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-history-debt-id');
+        if (id) openDebtPaymentModal(id, true);
+      });
+    });
 
     document.querySelectorAll('.btn-delete-debt').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -1024,6 +1358,26 @@ import ResetModal from '../components/ResetModal.astro';
         debts = debts.filter((d) => d.id !== id);
         localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
         renderAll();
+      });
+    });
+
+    document.querySelectorAll('.btn-reopen-debt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-reopen-debt-id');
+        const debt = debts.find((d) => d.id === id);
+        if (!debt) return;
+        const newPrincipal = prompt(`Reopen "${debt.name}". Enter new outstanding principal amount:`, debt.originalPrincipal.toString());
+        if (newPrincipal !== null) {
+          const parsed = parseFloat(newPrincipal);
+          if (!isNaN(parsed) && parsed > 0) {
+            debt.currentOutstandingPrincipal = parsed;
+            debt.balance = parsed;
+            debt.paidOff = false;
+            debt.active = true;
+            localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+            renderAll();
+          }
+        }
       });
     });
   }
@@ -1053,44 +1407,216 @@ import ResetModal from '../components/ResetModal.astro';
 
     goalsContainer.innerHTML = goals
       .map((g) => {
-        const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
-        const remaining = Math.max(0, g.target - g.current);
-        const monthsLeft = g.monthly > 0 ? Math.ceil(remaining / g.monthly) : 0;
+        const startingAmount = typeof g.initialAmount === 'number' ? g.initialAmount : (g.current || 0);
+        const contributions = Array.isArray(g.contributions) ? g.contributions : [];
+        const totalActual = contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+        const totalSaved = startingAmount + totalActual;
+        const pct = g.target > 0 ? Math.min(100, Math.round((totalSaved / g.target) * 100)) : 0;
+        const remaining = Math.max(0, g.target - totalSaved);
+        const plannedMonthsLeft = g.monthly > 0 ? Math.ceil(remaining / g.monthly) : 0;
+
+        let plannedProjectionText = '';
+        if (remaining === 0) {
+          plannedProjectionText = 'Goal Reached!';
+        } else if (g.monthly > 0) {
+          plannedProjectionText = `${plannedMonthsLeft} mos to goal`;
+        } else {
+          plannedProjectionText = 'No monthly plan set';
+        }
+
+        // Distinct monthly totals for actual pace
+        const monthlyTotalsMap = new Map<string, number>();
+        contributions.forEach((c) => {
+          const m = c.month || (c.date ? c.date.slice(0, 7) : '');
+          if (m) monthlyTotalsMap.set(m, (monthlyTotalsMap.get(m) || 0) + (Number(c.actual) || 0));
+        });
+        const monthlyTotals = Array.from(monthlyTotalsMap.values());
+        const recentMonths = monthlyTotals.slice(-6);
+        const sumRecent = recentMonths.reduce((sum, v) => sum + v, 0);
+        const avgActual = recentMonths.length > 0 ? sumRecent / recentMonths.length : 0;
+
+        let actualProjectionText = '';
+        if (remaining === 0) {
+          actualProjectionText = 'Goal Reached!';
+        } else if (contributions.length > 0) {
+          if (avgActual > 0) {
+            const actualMonthsLeft = Math.ceil(remaining / avgActual);
+            actualProjectionText = `${actualMonthsLeft} mos left (~${formatMoney(Math.round(avgActual))}/mo)`;
+          } else {
+            actualProjectionText = '₹0 contributed recently';
+          }
+        }
+
+        // Group contributions by month
+        const monthGroups = new Map<string, GoalContribution[]>();
+        contributions.forEach((c) => {
+          const m = c.month || (c.date ? c.date.slice(0, 7) : '');
+          if (!m) return;
+          if (!monthGroups.has(m)) monthGroups.set(m, []);
+          monthGroups.get(m)!.push(c);
+        });
+
+        // Sort months descending (newest month first)
+        const sortedMonthKeys = Array.from(monthGroups.keys()).sort((a, b) => b.localeCompare(a));
+
+        const historyHtml = sortedMonthKeys
+          .map((m) => {
+            const monthEntries = monthGroups.get(m)!;
+            // Sort entries chronologically descending within the month
+            monthEntries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            const monthActual = monthEntries.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+            const monthPlanned = typeof monthEntries[0]?.planned === 'number' ? monthEntries[0].planned : g.monthly;
+            const diff = monthActual - monthPlanned;
+            const diffText = diff < 0
+              ? `-${formatMoney(Math.abs(diff))}`
+              : diff > 0
+                ? `+${formatMoney(diff)}`
+                : formatMoney(0);
+            const diffClass = diff < 0
+              ? 'text-rose-700 dark:text-rose-400 font-semibold'
+              : diff > 0
+                ? 'text-emerald-700 dark:text-emerald-400 font-semibold'
+                : 'text-slate-500 dark:text-slate-400';
+
+            return `
+              <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 p-2 space-y-1.5">
+                <div class="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono border-b border-slate-200/60 dark:border-slate-800 pb-1">
+                  <span class="font-bold text-slate-800 dark:text-slate-200">${formatMonthYear(m)}</span>
+                  <div class="flex items-center gap-1.5 sm:gap-2">
+                    <span class="text-slate-500 dark:text-slate-400">Plan: ${formatMoney(monthPlanned)}</span>
+                    <span class="font-bold text-slate-900 dark:text-slate-100">Actual: ${formatMoney(monthActual)}</span>
+                    <span class="${diffClass}">(${diffText})</span>
+                  </div>
+                </div>
+                <div class="divide-y divide-slate-200/40 dark:divide-slate-800 font-mono text-[10px]">
+                  ${monthEntries
+                    .map(
+                      (c) => `
+                    <div class="flex items-center justify-between py-1 px-0.5">
+                      <span class="text-slate-600 dark:text-slate-300 font-medium">${formatDateDisplay(c.date)}</span>
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(c.actual)}</span>
+                        <div class="flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            data-edit-contrib-id="${c.id}"
+                            data-goal-id="${g.id}"
+                            class="btn-edit-contrib text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 p-0.5 rounded transition-colors cursor-pointer"
+                            title="Edit contribution (${formatDateDisplay(c.date)})"
+                            aria-label="Edit contribution (${formatDateDisplay(c.date)})"
+                          >
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                          </button>
+                          <button
+                            type="button"
+                            data-delete-contrib-id="${c.id}"
+                            data-goal-id="${g.id}"
+                            class="btn-delete-contrib text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
+                            title="Remove contribution"
+                            aria-label="Remove contribution"
+                          >
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `
+                    )
+                    .join('')}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
 
         return `
-        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100">${escapeHtml(g.name)}</h4>
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-                ${pct}% Done
-              </span>
-              <button
-                type="button"
-                data-delete-goal-id="${g.id}"
-                class="btn-delete-goal text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-md transition-colors cursor-pointer"
-                title="Remove financial target"
-                aria-label="Remove financial target"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate pr-2" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</h4>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                  ${pct}% Done
+                </span>
+                <button
+                  type="button"
+                  data-delete-goal-id="${g.id}"
+                  class="btn-delete-goal text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-md transition-colors cursor-pointer"
+                  title="Remove financial target"
+                  aria-label="Remove financial target"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="flex justify-between items-baseline text-xs font-mono">
-            <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(g.current)}</span>
-            <span class="text-slate-500 dark:text-slate-400">Target: ${formatMoney(g.target)}</span>
-          </div>
+            <div class="space-y-1">
+              <div class="flex justify-between items-baseline text-xs font-mono">
+                <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(totalSaved)}</span>
+                <span class="text-slate-500 dark:text-slate-400">Target: ${formatMoney(g.target)}</span>
+              </div>
+              <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                <span>Remaining: <strong class="text-slate-700 dark:text-slate-300 font-semibold">${formatMoney(remaining)}</strong></span>
+                <span>Starting: ${formatMoney(startingAmount)}</span>
+              </div>
+            </div>
 
-          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-            <div class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-          </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
 
-          <div class="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
-            <span>+${formatMoney(g.monthly)}/mo</span>
-            <span>${monthsLeft > 0 ? `${monthsLeft} mos to goal` : 'Goal Reached!'}</span>
+            <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+              <div class="flex justify-between items-center">
+                <span class="flex items-center gap-1">
+                  Plan: +${formatMoney(g.monthly)}/mo
+                  <button
+                    type="button"
+                    data-edit-plan-goal-id="${g.id}"
+                    class="btn-edit-plan text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer"
+                    title="Edit planned monthly allocation"
+                    aria-label="Edit planned monthly allocation"
+                  >
+                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  </button>
+                </span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">${plannedProjectionText}</span>
+              </div>
+              ${actualProjectionText ? `
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="text-slate-400">Actual:</span>
+                <span class="font-medium text-emerald-800 dark:text-emerald-300">${actualProjectionText}</span>
+              </div>
+              ` : ''}
+            </div>
+
+            <!-- Contribution Action -->
+            <button
+              type="button"
+              data-open-contrib-goal-id="${g.id}"
+              class="btn-open-contrib-modal w-full text-xs font-semibold py-1.5 px-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Record Contribution</span>
+            </button>
+
+            <!-- Compact Contribution History Section -->
+            ${contributions.length > 0 ? `
+            <details class="text-[11px] border border-slate-200/70 dark:border-slate-800 rounded-xl p-2 bg-slate-50/60 dark:bg-slate-850/60 group">
+              <summary class="cursor-pointer font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between select-none text-[11px]">
+                <span>Contribution History (${contributions.length} ${contributions.length === 1 ? 'entry' : 'entries'})</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <div class="mt-2 space-y-2">
+                ${historyHtml}
+              </div>
+            </details>
+            ` : `
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 text-center py-0.5">
+              No actual contributions recorded yet
+            </div>
+            `}
           </div>
         </div>
       `;
@@ -1105,6 +1631,55 @@ import ResetModal from '../components/ResetModal.astro';
         goals = goals.filter((g) => g.id !== id);
         localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
         renderAll();
+      });
+    });
+
+    // Attach open contribution modal handlers
+    document.querySelectorAll('.btn-open-contrib-modal').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-open-contrib-goal-id');
+        if (!id) return;
+        openContributionModal(id);
+      });
+    });
+
+    // Attach edit contribution handlers
+    document.querySelectorAll('.btn-edit-contrib').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const goalId = btn.getAttribute('data-goal-id');
+        const contribId = btn.getAttribute('data-edit-contrib-id');
+        if (!goalId || !contribId) return;
+        openContributionModal(goalId, undefined, false, contribId);
+      });
+    });
+
+    // Attach delete contribution handlers
+    document.querySelectorAll('.btn-delete-contrib').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const goalId = btn.getAttribute('data-goal-id');
+        const contribId = btn.getAttribute('data-delete-contrib-id');
+        if (!goalId || !contribId) return;
+        const goal = goals.find((g) => g.id === goalId);
+        if (!goal || !goal.contributions) return;
+
+        goal.contributions = goal.contributions.filter((c) => c.id !== contribId);
+        const starting = typeof goal.initialAmount === 'number' ? goal.initialAmount : (goal.current || 0);
+        const totalActual = goal.contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+        goal.current = starting + totalActual;
+        localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+        renderAll();
+      });
+    });
+
+    // Attach edit plan handlers
+    document.querySelectorAll('.btn-edit-plan').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const goalId = btn.getAttribute('data-edit-plan-goal-id');
+        if (!goalId) return;
+        openContributionModal(goalId, undefined, true);
       });
     });
   }
@@ -1419,12 +1994,21 @@ import ResetModal from '../components/ResetModal.astro';
     if (isNaN(minimum) || minimum < 0 || minimum > 100000000) return;
     if (isNaN(rate) || rate < 0 || rate > 100) return;
 
+    const isPaid = balance <= 0;
     debts.push({
       id: `debt-${Date.now()}`,
       name,
+      debtName: name,
+      originalPrincipal: balance,
+      currentOutstandingPrincipal: balance,
       balance,
+      interestRate: rate,
       rate,
-      minimum
+      monthlyEMI: minimum,
+      minimum,
+      paymentHistory: [],
+      active: !isPaid,
+      paidOff: isPaid
     });
 
     localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
@@ -1433,6 +2017,333 @@ import ResetModal from '../components/ResetModal.astro';
     inputDebtRate.value = '';
     inputDebtMinimum.value = '';
     renderAll();
+  });
+
+  // --- Debt Payment Modal Engine ---
+  let isSubmittingDebtPayment = false;
+
+  function showDebtPaymentError(msg: string) {
+    if (debtPaymentErrorMsg) {
+      debtPaymentErrorMsg.textContent = msg;
+      debtPaymentErrorMsg.classList.remove('hidden');
+    }
+  }
+
+  function hideDebtPaymentError() {
+    if (debtPaymentErrorMsg) {
+      debtPaymentErrorMsg.textContent = '';
+      debtPaymentErrorMsg.classList.add('hidden');
+    }
+  }
+
+  function updateDebtPaymentLiveFeedback() {
+    const debtId = inputDebtPaymentDebtId?.value;
+    const debt = debts.find((d) => d.id === debtId);
+    if (!debt) return;
+
+    const principal = parseFloat(inputDebtPaymentPrincipal?.value || '0') || 0;
+    const extra = parseFloat(inputDebtPaymentExtra?.value || '0') || 0;
+    const totalReduction = principal + extra;
+    const projectedNew = Math.max(0, debt.currentOutstandingPrincipal - totalReduction);
+
+    if (displayPaymentPrincipalReduction) {
+      displayPaymentPrincipalReduction.textContent = formatMoney(totalReduction);
+    }
+    if (displayPaymentNewBalance) {
+      if (projectedNew === 0) {
+        displayPaymentNewBalance.innerHTML = `<span class="text-emerald-700 dark:text-emerald-400 font-bold">${formatMoney(0)} (Loan Cleared! 🎉)</span>`;
+      } else {
+        displayPaymentNewBalance.textContent = formatMoney(projectedNew);
+      }
+    }
+  }
+
+  function renderDebtModalHistory(debt: DebtItem) {
+    if (!modalDebtHistoryTbody || !modalDebtHistoryCount) return;
+    const history = debt.paymentHistory || [];
+    modalDebtHistoryCount.textContent = `${history.length} payment${history.length === 1 ? '' : 's'}`;
+
+    if (history.length === 0) {
+      modalDebtHistoryTbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="py-4 text-center text-[10px] text-slate-400 dark:text-slate-500">
+            No payments recorded yet for this account.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    // Sort newest date first
+    const sorted = [...history].sort((a, b) => b.date.localeCompare(a.date));
+    modalDebtHistoryTbody.innerHTML = sorted
+      .map(
+        (p) => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+          <td class="py-1.5 px-2.5 whitespace-nowrap">
+            <span class="font-medium text-slate-800 dark:text-slate-200">${formatDateDisplay(p.date)}</span>
+            ${p.notes ? `<span class="block text-[9px] text-slate-400 font-sans italic truncate max-w-[120px]">${escapeHtml(p.notes)}</span>` : ''}
+          </td>
+          <td class="py-1.5 px-2 text-right font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">${formatMoney(p.totalPayment)}</td>
+          <td class="py-1.5 px-2 text-right text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">${formatMoney(p.principalPaid)}</td>
+          <td class="py-1.5 px-2 text-right text-rose-600 dark:text-rose-400 whitespace-nowrap">${formatMoney(p.interestPaid)}</td>
+          <td class="py-1.5 px-2 text-right text-slate-600 dark:text-slate-300 whitespace-nowrap">${formatMoney(p.extraPrepayment)}</td>
+          <td class="py-1.5 px-2 text-center whitespace-nowrap">
+            <button
+              type="button"
+              data-delete-payment-id="${p.id}"
+              data-debt-id="${debt.id}"
+              class="btn-delete-payment text-slate-400 hover:text-rose-600 p-0.5 rounded transition-colors cursor-pointer"
+              title="Delete payment record and revert balance"
+              aria-label="Delete payment record"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </td>
+        </tr>
+      `
+      )
+      .join('');
+
+    // Attach delete payment listeners
+    modalDebtHistoryTbody.querySelectorAll('.btn-delete-payment').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const paymentId = btn.getAttribute('data-delete-payment-id');
+        const dId = btn.getAttribute('data-debt-id');
+        const targetDebt = debts.find((d) => d.id === dId);
+        if (!targetDebt || !paymentId) return;
+
+        const pIndex = (targetDebt.paymentHistory || []).findIndex((p) => p.id === paymentId);
+        if (pIndex >= 0) {
+          const removed = targetDebt.paymentHistory![pIndex];
+          targetDebt.paymentHistory!.splice(pIndex, 1);
+          // Restore balance
+          const restored = targetDebt.currentOutstandingPrincipal + removed.principalPaid + removed.extraPrepayment;
+          targetDebt.currentOutstandingPrincipal = Math.min(targetDebt.originalPrincipal, restored);
+          targetDebt.balance = targetDebt.currentOutstandingPrincipal;
+          if (targetDebt.currentOutstandingPrincipal > 0) {
+            targetDebt.paidOff = false;
+            targetDebt.active = true;
+          }
+          localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+          renderDebtModalHistory(targetDebt);
+          if (modalDebtCurrentPrincipal) {
+            modalDebtCurrentPrincipal.textContent = formatMoney(targetDebt.currentOutstandingPrincipal);
+          }
+          updateDebtPaymentLiveFeedback();
+          renderAll();
+        }
+      });
+    });
+  }
+
+  function openDebtPaymentModal(debtId: string, historyOnly = false) {
+    const debt = debts.find((d) => d.id === debtId);
+    if (!debt || !debtPaymentModal) return;
+
+    if (inputDebtPaymentDebtId) inputDebtPaymentDebtId.value = debt.id;
+    if (modalDebtName) modalDebtName.textContent = debt.name;
+    if (modalDebtCurrentPrincipal) modalDebtCurrentPrincipal.textContent = formatMoney(debt.currentOutstandingPrincipal);
+    if (modalDebtRateEmi) {
+      modalDebtRateEmi.textContent = `${formatMoney(debt.monthlyEMI)}/mo @ ${debt.interestRate}% p.a.`;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (inputDebtPaymentDate) inputDebtPaymentDate.value = todayStr;
+
+    // Default payment values
+    const defaultTotal = debt.monthlyEMI > 0
+      ? Math.min(debt.monthlyEMI, debt.currentOutstandingPrincipal)
+      : Math.min(5000, debt.currentOutstandingPrincipal);
+
+    // Initial 1-month interest estimate for user convenience
+    const estInterest = Math.min(
+      defaultTotal,
+      Math.round(debt.currentOutstandingPrincipal * (debt.interestRate / 100) / 12)
+    );
+    const estPrincipal = Math.max(0, Math.min(debt.currentOutstandingPrincipal, defaultTotal - estInterest));
+
+    if (inputDebtPaymentTotal) inputDebtPaymentTotal.value = defaultTotal.toString();
+    if (inputDebtPaymentPrincipal) inputDebtPaymentPrincipal.value = estPrincipal.toString();
+    if (inputDebtPaymentInterest) inputDebtPaymentInterest.value = estInterest.toString();
+    if (inputDebtPaymentExtra) inputDebtPaymentExtra.value = '0';
+    if (inputDebtPaymentNotes) inputDebtPaymentNotes.value = '';
+
+    if (paymentEstimateNotice) paymentEstimateNotice.classList.add('hidden');
+    hideDebtPaymentError();
+
+    renderDebtModalHistory(debt);
+    updateDebtPaymentLiveFeedback();
+
+    isSubmittingDebtPayment = false;
+    if (btnSaveDebtPayment) {
+      btnSaveDebtPayment.disabled = debt.paidOff === true;
+      if (debt.paidOff) {
+        btnSaveDebtPayment.textContent = 'Account Paid Off';
+      } else {
+        btnSaveDebtPayment.innerHTML = '<span>💾</span> Save Payment';
+      }
+    }
+
+    debtPaymentModal.classList.remove('hidden');
+    if (!historyOnly && inputDebtPaymentTotal) {
+      inputDebtPaymentTotal.focus();
+    }
+  }
+
+  function closeDebtPaymentModal() {
+    debtPaymentModal?.classList.add('hidden');
+    hideDebtPaymentError();
+    isSubmittingDebtPayment = false;
+    if (btnSaveDebtPayment) btnSaveDebtPayment.disabled = false;
+  }
+
+  btnDebtEstimateSplit?.addEventListener('click', () => {
+    const debtId = inputDebtPaymentDebtId?.value;
+    const debt = debts.find((d) => d.id === debtId);
+    if (!debt || !inputDebtPaymentTotal) return;
+
+    const total = parseFloat(inputDebtPaymentTotal.value) || 0;
+    if (total <= 0) {
+      showDebtPaymentError('Please enter a total payment amount first.');
+      return;
+    }
+
+    const estInterest = Math.min(
+      total,
+      Math.round(debt.currentOutstandingPrincipal * (debt.interestRate / 100) / 12)
+    );
+    const estPrincipal = Math.max(0, Math.min(debt.currentOutstandingPrincipal, total - estInterest));
+
+    if (inputDebtPaymentPrincipal) inputDebtPaymentPrincipal.value = estPrincipal.toString();
+    if (inputDebtPaymentInterest) inputDebtPaymentInterest.value = estInterest.toString();
+    if (inputDebtPaymentExtra) inputDebtPaymentExtra.value = '0';
+
+    if (paymentEstimateNotice) paymentEstimateNotice.classList.remove('hidden');
+    hideDebtPaymentError();
+    updateDebtPaymentLiveFeedback();
+  });
+
+  inputDebtPaymentTotal?.addEventListener('input', () => {
+    const total = parseFloat(inputDebtPaymentTotal?.value || '0') || 0;
+    const principal = parseFloat(inputDebtPaymentPrincipal?.value || '0') || 0;
+    // Auto-calculate interest paid as totalPayment - principalPaid
+    if (total >= principal && inputDebtPaymentInterest) {
+      inputDebtPaymentInterest.value = Math.max(0, total - principal).toString();
+    }
+    updateDebtPaymentLiveFeedback();
+  });
+
+  inputDebtPaymentPrincipal?.addEventListener('input', () => {
+    const total = parseFloat(inputDebtPaymentTotal?.value || '0') || 0;
+    const principal = parseFloat(inputDebtPaymentPrincipal?.value || '0') || 0;
+    if (total >= principal && inputDebtPaymentInterest) {
+      inputDebtPaymentInterest.value = Math.max(0, total - principal).toString();
+    }
+    if (paymentEstimateNotice) paymentEstimateNotice.classList.add('hidden');
+    updateDebtPaymentLiveFeedback();
+  });
+
+  inputDebtPaymentExtra?.addEventListener('input', () => {
+    updateDebtPaymentLiveFeedback();
+  });
+
+  formDebtPayment?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (isSubmittingDebtPayment) return;
+
+    const debtId = inputDebtPaymentDebtId?.value;
+    const debt = debts.find((d) => d.id === debtId);
+    if (!debt) return;
+
+    if (debt.paidOff) {
+      showDebtPaymentError('This debt is already fully paid off. Reopen the account to record further payments.');
+      return;
+    }
+
+    const dateVal = inputDebtPaymentDate?.value;
+    if (!dateVal) {
+      showDebtPaymentError('Please select a valid payment date.');
+      return;
+    }
+
+    const total = parseFloat(inputDebtPaymentTotal?.value || '0');
+    const principal = parseFloat(inputDebtPaymentPrincipal?.value || '0');
+    const interest = parseFloat(inputDebtPaymentInterest?.value || '0');
+    const extra = parseFloat(inputDebtPaymentExtra?.value || '0');
+    const notes = inputDebtPaymentNotes?.value.trim() || '';
+
+    // Validations (Requirement 11)
+    if (isNaN(total) || total < 0) {
+      showDebtPaymentError('Total payment amount cannot be negative.');
+      return;
+    }
+    if (isNaN(principal) || principal < 0) {
+      showDebtPaymentError('Principal paid cannot be negative.');
+      return;
+    }
+    if (isNaN(interest) || interest < 0) {
+      showDebtPaymentError('Interest paid cannot be negative.');
+      return;
+    }
+    if (isNaN(extra) || extra < 0) {
+      showDebtPaymentError('Extra pre-payment cannot be negative.');
+      return;
+    }
+
+    const totalReduction = principal + extra;
+    if (totalReduction <= 0) {
+      showDebtPaymentError('Principal paid or extra pre-payment must be greater than ₹0.');
+      return;
+    }
+
+    if (totalReduction > debt.currentOutstandingPrincipal) {
+      showDebtPaymentError(
+        `Total principal reduction (${formatMoney(totalReduction)}) cannot exceed current outstanding principal (${formatMoney(debt.currentOutstandingPrincipal)}).`
+      );
+      return;
+    }
+
+    // Accidental duplicate submission prevention
+    isSubmittingDebtPayment = true;
+    if (btnSaveDebtPayment) btnSaveDebtPayment.disabled = true;
+
+    // Formula: newOutstandingPrincipal = max(0, previousOutstandingPrincipal - principalPaid - extraPrepayment)
+    const newOutstandingPrincipal = Math.max(0, debt.currentOutstandingPrincipal - principal - extra);
+
+    const paymentRecord: DebtPaymentRecord = {
+      id: `pay-${debt.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      date: dateVal,
+      month: dateVal.slice(0, 7),
+      totalPayment: total > 0 ? total : (principal + interest + extra),
+      principalPaid: principal,
+      interestPaid: interest,
+      extraPrepayment: extra,
+      notes
+    };
+
+    debt.paymentHistory = debt.paymentHistory || [];
+    debt.paymentHistory.push(paymentRecord);
+    debt.currentOutstandingPrincipal = newOutstandingPrincipal;
+    debt.balance = newOutstandingPrincipal;
+
+    // When debt is fully paid (Requirement 6)
+    if (newOutstandingPrincipal <= 0) {
+      debt.currentOutstandingPrincipal = 0;
+      debt.balance = 0;
+      debt.paidOff = true;
+      debt.active = false;
+    }
+
+    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+    closeDebtPaymentModal();
+    renderAll();
+  });
+
+  btnCloseDebtPaymentModal?.addEventListener('click', closeDebtPaymentModal);
+  btnCancelDebtPayment?.addEventListener('click', closeDebtPaymentModal);
+  debtPaymentModal?.addEventListener('click', (e) => {
+    if (e.target === debtPaymentModal) closeDebtPaymentModal();
   });
 
   // Add Goal Form (Allows 0 to 10,000,000 without restriction)
@@ -1451,7 +2362,9 @@ import ResetModal from '../components/ResetModal.astro';
       name,
       target,
       current,
-      monthly
+      initialAmount: current,
+      monthly,
+      contributions: []
     });
 
     localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
@@ -1466,6 +2379,257 @@ import ResetModal from '../components/ResetModal.astro';
     const el = document.getElementById('section-add-goal');
     el?.scrollIntoView({ behavior: 'smooth' });
     inputGoalName?.focus();
+  });
+
+  // --- Goal Contribution Modal Engine ---
+  let isSubmittingContrib = false;
+
+  function openContributionModal(goalId: string, defaultDate?: string, openPlanEdit = false, editContribId?: string) {
+    const goal = goals.find((g) => g.id === goalId);
+    if (!goal || !goalContributionModal) return;
+
+    if (inputContribGoalId) inputContribGoalId.value = goal.id;
+    if (modalContribGoalName) modalContribGoalName.textContent = goal.name;
+    if (displayContribPlanned) displayContribPlanned.textContent = formatMoney(goal.monthly);
+
+    // Calculate total saved and remaining for this goal
+    const startingAmount = typeof goal.initialAmount === 'number' ? goal.initialAmount : (goal.current || 0);
+    const contribs = Array.isArray(goal.contributions) ? goal.contributions : [];
+    const totalActual = contribs.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+    const totalSaved = startingAmount + totalActual;
+    const remaining = Math.max(0, goal.target - totalSaved);
+    if (displayContribRemaining) displayContribRemaining.textContent = formatMoney(remaining);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    if (editContribId) {
+      const existingEntry = contribs.find((c) => c.id === editContribId);
+      if (existingEntry) {
+        if (inputContribEntryId) inputContribEntryId.value = existingEntry.id || editContribId;
+        if (inputContribDate) inputContribDate.value = existingEntry.date || `${existingEntry.month}-01`;
+        if (inputContribActual) inputContribActual.value = existingEntry.actual.toString();
+        if (modalContributionTitle) modalContributionTitle.textContent = 'Edit Contribution';
+        if (btnSubmitContribution) btnSubmitContribution.textContent = 'Update Contribution';
+      }
+    } else {
+      if (inputContribEntryId) inputContribEntryId.value = '';
+      if (inputContribDate) inputContribDate.value = defaultDate || todayStr;
+      if (inputContribActual) inputContribActual.value = '';
+      if (modalContributionTitle) modalContributionTitle.textContent = 'Record Contribution';
+      if (btnSubmitContribution) btnSubmitContribution.textContent = 'Add Contribution';
+    }
+
+    updateContributionFeedback(goal);
+
+    // Plan edit container
+    if (containerEditPlan) {
+      if (openPlanEdit) {
+        containerEditPlan.classList.remove('hidden');
+        if (inputEditPlanValue) {
+          inputEditPlanValue.value = goal.monthly.toString();
+          inputEditPlanValue.focus();
+        }
+      } else {
+        containerEditPlan.classList.add('hidden');
+      }
+    }
+
+    if (contribErrorMsg) {
+      contribErrorMsg.textContent = '';
+      contribErrorMsg.classList.add('hidden');
+    }
+
+    isSubmittingContrib = false;
+    if (btnSubmitContribution) btnSubmitContribution.disabled = false;
+    goalContributionModal.classList.remove('hidden');
+  }
+
+  function closeContributionModal() {
+    goalContributionModal?.classList.add('hidden');
+    if (contribErrorMsg) contribErrorMsg.classList.add('hidden');
+    if (contribDiffFeedback) contribDiffFeedback.classList.add('hidden');
+    if (containerEditPlan) containerEditPlan.classList.add('hidden');
+    isSubmittingContrib = false;
+    if (btnSubmitContribution) btnSubmitContribution.disabled = false;
+  }
+
+  function updateContributionFeedback(goal: GoalItem) {
+    const selectedDate = inputContribDate?.value || new Date().toISOString().split('T')[0];
+    const selectedMonth = selectedDate.slice(0, 7);
+    const editingId = inputContribEntryId?.value;
+
+    // Calculate how much has ALREADY been contributed in this selected month (excluding the one being edited, if any)
+    const existingMonthContributions = (goal.contributions || [])
+      .filter((c) => (c.month || c.date?.slice(0, 7)) === selectedMonth && c.id !== editingId)
+      .reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+
+    if (displayContribMonthActual) {
+      displayContribMonthActual.textContent = formatMoney(existingMonthContributions);
+    }
+
+    if (!contribDiffFeedback || !inputContribActual) return;
+    const actualStr = inputContribActual.value.trim();
+    if (!actualStr) {
+      contribDiffFeedback.className = 'hidden';
+      contribDiffFeedback.textContent = '';
+      return;
+    }
+    const enteredAmount = parseFloat(actualStr);
+    if (isNaN(enteredAmount) || enteredAmount <= 0) {
+      contribDiffFeedback.className = 'hidden';
+      contribDiffFeedback.textContent = '';
+      return;
+    }
+
+    const monthName = formatMonthYear(selectedMonth);
+    const newMonthTotal = existingMonthContributions + enteredAmount;
+    const planned = goal.monthly;
+    const diff = newMonthTotal - planned;
+
+    if (diff < 0) {
+      contribDiffFeedback.textContent = `With this contribution, ${monthName} total will be ${formatMoney(newMonthTotal)} (${formatMoney(Math.abs(diff))} below planned allocation).`;
+      contribDiffFeedback.className = 'text-xs p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 block';
+    } else if (diff > 0) {
+      contribDiffFeedback.textContent = `With this contribution, ${monthName} total will be ${formatMoney(newMonthTotal)} (${formatMoney(diff)} above planned allocation).`;
+      contribDiffFeedback.className = 'text-xs p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 block';
+    } else {
+      contribDiffFeedback.textContent = `With this contribution, ${monthName} total will reach your planned allocation of ${formatMoney(planned)}.`;
+      contribDiffFeedback.className = 'text-xs p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 block';
+    }
+  }
+
+  formGoalContribution?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (isSubmittingContrib) return;
+
+    const goalId = inputContribGoalId?.value;
+    const goal = goals.find((g) => g.id === goalId);
+    if (!goal) return;
+
+    const dateVal = inputContribDate?.value;
+    if (!dateVal) {
+      if (contribErrorMsg) {
+        contribErrorMsg.textContent = 'Please select a valid contribution date.';
+        contribErrorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    const actual = parseFloat(inputContribActual?.value || '');
+    if (isNaN(actual) || actual <= 0) {
+      if (contribErrorMsg) {
+        contribErrorMsg.textContent = 'Contribution amount must be greater than 0.';
+        contribErrorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    const entryId = inputContribEntryId?.value;
+
+    // Validation: Do not allow total contributions to exceed remaining goal amount
+    const startingAmount = typeof goal.initialAmount === 'number' ? goal.initialAmount : (goal.current || 0);
+    const otherActuals = (goal.contributions || [])
+      .filter((c) => c.id !== entryId)
+      .reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+    const currentWithoutThis = startingAmount + otherActuals;
+    const maxAllowed = Math.max(0, goal.target - currentWithoutThis);
+
+    if (actual > maxAllowed) {
+      if (contribErrorMsg) {
+        contribErrorMsg.textContent = `Contribution cannot exceed remaining goal amount (${formatMoney(maxAllowed)}).`;
+        contribErrorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    isSubmittingContrib = true;
+    if (btnSubmitContribution) btnSubmitContribution.disabled = true;
+
+    if (!goal.contributions) goal.contributions = [];
+    const month = dateVal.slice(0, 7);
+
+    if (entryId) {
+      // Editing existing entry
+      const existingIdx = goal.contributions.findIndex((c) => c.id === entryId);
+      if (existingIdx >= 0) {
+        goal.contributions[existingIdx] = {
+          ...goal.contributions[existingIdx],
+          date: dateVal,
+          month,
+          actual
+        };
+      }
+    } else {
+      // Adding a separate valid contribution (supports multiple in the same month/date)
+      goal.contributions.push({
+        id: `contrib-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        date: dateVal,
+        month,
+        planned: goal.monthly,
+        actual
+      });
+    }
+
+    // Sort chronologically by date
+    goal.contributions.sort((a, b) => (a.date || a.month).localeCompare(b.date || b.month));
+
+    // Recalculate current saved
+    const totalActual = goal.contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
+    goal.current = startingAmount + totalActual;
+
+    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    closeContributionModal();
+    renderAll();
+  });
+
+  inputContribDate?.addEventListener('change', () => {
+    const goalId = inputContribGoalId?.value;
+    const goal = goals.find((g) => g.id === goalId);
+    if (goal) updateContributionFeedback(goal);
+  });
+
+  inputContribActual?.addEventListener('input', () => {
+    const goalId = inputContribGoalId?.value;
+    const goal = goals.find((g) => g.id === goalId);
+    if (goal) updateContributionFeedback(goal);
+  });
+
+  btnToggleEditPlan?.addEventListener('click', () => {
+    containerEditPlan?.classList.toggle('hidden');
+    if (!containerEditPlan?.classList.contains('hidden') && inputEditPlanValue) {
+      const goalId = inputContribGoalId?.value;
+      const goal = goals.find((g) => g.id === goalId);
+      if (goal) inputEditPlanValue.value = goal.monthly.toString();
+      inputEditPlanValue?.focus();
+    }
+  });
+
+  btnSavePlanValue?.addEventListener('click', () => {
+    const goalId = inputContribGoalId?.value;
+    const goal = goals.find((g) => g.id === goalId);
+    if (!goal || !inputEditPlanValue) return;
+
+    const newPlan = parseFloat(inputEditPlanValue.value);
+    if (isNaN(newPlan) || newPlan < 0 || newPlan > 10000000) {
+      if (contribErrorMsg) {
+        contribErrorMsg.textContent = 'Please enter a valid planned monthly allocation (₹0 - ₹1,00,00,000).';
+        contribErrorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    goal.monthly = newPlan;
+    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    if (displayContribPlanned) displayContribPlanned.textContent = formatMoney(goal.monthly);
+    containerEditPlan?.classList.add('hidden');
+    updateContributionFeedback(goal);
+    renderAll();
+  });
+
+  btnCloseContributionModal?.addEventListener('click', closeContributionModal);
+  btnCancelContribution?.addEventListener('click', closeContributionModal);
+  goalContributionModal?.addEventListener('click', (e) => {
+    if (e.target === goalContributionModal) closeContributionModal();
   });
 
   // Blog Reader Actions

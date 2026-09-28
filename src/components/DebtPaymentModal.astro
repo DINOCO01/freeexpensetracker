@@ -1,0 +1,233 @@
+---
+---
+
+<!-- Debt Payment Entry & History Modal Backdrop -->
+<div
+  id="debt-payment-modal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs hidden overflow-y-auto"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-debt-payment-title"
+>
+  <div class="bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 my-6">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-sm border border-emerald-200 dark:border-emerald-800/60 shrink-0">
+          💳
+        </div>
+        <div class="min-w-0">
+          <h3 id="modal-debt-payment-title" class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] truncate">
+            Record Debt Payment
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+            Account: <span id="modal-debt-name" class="font-semibold text-slate-800 dark:text-slate-200"></span>
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        id="btn-close-debt-payment-modal"
+        class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
+        aria-label="Close modal"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Active Balance Info Bar -->
+    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+      <div>
+        <span class="text-slate-500 dark:text-slate-400 text-[11px] block">Current Outstanding Principal:</span>
+        <span id="modal-debt-current-principal" class="text-sm font-bold font-mono text-slate-900 dark:text-slate-100">₹0</span>
+      </div>
+      <div class="text-right">
+        <span class="text-slate-500 dark:text-slate-400 text-[11px] block">Monthly EMI / Rate:</span>
+        <span id="modal-debt-rate-emi" class="text-xs font-semibold font-mono text-slate-700 dark:text-slate-300">—</span>
+      </div>
+    </div>
+
+    <!-- Payment Form -->
+    <form id="form-debt-payment" class="space-y-3.5">
+      <input type="hidden" id="input-debt-payment-debt-id" />
+
+      <!-- Row 1: Payment Date & Total Payment -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="input-debt-payment-date" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Payment Date
+          </label>
+          <input
+            type="date"
+            id="input-debt-payment-date"
+            required
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="input-debt-payment-total" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Total Payment (<span class="currency-label font-mono">₹</span>)
+          </label>
+          <input
+            type="number"
+            id="input-debt-payment-total"
+            required
+            min="1"
+            max="100000000"
+            step="any"
+            placeholder="e.g. 8500"
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-bold font-mono text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- Split Options Banner -->
+      <div class="flex items-center justify-between text-[11px] px-1 text-slate-500 dark:text-slate-400">
+        <span class="font-medium">Principal & Interest Breakdown:</span>
+        <button
+          type="button"
+          id="btn-debt-estimate-split"
+          class="text-emerald-700 dark:text-emerald-400 hover:underline font-semibold cursor-pointer flex items-center gap-1"
+          title="Calculate approximate 1-month interest based on annual rate"
+        >
+          <span>⚡</span> Estimate 1-Mo Split <span class="text-[9px] uppercase font-bold text-amber-700 dark:text-amber-400">(Estimated)</span>
+        </button>
+      </div>
+
+      <!-- Row 2: Principal Paid & Interest Paid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="input-debt-payment-principal" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Principal Paid (<span class="currency-label font-mono">₹</span>)
+          </label>
+          <input
+            type="number"
+            id="input-debt-payment-principal"
+            required
+            min="0"
+            max="100000000"
+            step="any"
+            placeholder="e.g. 6000"
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-bold font-mono text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Deducted from loan balance</p>
+        </div>
+
+        <div>
+          <label for="input-debt-payment-interest" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Interest Paid (<span class="currency-label font-mono">₹</span>)
+          </label>
+          <input
+            type="number"
+            id="input-debt-payment-interest"
+            min="0"
+            max="100000000"
+            step="any"
+            value="0"
+            placeholder="e.g. 2500"
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-bold font-mono text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Lender fee (not deducted from principal)</p>
+        </div>
+      </div>
+
+      <!-- Row 3: Extra Pre-payment & Notes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="input-debt-payment-extra" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Extra Pre-payment (<span class="currency-label font-mono">₹</span>)
+          </label>
+          <input
+            type="number"
+            id="input-debt-payment-extra"
+            min="0"
+            max="100000000"
+            step="any"
+            value="0"
+            placeholder="0"
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-bold font-mono text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Additional principal pre-payment</p>
+        </div>
+
+        <div>
+          <label for="input-debt-payment-notes" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Optional Notes
+          </label>
+          <input
+            type="text"
+            id="input-debt-payment-notes"
+            placeholder="e.g. Regular EMI + festive bonus"
+            class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 px-3 py-2 text-xs font-medium text-slate-900 focus:border-emerald-600 focus:outline-none"
+          />
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">For your personal reference</p>
+        </div>
+      </div>
+
+      <!-- Live Calculation Feedback Box -->
+      <div id="debt-payment-live-feedback" class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
+        <div class="flex items-center justify-between font-mono text-[11px]">
+          <span class="text-slate-600 dark:text-slate-400">Total Principal Reduction:</span>
+          <span id="display-payment-principal-reduction" class="font-bold text-emerald-800 dark:text-emerald-300">₹0</span>
+        </div>
+        <div class="flex items-center justify-between font-mono text-xs pt-1 border-t border-emerald-200/60 dark:border-emerald-800/60">
+          <span class="font-semibold text-slate-900 dark:text-slate-100">Projected New Principal:</span>
+          <span id="display-payment-new-balance" class="font-bold text-slate-900 dark:text-slate-100">₹0</span>
+        </div>
+        <div id="payment-estimate-notice" class="hidden text-[10px] text-amber-800 dark:text-amber-300 pt-1">
+          * Note: Estimated split calculated for reference. Check your lender statement for exact interest allocation.
+        </div>
+      </div>
+
+      <!-- Error Message Box -->
+      <div id="debt-payment-error-msg" class="text-xs p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 hidden"></div>
+
+      <!-- Form Actions -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <button
+          type="button"
+          id="btn-cancel-debt-payment"
+          class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 rounded-xl transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          id="btn-save-debt-payment"
+          class="px-4 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 rounded-xl transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+        >
+          <span>💾</span> Save Payment
+        </button>
+      </div>
+    </form>
+
+    <!-- Payment History Section for this Debt -->
+    <div class="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
+      <div class="flex items-center justify-between">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-1.5">
+          <span>📜</span> Recorded Payment History
+        </h4>
+        <span id="modal-debt-history-count" class="text-[10px] font-mono text-slate-500 dark:text-slate-400">0 payments</span>
+      </div>
+
+      <div class="max-h-48 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+        <table class="w-full text-left text-[11px]">
+          <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[9px] sticky top-0">
+            <tr>
+              <th class="py-1.5 px-2.5">Date</th>
+              <th class="py-1.5 px-2 text-right">Total</th>
+              <th class="py-1.5 px-2 text-right">Principal</th>
+              <th class="py-1.5 px-2 text-right">Interest</th>
+              <th class="py-1.5 px-2 text-right">Extra</th>
+              <th class="py-1.5 px-2 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="modal-debt-history-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-slate-700 dark:text-slate-300">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
