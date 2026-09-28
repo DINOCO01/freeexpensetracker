@@ -128,12 +128,13 @@ export function clearAllStoredData(): void {
 }
 
 export function exportTransactionsToCSV(transactions: Transaction[], currencySymbol: string = '₹'): void {
-  const headers = ['Transaction ID', 'Date', 'Expense Description', 'Category', `Amount (${currencySymbol})`, 'Source'];
+  const headers = ['Transaction ID', 'Date', 'Expense Description', 'Category', 'Type', `Amount (${currencySymbol})`, 'Source'];
   const rows = transactions.map((t) => [
     t.id,
     t.date,
     `"${t.name.replace(/"/g, '""')}"`,
     t.category,
+    t.type || 'expense',
     t.amount.toFixed(2),
     t.source || 'manual'
   ]);

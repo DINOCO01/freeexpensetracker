@@ -224,7 +224,9 @@ export function calculateFinancialHealthScore(
   let totalSavings = 0;
 
   for (const t of transactions) {
-    if (t.type === 'income') continue;
+    // Primary: use t.type. Fallback for legacy data: category === 'Income'.
+    const isIncome = t.type === 'income' || (!t.type && t.category === 'Income');
+    if (isIncome) continue;
     totalSpent += t.amount;
     const type = CATEGORY_TYPES[t.category] || 'want';
     if (type === 'need') totalNeeds += t.amount;

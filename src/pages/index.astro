@@ -702,6 +702,9 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
     });
 
     // Compute category, total outflows, and total income from transactions
+    // RULE: Cashflow direction is determined SOLELY by t.type ('income' vs 'expense').
+    // Category MUST NOT override direction. A credit categorized as 'Savings' is still income.
+    // Fallback for legacy transactions without a type field: check if category is 'Income'.
     let totalSpent = 0;
     let totalIncomeFromTx = 0;
     let totalNeeds = 0;
@@ -719,7 +722,9 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
     };
 
     state.transactions.forEach((t) => {
-      if (t.type === 'income') {
+      // Primary: use t.type. Fallback for legacy data: category === 'Income'.
+      const isIncome = t.type === 'income' || (!t.type && t.category === 'Income');
+      if (isIncome) {
         totalIncomeFromTx += t.amount;
       } else {
         totalSpent += t.amount;
@@ -1824,7 +1829,9 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
 
     if (!name || isNaN(amount) || amount <= 0) return;
 
-    const txType = pendingReceiptMeta?.type || 'expense';
+    // Determine direction from receipt metadata, or from category selection as fallback.
+    // If user selects 'Income' category, the transaction is income regardless of form defaults.
+    const txType = pendingReceiptMeta?.type || (category === 'Income' ? 'income' : 'expense');
     const txDate = pendingReceiptMeta?.date || new Date().toISOString().split('T')[0];
     const txSource = pendingReceiptMeta?.source || 'manual';
     const txId = pendingReceiptMeta ? `rcpt-${Date.now()}` : `tx-${Date.now()}`;
