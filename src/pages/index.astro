@@ -116,6 +116,7 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
     formatCurrency,
     normalizeToMonthly,
     calculateFinancialHealthScore,
+    calculateSavingsMetrics,
     CATEGORY_TYPES,
     CATEGORY_ICONS,
     type Frequency,
@@ -701,10 +702,14 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
       }
     });
 
-    // Compute category, total outflows, and total income from transactions
+    // Compute category totals and income from transactions.
     // RULE: Cashflow direction is determined SOLELY by t.type ('income' vs 'expense').
     // Category MUST NOT override direction. A credit categorized as 'Savings' is still income.
     // Fallback for legacy transactions without a type field: check if category is 'Income'.
+    //
+    // SAVINGS RATE is calculated by calculateSavingsMetrics() inside calculateFinancialHealthScore().
+    // The dashboard Savings Rate card reads health.savingsRatePct — the single source of truth —
+    // so it always matches the value used by the Financial Health Score.
     let totalSpent = 0;
     let totalIncomeFromTx = 0;
     let totalNeeds = 0;
@@ -737,10 +742,14 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
     });
 
     const effectiveTotalIncome = monthlyIncome + totalIncomeFromTx;
+    // Net cashflow = income minus ALL outflows (consumption + savings + transfers + debt).
+    // This is displayed on the cashflow balance card but is NOT the Savings Rate.
     const netCashflow = effectiveTotalIncome - totalSpent;
     const expensesPct = effectiveTotalIncome > 0 ? Math.round((totalSpent / effectiveTotalIncome) * 100) : 0;
-    const totalSavingsEffective = totalSavings + Math.max(0, netCashflow);
-    const savingsRatePct = effectiveTotalIncome > 0 ? Math.round((totalSavingsEffective / effectiveTotalIncome) * 100) : 0;
+
+    // Financial Health Indicator — MUST be computed before the KPI Savings Rate card
+    // so that health.savingsRatePct (the single source of truth) is available.
+    const health = calculateFinancialHealthScore(effectiveTotalIncome, state.transactions);
 
     // Render KPI Cards
     if (statTotalIncome) statTotalIncome.textContent = formatMoney(effectiveTotalIncome);
@@ -762,12 +771,15 @@ import DebtPaymentModal from '../components/DebtPaymentModal.astro';
         }
       }
     }
+    // Savings Rate card — reads health.savingsRatePct (single source of truth).
+    // Formula: (TotalIncome - ConsumptionSpending) / TotalIncome x 100.
+    // Savings/investment outflows, internal transfers, and debt payments are excluded
+    // from consumption, so they are NOT double-counted here.
     if (statSavingsRate) {
-      statSavingsRate.textContent = `${savingsRatePct}%`;
+      statSavingsRate.textContent = `${health.savingsRatePct}%`;
     }
 
-    // Financial Health Indicator
-    const health = calculateFinancialHealthScore(effectiveTotalIncome, state.transactions);
+    // Financial Health Indicator — already computed above before the KPI cards.
     if (healthScoreNumber) healthScoreNumber.textContent = health.score.toString();
     if (healthTierText) healthTierText.textContent = health.tier;
     if (healthTierBadge) {
