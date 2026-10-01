@@ -1,0 +1,19 @@
+---
+import MainApp from '../../components/MainApp.astro';
+import { LOCALES_LIST, type SupportedLocale } from '../../locales';
+
+export function getStaticPaths() {
+  return LOCALES_LIST.map((lang) => ({
+    params: { lang },
+    props: { locale: lang }
+  }));
+}
+
+interface Props {
+  locale: SupportedLocale;
+}
+
+const { locale } = Astro.props;
+---
+
+<MainApp locale={locale} />

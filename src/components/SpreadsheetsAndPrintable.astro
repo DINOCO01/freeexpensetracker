@@ -1,68 +1,75 @@
 ---
+import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <div class="space-y-6">
   <!-- Top Banner & Intro -->
-  <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div class="space-y-1">
       <div class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-base border border-emerald-200">
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-base border border-emerald-200 dark:border-emerald-800">
           📋
         </span>
-        <h2 class="text-xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-          Budget & Expense Tracker Templates
+        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          {t('templates.title', locale)}
         </h2>
-        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
-          Templates Hub
+        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+          {t('templates.badge', locale)}
         </span>
       </div>
-      <p class="text-xs sm:text-sm text-slate-600">
-        Curated spreadsheets and printable templates for tracking household finances, daily expenses, and long-term targets.
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+        {t('templates.subtitle', locale)}
       </p>
     </div>
 
     <!-- Quick guarantee -->
-    <div class="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
-      <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium">
+      <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
       </svg>
-      <span>No Sign-Up Required • 100% Private</span>
+      <span>{t('templates.privatePill', locale)}</span>
     </div>
   </div>
 
   <!-- Templates Placeholder State -->
-  <div class="bg-white border border-slate-200 rounded-2xl p-10 sm:p-14 shadow-xs text-center space-y-4">
-    <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-3xl shadow-2xs">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 sm:p-14 shadow-xs text-center space-y-4">
+    <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-3xl shadow-2xs">
       📊
     </div>
     <div class="space-y-1.5 max-w-md mx-auto">
-      <h3 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
-        Templates Currently Being Updated
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        {t('templates.updatingTitle', locale)}
       </h3>
-      <p class="text-xs text-slate-600 leading-relaxed">
-        Our curated collection of Google Sheets, Excel workbooks, and printable PDF templates is currently being refreshed and standardized. They will be available in an upcoming update.
+      <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+        {t('templates.updatingSub', locale)}
       </p>
     </div>
     <div class="pt-2">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        In Progress • Coming Soon
+        {t('templates.comingSoon', locale)}
       </span>
     </div>
   </div>
 
   <!-- Helpful Workflow Tip Box -->
-  <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-3.5">
-      <div class="w-10 h-10 rounded-xl bg-white text-emerald-800 flex items-center justify-center shrink-0 border border-emerald-200 shadow-2xs font-bold text-lg">
+      <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-200 dark:border-emerald-700 shadow-2xs font-bold text-lg">
         🔄
       </div>
       <div class="space-y-0.5">
-        <h4 class="text-xs sm:text-sm font-bold text-slate-900">
-          Have an existing bank or card statement?
+        <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
+          {t('importer.title', locale)}
         </h4>
-        <p class="text-xs text-slate-600">
-          You can import your bank statements, CSVs, or receipt photos into our <strong class="text-slate-900">Universal Statement Importer</strong> to automatically analyze your expenses.
+        <p class="text-xs text-slate-600 dark:text-slate-300">
+          {t('importer.subtitle', locale)}
         </p>
       </div>
     </div>
@@ -70,9 +77,9 @@
     <button
       type="button"
       id="btn-switch-to-importer-from-templates"
-      class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-900 bg-white hover:bg-emerald-50 border border-emerald-300 shadow-2xs transition-colors cursor-pointer"
+      class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-slate-700 border border-emerald-300 dark:border-emerald-700 shadow-2xs transition-colors cursor-pointer"
     >
-      Open Statement Importer 📥
+      {t('nav.importStatement', locale)} 📥
     </button>
   </div>
 </div>

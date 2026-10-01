@@ -1,4 +1,11 @@
 ---
+import { t, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = 'en' } = Astro.props;
 ---
 
 <!-- Reset Confirmation Modal -->
@@ -18,10 +25,10 @@
       </div>
       <div>
         <h3 id="modal-reset-title" class="text-base font-bold text-slate-900 font-['Outfit',sans-serif]">
-          Reset Expense Tracker Data?
+          {t('modals.resetTitle', locale)}
         </h3>
         <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-          This will wipe your current income, budget preferences, and all recorded transactions stored in your browser's localStorage.
+          {t('modals.resetWarning', locale)}
         </p>
       </div>
     </div>
@@ -32,10 +39,10 @@
         <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
-        Wipe completely or restore default demo data?
+        {t('modals.wipeOrRestore', locale)}
       </div>
       <p class="text-[11px] text-slate-500">
-        You can clear everything to start with an empty slate, or reload realistic sample data to see the charts in action.
+        {t('modals.wipeOrRestoreHint', locale)}
       </p>
     </div>
 
@@ -46,7 +53,7 @@
         id="btn-cancel-reset"
         class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
       >
-        Cancel
+        {t('buttons.cancel', locale)}
       </button>
 
       <button
@@ -54,7 +61,7 @@
         id="btn-restore-sample"
         class="px-4 py-2 rounded-xl text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
       >
-        Restore Sample Data
+        {t('modals.restoreSampleData', locale)}
       </button>
 
       <button
@@ -62,7 +69,7 @@
         id="btn-confirm-reset-blank"
         class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition-colors shadow-xs cursor-pointer"
       >
-        Wipe Everything
+        {t('modals.resetConfirm', locale)}
       </button>
     </div>
   </div>

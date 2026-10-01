@@ -1,58 +1,69 @@
 ---
+import { t, type SupportedLocale } from '../locales';
+
 export interface FAQItem {
   question: string;
   answer: string;
   category: string;
 }
 
-export const FAQ_DATA: FAQItem[] = [
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+
+export const getFaqData = (loc: SupportedLocale = 'en'): FAQItem[] => [
   {
-    question: "Is there a free expense tracker app?",
-    answer: "Yes. FreeExpenseTracker.com is a 100% free expense tracker web app that requires no paid subscription, no account registration, and no credit card. It runs directly in your web browser with offline support, automatic receipt photo OCR scanning, dynamic 50/30/20 budget calculations, and exportable ledgers.",
-    category: "General & Pricing"
+    question: t('faq.q1', loc),
+    answer: t('faq.a1', loc),
+    category: t('faq.catGeneralPricing', loc)
   },
   {
-    question: "Where can I get a free expense tracker template?",
-    answer: "You can download free expense tracker templates directly from FreeExpenseTracker.com in our Free Templates hub. We provide pre-built Google Sheets templates with one-click copy links, formulated Microsoft Excel (.xlsx) workbooks with automated SUM and variance formulas, and printable monthly PDF expense booklets designed for ink-saving physical tracking.",
-    category: "Templates & Sheets"
+    question: t('faq.q2', loc),
+    answer: t('faq.a2', loc),
+    category: t('faq.catTemplatesSheets', loc)
   },
   {
-    question: "How do I make my own expense tracker?",
-    answer: "To make your own expense tracker, start by determining your essential tracking columns: Date, Merchant/Description, Category (Housing, Food, Utilities, Transportation, Entertainment, Savings), Payment Method (Cash, Credit, Debit), and Amount. Next, choose your preferred format—such as a spreadsheet in Microsoft Excel or Google Sheets using SUMIF and variance formulas, or a physical notebook ledger with ruled rows. Alternatively, you can use FreeExpenseTracker.com to customize an automated, pre-configured tracker with zero setup time.",
-    category: "How-To & DIY"
+    question: t('faq.q3', loc),
+    answer: t('faq.a3', loc),
+    category: t('faq.catHowToDIY', loc)
   },
   {
-    question: "Are expense tracking apps safe?",
-    answer: "Traditional expense tracking apps that connect directly to your bank account via third-party aggregators carry privacy risks, as they often store credentials or monetize aggregated user spending habits. In contrast, client-side tools like FreeExpenseTracker.com are completely safe because all financial data, receipt scans, and uploaded statements are processed locally in your browser memory using WebAssembly and Web Workers. No sensitive financial information is ever uploaded to or stored on external servers.",
-    category: "Privacy & Security"
+    question: t('faq.q4', loc),
+    answer: t('faq.a4', loc),
+    category: t('faq.catPrivacySecurity', loc)
   },
   {
-    question: "How to track expenses for free?",
-    answer: "To track expenses for free: (1) Establish your net monthly income and set fixed category limits (e.g., using the 50/30/20 rule: 50% Needs, 30% Wants, 20% Savings). (2) Record daily purchases as they happen using FreeExpenseTracker.com's instant receipt scanner or manual quick logger. (3) Import monthly PDF bank statements or Excel CSV downloads to auto-categorize recurring outflows. (4) Review your weekly cash flow and financial health score to eliminate unnecessary subscriptions and prevent lifestyle creep.",
-    category: "How-To & DIY"
+    question: t('faq.q5', loc),
+    answer: t('faq.a5', loc),
+    category: t('faq.catHowToDIY', loc)
   },
   {
-    question: "Can you provide an example of an expense tracker?",
-    answer: "A practical example of an expense tracker is FreeExpenseTracker.com's Live Ledger. Each entry records the date (e.g., 2026-09-15), payee or merchant (e.g., Trader Joe's), category (e.g., Food), payment type (e.g., Debit Card), and outflow amount (e.g., $84.50). The tracker automatically subtracts these outflows from your normalized monthly income, plots your spending across a visual category breakdown chart, and benchmarks your savings rate against healthy financial ratios.",
-    category: "General & Examples"
+    question: t('faq.q6', loc),
+    answer: t('faq.a6', loc),
+    category: t('faq.catGeneralExamples', loc)
   },
   {
-    question: "What are the benefits of using an expense tracker?",
-    answer: "The main benefits of using an expense tracker include: (1) Eliminating financial blind spots and identifying hidden money leaks like forgotten recurring subscriptions. (2) Accelerating debt payoff by routing surplus cash into Debt Snowball or Debt Avalanche strategies. (3) Building an emergency runway of 3 to 6 months of living expenses. (4) Reducing financial stress through automated clarity on exact cash flow. (5) Achieving major milestones like home down payments, retirement contributions, and vacation savings.",
-    category: "Financial Strategy"
+    question: t('faq.q7', loc),
+    answer: t('faq.a7', loc),
+    category: t('faq.catFinancialStrategy', loc)
   },
   {
-    question: "What is the best simple app for tracking expenses?",
-    answer: "The best simple app for tracking expenses is FreeExpenseTracker.com. It offers a clean, minimalist user interface with zero clutter, zero ads, and zero account sign-up hurdles. You can start logging expenses instantly, simulate income scenarios with an interactive slider up to $500,000/month, scan receipt photos with AI OCR, and switch seamlessly between 25 global currencies—all with 100% private, client-side security.",
-    category: "App Comparison"
+    question: t('faq.q8', loc),
+    answer: t('faq.a8', loc),
+    category: t('faq.catAppComparison', loc)
   }
 ];
+
+export const FAQ_DATA = getFaqData('en');
+const currentFaqData = getFaqData(locale);
 
 // Generate JSON-LD schema
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": FAQ_DATA.map((item) => ({
+  "mainEntity": currentFaqData.map((item) => ({
     "@type": "Question",
     "name": item.question,
     "acceptedAnswer": {
@@ -69,13 +80,13 @@ const faqSchema = {
     <div class="space-y-1.5">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
         <span>❓</span>
-        <span>Expert Personal Finance Answers</span>
+        <span>{t('faq.badge', locale)}</span>
       </div>
       <h2 class="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
-        Frequently Asked Questions About Expense Tracking
+        {t('faq.title', locale)}
       </h2>
       <p class="text-xs sm:text-sm text-slate-600 max-w-2xl">
-        Find authoritative answers regarding free expense tracking apps, spreadsheet templates, DIY workflows, security, and proven wealth-building techniques.
+        {t('faq.subtitle', locale)}
       </p>
     </div>
 
@@ -84,7 +95,7 @@ const faqSchema = {
       <input
         type="text"
         id="faq-search-input"
-        placeholder="Filter questions (e.g. template, safe)..."
+        placeholder={t('faq.filterPlaceholder', locale)}
         class="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
       />
       <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +106,7 @@ const faqSchema = {
 
   <!-- FAQ Accordion List -->
   <div id="faq-items-container" class="space-y-3">
-    {FAQ_DATA.map((item, index) => (
+    {currentFaqData.map((item, index) => (
       <details
         class="faq-item group border border-slate-200 hover:border-emerald-300 rounded-2xl p-3.5 sm:p-5 transition-all bg-white hover:bg-emerald-50/20 open:bg-slate-50/50 open:border-emerald-400 shadow-2xs"
         data-question={item.question.toLowerCase()}
@@ -119,9 +130,9 @@ const faqSchema = {
         <div class="mt-3.5 pt-3.5 border-t border-slate-200/80 text-xs sm:text-sm text-slate-600 leading-relaxed space-y-2">
           <p>{item.answer}</p>
           <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-400 font-mono">
-            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">Topic: {item.category}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">{t('faq.topicLabel', locale)}: {item.category}</span>
             <span>•</span>
-            <span class="text-emerald-700 font-medium">Verified for accuracy</span>
+            <span class="text-emerald-700 font-medium">{t('faq.verifiedLabel', locale)}</span>
           </div>
         </div>
       </details>
@@ -131,8 +142,8 @@ const faqSchema = {
   <!-- Empty Search Results -->
   <div id="faq-empty-state" class="hidden p-8 text-center bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
     <div class="text-2xl">🔍</div>
-    <div class="text-sm font-bold text-slate-800">No matching questions found</div>
-    <p class="text-xs text-slate-500">Try searching for keywords like "template", "safe", "DIY", "app", or "free".</p>
+    <div class="text-sm font-bold text-slate-800">{t('faq.noMatches', locale)}</div>
+    <p class="text-xs text-slate-500">{t('faq.noMatchesHint', locale)}</p>
   </div>
 
   <!-- Structured Data JSON-LD for Google Rich Results -->

@@ -1,4 +1,11 @@
 ---
+import { t, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = 'en' } = Astro.props;
 ---
 
 <footer class="no-print border-t border-slate-200 bg-white mt-12 py-10 text-slate-500 text-xs">
@@ -20,42 +27,42 @@
           </span>
         </div>
         <p class="text-xs text-slate-600 leading-relaxed max-w-md">
-          A fast, private, and 100% free expense tracker platform. Manage your cash flow with our interactive web app, download free expense tracker spreadsheet templates, or copy automated Google Sheets workbooks—all with zero logins or third-party trackers.
+          {t('footer.about', locale)}
         </p>
         <div class="text-[11px] text-slate-400">
-          Domain: <strong class="text-slate-700">freexpensetracker.com</strong> • Client-side private financial architecture.
+          {t('footer.domainNote', locale)}
         </div>
       </div>
 
       <!-- Col 2: Core Tools & Workflows -->
       <div class="space-y-2.5">
         <div class="font-bold text-slate-900 uppercase text-[11px] tracking-wider font-['Outfit',sans-serif]">
-          Budgeting Tools
+          {t('footer.headingTools', locale)}
         </div>
         <ul class="space-y-1.5 text-xs text-slate-600">
           <li>
             <a href="#tab-view-tracker" class="hover:text-emerald-700 transition-colors">
-              Live Expense Tracker
+              {t('footer.linkTracker', locale)}
             </a>
           </li>
           <li>
             <a href="#tab-view-templates" class="hover:text-emerald-700 transition-colors">
-              Free Expense Tracker Google Sheets
+              {t('footer.linkSheets', locale)}
             </a>
           </li>
           <li>
             <a href="#tab-view-templates" class="hover:text-emerald-700 transition-colors">
-              Free Expense Tracker Spreadsheet (.xlsx)
+              {t('footer.linkExcel', locale)}
             </a>
           </li>
           <li>
             <a href="#tab-view-debt" class="hover:text-emerald-700 transition-colors">
-              Debt Snowball & Avalanche Planner
+              {t('footer.linkDebt', locale)}
             </a>
           </li>
           <li>
             <a href="#tab-view-targets" class="hover:text-emerald-700 transition-colors">
-              50/30/20 Target Goal Planner
+              {t('footer.linkBudget', locale)}
             </a>
           </li>
         </ul>
@@ -64,32 +71,32 @@
       <!-- Col 3: Resources & Guides -->
       <div class="space-y-2.5">
         <div class="font-bold text-slate-900 uppercase text-[11px] tracking-wider font-['Outfit',sans-serif]">
-          Resources
+          {t('footer.headingResources', locale)}
         </div>
         <ul class="space-y-1.5 text-xs text-slate-600">
           <li>
-            <a href="/#tab-view-knowledge" class="hover:text-emerald-700 transition-colors">
-              Financial Knowledge & Guides
+            <a href="#tab-view-knowledge" class="hover:text-emerald-700 transition-colors">
+              {t('footer.linkKnowledge', locale)}
             </a>
           </li>
           <li>
-            <a href="/#tab-view-templates" class="hover:text-emerald-700 transition-colors">
-              Printable PDF Expense Booklets
+            <a href="#tab-view-templates" class="hover:text-emerald-700 transition-colors">
+              {t('footer.linkPdf', locale)}
             </a>
           </li>
           <li>
-            <a href="/#tab-view-import" class="hover:text-emerald-700 transition-colors">
-              Multi-Format Statement Importer
+            <a href="#tab-view-import" class="hover:text-emerald-700 transition-colors">
+              {t('importer.title', locale)}
             </a>
           </li>
           <li>
-            <a href="/#section-faq" class="hover:text-emerald-700 transition-colors">
-              Frequently Asked Questions
+            <a href="#section-faq" class="hover:text-emerald-700 transition-colors">
+              {t('faq.title', locale)}
             </a>
           </li>
           <li>
-            <a href="/#section-seo-guide" class="hover:text-emerald-700 transition-colors">
-              Expense Tracking Playbook
+            <a href="#section-seo-guide" class="hover:text-emerald-700 transition-colors">
+              {t('seoGuide.title', locale)}
             </a>
           </li>
         </ul>
@@ -98,31 +105,31 @@
       <!-- Col 4: Company & Legal -->
       <div class="space-y-2.5">
         <div class="font-bold text-slate-900 uppercase text-[11px] tracking-wider font-['Outfit',sans-serif]">
-          Company & Legal
+          {t('footer.headingLegal', locale)}
         </div>
         <ul class="space-y-1.5 text-xs text-slate-600">
           <li>
             <a href="/about-us" class="hover:text-emerald-700 transition-colors">
-              About Us
+              {t('footer.linkAbout', locale)}
             </a>
           </li>
           <li>
             <a href="/privacy-policy" class="hover:text-emerald-700 transition-colors">
-              Privacy Policy
+              {t('footer.linkPrivacy', locale)}
             </a>
           </li>
           <li>
             <a href="/terms-and-conditions" class="hover:text-emerald-700 transition-colors">
-              Terms & Conditions
+              {t('footer.linkTerms', locale)}
             </a>
           </li>
           <li>
             <a href="/contact-us" class="hover:text-emerald-700 transition-colors">
-              Contact Us
+              {t('footer.linkContact', locale)}
             </a>
           </li>
           <li>
-            <span class="text-emerald-700 font-medium">100% Client-Side Privacy</span>
+            <span class="text-emerald-700 font-medium">{t('footer.clientSidePrivacy', locale)}</span>
           </li>
         </ul>
       </div>
@@ -131,16 +138,16 @@
     <!-- Bottom Bar: Links, Keywords & Copyright -->
     <div class="border-t border-slate-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
       <div>
-        © 2026 FreeExpenseTracker.com. All rights reserved. The best free expense tracker app for private budgeting.
+        © 2026 {t('footer.copyright', locale)}
       </div>
       <div class="flex items-center gap-3 flex-wrap justify-center text-slate-500">
-        <a href="/about-us" class="hover:text-emerald-700 transition-colors">About</a>
+        <a href="/about-us" class="hover:text-emerald-700 transition-colors">{t('footer.linkAbout', locale)}</a>
         <span>•</span>
-        <a href="/privacy-policy" class="hover:text-emerald-700 transition-colors">Privacy</a>
+        <a href="/privacy-policy" class="hover:text-emerald-700 transition-colors">{t('footer.linkPrivacy', locale)}</a>
         <span>•</span>
-        <a href="/terms-and-conditions" class="hover:text-emerald-700 transition-colors">Terms</a>
+        <a href="/terms-and-conditions" class="hover:text-emerald-700 transition-colors">{t('footer.linkTerms', locale)}</a>
         <span>•</span>
-        <a href="/contact-us" class="hover:text-emerald-700 transition-colors">Contact</a>
+        <a href="/contact-us" class="hover:text-emerald-700 transition-colors">{t('footer.linkContact', locale)}</a>
       </div>
     </div>
   </div>

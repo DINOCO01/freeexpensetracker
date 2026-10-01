@@ -1,4 +1,11 @@
 ---
+import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <div class="space-y-6">
@@ -7,14 +14,14 @@
     <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
       <div class="flex items-center gap-2">
         <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
-          <span>💳</span> Loan, EMI & Debt Freedom Planner
+          <span>💳</span> {t('debt.title', locale)}
         </h2>
         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
-          Payoff Optimization
+          {t('debt.badge', locale)}
         </span>
       </div>
       <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
-        Systematically plan and accelerate your debt-free journey. Select a financial model from the vertical tabs below to test different payoff dynamics and review personalized recommendations.
+        {t('debt.subtitle', locale)}
       </p>
     </div>
 
@@ -23,8 +30,8 @@
       <!-- Left Column: Vertical Tabs Selector (md:col-span-5) -->
       <div class="md:col-span-5 flex flex-col gap-2" role="tablist" aria-label="Debt payoff financial models">
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5 flex items-center justify-between">
-          <span>Financial Models</span>
-          <span class="text-[10px] font-normal text-slate-500 dark:text-slate-400 lowercase">(vertical selector)</span>
+          <span>{t('debt.modelsHeading', locale)}</span>
+          <span class="text-[10px] font-normal text-slate-500 dark:text-slate-400 lowercase">{t('debt.modelsSub', locale)}</span>
         </div>
 
         <!-- Vertical Tab 1: Avalanche -->
@@ -41,11 +48,11 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">Debt Avalanche</span>
-              <span class="strat-badge px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">Active</span>
+              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.avalancheTitle', locale)}</span>
+              <span class="strat-badge px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
             </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">Highest Interest Rate First</p>
-            <div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium mt-1">Minimizes total interest cost</div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.avalancheSub', locale)}</p>
+            <div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium mt-1">{t('debt.avalancheDesc', locale)}</div>
           </div>
         </button>
 
@@ -63,11 +70,11 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">Debt Snowball</span>
-              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">Active</span>
+              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.snowballTitle', locale)}</span>
+              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
             </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">Smallest Balance First</p>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">Fastest milestone closures</div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.snowballSub', locale)}</p>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{t('debt.snowballDesc', locale)}</div>
           </div>
         </button>
 
@@ -85,11 +92,11 @@
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">Cash Flow & EMI Relief</span>
-              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">Active</span>
+              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.customTitle', locale)}</span>
+              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
             </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">Highest Monthly EMI First</p>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">Frees up monthly cash flow</div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.customSub', locale)}</p>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{t('debt.customDesc', locale)}</div>
           </div>
         </button>
       </div>
@@ -100,9 +107,9 @@
           <div class="flex items-start gap-2.5">
             <span class="text-lg shrink-0">💡</span>
             <div>
-              <strong class="text-slate-900 dark:text-slate-100 block font-bold">Model Recommendation: Avalanche (Interest Saver)</strong>
+              <strong class="text-slate-900 dark:text-slate-100 block font-bold">{t('debt.avalancheTitle', locale)}</strong>
               <p class="text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed text-[11px] sm:text-xs">
-                Prioritizes clearing highest interest obligations (e.g. revolving credit cards & unsecured personal loans) first. This mathematically minimizes your total cumulative interest outflow, reduces borrowing costs, and shortens the payoff journey.
+                {t('debt.avalancheDesc', locale)}
               </p>
             </div>
           </div>
@@ -110,42 +117,42 @@
       </div>
     </div>
 
-    <!-- 4 Debt KPI Cards (Clean zero initial state; no demo numbers) -->
+    <!-- 4 Debt KPI Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Total Outstanding Debt</div>
+        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.totalDebt', locale)}</div>
         <div id="stat-total-debt" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">₹0</div>
-        <div class="text-[11px] text-slate-600 dark:text-slate-400"><span id="debt-item-count">0</span> active accounts</div>
+        <div class="text-[11px] text-slate-600 dark:text-slate-400"><span id="debt-item-count">0</span> {t('debt.accounts', locale)}</div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">FOIR / Debt-to-Income (DTI)</div>
+        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.monthlyEmi', locale)}</div>
         <div id="stat-dti-ratio" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">0%</div>
-        <div id="stat-dti-tier" class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">No active debt</div>
+        <div id="stat-dti-tier" class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{t('debt.emptyDebts', locale)}</div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Projected Loan-Free</div>
+        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.debtFreeTime', locale)}</div>
         <div id="stat-debt-free-date" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">—</div>
-        <div id="stat-debt-months-left" class="text-[11px] text-slate-600 dark:text-slate-400">0 months</div>
+        <div id="stat-debt-months-left" class="text-[11px] text-slate-600 dark:text-slate-400">0 {t('debt.months', locale)}</div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Total Interest Saved</div>
+        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.interestSaved', locale)}</div>
         <div id="stat-interest-saved" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">₹0</div>
-        <div class="text-[11px] text-slate-600 dark:text-slate-400">With extra pre-payments</div>
+        <div class="text-[11px] text-slate-600 dark:text-slate-400">{t('debt.vsMinimums', locale)}</div>
       </div>
     </div>
 
-    <!-- Extra Payment Slider & Direct Input (Supports 0 to 100,000,000) -->
+    <!-- Extra Payment Slider & Direct Input -->
     <div class="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 space-y-3">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
         <span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
           <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          Accelerate Payoff: Extra Monthly Contribution / Pre-payment
+          {t('debt.acceleratePayoff', locale)}
         </span>
         <div class="flex items-center gap-2">
-          <span class="text-slate-500 dark:text-slate-400 text-[11px]">Monthly Pre-payment:</span>
+          <span class="text-slate-500 dark:text-slate-400 text-[11px]">{t('debt.monthlyExtra', locale)}:</span>
           <div class="relative w-36 sm:w-44">
             <span class="currency-label absolute left-2.5 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">₹</span>
             <input
@@ -170,11 +177,6 @@
         value="0"
         class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
       />
-      <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-        <span>₹0 (Regular EMIs)</span>
-        <span>+₹2,50,000/mo</span>
-        <span>+₹5,00,000/mo (Use input above for up to ₹10 Cr)</span>
-      </div>
     </div>
   </div>
 
@@ -184,21 +186,21 @@
     <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
       <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
         <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
-          <span>➕</span> Add a Loan, EMI, or Credit Card Account
+          <span>➕</span> {t('debt.addDebtTitle', locale)}
         </h3>
         <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-          Enter loan particulars. Supports values between ₹0 and ₹10,00,00,000 (₹10 Crore).
+          {t('debt.subtitle', locale)}
         </p>
       </div>
 
       <form id="form-add-debt" class="space-y-3">
         <div>
-          <label for="input-debt-name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Loan / Debt Name</label>
+          <label for="input-debt-name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('debt.debtName', locale)}</label>
           <input
             type="text"
             id="input-debt-name"
             required
-            placeholder="e.g. HDFC Credit Card, SBI Car Loan, Personal Loan"
+            placeholder={t('debt.debtNamePlaceholder', locale)}
             class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
           />
         </div>
@@ -206,7 +208,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label for="input-debt-balance" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Outstanding Principal (<span class="currency-label font-mono">₹</span>)
+              {t('debt.currentPrincipal', locale)} (<span class="currency-label font-mono">₹</span>)
             </label>
             <input
               type="number"
@@ -221,7 +223,7 @@
           </div>
 
           <div>
-            <label for="input-debt-rate" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Interest Rate (% p.a.)</label>
+            <label for="input-debt-rate" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('debt.interestRate', locale)}</label>
             <input
               type="number"
               id="input-debt-rate"
@@ -237,7 +239,7 @@
 
         <div>
           <label for="input-debt-minimum" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Monthly EMI / Minimum Due (<span class="currency-label font-mono">₹</span>)
+            {t('debt.minPayment', locale)} (<span class="currency-label font-mono">₹</span>)
           </label>
           <input
             type="number"
@@ -255,7 +257,7 @@
           type="submit"
           class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
         >
-          Add to Payoff Schedule
+          {t('debt.btnAddDebt', locale)}
         </button>
       </form>
     </div>
@@ -265,64 +267,33 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
         <div>
           <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-            Prioritized Payoff Order
+            {t('debt.debtListTitle', locale)}
           </h3>
           <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-            Accounts dynamically ordered according to your selected debt payoff model.
+            {t('debt.subtitle', locale)}
           </p>
         </div>
         <span id="active-strategy-pill" class="self-start sm:self-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-          Avalanche (Highest Interest First)
+          {t('debt.avalancheTitle', locale)}
         </span>
-      </div>
-
-      <!-- Payment Rollover Planning Callout (Visible when debts are paid off or extra payment active) -->
-      <div id="debt-rollover-banner" class="hidden p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-        <!-- Dynamically rendered -->
       </div>
 
       <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
         <table class="w-full min-w-[520px] text-left text-xs">
           <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
             <tr>
-              <th class="py-2.5 px-3">Priority</th>
-              <th class="py-2.5 px-3">Loan / Debt Name</th>
-              <th class="py-2.5 px-3 text-right">Outstanding Principal</th>
-              <th class="py-2.5 px-3 text-right">Interest Rate</th>
-              <th class="py-2.5 px-3 text-right">Monthly EMI</th>
-              <th class="py-2.5 px-3 text-center">Actions</th>
+              <th class="py-2.5 px-3">{t('debt.thPriority', locale)}</th>
+              <th class="py-2.5 px-3">{t('debt.debtName', locale)}</th>
+              <th class="py-2.5 px-3 text-right">{t('debt.currentPrincipal', locale)}</th>
+              <th class="py-2.5 px-3 text-right">{t('debt.interestRate', locale)}</th>
+              <th class="py-2.5 px-3 text-right">{t('debt.minPayment', locale)}</th>
+              <th class="py-2.5 px-3 text-center">{t('debt.thActions', locale)}</th>
             </tr>
           </thead>
           <tbody id="debts-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-            <!-- Dynamically populated via JS without demo rows -->
+            <!-- Dynamically populated via JS -->
           </tbody>
         </table>
-      </div>
-
-      <!-- Paid Off Accounts Section -->
-      <div id="container-paid-debts" class="hidden pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-        <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-1.5">
-            <span>🎉</span> Paid Off Accounts (<span id="count-paid-debts">0</span>)
-          </h4>
-          <span class="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">Monthly EMI capacity freed up</span>
-        </div>
-        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-          <table class="w-full min-w-[500px] text-left text-xs">
-            <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
-              <tr>
-                <th class="py-2.5 px-3">Status</th>
-                <th class="py-2.5 px-3">Loan / Debt Name</th>
-                <th class="py-2.5 px-3 text-right">Original Principal</th>
-                <th class="py-2.5 px-3 text-right">Freed Monthly EMI</th>
-                <th class="py-2.5 px-3 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="paid-debts-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-              <!-- Dynamically populated via JS -->
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   </div>

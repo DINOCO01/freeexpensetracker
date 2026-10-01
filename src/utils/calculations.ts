@@ -275,14 +275,40 @@ export function normalizeToMonthly(amount: number, frequency: Frequency): number
   }
 }
 
-export function formatCurrency(amount: number, currencyCode: string = "INR"): string {
+export function formatCurrency(
+  amount: number,
+  currencyCode: string = "INR",
+  localeCode?: string
+): string {
   const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.INR;
   const isWhole = Math.round(amount) === amount;
-  const locale = currencyCode === "INR" ? "en-IN" : "en-US";
+  
+  let activeLocale = localeCode;
+  if (!activeLocale && typeof document !== 'undefined') {
+    activeLocale = document.documentElement.dataset.locale || document.documentElement.lang || 'en';
+  }
+
+  let locale = "en-US";
+  if (currencyCode === "INR" || activeLocale === "hi") {
+    locale = "en-IN"; // Preserves Indian lakh/crore formatting
+  } else if (activeLocale) {
+    const localeMap: Record<string, string> = {
+      de: "de-DE",
+      fr: "fr-FR",
+      es: "es-ES",
+      pt: "pt-PT",
+      ja: "ja-JP",
+      ko: "ko-KR",
+      en: "en-US"
+    };
+    locale = localeMap[activeLocale] || "en-US";
+  }
+
   const formattedNumber = new Intl.NumberFormat(locale, {
     minimumFractionDigits: isWhole ? 0 : 2,
     maximumFractionDigits: 2
   }).format(amount);
+
   return `${curr.symbol}${formattedNumber}`;
 }
 

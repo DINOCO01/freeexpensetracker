@@ -1,22 +1,29 @@
 ---
+import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
-<div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
     <div>
       <div class="flex items-center gap-2">
-        <h3 class="text-base font-bold text-slate-900 font-['Outfit',sans-serif]">
-          Transaction Ledger
+        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          {t('ledger.title', locale)}
         </h3>
         <span
           id="tx-count-display"
-          class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200"
+          class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
         >
-          6 entries
+          {t('ledger.entriesCount', locale, { count: 6 })}
         </span>
       </div>
-      <p class="text-xs text-slate-600 mt-0.5">
-        Live log of all manual entries and imported file transactions.
+      <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+        {t('ledger.subtitle', locale)}
       </p>
     </div>
 
@@ -27,8 +34,8 @@
         <input
           type="text"
           id="search-transactions"
-          placeholder="Filter ledger..."
-          class="w-full text-xs rounded-lg border border-slate-300 pl-7 pr-2.5 py-1.5 focus:border-emerald-600 focus:outline-none placeholder:text-slate-400"
+          placeholder={t('ledger.searchPlaceholder', locale)}
+          class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pl-7 pr-2.5 py-1.5 focus:border-emerald-600 focus:outline-none placeholder:text-slate-400"
         />
         <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
       </div>
@@ -37,7 +44,7 @@
       <button
         type="button"
         id="btn-export-csv"
-        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
+        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
         title="Export to CSV"
       >
         <span>CSV</span>
@@ -47,29 +54,28 @@
       <button
         type="button"
         id="btn-export-excel-quick"
-        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
+        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
         title="Download Excel Workbook"
       >
         <span>XLSX</span>
       </button>
-
     </div>
   </div>
 
   <!-- Table Container -->
-  <div class="overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 rounded-xl">
+  <div class="overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 dark:border-slate-800 rounded-xl">
     <table class="w-full min-w-[500px] text-left border-collapse text-xs">
-      <thead class="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[10px] tracking-wider z-10">
+      <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider z-10">
         <tr>
-          <th class="py-2.5 px-3">Date</th>
-          <th class="py-2.5 px-3">Description</th>
-          <th class="py-2.5 px-3">Category</th>
-          <th class="py-2.5 px-3">Source</th>
-          <th class="py-2.5 px-3 text-right">Amount</th>
-          <th class="py-2.5 px-3 text-center w-12">Action</th>
+          <th class="py-2.5 px-3">{t('ledger.thDate', locale)}</th>
+          <th class="py-2.5 px-3">{t('ledger.thDescription', locale)}</th>
+          <th class="py-2.5 px-3">{t('ledger.thCategory', locale)}</th>
+          <th class="py-2.5 px-3">{t('ledger.thSource', locale)}</th>
+          <th class="py-2.5 px-3 text-right">{t('ledger.thAmount', locale)}</th>
+          <th class="py-2.5 px-3 text-center w-12">{t('ledger.thAction', locale)}</th>
         </tr>
       </thead>
-      <tbody id="transactions-tbody" class="divide-y divide-slate-100 text-slate-700">
+      <tbody id="transactions-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
         <!-- Rendered via JS -->
       </tbody>
     </table>
@@ -77,9 +83,9 @@
     <!-- Empty State -->
     <div id="empty-ledger-state" class="hidden p-8 text-center space-y-2">
       <div class="text-3xl">📝</div>
-      <p class="text-xs font-semibold text-slate-800">No transactions recorded yet</p>
-      <p class="text-[11px] text-slate-500">
-        Add an expense using the form on the left or drop an Excel/CSV file to populate the ledger.
+      <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
+      <p class="text-[11px] text-slate-500 dark:text-slate-400">
+        {t('ledger.emptySubtitle', locale)}
       </p>
     </div>
   </div>

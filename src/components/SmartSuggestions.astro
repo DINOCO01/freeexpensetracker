@@ -1,4 +1,11 @@
 ---
+import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
@@ -6,20 +13,20 @@
     <div>
       <div class="flex items-center gap-2">
         <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
-          <span>💡</span> Smart Spending Suggestions & Alternatives
+          <span>💡</span> {t('suggestions.title', locale)}
         </h3>
         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
-          Live AI Advisor
+          {t('suggestions.advisorBadge', locale)}
         </span>
       </div>
       <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-        Personalized money-saving alternatives and actionable switches derived directly from your recorded expenses.
+        {t('suggestions.subtitle', locale)}
       </p>
     </div>
 
     <!-- Potential monthly savings summary badge -->
     <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800">
-      <span class="text-xs text-emerald-800 dark:text-emerald-300 font-medium">Potential Monthly Savings:</span>
+      <span class="text-xs text-emerald-800 dark:text-emerald-300 font-medium">{t('suggestions.potentialSavings', locale)}</span>
       <span id="potential-savings-total" class="text-sm font-bold font-mono text-emerald-700 dark:text-emerald-400">+₹0/mo</span>
     </div>
   </div>

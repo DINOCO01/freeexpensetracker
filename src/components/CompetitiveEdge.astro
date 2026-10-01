@@ -1,4 +1,11 @@
 ---
+import { t, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = 'en' } = Astro.props;
 ---
 
 <div class="space-y-6">
@@ -7,14 +14,14 @@
     <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
       <div class="flex items-center gap-2">
         <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-          Why Free Expense Tracker Outperforms Other Tools
+          {t('competitiveEdge.title', locale)}
         </h3>
         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-          vs. Traditional Tools & Platforms
+          {t('competitiveEdge.badge', locale)}
         </span>
       </div>
       <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">
-        We analyzed conventional budgeting platforms and online financial worksheets to build a modern, truly private, zero-friction financial planner.
+        {t('competitiveEdge.subtitle', locale)}
       </p>
     </div>
 
@@ -23,64 +30,64 @@
       <table class="w-full min-w-[620px] text-left border-collapse text-xs">
         <thead class="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
           <tr>
-            <th class="py-3 px-4">Evaluation Criteria</th>
-            <th class="py-3 px-4 text-emerald-900 dark:text-emerald-200 bg-emerald-50/70 dark:bg-emerald-950/70">Free Expense Tracker (freexpensetracker.com)</th>
-            <th class="py-3 px-4 text-slate-500 dark:text-slate-400">Traditional Budgeting Sites</th>
+            <th class="py-3 px-4">{t('competitiveEdge.thCriteria', locale)}</th>
+            <th class="py-3 px-4 text-emerald-900 dark:text-emerald-200 bg-emerald-50/70 dark:bg-emerald-950/70">{t('competitiveEdge.thFet', locale)}</th>
+            <th class="py-3 px-4 text-slate-500 dark:text-slate-400">{t('competitiveEdge.thOthers', locale)}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Privacy & Data Storage</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c1Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              100% Client-Side (<code class="text-[11px] font-mono dark:bg-emerald-900/60 dark:text-emerald-100 px-1 py-0.5 rounded">localStorage</code>). No signup, no email capture, zero tracking.
+              {t('competitiveEdge.c1Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              Funnels users toward debt consolidation phone calls and lead-generation intake forms.
+              {t('competitiveEdge.c1Others', locale)}
             </td>
           </tr>
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Bank & File Import</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c2Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              Drop Excel (<code class="text-[11px] font-mono dark:bg-emerald-900/60 dark:text-emerald-100 px-1 py-0.5 rounded">.xlsx</code>) or CSV files with auto-categorization & live insights.
+              {t('competitiveEdge.c2Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              No file import capability. Requires tedious manual typing of every single bill.
+              {t('competitiveEdge.c2Others', locale)}
             </td>
           </tr>
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Budget Frameworks</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c3Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              4 Dynamic Models: 50/30/20, 70/20/10, 80/20, and Zero-Based Budgeting.
+              {t('competitiveEdge.c3Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              Rigid, predefined static expense categories with no model flexibility.
+              {t('competitiveEdge.c3Others', locale)}
             </td>
           </tr>
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Interactive Simulation</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c4Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              Real-time income range sliders, instant SVG charts, and interactive dial updates.
+              {t('competitiveEdge.c4Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              Static text forms with slow page reloads and no visual simulation.
+              {t('competitiveEdge.c4Others', locale)}
             </td>
           </tr>
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Multi-Modal Export</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c5Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              Live web app + Formula-ready Excel download + High-contrast printable booklet.
+              {t('competitiveEdge.c5Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              Basic generic PDF downloads with no formula capabilities.
+              {t('competitiveEdge.c5Others', locale)}
             </td>
           </tr>
           <tr>
-            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">Financial Health Score</td>
+            <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">{t('competitiveEdge.c6Name', locale)}</td>
             <td class="py-3 px-4 font-semibold text-emerald-800 dark:text-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/40">
-              Algorithmic 0–100 score dial evaluating savings rate, fixed burdens, and cashflow buffers.
+              {t('competitiveEdge.c6Fet', locale)}
             </td>
             <td class="py-3 px-4 text-slate-500 dark:text-slate-400">
-              Subjective questionnaires designed to steer users to credit counselors.
+              {t('competitiveEdge.c6Others', locale)}
             </td>
           </tr>
         </tbody>
