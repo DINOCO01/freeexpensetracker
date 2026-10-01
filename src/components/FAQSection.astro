@@ -151,7 +151,7 @@ const faqSchema = {
 </section>
 
 <script>
-  const faqSearchInput = document.getElementById('faq-search-input') as HTMLInputElement;
+  const faqSearchInput = document.getElementById('faq-search-input') as HTMLInputElement | null;
   const faqItems = document.querySelectorAll('.faq-item');
   const faqEmptyState = document.getElementById('faq-empty-state');
 

@@ -100,6 +100,7 @@ import Footer from '../components/Footer.astro';
             <input
               type="text"
               id="contact-name"
+              name="name"
               required
               placeholder="e.g. Alex Morgan"
               class="w-full text-xs rounded-xl border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
@@ -114,6 +115,7 @@ import Footer from '../components/Footer.astro';
             <input
               type="email"
               id="contact-email"
+              name="email"
               required
               placeholder="alex@example.com"
               class="w-full text-xs rounded-xl border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
@@ -128,6 +130,7 @@ import Footer from '../components/Footer.astro';
           </label>
           <select
             id="contact-topic"
+            name="topic"
             class="w-full text-xs rounded-xl border border-slate-300 px-3.5 py-2.5 text-slate-900 bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500 shadow-2xs cursor-pointer"
           >
             <option value="feedback">💡 General Feedback & Ideas</option>
@@ -145,6 +148,7 @@ import Footer from '../components/Footer.astro';
           </label>
           <textarea
             id="contact-message"
+            name="message"
             rows="5"
             required
             placeholder="Tell us what's on your mind, describe your template request, or share feedback..."
@@ -183,16 +187,66 @@ import Footer from '../components/Footer.astro';
   <Footer />
 
   <script>
-    const contactForm = document.getElementById('contact-form') as HTMLFormElement;
+    const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
     const successBanner = document.getElementById('contact-success-banner');
+    const submitBtn = contactForm?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
 
     if (contactForm && successBanner) {
-      contactForm.addEventListener('submit', (e) => {
+      contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        // Visual feedback
-        successBanner.classList.remove('hidden');
-        contactForm.reset();
-        successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `
+            <svg class="animate-spin w-4 h-4 text-white inline-block" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Sending...
+          `;
+        }
+
+        const nameInput = document.getElementById('contact-name') as HTMLInputElement | null;
+        const emailInput = document.getElementById('contact-email') as HTMLInputElement | null;
+        const topicInput = document.getElementById('contact-topic') as HTMLSelectElement | null;
+        const messageInput = document.getElementById('contact-message') as HTMLTextAreaElement | null;
+
+        const name = nameInput?.value.trim() || '';
+        const email = emailInput?.value.trim() || '';
+        const topic = topicInput?.value || 'feedback';
+        const message = messageInput?.value.trim() || '';
+
+        const payload = {
+          name,
+          email,
+          topic,
+          message,
+          _subject: `FreeExpenseTracker Contact: ${topic.toUpperCase()} from ${name || 'User'}`,
+          _captcha: 'false',
+          _template: 'table'
+        };
+
+        try {
+          await fetch('https://formsubmit.co/ajax/livetoolworld@gmail.com', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        } catch (err) {
+          console.error('Contact form submission error:', err);
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+          }
+          successBanner.classList.remove('hidden');
+          contactForm.reset();
+          successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
     }
   </script>

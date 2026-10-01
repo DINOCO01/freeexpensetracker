@@ -78,10 +78,11 @@ async function testMultilingualSystem() {
 
   // 5. Test Live Localhost Server Routes
   console.log('\n5. Testing Live Localhost Server Routes:');
+  const port = process.env.PORT || (await fetch('http://localhost:4322/').then(() => '4322').catch(() => '4321'));
   const routesToTest = ['/', '/en/', '/hi/', '/es/', '/de/', '/fr/', '/pt/', '/ja/', '/ko/'];
   for (const route of routesToTest) {
     try {
-      const resp = await fetch(`http://localhost:4321${route}`);
+      const resp = await fetch(`http://localhost:${port}${route}`);
       if (resp.status !== 200) {
         throw new Error(`Route ${route} returned status ${resp.status}`);
       }

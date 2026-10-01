@@ -111,6 +111,32 @@ const { locale = 'en' } = Astro.props;
   <!-- Global SEO Footer -->
   <Footer locale={locale} />
 
+  <!-- Reusable Contextual Feedback Widget (hidden until a tool action completes) -->
+  <div id="contextual-feedback" class="hidden mt-6 pt-4 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+    <div id="feedback-prompt-container" class="flex flex-col sm:flex-row items-center justify-between w-full gap-3">
+      <span class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Was this helpful?</span>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="btn-feedback-yes"
+          class="px-4 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition-all cursor-pointer shadow-2xs active:scale-95 flex items-center gap-1.5"
+        >
+          <span>👍</span> Yes
+        </button>
+        <a
+          href="/contact-us"
+          id="btn-feedback-no"
+          class="px-4 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-700 dark:hover:text-rose-300 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition-all cursor-pointer shadow-2xs active:scale-95 flex items-center gap-1.5"
+        >
+          <span>👎</span> No
+        </a>
+      </div>
+    </div>
+    <div id="feedback-confirmation" class="hidden w-full text-center sm:text-left py-2 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs sm:text-sm font-semibold">
+      Thanks for your feedback!
+    </div>
+  </div>
+
   <!-- Modals -->
   <FileImportModal locale={locale} />
   <ResetModal locale={locale} />
@@ -1885,6 +1911,8 @@ const { locale = 'en' } = Astro.props;
     inputItemName.value = '';
     inputItemAmount.value = '';
     renderAll();
+    const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
+    showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
 
   // Preset Chips
@@ -2056,6 +2084,7 @@ const { locale = 'en' } = Astro.props;
     inputDebtRate.value = '';
     inputDebtMinimum.value = '';
     renderAll();
+    showContextualFeedback(document.getElementById('tab-view-debt'));
   });
 
   // --- Debt Payment Modal Engine ---
@@ -2377,6 +2406,7 @@ const { locale = 'en' } = Astro.props;
     localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
     closeDebtPaymentModal();
     renderAll();
+    showContextualFeedback(document.getElementById('tab-view-debt'));
   });
 
   btnCloseDebtPaymentModal?.addEventListener('click', closeDebtPaymentModal);
@@ -2412,6 +2442,7 @@ const { locale = 'en' } = Astro.props;
     inputGoalCurrent.value = '';
     inputGoalMonthly.value = '';
     renderAll();
+    showContextualFeedback(document.getElementById('tab-view-targets'));
   });
 
   btnScrollToAddGoal?.addEventListener('click', () => {
@@ -2619,6 +2650,7 @@ const { locale = 'en' } = Astro.props;
     localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
     closeContributionModal();
     renderAll();
+    showContextualFeedback(document.getElementById('tab-view-targets'));
   });
 
   inputContribDate?.addEventListener('change', () => {
@@ -2872,6 +2904,8 @@ const { locale = 'en' } = Astro.props;
         )
         .join('');
     }
+    const previewBox = document.getElementById('import-preview-box');
+    showContextualFeedback(previewBox);
   }
 
   async function handleSelectedFile(files: FileList | File[]) {
@@ -2903,6 +2937,8 @@ const { locale = 'en' } = Astro.props;
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
     anchor?.scrollIntoView({ behavior: 'smooth' });
+    const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
+    showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
 
   btnApplyAppend?.addEventListener('click', () => {
@@ -2914,6 +2950,8 @@ const { locale = 'en' } = Astro.props;
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
     anchor?.scrollIntoView({ behavior: 'smooth' });
+    const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
+    showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
 
   // Tab Universal Statement & Receipt Importer Logic
@@ -3064,7 +3102,10 @@ const { locale = 'en' } = Astro.props;
       renderTabImporterResults();
 
       if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
-      if (tabImporterResults) tabImporterResults.classList.remove('hidden');
+      if (tabImporterResults) {
+        tabImporterResults.classList.remove('hidden');
+        showContextualFeedback(tabImporterResults);
+      }
     } catch (err: any) {
       if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
       if (tabImporterError) {
@@ -3094,6 +3135,8 @@ const { locale = 'en' } = Astro.props;
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
     anchor?.scrollIntoView({ behavior: 'smooth' });
+    const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
+    showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
 
   btnTabApplyAppend?.addEventListener('click', () => {
@@ -3104,6 +3147,8 @@ const { locale = 'en' } = Astro.props;
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
     anchor?.scrollIntoView({ behavior: 'smooth' });
+    const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
+    showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
 
   btnTabResetImport?.addEventListener('click', () => {
@@ -3249,6 +3294,25 @@ const { locale = 'en' } = Astro.props;
     switchTab('import');
     const tabImportEl = document.getElementById('tab-view-import');
     tabImportEl?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // --- Contextual Feedback Flow ---
+  function showContextualFeedback(targetContainer: HTMLElement | null) {
+    const feedbackEl = document.getElementById('contextual-feedback');
+    if (!feedbackEl || !targetContainer) return;
+    targetContainer.appendChild(feedbackEl);
+    feedbackEl.classList.remove('hidden');
+  }
+
+  const btnFeedbackYes = document.getElementById('btn-feedback-yes');
+  const feedbackPrompt = document.getElementById('feedback-prompt-container');
+  const feedbackConfirmation = document.getElementById('feedback-confirmation');
+
+  btnFeedbackYes?.addEventListener('click', () => {
+    if (feedbackPrompt && feedbackConfirmation) {
+      feedbackPrompt.classList.add('hidden');
+      feedbackConfirmation.classList.remove('hidden');
+    }
   });
 
   // Initial Render
