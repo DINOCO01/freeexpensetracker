@@ -122,10 +122,13 @@ const { locale = 'en' } = Astro.props;
   import {
     t,
     getLocalizedCategory,
+    getLocale,
     type SupportedLocale
   } from '../locales';
 
-  const activeLocale = (typeof document !== 'undefined' && (document.documentElement.dataset.locale as SupportedLocale)) || 'en';
+  const activeLocale: SupportedLocale = typeof document !== 'undefined'
+    ? getLocale(document.documentElement.dataset.locale)
+    : 'en';
 
   import {
     SUPPORTED_CURRENCIES,
@@ -668,7 +671,7 @@ const { locale = 'en' } = Astro.props;
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   }
 
-  function formatDateDisplay(dateStr: string): string {
+  function formatDateDisplay(dateStr?: string): string {
     if (!dateStr) return '';
     const parts = dateStr.split('-');
     if (parts.length === 3) {
@@ -1527,7 +1530,7 @@ const { locale = 'en' } = Astro.props;
                     .map(
                       (c) => `
                     <div class="flex items-center justify-between py-1 px-0.5">
-                      <span class="text-slate-600 dark:text-slate-300 font-medium">${formatDateDisplay(c.date)}</span>
+                      <span class="text-slate-600 dark:text-slate-300 font-medium">${formatDateDisplay(c.date || c.month)}</span>
                       <div class="flex items-center gap-2">
                         <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(c.actual)}</span>
                         <div class="flex items-center gap-0.5">
@@ -1536,8 +1539,8 @@ const { locale = 'en' } = Astro.props;
                             data-edit-contrib-id="${c.id}"
                             data-goal-id="${g.id}"
                             class="btn-edit-contrib text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 p-0.5 rounded transition-colors cursor-pointer"
-                            title="Edit contribution (${formatDateDisplay(c.date)})"
-                            aria-label="Edit contribution (${formatDateDisplay(c.date)})"
+                            title="Edit contribution (${formatDateDisplay(c.date || c.month)})"
+                            aria-label="Edit contribution (${formatDateDisplay(c.date || c.month)})"
                           >
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                           </button>
@@ -1744,36 +1747,36 @@ const { locale = 'en' } = Astro.props;
 
     transactionsTbody.innerHTML = filtered
       .map(
-        (t) => `
+        (tx) => `
       <tr class="hover:bg-slate-50 transition-colors">
-        <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${t.date}</td>
-        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(t.name)}">
-          ${escapeHtml(t.name)}
+        <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
+        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(tx.name)}">
+          ${escapeHtml(tx.name)}
         </td>
         <td class="py-2 px-3 whitespace-nowrap">
-          ${t.type === 'income'
+          ${tx.type === 'income'
             ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
                 💵 ${t('categories.Income', activeLocale)}
               </span>`
             : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                ${CATEGORY_ICONS[t.category] || '📦'} ${getLocalizedCategory(t.category, activeLocale)}
+                ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
               </span>`
           }
         </td>
         <td class="py-2 px-3 whitespace-nowrap">
           ${
-            t.source === 'imported'
+            tx.source === 'imported'
               ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">file</span>`
               : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">manual</span>`
           }
         </td>
-        <td class="py-2 px-3 text-right font-mono font-bold ${t.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
-          ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+        <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
+          ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
         </td>
         <td class="py-2 px-3 text-center">
           <button
             type="button"
-            data-delete-id="${t.id}"
+            data-delete-id="${tx.id}"
             class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
             title="Delete entry"
           >
@@ -2851,18 +2854,18 @@ const { locale = 'en' } = Astro.props;
       previewTableTbody.innerHTML = result.transactions
         .slice(0, 5)
         .map(
-          (t) => `
+          (txn) => `
         <tr class="hover:bg-slate-50">
-          <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${t.date}</td>
-          <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(t.name)}</td>
+          <td class="py-1.5 px-3 font-mono text-[10px] text-slate-500">${txn.date}</td>
+          <td class="py-1.5 px-3 font-medium text-slate-900 truncate max-w-[140px]">${escapeHtml(txn.name)}</td>
           <td class="py-1.5 px-3">
-            ${t.type === 'income'
+            ${txn.type === 'income'
               ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">💵 ${t('categories.Income', activeLocale)}</span>`
-              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${getLocalizedCategory(t.category, activeLocale)}</span>`
+              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">${getLocalizedCategory(txn.category, activeLocale)}</span>`
             }
           </td>
-          <td class="py-1.5 px-3 font-mono font-bold text-right ${t.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
-            ${t.type === 'income' ? '+' : ''}${formatMoney(t.amount)}
+          <td class="py-1.5 px-3 font-mono font-bold text-right ${txn.type === 'income' ? 'text-emerald-700' : 'text-rose-600'}">
+            ${txn.type === 'income' ? '+' : ''}${formatMoney(txn.amount)}
           </td>
         </tr>
       `
