@@ -277,10 +277,10 @@ export function normalizeToMonthly(amount: number, frequency: Frequency): number
 
 export function formatCurrency(
   amount: number,
-  currencyCode: string = "INR",
+  currencyCode: string = "USD",
   localeCode?: string
 ): string {
-  const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.INR;
+  const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
   const isWhole = Math.round(amount) === amount;
   
   let activeLocale = localeCode;

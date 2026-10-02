@@ -383,7 +383,7 @@ const { locale = 'en' } = Astro.props;
         <p><strong>The 50% Rule for Increments:</strong> Whenever you receive a raise, bonus, or new income stream, commit at least 50% of the net increase directly into automated investments before adjusting your discretionary lifestyle upward.</p>
 
         <h4 class="font-bold text-slate-900 mt-3 text-sm">3. The 72-Hour Impulse Delay</h4>
-        <p>For any non-essential purchase exceeding ₹1,000, institute an intentional 72-hour cooling-off delay. In a significant number of instances, the initial emotional urge dissipates, leaving your cash flow intact for true priorities.</p>
+        <p>For any non-essential purchase exceeding $50, institute an intentional 72-hour cooling-off delay. In a significant number of instances, the initial emotional urge dissipates, leaving your cash flow intact for true priorities.</p>
       `
     },
     'blog-3': {
@@ -666,7 +666,7 @@ const { locale = 'en' } = Astro.props;
 
   // --- 4. Helper Functions ---
   function getCurrencySymbol(): string {
-    const curr = SUPPORTED_CURRENCIES[state.currency] || SUPPORTED_CURRENCIES.INR;
+    const curr = SUPPORTED_CURRENCIES[state.currency] || SUPPORTED_CURRENCIES.USD;
     return curr.symbol;
   }
 
@@ -1242,7 +1242,7 @@ const { locale = 'en' } = Astro.props;
               </div>
               <div class="text-[11px] text-slate-600 dark:text-slate-300">
                 ${freedMonthlyEMI > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(freedMonthlyEMI)}/mo</strong> freed from paid-off account(s) + ` : ''}
-                ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mo</strong> extra pre-payment` : '₹0 extra pre-payment'}
+                ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mo</strong> extra pre-payment` : `${formatMoney(0)} extra pre-payment`}
                 rolled into your top target.
               </div>
             </div>
@@ -2776,7 +2776,7 @@ const { locale = 'en' } = Astro.props;
       income: 0,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'INR',
+      currency: 'USD',
       transactions: []
     };
     debts = [];
@@ -2792,7 +2792,7 @@ const { locale = 'en' } = Astro.props;
       income: 75000,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'INR',
+      currency: 'USD',
       transactions: [
         { id: 'tx-1', name: 'Apartment Rent', amount: 22000, category: 'Housing', date: new Date().toISOString().split('T')[0], source: 'manual' },
         { id: 'tx-2', name: 'Supermarket & Groceries', amount: 8500, category: 'Food', date: new Date().toISOString().split('T')[0], source: 'manual' },
@@ -3166,15 +3166,15 @@ const { locale = 'en' } = Astro.props;
 
       if (target === tabId) {
         if (isCapsule) {
-          btn.className = 'tab-btn active capsule-tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-emerald-700 text-white border border-emerald-800 shadow-xs cursor-pointer text-left';
+          btn.className = 'tab-btn active capsule-tab-btn min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all bg-emerald-700 text-white border border-emerald-800 shadow-xs cursor-pointer text-left shrink truncate';
         } else {
-          btn.className = 'tab-btn active w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-600 shadow-2xs cursor-pointer text-left';
+          btn.className = 'tab-btn active w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-600 shadow-2xs cursor-pointer text-left';
         }
       } else {
         if (isCapsule) {
-          btn.className = 'tab-btn capsule-tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-2xs cursor-pointer text-left';
+          btn.className = 'tab-btn capsule-tab-btn min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs cursor-pointer text-left shrink truncate';
         } else {
-          btn.className = 'tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left';
+          btn.className = 'tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left';
         }
       }
     });

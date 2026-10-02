@@ -9,135 +9,128 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <nav aria-label="Main Navigation Tabs" class="no-print w-full">
-  <div class="max-w-3xl mx-auto p-1.5 sm:p-2 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-    <div class="grid grid-cols-2 gap-2 sm:gap-2.5">
-      <!-- Set 1 (Left Column): 2 tabs vertical + last tab placed below them -->
-      <div class="flex flex-col gap-2 sm:gap-2.5">
-        <!-- Tab 1: Live Expense Tracker (Active by default) -->
-        <button
-          type="button"
-          data-tab="tracker"
-          class="tab-btn active w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs cursor-pointer text-left"
-        >
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-            <span class="truncate">{t('tabs.tracker', locale)}</span>
-          </div>
-        </button>
+  <div class="max-w-3xl mx-auto p-2 sm:p-2.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
+    <!-- Primary Tools: 4 main features in a clean, balanced grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+      <!-- Tool 1: Live Expense Tracker (Active by default) -->
+      <button
+        type="button"
+        data-tab="tracker"
+        class="tab-btn active w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs cursor-pointer text-left"
+      >
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+          <span class="truncate">{t('tabs.tracker', locale)}</span>
+        </div>
+      </button>
 
-        <!-- Tab 2: Free Templates -->
-        <button
-          type="button"
-          data-tab="templates"
-          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
-        >
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span class="text-sm shrink-0">📋</span>
-            <span class="truncate">{t('tabs.templates', locale)}</span>
-          </div>
-          <span class="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
-            {t('tabs.templatesBadge', locale)}
-          </span>
-        </button>
+      <!-- Tool 2: Free Templates -->
+      <button
+        type="button"
+        data-tab="templates"
+        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+      >
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-sm shrink-0">📋</span>
+          <span class="truncate">{t('tabs.templates', locale)}</span>
+        </div>
+      </button>
 
-        <!-- Tab 5: Knowledge & Blogs (Last tab placed below the first set) -->
+      <!-- Tool 3: Debt Planner -->
+      <button
+        type="button"
+        data-tab="debt"
+        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+      >
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-sm shrink-0">💳</span>
+          <span class="truncate">{t('tabs.debt', locale)}</span>
+        </div>
+      </button>
+
+      <!-- Tool 4: Budget & Goals -->
+      <button
+        type="button"
+        data-tab="targets"
+        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+      >
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-sm shrink-0">🎯</span>
+          <span class="truncate">{t('tabs.budget', locale)}</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Secondary Control Row: Knowledge/Guides (visually secondary) & Currency + Reset -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70 dark:border-slate-800/80">
+      <!-- Knowledge & Guides: Visually secondary button -->
+      <div class="min-w-0 flex-1 sm:flex-initial">
         <button
           type="button"
           data-tab="knowledge"
-          class="tab-btn capsule-tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 shadow-2xs cursor-pointer text-left"
+          class="tab-btn capsule-tab-btn min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs cursor-pointer text-left shrink truncate"
           title={t('tabs.knowledge', locale)}
         >
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span class="text-sm shrink-0">📚</span>
-            <span class="truncate">{t('tabs.knowledge', locale)}</span>
-          </div>
-          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 shrink-0">
-            {t('tabs.knowledgeBadge', locale)}
-          </span>
+          <span class="text-xs shrink-0">📚</span>
+          <span class="truncate">{locale === 'en' ? 'Knowledge & Guides' : t('tabs.knowledge', locale)}</span>
         </button>
       </div>
 
-      <!-- Set 2 (Right Column, parallel to earlier set): 2 tabs paired vertical -->
-      <div class="flex flex-col gap-2 sm:gap-2.5">
-        <!-- Tab 3: Debt Management -->
-        <button
-          type="button"
-          data-tab="debt"
-          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
-        >
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span class="text-sm shrink-0">💳</span>
-            <span class="truncate">{t('tabs.debt', locale)}</span>
-          </div>
-        </button>
-
-        <!-- Tab 4: Target & Budget Planning -->
-        <button
-          type="button"
-          data-tab="targets"
-          class="tab-btn w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 sm:gap-2 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
-        >
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span class="text-sm shrink-0">🎯</span>
-            <span class="truncate">{t('tabs.budget', locale)}</span>
-          </div>
-        </button>
-
-        <!-- Parallel to Knowledge & Blogs: Currency Selector & Reset Button paired parallel with each other -->
-        <div class="grid grid-cols-2 gap-1.5 sm:gap-2 w-full">
-          <!-- Currency Selector Dropdown -->
-          <div class="relative w-full">
-            <label for="currency-selector" class="sr-only">Change Currency</label>
-            <div class="relative flex items-center h-full">
-              <select
-                id="currency-selector"
-                class="w-full h-full min-h-[38px] sm:min-h-[42px] text-xs font-semibold bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 rounded-xl pl-2 sm:pl-2.5 pr-5 sm:pr-6 py-1.5 sm:py-2 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none truncate"
-                title="Change Currency"
-              >
-                <option value="INR" selected>INR (₹)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="CAD">CAD (CA$)</option>
-                <option value="AUD">AUD (AU$)</option>
-                <option value="JPY">JPY (¥)</option>
-                <option value="CHF">CHF (CHF)</option>
-                <option value="CNY">CNY (¥)</option>
-                <option value="SGD">SGD (S$)</option>
-                <option value="NZD">NZD (NZ$)</option>
-                <option value="AED">AED (AED)</option>
-                <option value="SAR">SAR (SAR)</option>
-                <option value="BRL">BRL (R$)</option>
-                <option value="MXN">MXN (Mex$)</option>
-                <option value="ZAR">ZAR (R)</option>
-                <option value="SEK">SEK (kr)</option>
-                <option value="KRW">KRW (₩)</option>
-                <option value="PHP">PHP (₱)</option>
-                <option value="MYR">MYR (RM)</option>
-                <option value="IDR">IDR (Rp)</option>
-                <option value="TRY">TRY (₺)</option>
-                <option value="PKR">PKR (Rs)</option>
-                <option value="BDT">BDT (৳)</option>
-                <option value="NGN">NGN (₦)</option>
-              </select>
-              <div class="pointer-events-none absolute right-1.5 sm:right-2 flex items-center text-slate-400">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-              </div>
+      <!-- Compact Controls: Currency & Reset -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <!-- Currency Selector Dropdown -->
+        <div class="relative">
+          <label for="currency-selector" class="sr-only">Change Currency</label>
+          <div class="relative flex items-center">
+            <select
+              id="currency-selector"
+              class="min-h-[36px] sm:min-h-[38px] text-xs font-semibold bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 rounded-xl pl-2 sm:pl-2.5 pr-6 py-1.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none"
+              title="Change Currency"
+            >
+              <option value="USD" selected>USD ($)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="CAD">CAD (CA$)</option>
+              <option value="AUD">AUD (AU$)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="CHF">CHF (CHF)</option>
+              <option value="CNY">CNY (¥)</option>
+              <option value="SGD">SGD (S$)</option>
+              <option value="NZD">NZD (NZ$)</option>
+              <option value="AED">AED (AED)</option>
+              <option value="SAR">SAR (SAR)</option>
+              <option value="BRL">BRL (R$)</option>
+              <option value="MXN">MXN (Mex$)</option>
+              <option value="ZAR">ZAR (R)</option>
+              <option value="SEK">SEK (kr)</option>
+              <option value="KRW">KRW (₩)</option>
+              <option value="PHP">PHP (₱)</option>
+              <option value="MYR">MYR (RM)</option>
+              <option value="IDR">IDR (Rp)</option>
+              <option value="TRY">TRY (₺)</option>
+              <option value="PKR">PKR (Rs)</option>
+              <option value="BDT">BDT (৳)</option>
+              <option value="NGN">NGN (₦)</option>
+            </select>
+            <div class="pointer-events-none absolute right-1.5 flex items-center text-slate-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
           </div>
-
-          <!-- Reset Button -->
-          <button
-            type="button"
-            id="btn-open-reset-modal"
-            class="btn-open-reset-modal w-full h-full min-h-[38px] sm:min-h-[42px] text-xs font-semibold px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-white hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 shrink-0"
-            title={t('footer.resetData', locale)}
-          >
-            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            <span>{t('buttons.resetAll', locale)}</span>
-          </button>
         </div>
+
+        <!-- Reset Button -->
+        <button
+          type="button"
+          id="btn-open-reset-modal"
+          class="btn-open-reset-modal min-h-[36px] sm:min-h-[38px] text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-white hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 shrink-0"
+          title={t('footer.resetData', locale)}
+        >
+          <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          <span>{t('buttons.resetAll', locale)}</span>
+        </button>
       </div>
     </div>
   </div>
 </nav>
+

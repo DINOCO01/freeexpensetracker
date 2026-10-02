@@ -627,7 +627,7 @@ interface PdfCell {
 export function parseTextStatementLines(
   rawText: string,
   fileName: string = 'statement.pdf',
-  currencyCode: string = 'INR',
+  currencyCode: string = 'USD',
   sourceType: 'pdf' | 'image' = 'pdf'
 ): FileInterpretationResult | null {
   if (!rawText || rawText.trim().length === 0) return null;
@@ -877,7 +877,7 @@ export function parseTextStatementLines(
 
 export async function parsePdfStatement(
   file: File,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
   const buffer = await file.arrayBuffer();
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
@@ -1606,7 +1606,7 @@ export async function parsePdfStatement(
 export function processTabularStatement(
   rawRows: any[][],
   fileName: string = 'statement.csv',
-  currencyCode: string = 'INR',
+  currencyCode: string = 'USD',
   sourceType: 'csv' | 'excel' = 'csv'
 ): FileInterpretationResult {
   if (!rawRows || rawRows.length < 2) {
@@ -1982,7 +1982,7 @@ export function processTabularStatement(
 
     if (diff !== undefined && !reconciled) {
       warnings.push(
-        `Calculated closing balance (${(calcClosing || 0).toFixed(2)}) differs from statement closing balance (${(closingBalance || 0).toFixed(2)}) by ₹${diff.toFixed(2)}.`
+        `Calculated closing balance (${(calcClosing || 0).toFixed(2)}) differs from statement closing balance (${(closingBalance || 0).toFixed(2)}) by ${currencyCode} ${diff.toFixed(2)}.`
       );
     }
 
@@ -2021,7 +2021,7 @@ export function processTabularStatement(
 
 export async function parseExcelFile(
   file: File,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
@@ -2109,7 +2109,7 @@ export function parseCsvLine(line: string, delimiter: string): string[] {
 export function parseCsvContent(
   csvText: string,
   fileName: string = 'statement.csv',
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): FileInterpretationResult {
   const delimiter = detectCsvDelimiter(csvText);
   const lines = csvText
@@ -2141,7 +2141,7 @@ export function extractGoogleSpreadsheetId(url: string): { spreadsheetId: string
 
 export async function parseGoogleSheetsUrl(
   url: string,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
   const sheetMeta = extractGoogleSpreadsheetId(url);
   if (!sheetMeta) {
@@ -2179,7 +2179,7 @@ export async function parseGoogleSheetsUrl(
 
 export async function parseImageDocument(
   file: File,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
   const { scanReceiptImage } = await import('./receiptScanner');
   const scanned = await scanReceiptImage(file);
@@ -2317,7 +2317,7 @@ function aggregateInterpretationResult(
 
 export async function parseAndInterpretFile(
   fileOrUrl: File | string,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
   // If string URL (e.g. Google Sheets)
   if (typeof fileOrUrl === 'string') {
@@ -2371,7 +2371,7 @@ export async function parseAndInterpretFile(
 export async function parseAndInterpretMultipleFiles(
   items: (File | string)[],
   onProgress?: (current: number, total: number, itemName: string) => void,
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): Promise<MultiFileInterpretationResult> {
   if (!items || items.length === 0) {
     throw new Error('Please select at least one file or Google Sheet URL to interpret.');
@@ -2550,7 +2550,7 @@ export function buildFileInterpretationInsights(
     reconciliation?: StatementReconciliation;
     needsReviewCount?: number;
   },
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): string[] {
   const insights: string[] = [];
   const incomeTxCount = result.transactions?.filter((t) => t.type === 'income').length ?? 0;
@@ -2619,7 +2619,7 @@ export function buildMultiFileInsights(
     latestDate?: string;
     transactions?: Transaction[];
   },
-  currencyCode: string = 'INR'
+  currencyCode: string = 'USD'
 ): string[] {
   const insights: string[] = [
     `Successfully processed ${result.successfulFiles} of ${result.fileCount} file(s), extracting ${result.recordCount} transactions totaling ${formatCurrency(result.totalAmount, currencyCode)} in outflows.`

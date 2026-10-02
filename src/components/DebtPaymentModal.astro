@@ -46,7 +46,7 @@ const { locale = 'en' } = Astro.props;
     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
       <div>
         <span class="text-slate-500 dark:text-slate-400 text-[11px] block">{t('modals.currentPrincipal', locale)}:</span>
-        <span id="modal-debt-current-principal" class="text-sm font-bold font-mono text-slate-900 dark:text-slate-100">₹0</span>
+        <span id="modal-debt-current-principal" class="text-sm font-bold font-mono text-slate-900 dark:text-slate-100">$0</span>
       </div>
       <div class="text-right">
         <span class="text-slate-500 dark:text-slate-400 text-[11px] block">{t('modals.monthlyEmiRate', locale)}:</span>
@@ -74,7 +74,7 @@ const { locale = 'en' } = Astro.props;
 
         <div>
           <label for="input-debt-payment-total" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('modals.totalPayment', locale)} (<span class="currency-label font-mono">₹</span>)
+            {t('modals.totalPayment', locale)} (<span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
@@ -106,7 +106,7 @@ const { locale = 'en' } = Astro.props;
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label for="input-debt-payment-principal" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('modals.principalPaid', locale)} (<span class="currency-label font-mono">₹</span>)
+            {t('modals.principalPaid', locale)} (<span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
@@ -123,7 +123,7 @@ const { locale = 'en' } = Astro.props;
 
         <div>
           <label for="input-debt-payment-interest" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('modals.interestPaid', locale)} (<span class="currency-label font-mono">₹</span>)
+            {t('modals.interestPaid', locale)} (<span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
@@ -143,7 +143,7 @@ const { locale = 'en' } = Astro.props;
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label for="input-debt-payment-extra" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('modals.extraPrepayment', locale)} (<span class="currency-label font-mono">₹</span>)
+            {t('modals.extraPrepayment', locale)} (<span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
@@ -176,11 +176,11 @@ const { locale = 'en' } = Astro.props;
       <div id="debt-payment-live-feedback" class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
         <div class="flex items-center justify-between font-mono text-[11px]">
           <span class="text-slate-600 dark:text-slate-400">{t('modals.totalPrincipalReduction', locale)}:</span>
-          <span id="display-payment-principal-reduction" class="font-bold text-emerald-800 dark:text-emerald-300">₹0</span>
+          <span id="display-payment-principal-reduction" class="font-bold text-emerald-800 dark:text-emerald-300">$0</span>
         </div>
         <div class="flex items-center justify-between font-mono text-xs pt-1 border-t border-emerald-200/60 dark:border-emerald-800/60">
           <span class="font-semibold text-slate-900 dark:text-slate-100">{t('modals.projectedNewPrincipal', locale)}:</span>
-          <span id="display-payment-new-balance" class="font-bold text-slate-900 dark:text-slate-100">₹0</span>
+          <span id="display-payment-new-balance" class="font-bold text-slate-900 dark:text-slate-100">$0</span>
         </div>
         <div id="payment-estimate-notice" class="hidden text-[10px] text-amber-800 dark:text-amber-300 pt-1">
           {t('modals.estimateSplitNotice', locale)}

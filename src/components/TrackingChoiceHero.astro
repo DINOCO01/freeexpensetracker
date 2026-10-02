@@ -6,25 +6,36 @@ interface Props {
 }
 
 const { locale = DEFAULT_LOCALE } = Astro.props;
+const isEn = locale === 'en';
 ---
 
-<section class="space-y-6">
+<section class="space-y-3 sm:space-y-4">
   <!-- Headline & Value Proposition -->
-  <div class="text-center max-w-3xl mx-auto space-y-3 pt-2">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-      <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-      {t('hero.badge', locale)}
+  <div class="text-center max-w-2xl mx-auto space-y-2 sm:space-y-3 pt-1 sm:pt-2">
+    <!-- Compact Badge -->
+    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse shrink-0"></span>
+      <span>{isEn ? '100% Free • No Sign-Up • Private Browser Storage' : t('hero.badge', locale)}</span>
     </div>
 
+    <!-- Main Headline -->
     <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-tight">
-      {t('hero.title1', locale)} <br class="hidden sm:inline" />
-      <span class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
-        {t('hero.title2', locale)}
-      </span>
+      {isEn ? (
+        <span>Take Control of Your Money.</span>
+      ) : (
+        <>
+          {t('hero.title1', locale)} <br class="hidden sm:inline" />
+          <span class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            {t('hero.title2', locale)}
+          </span>
+        </>
+      )}
     </h1>
 
-    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed px-1">
-      {t('hero.description', locale)}
+    <!-- Shorter supporting line -->
+    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed px-2">
+      {isEn ? 'Track spending, plan debt, and reach your financial goals.' : t('hero.description', locale)}
     </p>
   </div>
 </section>
+

@@ -121,7 +121,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
         <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.totalDebt', locale)}</div>
-        <div id="stat-total-debt" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">₹0</div>
+        <div id="stat-total-debt" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">$0</div>
         <div class="text-[11px] text-slate-600 dark:text-slate-400"><span id="debt-item-count">0</span> {t('debt.accounts', locale)}</div>
       </div>
 
@@ -139,7 +139,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 
       <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
         <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.interestSaved', locale)}</div>
-        <div id="stat-interest-saved" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">₹0</div>
+        <div id="stat-interest-saved" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">$0</div>
         <div class="text-[11px] text-slate-600 dark:text-slate-400">{t('debt.vsMinimums', locale)}</div>
       </div>
     </div>
@@ -154,7 +154,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         <div class="flex items-center gap-2">
           <span class="text-slate-500 dark:text-slate-400 text-[11px]">{t('debt.monthlyExtra', locale)}:</span>
           <div class="relative w-36 sm:w-44">
-            <span class="currency-label absolute left-2.5 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">₹</span>
+            <span class="currency-label absolute left-2.5 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">$</span>
             <input
               type="number"
               id="input-debt-extra-number"
@@ -205,10 +205,10 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
           />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label for="input-debt-balance" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              {t('debt.currentPrincipal', locale)} (<span class="currency-label font-mono">₹</span>)
+              {t('debt.currentPrincipal', locale)} (<span class="currency-label font-mono">$</span>)
             </label>
             <input
               type="number"
@@ -239,7 +239,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 
         <div>
           <label for="input-debt-minimum" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('debt.minPayment', locale)} (<span class="currency-label font-mono">₹</span>)
+            {t('debt.minPayment', locale)} (<span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
