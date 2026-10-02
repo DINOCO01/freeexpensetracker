@@ -6,55 +6,402 @@ interface Props {
 }
 
 const { locale = DEFAULT_LOCALE } = Astro.props;
+
+export interface TemplateDefinition {
+  id: string;
+  nameKey: string;
+  descKey: string;
+  categoryKey: string;
+  categoryIcon: string;
+  fileName: string;
+  googleSheetsUrl: string;
+  fileSize: string;
+}
+
+const TEMPLATES: TemplateDefinition[] = [
+  {
+    id: 'paycheck-budget',
+    nameKey: 'templates.t01_name',
+    descKey: 'templates.t01_desc',
+    categoryKey: 'catBudget',
+    categoryIcon: '💰',
+    fileName: '01_US_Paycheck_Budget.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1RljUtyWrxdbhT91qLe5OjX5y9J_Oq6fu1SAkkIQ_EGs/copy',
+    fileSize: '7.5 KB'
+  },
+  {
+    id: 'debt-snowball',
+    nameKey: 'templates.t02_name',
+    descKey: 'templates.t02_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '02_US_Debt_Snowball.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1G5_-PMG417ewdgcHNHoCDYeZMJFB9zfdxdaotBmLFys/copy',
+    fileSize: '7.0 KB'
+  },
+  {
+    id: 'debt-avalanche',
+    nameKey: 'templates.t03_name',
+    descKey: 'templates.t03_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '03_US_Debt_Avalanche.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1DGoVyJ8W75pJnjuXZw3NgqfSTApRD8YA8DMgeY_yxCQ/copy',
+    fileSize: '7.0 KB'
+  },
+  {
+    id: 'debt-to-income',
+    nameKey: 'templates.t04_name',
+    descKey: 'templates.t04_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '04_US_Debt_to_Income_Calculator.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/13ltxv5AzV-G29y14xQmaSQBplV-KLPzPgJsHfy1CZgc/copy',
+    fileSize: '6.4 KB'
+  },
+  {
+    id: 'student-loan',
+    nameKey: 'templates.t05_name',
+    descKey: 'templates.t05_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '05_US_Student_Loan_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/138Rmj9CEgCAkuaunnsULdoABWeIS3z3iyYtm7I2eg9M/copy',
+    fileSize: '6.5 KB'
+  },
+  {
+    id: 'auto-loan',
+    nameKey: 'templates.t06_name',
+    descKey: 'templates.t06_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '06_US_Auto_Loan_Calculator.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1vAo56iDBCEO9lBRQGTc5hEy9_xCQ9Ch6iW3rpJNbklI/copy',
+    fileSize: '6.4 KB'
+  },
+  {
+    id: 'mortgage-planner',
+    nameKey: 'templates.t07_name',
+    descKey: 'templates.t07_desc',
+    categoryKey: 'catDebt',
+    categoryIcon: '💳',
+    fileName: '07_US_Mortgage_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1JLqHfjVxwhyS3AhciA3Ozhe31ltWd1ZtHcpVbz8NjuM/copy',
+    fileSize: '6.5 KB'
+  },
+  {
+    id: '401k-retirement',
+    nameKey: 'templates.t08_name',
+    descKey: 'templates.t08_desc',
+    categoryKey: 'catInvesting',
+    categoryIcon: '📈',
+    fileName: '08_US_401k_Retirement_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1d9Xsmoy134jw498cu8UI3LaX3gqSNKBk9hSK5-m2su8/copy',
+    fileSize: '6.5 KB'
+  },
+  {
+    id: 'roth-ira',
+    nameKey: 'templates.t09_name',
+    descKey: 'templates.t09_desc',
+    categoryKey: 'catInvesting',
+    categoryIcon: '📈',
+    fileName: '09_US_Roth_IRA_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1VkXAGi8MyYsQYvuk7AEb-LlfC8x0YZJJtGw5C1l9404/copy',
+    fileSize: '6.3 KB'
+  },
+  {
+    id: 'emergency-fund',
+    nameKey: 'templates.t10_name',
+    descKey: 'templates.t10_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '🛡️',
+    fileName: '10_US_Emergency_Fund_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1rYSlbyXNHijXwQopymO0h63pKh0EHNOFAEm_b1afnww/copy',
+    fileSize: '6.4 KB'
+  },
+  {
+    id: 'subscription-audit',
+    nameKey: 'templates.t11_name',
+    descKey: 'templates.t11_desc',
+    categoryKey: 'catBills',
+    categoryIcon: '🧾',
+    fileName: '11_US_Subscription_Audit.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1Jw_uqr7eCcJOaJ-a9qrV8uLBLDLACvoqZ6jApVeWQNk/copy',
+    fileSize: '9.5 KB'
+  },
+  {
+    id: 'sinking-fund',
+    nameKey: 'templates.t12_name',
+    descKey: 'templates.t12_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '🛡️',
+    fileName: '12_US_Sinking_Fund_Planner.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1WCqJn4R7DtWUO5gwjvhOoIRgANSkuTu7QKc1y8vy6T0/copy',
+    fileSize: '8.0 KB'
+  },
+  {
+    id: 'net-worth',
+    nameKey: 'templates.t13_name',
+    descKey: 'templates.t13_desc',
+    categoryKey: 'catInvesting',
+    categoryIcon: '📈',
+    fileName: '13_US_Net_Worth_Tracker.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1Z3sCWsHnpOFp86NgFzdSmDpFwCKSu_h8lGUK3EY0MUE/copy',
+    fileSize: '8.5 KB'
+  },
+  {
+    id: 'financial-dashboard',
+    nameKey: 'templates.t14_name',
+    descKey: 'templates.t14_desc',
+    categoryKey: 'catBudget',
+    categoryIcon: '💰',
+    fileName: '14_US_Financial_Dashboard.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1CqLo5f0BwdfuLWVyvV1BXMWYpQdQ4VpyhgJBOeMKjuE/copy',
+    fileSize: '12.5 KB'
+  },
+  {
+    id: 'monthly-spending',
+    nameKey: 'templates.t15_name',
+    descKey: 'templates.t15_desc',
+    categoryKey: 'catBudget',
+    categoryIcon: '💰',
+    fileName: '15_US_Monthly_Spending_Analyzer.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1ywTkoRZ6OVYltMSEPxkZ-yaGZoxsrchfzNQeI6iZfpU/copy',
+    fileSize: '12.8 KB'
+  }
+];
+
+const CATEGORIES = [
+  { key: 'all', labelKey: 'templates.catAll', count: 15, icon: '📂' },
+  { key: 'catBudget', labelKey: 'templates.catBudget', count: 3, icon: '💰' },
+  { key: 'catDebt', labelKey: 'templates.catDebt', count: 6, icon: '💳' },
+  { key: 'catSavings', labelKey: 'templates.catSavings', count: 2, icon: '🛡️' },
+  { key: 'catInvesting', labelKey: 'templates.catInvesting', count: 3, icon: '📈' },
+  { key: 'catBills', labelKey: 'templates.catBills', count: 1, icon: '🧾' }
+];
+
+function getCategoryColor(categoryKey: string): { bg: string; text: string; border: string } {
+  if (categoryKey === 'catBudget') {
+    return {
+      bg: 'bg-emerald-50 dark:bg-emerald-950/40',
+      text: 'text-emerald-700 dark:text-emerald-300',
+      border: 'border-emerald-200/70 dark:border-emerald-800/60'
+    };
+  }
+  if (categoryKey === 'catDebt') {
+    return {
+      bg: 'bg-amber-50 dark:bg-amber-950/40',
+      text: 'text-amber-800 dark:text-amber-300',
+      border: 'border-amber-200/70 dark:border-amber-800/60'
+    };
+  }
+  if (categoryKey === 'catSavings') {
+    return {
+      bg: 'bg-sky-50 dark:bg-sky-950/40',
+      text: 'text-sky-800 dark:text-sky-300',
+      border: 'border-sky-200/70 dark:border-sky-800/60'
+    };
+  }
+  if (categoryKey === 'catInvesting') {
+    return {
+      bg: 'bg-indigo-50 dark:bg-indigo-950/40',
+      text: 'text-indigo-800 dark:text-indigo-300',
+      border: 'border-indigo-200/70 dark:border-indigo-800/60'
+    };
+  }
+  return {
+    bg: 'bg-rose-50 dark:bg-rose-950/40',
+    text: 'text-rose-800 dark:text-rose-300',
+    border: 'border-rose-200/70 dark:border-rose-800/60'
+  };
+}
 ---
 
 <div class="space-y-6">
-  <!-- Top Banner & Intro -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-base border border-emerald-200 dark:border-emerald-800">
-          📋
-        </span>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-          {t('templates.title', locale)}
-        </h2>
-        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
-          {t('templates.badge', locale)}
-        </span>
-      </div>
-      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-        {t('templates.subtitle', locale)}
-      </p>
+  <!-- Clean Section Header -->
+  <div class="text-center max-w-2xl mx-auto space-y-2 pt-1 sm:pt-2">
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs">
+      <span>📋</span>
+      <span>{t('templates.badge', locale)}</span>
     </div>
 
-    <!-- Quick guarantee -->
-    <div class="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium">
-      <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
-      <span>{t('templates.privatePill', locale)}</span>
+    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+      {t('templates.title', locale)}
+    </h2>
+
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed px-2">
+      {t('templates.subtitle', locale)}
+    </p>
+
+    <!-- Subtle Trust Indicator -->
+    <div class="pt-0.5">
+      <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span>{t('templates.privatePill', locale)}</span>
+      </span>
     </div>
   </div>
 
-  <!-- Templates Placeholder State -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 sm:p-14 shadow-xs text-center space-y-4">
-    <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-3xl shadow-2xs">
-      📊
+  <!-- Interactive Controls Bar: Switcher + Category Filters -->
+  <div class="space-y-3.5">
+    <!-- Format Toggle: Excel / Google Sheets -->
+    <div class="flex items-center justify-center">
+      <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800/90 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-2xs" role="tablist" aria-label="Template format switcher">
+        <button
+          type="button"
+          id="btn-format-excel"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-templates-excel"
+          class="format-tab-btn active inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-xs border border-slate-200/90 dark:border-slate-600"
+        >
+          <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+            <path d="M9.5 11l1.8 3-1.8 3h1.7l1-1.8 1 1.8h1.7l-1.8-3 1.8-3h-1.7l-1 1.8-1-1.8H9.5z"/>
+          </svg>
+          <span>{t('templates.tabExcel', locale)}</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">15</span>
+        </button>
+
+        <button
+          type="button"
+          id="btn-format-sheets"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-templates-sheets"
+          class="format-tab-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+        >
+          <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+            <path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>
+          </svg>
+          <span>{t('templates.tabSheets', locale)}</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">15</span>
+        </button>
+      </div>
     </div>
-    <div class="space-y-1.5 max-w-md mx-auto">
-      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-        {t('templates.updatingTitle', locale)}
-      </h3>
-      <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-        {t('templates.updatingSub', locale)}
-      </p>
+
+    <!-- Category Filter Bar (Horizontally scrollable on mobile) -->
+    <div class="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar scroll-smooth py-1 gap-1.5 -mx-3 px-3 sm:mx-0 sm:px-0">
+      {CATEGORIES.map((cat) => (
+        <button
+          type="button"
+          data-category-filter={cat.key}
+          class={`tmpl-cat-filter shrink-0 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer select-none ${
+            cat.key === 'all'
+              ? 'active font-semibold bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-2xs'
+              : 'font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200/80 dark:border-slate-700/80'
+          }`}
+        >
+          <span>{cat.icon} {t(cat.labelKey, locale)}</span>
+          <span class="ml-1 opacity-70 text-[10px] font-mono">{cat.count}</span>
+        </button>
+      ))}
     </div>
-    <div class="pt-2">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        {t('templates.comingSoon', locale)}
-      </span>
+  </div>
+
+  <!-- PANEL 1: EXCEL TEMPLATES -->
+  <div id="panel-templates-excel" class="space-y-4" role="tabpanel" aria-labelledby="btn-format-excel">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+      {TEMPLATES.map((tmpl) => {
+        const catColor = getCategoryColor(tmpl.categoryKey);
+        const catLabel = t(`templates.${tmpl.categoryKey}`, locale);
+        return (
+          <div
+            data-category={tmpl.categoryKey}
+            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-4 group"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${catColor.bg} ${catColor.text} ${catColor.border}`}>
+                  <span>{tmpl.categoryIcon}</span>
+                  <span>{catLabel}</span>
+                </span>
+                <span class="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                  .xlsx • {tmpl.fileSize}
+                </span>
+              </div>
+
+              <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+                  {t(tmpl.nameKey, locale)}
+                </h3>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                  {t(tmpl.descKey, locale)}
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+              <a
+                href={`/templates/${tmpl.fileName}`}
+                download={tmpl.fileName}
+                class="w-full inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                aria-label={`Download ${t(tmpl.nameKey, locale)} Excel Template`}
+              >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>{t('templates.btnDownloadExcel', locale)}</span>
+              </a>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- PANEL 2: GOOGLE SHEETS TEMPLATES -->
+  <div id="panel-templates-sheets" class="space-y-4 hidden" role="tabpanel" aria-labelledby="btn-format-sheets">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+      {TEMPLATES.map((tmpl) => {
+        const catColor = getCategoryColor(tmpl.categoryKey);
+        const catLabel = t(`templates.${tmpl.categoryKey}`, locale);
+        return (
+          <div
+            data-category={tmpl.categoryKey}
+            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-4 group"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${catColor.bg} ${catColor.text} ${catColor.border}`}>
+                  <span>{tmpl.categoryIcon}</span>
+                  <span>{catLabel}</span>
+                </span>
+                <span class="text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                  Google Sheets
+                </span>
+              </div>
+
+              <div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+                  {t(tmpl.nameKey, locale)}
+                </h3>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                  {t(tmpl.descKey, locale)}
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+              <a
+                href={tmpl.googleSheetsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                aria-label={`Open ${t(tmpl.nameKey, locale)} in Google Sheets`}
+              >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span>{t('templates.btnOpenSheets', locale)}</span>
+              </a>
+            </div>
+          </div>
+        );
+      })}
     </div>
   </div>
 
@@ -83,3 +430,90 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </button>
   </div>
 </div>
+
+<script>
+  function setupTemplatesHub() {
+    const btnExcel = document.getElementById('btn-format-excel');
+    const btnSheets = document.getElementById('btn-format-sheets');
+    const panelExcel = document.getElementById('panel-templates-excel');
+    const panelSheets = document.getElementById('panel-templates-sheets');
+    const catButtons = document.querySelectorAll<HTMLButtonElement>('.tmpl-cat-filter');
+    const cardItems = document.querySelectorAll<HTMLElement>('.template-card-item');
+
+    if (!btnExcel || !btnSheets || !panelExcel || !panelSheets) return;
+
+    let currentCategory = 'all';
+
+    const activeFormatClasses = ['bg-white', 'dark:bg-slate-700', 'text-emerald-800', 'dark:text-emerald-300', 'shadow-xs', 'border', 'border-slate-200/90', 'dark:border-slate-600', 'font-bold'];
+    const inactiveFormatClasses = ['text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-100', 'font-semibold'];
+
+    const activeCatClasses = ['bg-slate-900', 'dark:bg-slate-100', 'text-white', 'dark:text-slate-900', 'font-semibold', 'shadow-2xs'];
+    const inactiveCatClasses = ['bg-white', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400', 'hover:text-slate-900', 'dark:hover:text-slate-200', 'border', 'border-slate-200/80', 'dark:border-slate-700/80', 'font-medium'];
+
+    function applyCategoryFilter(cat: string) {
+      currentCategory = cat;
+
+      catButtons.forEach((btn) => {
+        const btnCat = btn.getAttribute('data-category-filter');
+        if (btnCat === cat) {
+          btn.classList.add(...activeCatClasses);
+          btn.classList.remove(...inactiveCatClasses);
+        } else {
+          btn.classList.remove(...activeCatClasses);
+          btn.classList.add(...inactiveCatClasses);
+        }
+      });
+
+      cardItems.forEach((card) => {
+        const itemCat = card.getAttribute('data-category');
+        if (cat === 'all' || itemCat === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    function selectExcel() {
+      btnExcel?.classList.add(...activeFormatClasses);
+      btnExcel?.classList.remove(...inactiveFormatClasses);
+      btnExcel?.setAttribute('aria-selected', 'true');
+
+      btnSheets?.classList.remove(...activeFormatClasses);
+      btnSheets?.classList.add(...inactiveFormatClasses);
+      btnSheets?.setAttribute('aria-selected', 'false');
+
+      panelExcel?.classList.remove('hidden');
+      panelSheets?.classList.add('hidden');
+    }
+
+    function selectSheets() {
+      btnSheets?.classList.add(...activeFormatClasses);
+      btnSheets?.classList.remove(...inactiveFormatClasses);
+      btnSheets?.setAttribute('aria-selected', 'true');
+
+      btnExcel?.classList.remove(...activeFormatClasses);
+      btnExcel?.classList.add(...inactiveFormatClasses);
+      btnExcel?.setAttribute('aria-selected', 'false');
+
+      panelSheets?.classList.remove('hidden');
+      panelExcel?.classList.add('hidden');
+    }
+
+    btnExcel.addEventListener('click', selectExcel);
+    btnSheets.addEventListener('click', selectSheets);
+
+    catButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetCat = btn.getAttribute('data-category-filter') || 'all';
+        applyCategoryFilter(targetCat);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupTemplatesHub);
+  } else {
+    setupTemplatesHub();
+  }
+</script>
