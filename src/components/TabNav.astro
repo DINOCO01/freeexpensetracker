@@ -9,14 +9,14 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <nav aria-label="Main Navigation Tabs" class="no-print w-full">
-  <div class="max-w-3xl mx-auto p-2 sm:p-2.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
-    <!-- Primary Tools: 4 main features in a clean, balanced grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+  <div class="max-w-3xl mx-auto p-1.5 sm:p-2.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1.5 sm:space-y-2">
+    <!-- Primary Navigation: Horizontally scrollable strip on mobile, balanced 4-column grid on desktop -->
+    <div class="flex sm:grid sm:grid-cols-4 items-center gap-1.5 sm:gap-2.5 overflow-x-auto sm:overflow-visible no-scrollbar scrollbar-none scroll-smooth pb-0.5 sm:pb-0 px-0.5">
       <!-- Tool 1: Live Expense Tracker (Active by default) -->
       <button
         type="button"
         data-tab="tracker"
-        class="tab-btn active w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs cursor-pointer text-left"
+        class="tab-btn active shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-600 shadow-2xs cursor-pointer text-left"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
@@ -28,7 +28,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <button
         type="button"
         data-tab="templates"
-        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+        class="tab-btn shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span class="text-sm shrink-0">📋</span>
@@ -40,7 +40,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <button
         type="button"
         data-tab="debt"
-        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+        class="tab-btn shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span class="text-sm shrink-0">💳</span>
@@ -52,19 +52,31 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <button
         type="button"
         data-tab="targets"
-        class="tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 hover:border-slate-300 dark:border-slate-700 shadow-2xs cursor-pointer text-left"
+        class="tab-btn shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span class="text-sm shrink-0">🎯</span>
           <span class="truncate">{t('tabs.budget', locale)}</span>
         </div>
       </button>
+
+      <!-- Tool 5 (Mobile only in horizontal row): Knowledge & Guides -->
+      <button
+        type="button"
+        data-tab="knowledge"
+        class="tab-btn mobile-tab-knowledge sm:hidden shrink-0 whitespace-nowrap min-h-[38px] px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left"
+      >
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="text-sm shrink-0">📚</span>
+          <span class="truncate">{locale === 'en' ? 'Knowledge & Guides' : t('tabs.knowledge', locale)}</span>
+        </div>
+      </button>
     </div>
 
-    <!-- Secondary Control Row: Knowledge/Guides (visually secondary) & Currency + Reset -->
-    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 pt-2 border-t border-slate-200/70 dark:border-slate-800/80">
-      <!-- Knowledge & Guides: Visually secondary button -->
-      <div class="min-w-0 flex-1 sm:flex-initial">
+    <!-- Secondary Row: Desktop Knowledge Capsule & Controls (Currency + Reset) -->
+    <div class="flex items-center justify-between gap-2 pt-1.5 sm:pt-2 border-t border-slate-200/70 dark:border-slate-800/80">
+      <!-- Knowledge & Guides: Visually secondary button on Desktop -->
+      <div class="hidden sm:block min-w-0 flex-initial">
         <button
           type="button"
           data-tab="knowledge"
@@ -76,8 +88,8 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         </button>
       </div>
 
-      <!-- Compact Controls: Currency & Reset -->
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <!-- Controls: Currency & Reset -->
+      <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-1.5 sm:gap-2 shrink-0">
         <!-- Currency Selector Dropdown -->
         <div class="relative">
           <label for="currency-selector" class="sr-only">Change Currency</label>
@@ -133,4 +145,3 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 </nav>
-

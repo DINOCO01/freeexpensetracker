@@ -1506,7 +1506,7 @@ const { locale = 'en' } = Astro.props;
             const actualMonthsLeft = Math.ceil(remaining / avgActual);
             actualProjectionText = `${actualMonthsLeft} mos left (~${formatMoney(Math.round(avgActual))}/mo)`;
           } else {
-            actualProjectionText = '₹0 contributed recently';
+            actualProjectionText = `${getCurrencySymbol()}0 contributed recently`;
           }
         }
 
@@ -2361,7 +2361,7 @@ const { locale = 'en' } = Astro.props;
 
     const totalReduction = principal + extra;
     if (totalReduction <= 0) {
-      showDebtPaymentError('Principal paid or extra pre-payment must be greater than ₹0.');
+      showDebtPaymentError(`Principal paid or extra pre-payment must be greater than ${getCurrencySymbol()}0.`);
       return;
     }
 
@@ -2683,7 +2683,7 @@ const { locale = 'en' } = Astro.props;
     const newPlan = parseFloat(inputEditPlanValue.value);
     if (isNaN(newPlan) || newPlan < 0 || newPlan > 10000000) {
       if (contribErrorMsg) {
-        contribErrorMsg.textContent = 'Please enter a valid planned monthly allocation (₹0 - ₹1,00,00,000).';
+        contribErrorMsg.textContent = `Please enter a valid planned monthly allocation (${formatMoney(0)} - ${formatMoney(10000000)}).`;
         contribErrorMsg.classList.remove('hidden');
       }
       return;
@@ -2789,17 +2789,17 @@ const { locale = 'en' } = Astro.props;
   btnRestoreSample?.addEventListener('click', () => {
     clearAllStoredData();
     state = {
-      income: 75000,
+      income: 4200,
       frequency: 'monthly',
       model: '50-30-20',
       currency: 'USD',
       transactions: [
-        { id: 'tx-1', name: 'Apartment Rent', amount: 22000, category: 'Housing', date: new Date().toISOString().split('T')[0], source: 'manual' },
-        { id: 'tx-2', name: 'Supermarket & Groceries', amount: 8500, category: 'Food', date: new Date().toISOString().split('T')[0], source: 'manual' },
-        { id: 'tx-3', name: 'Electricity & Broadband Bill', amount: 2800, category: 'Utilities', date: new Date().toISOString().split('T')[0], source: 'manual' },
-        { id: 'tx-4', name: 'Fuel & Metro Travel', amount: 3500, category: 'Transport', date: new Date().toISOString().split('T')[0], source: 'manual' },
-        { id: 'tx-5', name: 'Dining Out & OTT Subscriptions', amount: 3200, category: 'Entertainment', date: new Date().toISOString().split('T')[0], source: 'manual' },
-        { id: 'tx-6', name: 'Mutual Fund SIP Transfer', amount: 15000, category: 'Savings', date: new Date().toISOString().split('T')[0], source: 'manual' }
+        { id: 'tx-1', name: 'Apartment Rent', amount: 1350, category: 'Housing', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-2', name: 'Weekly Supermarket Haul', amount: 380, category: 'Food', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-3', name: 'Electric & High-Speed Internet', amount: 145, category: 'Utilities', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-4', name: 'Car Gas & Metro Pass', amount: 160, category: 'Transport', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-5', name: 'Streaming Subscriptions & Dining Out', amount: 120, category: 'Entertainment', date: new Date().toISOString().split('T')[0], source: 'manual' },
+        { id: 'tx-6', name: 'Emergency Fund Transfer', amount: 450, category: 'Savings', date: new Date().toISOString().split('T')[0], source: 'manual' }
       ]
     };
     debts = [];
@@ -3163,18 +3163,20 @@ const { locale = 'en' } = Astro.props;
     tabButtons.forEach((btn) => {
       const target = btn.getAttribute('data-tab');
       const isCapsule = btn.classList.contains('capsule-tab-btn');
+      const isMobileKnowledge = btn.classList.contains('mobile-tab-knowledge');
+      const mobileOnlyClass = isMobileKnowledge ? 'mobile-tab-knowledge sm:hidden ' : '';
 
       if (target === tabId) {
         if (isCapsule) {
           btn.className = 'tab-btn active capsule-tab-btn min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all bg-emerald-700 text-white border border-emerald-800 shadow-xs cursor-pointer text-left shrink truncate';
         } else {
-          btn.className = 'tab-btn active w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-600 shadow-2xs cursor-pointer text-left';
+          btn.className = `tab-btn active ${mobileOnlyClass}shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-600 shadow-2xs cursor-pointer text-left`;
         }
       } else {
         if (isCapsule) {
           btn.className = 'tab-btn capsule-tab-btn min-h-[36px] sm:min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-800 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs cursor-pointer text-left shrink truncate';
         } else {
-          btn.className = 'tab-btn w-full min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left';
+          btn.className = `tab-btn ${mobileOnlyClass}shrink-0 whitespace-nowrap sm:w-full min-h-[38px] sm:min-h-[44px] px-3 py-2 sm:py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-1.5 transition-all bg-white/70 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 shadow-2xs cursor-pointer text-left`;
         }
       }
     });
