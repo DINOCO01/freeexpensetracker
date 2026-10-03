@@ -3222,6 +3222,23 @@ const { locale = 'en' } = Astro.props;
     });
   });
 
+  // Universal handler: Switch and scroll to tabs when internal anchor links are clicked
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#tab-view-"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const hash = link.getAttribute('href');
+      if (!hash) return;
+      const tabName = hash.replace('#tab-view-', '');
+      if (tabName) {
+        e.preventDefault();
+        switchTab(tabName);
+        setTimeout(() => {
+          const targetView = document.getElementById(`tab-view-${tabName}`);
+          targetView?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    });
+  });
+
   // --- Templates Hub Handlers ---
   const tmplFilterBtns = document.querySelectorAll('.btn-tmpl-filter');
   const templateCards = document.querySelectorAll('.template-card');

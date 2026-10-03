@@ -1,9 +1,9 @@
 export const en = {
   meta: {
     siteName: "Free Expense Tracker",
-    title: "Free Expense Tracker - Best Free Expense Tracker App, Spreadsheets & Templates",
-    description: "Manage your finances with Free Expense Tracker. Download free expense tracker spreadsheet workbooks, copy free expense tracker Google Sheets templates, or use our live private web app with receipt OCR scanning. 100% free with zero accounts needed.",
-    keywords: "Free Expense Tracker, free expense tracker, best free expense tracker app, free expense tracker template, free expense tracker google sheets, best free expense tracker, free expense tracker spreadsheet, budget planner, personal finance app, receipt scanner"
+    title: "Free Expense Tracker - Web App & Free Spreadsheet Templates",
+    description: "Take control of your money with Free Expense Tracker. Track income and spending, plan monthly budgets, and download free Google Sheets and Excel templates.",
+    keywords: "Free Expense Tracker, expense tracker template, budget excel template, net worth excel template, google sheets templates, free google sheets templates, personal finance"
   },
   nav: {
     brand: "Free Expense Tracker",

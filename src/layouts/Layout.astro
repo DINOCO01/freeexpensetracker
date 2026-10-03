@@ -35,7 +35,7 @@ const metaKeywords = keywords || t('meta.keywords', locale);
 
 const siteUrl = "https://freexpensetracker.com";
 const canonical = canonicalUrl || (locale === DEFAULT_LOCALE ? `${siteUrl}/` : `${siteUrl}/${locale}/`);
-const ogImageUrl = `${siteUrl}/og-image.svg`;
+const ogImageUrl = `${siteUrl}/web-app-manifest-512x512.png`;
 
 // Hreflang links for SEO
 const hreflangLinks = getAllHreflangLinks(Astro.url.pathname, siteUrl);
@@ -53,7 +53,7 @@ const ogLocaleMap: Record<SupportedLocale, string> = {
 };
 const ogLocale = ogLocaleMap[locale] || 'en_US';
 
-// JSON-LD Structured Data: WebApplication, WebSite, and localized FAQPage
+// JSON-LD Structured Data: WebApplication, WebSite, Organization, BreadcrumbList, and localized FAQPage
 const structuredData = [
   {
     "@context": "https://schema.org",
@@ -91,6 +91,26 @@ const structuredData = [
       "target": `${siteUrl}/?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Free Expense Tracker",
+    "url": `${siteUrl}/`,
+    "logo": `${siteUrl}/web-app-manifest-512x512.png`,
+    "description": "Free web-based personal expense tracking application and financial spreadsheet template library."
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": t('meta.siteName', locale),
+        "item": `${siteUrl}/`
+      }
+    ]
   },
   {
     "@context": "https://schema.org",
@@ -152,6 +172,9 @@ const structuredData = [
     <meta property="og:title" content={metaTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content={metaTitle} />
     <meta property="og:locale" content={ogLocale} />
 

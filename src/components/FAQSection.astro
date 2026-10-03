@@ -58,20 +58,6 @@ export const getFaqData = (loc: SupportedLocale = 'en'): FAQItem[] => [
 
 export const FAQ_DATA = getFaqData('en');
 const currentFaqData = getFaqData(locale);
-
-// Generate JSON-LD schema
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": currentFaqData.map((item) => ({
-    "@type": "Question",
-    "name": item.question,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": item.answer
-    }
-  }))
-};
 ---
 
 <section id="faq-section" class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8">
@@ -145,9 +131,6 @@ const faqSchema = {
     <div class="text-sm font-bold text-slate-800">{t('faq.noMatches', locale)}</div>
     <p class="text-xs text-slate-500">{t('faq.noMatchesHint', locale)}</p>
   </div>
-
-  <!-- Structured Data JSON-LD for Google Rich Results -->
-  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </section>
 
 <script>

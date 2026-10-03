@@ -6,256 +6,434 @@ interface Props {
 }
 
 const { locale = 'en' } = Astro.props;
+const isEn = locale === 'en';
 ---
 
 <article class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-8 md:p-12 shadow-xs space-y-8 sm:space-y-10 text-slate-700 leading-relaxed font-sans">
-  <!-- Article Header -->
-  <header class="border-b border-slate-100 pb-6 sm:pb-8 space-y-3">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-      <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-      <span>{t('seoGuide.badge', locale)}</span>
-    </div>
-    <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
-      {t('seoGuide.title', locale)}
-    </h2>
-    <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
-      {t('seoGuide.subtitle', locale)}
-    </p>
-  </header>
+  {isEn ? (
+    <>
+      <!-- Article Header -->
+      <header class="border-b border-slate-100 pb-6 sm:pb-8 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>Personal Finance &amp; Budgeting Guide</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+          Complete Guide to Using a Free Expense Tracker for Personal Finance
+        </h2>
+        <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+          Learn how a structured free expense tracker helps you monitor income, categorize daily spending, calculate net cash flow, plan budgets, and reach meaningful financial goals without paid subscriptions.
+        </p>
+      </header>
 
-  <!-- Section 1: The Modern Budgeting Landscape -->
-  <section class="space-y-4">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec1Title', locale)}
-    </h3>
-    <p>
-      {t('seoGuide.sec1Text1', locale)}
-    </p>
-    <p>
-      {t('seoGuide.sec1Text2', locale)}
-    </p>
-  </section>
+      <!-- Section 1: What is a Free Expense Tracker and Why It Matters -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          What is a Free Expense Tracker and Why Use One?
+        </h3>
+        <p>
+          A free expense tracker is an accessible tool designed to help you record income, monitor daily expenditures, and understand exactly where your money goes. Rather than relying on guesswork or fragmented banking apps, an expense tracker organizes every transaction into clear, actionable categories.
+        </p>
+        <p>
+          Managing money today is demanding with fluctuating living costs and recurring digital subscriptions. Many commercial budgeting applications charge monthly subscription fees, require your bank credentials, or sell aggregated data to advertisers. In contrast, Free Expense Tracker offers full budgeting and transaction logging completely free, with zero account signups and zero third-party tracking.
+        </p>
+      </section>
 
-  <!-- Section 2: Why It's the Best Free Expense Tracker -->
-  <section class="space-y-4">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec2Title', locale)}
-    </h3>
-    <p>
-      {t('seoGuide.sec2Text', locale)}
-    </p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-        <div class="text-xl">🔒</div>
-        <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar1Title', locale)}</h4>
+      <!-- Section 2: How the Expense Tracker Works -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          How the Expense Tracker Works: Recording and Categorizing Transactions
+        </h3>
+        <p>
+          Managing money effectively requires two actions: recording transactions and organizing them into categories. Logging an expense takes seconds: enter the amount, select an expense category (Housing, Groceries, Utilities, Healthcare, Dining, or Entertainment), and set the date.
+        </p>
+        <p>
+          To eliminate typing, our built-in <a href="#tab-view-import" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Universal Statement &amp; Receipt Importer</a> accepts bank statements (PDF, CSV, Excel) and receipt photos (PNG, JPG, WebP). Client-side optical character recognition (OCR) scans documents locally in your browser, detecting merchants, dates, and amounts so you can review and add them to your ledger.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">🔒</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">Local Data Privacy</h4>
+            <p class="text-xs text-slate-600">
+              Your financial records, bank statements, and receipt images are processed entirely on your device and saved in local browser storage. No financial records are sent to external servers.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">📸</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">In-Browser Receipt Scanner</h4>
+            <p class="text-xs text-slate-600">
+              Drag and drop multi-format receipts or bank statements for fast client-side parsing without manual typing fatigue.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">⚡</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">Live Cash Flow Math</h4>
+            <p class="text-xs text-slate-600">
+              Instant visual metrics calculate your fixed expense ratio, savings rate, and emergency cash runway in real time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Understanding Spending, Net Cash Flow, and Budget Planning -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Understanding Spending, Calculating Net Cash Flow, and Budget Planning
+        </h3>
+        <p>
+          Recording transactions creates awareness; the next step is calculating net cash flow:
+        </p>
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 space-y-1">
+          <div><strong>Net Cash Flow</strong> = Total Take-Home Income &minus; Total Living Expenses</div>
+        </div>
+        <p>
+          A positive cash flow produces a surplus for savings, debt payments, and investing. A negative cash flow signals a deficit where expenses exceed earnings, requiring quick adjustment.
+        </p>
+        <p>
+          To maintain a surplus, structured budget planning helps. The <strong>50/30/20 budget framework</strong> allocates 50% of take-home pay to essentials, 30% to discretionary wants, and 20% to savings and debt reduction. Model this instantly with our <a href="#tab-view-targets" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Budget Planning &amp; Goals tool</a> or track daily spending with the <a href="#live-tool-anchor" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Free Expense Tracker</a>.
+        </p>
+      </section>
+
+      <!-- Section 4: Tracking Savings, Financial Goals, and Net Worth -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Tracking Savings, Sinking Funds, and Measuring Net Worth
+        </h3>
+        <p>
+          Financial organization extends beyond daily tracking to long-term wealth stabilization across three tiers:
+        </p>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <strong class="text-slate-900 text-sm">Emergency Fund Buffer:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Keep 3 to 6 months of living expenses in a savings account to absorb unexpected bills without debt.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <strong class="text-slate-900 text-sm">Sinking Funds for Known Targets:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Set aside monthly contributions for predictable expenses like insurance, holidays, and car maintenance.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <strong class="text-slate-900 text-sm">Net Worth Tracking:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Measure total assets minus total liabilities. Tracking net worth regularly confirms whether daily habits build wealth.
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-600 pt-1">
+          To calculate your total financial picture, download our pre-configured <a href="/templates/13_US_Net_Worth_Tracker.xlsx" download="13_US_Net_Worth_Tracker.xlsx" class="text-emerald-700 hover:text-emerald-800 underline font-medium">net worth excel template</a> or model payoffs with the <a href="#tab-view-debt" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Debt Snowball and Avalanche Planner</a>.
+        </p>
+      </section>
+
+      <!-- Section 5: Expense Tracker Templates: Web App vs Google Sheets vs Excel -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Expense Tracker Templates: Choosing Between the Web App, Google Sheets, and Excel Workbooks
+        </h3>
+        <p>
+          Different people prefer different workflows. Some want an interactive web dashboard, while others prefer spreadsheets or offline isolation:
+        </p>
+        <p>
+          For cloud tracking across phones and laptops, copying a <strong>google sheets expense tracker template</strong> allows easy household collaboration. To find the <strong>best google sheets templates</strong> for your budget, our collection of <strong>free google sheets templates</strong> offers pre-formatted formulas ready to copy into Google Drive.
+        </p>
+        <p>
+          For offline privacy and calculation power, our downloadable <strong>budget excel template</strong> workbooks run inside Microsoft Excel. Explore our <strong>free templates download</strong> library below to select the right <strong>expense tracker template</strong>.
+        </p>
+
+        <!-- Method Comparison Table -->
+        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+          <table class="w-full min-w-[620px] text-xs text-left">
+            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">Tracking Method</th>
+                <th class="py-3 px-4">Key Advantages</th>
+                <th class="py-3 px-4">Format / Environment</th>
+                <th class="py-3 px-4">Ideal For</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Live Free Expense Tracker</td>
+                <td class="py-3 px-4">Instant receipt OCR, visual cash flow metrics, zero login, local browser storage.</td>
+                <td class="py-3 px-4 font-mono text-slate-600">Web Browser</td>
+                <td class="py-3 px-4">Daily expense logging &amp; instant health metrics</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Google Sheets Templates</td>
+                <td class="py-3 px-4">Real-time cloud sync, multi-device mobile access, collaborative budgeting.</td>
+                <td class="py-3 px-4 font-mono text-slate-600">Google Drive</td>
+                <td class="py-3 px-4">Household budgets &amp; cloud tracking</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Budget Excel Template (.xlsx)</td>
+                <td class="py-3 px-4">Complete offline privacy, pre-built formulas, custom pivot tables.</td>
+                <td class="py-3 px-4 font-mono text-slate-600">Microsoft Excel</td>
+                <td class="py-3 px-4">Power users &amp; offline privacy</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Printable Expense Sheets</td>
+                <td class="py-3 px-4">Tangible paper tracking, zero screen time, ink-friendly layouts.</td>
+                <td class="py-3 px-4 font-mono text-slate-600">Printable PDF</td>
+                <td class="py-3 px-4">Cash envelope budgeting</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <p class="text-xs text-slate-600">
-          {t('seoGuide.sec2Pillar1Text', locale)}
+          Looking for a specific workbook? Explore our <a href="#tab-view-templates" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Free Templates Hub</a> to copy our <strong>google sheets templates free</strong> or download specialized workbooks including our <a href="/templates/01_US_Paycheck_Budget.xlsx" download="01_US_Paycheck_Budget.xlsx" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Budget Excel Template</a>, <a href="/templates/13_US_Net_Worth_Tracker.xlsx" download="13_US_Net_Worth_Tracker.xlsx" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Net Worth Excel Template</a>, and <a href="/templates/02_US_Debt_Snowball.xlsx" download="02_US_Debt_Snowball.xlsx" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Debt Snowball Calculator</a>.
         </p>
-      </div>
+      </section>
 
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-        <div class="text-xl">📸</div>
-        <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar2Title', locale)}</h4>
-        <p class="text-xs text-slate-600">
-          {t('seoGuide.sec2Pillar2Text', locale)}
+      <!-- Section 6: Who Benefits from a Free Expense Tracker -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Who Can Benefit from a Structured Free Expense Tracker?
+        </h3>
+        <p>
+          A structured expense tracker provides clarity for users across diverse life stages and financial situations:
         </p>
-      </div>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+          <li class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <strong class="text-slate-900 block text-sm font-semibold">Students &amp; Young Adults:</strong>
+            <span>Establish essential money habits and manage living costs with zero software fees.</span>
+          </li>
+          <li class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <strong class="text-slate-900 block text-sm font-semibold">Freelancers &amp; Solopreneurs:</strong>
+            <span>Separate business and personal expenses, monitor variable monthly cash flow, and simplify tax prep.</span>
+          </li>
+          <li class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <strong class="text-slate-900 block text-sm font-semibold">Couples &amp; Families:</strong>
+            <span>Coordinate shared household bills, eliminate duplicate subscriptions, and align on joint savings goals.</span>
+          </li>
+          <li class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <strong class="text-slate-900 block text-sm font-semibold">Debt Payoff Journeyers:</strong>
+            <span>Gain clear mathematical insight into payoff dates using Snowball and Avalanche repayment models.</span>
+          </li>
+        </ul>
+      </section>
 
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-        <div class="text-xl">⚡</div>
-        <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar3Title', locale)}</h4>
-        <p class="text-xs text-slate-600">
-          {t('seoGuide.sec2Pillar3Text', locale)}
+      <!-- Section 7: Why Structured Organization Makes Personal Finance Easier -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Why Using a Structured Expense Tracker Makes Financial Management Easier
+        </h3>
+        <p>
+          Without an organized system, personal finances feel stressful. Unnoticed charges slip by on statements, impulse spending adds up, and saving gets postponed.
         </p>
-      </div>
-    </div>
-  </section>
+        <p>
+          A regular tracking routine replaces anxiety with clarity and control. By accounting for each transaction, you quickly spot spending leaks and fund priority goals. Whether you use our live browser application, our <strong>google sheets templates</strong>, or our offline <strong>budget excel template</strong> workbooks, structured tracking provides the clarity needed to make confident decisions.
+        </p>
+      </section>
 
-  <!-- Section 3: Web App vs Sheets vs Excel Spreadsheets -->
-  <section class="space-y-4">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec3Title', locale)}
-    </h3>
-    <p>
-      {t('seoGuide.sec3Text', locale)}
-    </p>
-
-    <div class="overflow-x-auto border border-slate-200 rounded-2xl">
-      <table class="w-full min-w-[620px] text-xs text-left">
-        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-          <tr>
-            <th class="py-3 px-4">{t('seoGuide.tableMethod', locale)}</th>
-            <th class="py-3 px-4">{t('seoGuide.tableAdvantages', locale)}</th>
-            <th class="py-3 px-4">{t('seoGuide.tableSoftware', locale)}</th>
-            <th class="py-3 px-4">{t('seoGuide.tableIdealFor', locale)}</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr>
-            <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m1Name', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m1Adv', locale)}</td>
-            <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m1Soft', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m1Ideal', locale)}</td>
-          </tr>
-          <tr>
-            <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m2Name', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m2Adv', locale)}</td>
-            <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m2Soft', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m2Ideal', locale)}</td>
-          </tr>
-          <tr>
-            <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m3Name', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m3Adv', locale)}</td>
-            <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m3Soft', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m3Ideal', locale)}</td>
-          </tr>
-          <tr>
-            <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m4Name', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m4Adv', locale)}</td>
-            <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m4Soft', locale)}</td>
-            <td class="py-3 px-4">{t('seoGuide.m4Ideal', locale)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="text-xs text-slate-600">
-      {t('seoGuide.sec3Note', locale)}
-    </p>
-  </section>
-
-  <!-- Section 4: Practical Financial Strategy Guide -->
-  <section class="space-y-4">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec4Title', locale)}
-    </h3>
-    <p>
-      {t('seoGuide.sec4Text', locale)}
-    </p>
-
-    <div class="space-y-3">
-      <div class="flex items-start gap-3">
-        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
-        <div>
-          <strong class="text-slate-900 text-sm">{t('seoGuide.step1Title', locale)}:</strong>
-          <p class="text-xs text-slate-600 mt-0.5">
-            {t('seoGuide.step1Desc', locale)}
-          </p>
+      <!-- Article Footer Call to Action -->
+      <footer class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="space-y-0.5">
+          <strong class="font-bold text-sm">Ready to Organize Your Personal Finances?</strong>
+          <p class="text-emerald-800">Start logging your expenses above, simulate your monthly cash flow, or download our free spreadsheet templates today.</p>
         </div>
-      </div>
-
-      <div class="flex items-start gap-3">
-        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
-        <div>
-          <strong class="text-slate-900 text-sm">{t('seoGuide.step2Title', locale)}:</strong>
-          <p class="text-xs text-slate-600 mt-0.5">
-            {t('seoGuide.step2Desc', locale)}
-          </p>
+        <div class="flex items-center gap-2 shrink-0">
+          <a
+            href="#live-tool-anchor"
+            id="btn-scroll-to-live-tracker"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors shadow-2xs cursor-pointer"
+          >
+            Launch Free Expense Tracker &uarr;
+          </a>
+          <a
+            href="#tab-view-templates"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-900 bg-white hover:bg-emerald-100 border border-emerald-300 transition-colors shadow-2xs cursor-pointer"
+          >
+            Browse Free Templates &rarr;
+          </a>
         </div>
-      </div>
-
-      <div class="flex items-start gap-3">
-        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
-        <div>
-          <strong class="text-slate-900 text-sm">{t('seoGuide.step3Title', locale)}:</strong>
-          <p class="text-xs text-slate-600 mt-0.5">
-            {t('seoGuide.step3Desc', locale)}
-          </p>
+      </footer>
+    </>
+  ) : (
+    <>
+      <!-- Multilingual Fallback Header -->
+      <header class="border-b border-slate-100 pb-6 sm:pb-8 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>{t('seoGuide.badge', locale)}</span>
         </div>
-      </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+          {t('seoGuide.title', locale)}
+        </h2>
+        <p class="text-sm sm:text-base text-slate-600 max-w-3xl">
+          {t('seoGuide.subtitle', locale)}
+        </p>
+      </header>
 
-      <div class="flex items-start gap-3">
-        <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span>
-        <div>
-          <strong class="text-slate-900 text-sm">{t('seoGuide.step4Title', locale)}:</strong>
-          <p class="text-xs text-slate-600 mt-0.5">
-            {t('seoGuide.step4Desc', locale)}
-          </p>
+      <!-- Section 1 -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          {t('seoGuide.sec1Title', locale)}
+        </h3>
+        <p>{t('seoGuide.sec1Text1', locale)}</p>
+        <p>{t('seoGuide.sec1Text2', locale)}</p>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          {t('seoGuide.sec2Title', locale)}
+        </h3>
+        <p>{t('seoGuide.sec2Text', locale)}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">🔒</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar1Title', locale)}</h4>
+            <p class="text-xs text-slate-600">{t('seoGuide.sec2Pillar1Text', locale)}</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">📸</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar2Title', locale)}</h4>
+            <p class="text-xs text-slate-600">{t('seoGuide.sec2Pillar2Text', locale)}</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+            <div class="text-xl">⚡</div>
+            <h4 class="font-bold text-sm text-slate-900 font-['Outfit',sans-serif]">{t('seoGuide.sec2Pillar3Title', locale)}</h4>
+            <p class="text-xs text-slate-600">{t('seoGuide.sec2Pillar3Text', locale)}</p>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Section 5: Universal Importer & Multi-Format Ease -->
-  <section class="space-y-4">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec5Title', locale)}
-    </h3>
-    <p>
-      {t('seoGuide.sec5Text', locale)}
-    </p>
-    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
-      <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-        <span class="text-emerald-600 font-bold">✓</span>
-        <span>{t('seoGuide.sec5Item1', locale)}</span>
-      </li>
-      <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-        <span class="text-emerald-600 font-bold">✓</span>
-        <span>{t('seoGuide.sec5Item2', locale)}</span>
-      </li>
-      <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-        <span class="text-emerald-600 font-bold">✓</span>
-        <span>{t('seoGuide.sec5Item3', locale)}</span>
-      </li>
-      <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-        <span class="text-emerald-600 font-bold">✓</span>
-        <span>{t('seoGuide.sec5Item4', locale)}</span>
-      </li>
-    </ul>
-    <p class="text-xs text-slate-600">
-      {t('seoGuide.sec5Note', locale)}
-    </p>
-  </section>
+      <!-- Section 3 -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          {t('seoGuide.sec3Title', locale)}
+        </h3>
+        <p>{t('seoGuide.sec3Text', locale)}</p>
+        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+          <table class="w-full min-w-[620px] text-xs text-left">
+            <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4">{t('seoGuide.tableMethod', locale)}</th>
+                <th class="py-3 px-4">{t('seoGuide.tableAdvantages', locale)}</th>
+                <th class="py-3 px-4">{t('seoGuide.tableSoftware', locale)}</th>
+                <th class="py-3 px-4">{t('seoGuide.tableIdealFor', locale)}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m1Name', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m1Adv', locale)}</td>
+                <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m1Soft', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m1Ideal', locale)}</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m2Name', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m2Adv', locale)}</td>
+                <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m2Soft', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m2Ideal', locale)}</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m3Name', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m3Adv', locale)}</td>
+                <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m3Soft', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m3Ideal', locale)}</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">{t('seoGuide.m4Name', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m4Adv', locale)}</td>
+                <td class="py-3 px-4 font-mono text-slate-600">{t('seoGuide.m4Soft', locale)}</td>
+                <td class="py-3 px-4">{t('seoGuide.m4Ideal', locale)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-  <!-- Section 6: Frequently Asked Questions (FAQ) -->
-  <section class="space-y-4 border-t border-slate-100 pt-8">
-    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
-      {t('seoGuide.sec6Title', locale)}
-    </h3>
+      <!-- Section 4 -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          {t('seoGuide.sec4Title', locale)}
+        </h3>
+        <p>{t('seoGuide.sec4Text', locale)}</p>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+            <div>
+              <strong class="text-slate-900 text-sm">{t('seoGuide.step1Title', locale)}:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">{t('seoGuide.step1Desc', locale)}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+            <div>
+              <strong class="text-slate-900 text-sm">{t('seoGuide.step2Title', locale)}:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">{t('seoGuide.step2Desc', locale)}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+            <div>
+              <strong class="text-slate-900 text-sm">{t('seoGuide.step3Title', locale)}:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">{t('seoGuide.step3Desc', locale)}</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span>
+            <div>
+              <strong class="text-slate-900 text-sm">{t('seoGuide.step4Title', locale)}:</strong>
+              <p class="text-xs text-slate-600 mt-0.5">{t('seoGuide.step4Desc', locale)}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <div class="space-y-3">
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-        <h4 class="font-bold text-sm text-slate-900">{t('seoGuide.faq1Q', locale)}</h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          {t('seoGuide.faq1A', locale)}
-        </p>
-      </div>
+      <!-- Section 5 -->
+      <section class="space-y-4">
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          {t('seoGuide.sec5Title', locale)}
+        </h3>
+        <p>{t('seoGuide.sec5Text', locale)}</p>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+          <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span>{t('seoGuide.sec5Item1', locale)}</span>
+          </li>
+          <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span>{t('seoGuide.sec5Item2', locale)}</span>
+          </li>
+          <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span>{t('seoGuide.sec5Item3', locale)}</span>
+          </li>
+          <li class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span>{t('seoGuide.sec5Item4', locale)}</span>
+          </li>
+        </ul>
+      </section>
 
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-        <h4 class="font-bold text-sm text-slate-900">{t('seoGuide.faq2Q', locale)}</h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          {t('seoGuide.faq2A', locale)}
-        </p>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-        <h4 class="font-bold text-sm text-slate-900">{t('seoGuide.faq3Q', locale)}</h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          {t('seoGuide.faq3A', locale)}
-        </p>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-        <h4 class="font-bold text-sm text-slate-900">{t('seoGuide.faq4Q', locale)}</h4>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          {t('seoGuide.faq4A', locale)}
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Article Footer Summary -->
-  <footer class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-3">
-    <div class="space-y-0.5">
-      <strong class="font-bold text-sm">{t('seoGuide.ctaTitle', locale)}</strong>
-      <p class="text-emerald-800">{t('seoGuide.ctaSubtitle', locale)}</p>
-    </div>
-    <a
-      href="#live-tool-anchor"
-      id="btn-scroll-to-live-tracker"
-      class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors shadow-2xs"
-    >
-      {t('seoGuide.ctaButton', locale)}
-    </a>
-  </footer>
+      <!-- Footer CTA -->
+      <footer class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="space-y-0.5">
+          <strong class="font-bold text-sm">{t('seoGuide.ctaTitle', locale)}</strong>
+          <p class="text-emerald-800">{t('seoGuide.ctaSubtitle', locale)}</p>
+        </div>
+        <a
+          href="#live-tool-anchor"
+          id="btn-scroll-to-live-tracker"
+          class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 transition-colors shadow-2xs"
+        >
+          {t('seoGuide.ctaButton', locale)}
+        </a>
+      </footer>
+    </>
+  )}
 </article>
