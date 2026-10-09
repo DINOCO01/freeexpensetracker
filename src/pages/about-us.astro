@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { getCanonicalUrl } from '../utils/canonical';
 ---
 
 <Layout
   title="About Us - Free Expense Tracker | Mission, Architecture & Privacy Philosophy"
   description="Discover the story behind Free Expense Tracker. Learn why we built a 100% free, client-side personal finance tool with zero logins, no ads, and private local storage."
-  canonicalUrl="https://freexpensetracker.com/about-us"
+  canonicalUrl={getCanonicalUrl('/about-us/')}
 >
   <Navbar />
 

@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { getCanonicalUrl } from '../utils/canonical';
 ---
 
 <Layout
   title="Contact Us - Free Expense Tracker | Feedback, Support & Template Requests"
   description="Get in touch with the Free Expense Tracker team. Send us feedback, suggest new spreadsheet templates, report bugs, or ask privacy questions."
-  canonicalUrl="https://freexpensetracker.com/contact-us"
+  canonicalUrl={getCanonicalUrl('/contact-us/')}
 >
   <Navbar />
 

@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { getCanonicalUrl } from '../utils/canonical';
 ---
 
 <Layout
   title="404 - Page Not Found | Free Expense Tracker"
   description="The requested page could not be found. Return to Free Expense Tracker to access our live private web app and free budgeting spreadsheet templates."
-  canonicalUrl="https://freexpensetracker.com/404"
+  canonicalUrl={getCanonicalUrl('/404/')}
 >
   <Navbar />
 
@@ -58,16 +59,16 @@ import Footer from '../components/Footer.astro';
       <div class="pt-6 border-t border-slate-200/80">
         <p class="text-xs text-slate-500 mb-3">Popular pages you might be looking for:</p>
         <div class="flex items-center justify-center gap-2 flex-wrap text-xs font-medium">
-          <a href="/about-us" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+          <a href="/about-us/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
             About Us
           </a>
           <a href="/#section-faq" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
             FAQ
           </a>
-          <a href="/privacy-policy" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+          <a href="/privacy-policy/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
             Privacy Policy
           </a>
-          <a href="/contact-us" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+          <a href="/contact-us/" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
             Contact Us
           </a>
         </div>

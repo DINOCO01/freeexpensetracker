@@ -9,6 +9,7 @@ import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES
 } from '../locales';
+import { getCanonicalUrl, SITE_URL } from '../utils/canonical';
 
 interface Props {
   title?: string;
@@ -33,8 +34,8 @@ const metaTitle = title || t('meta.title', locale);
 const metaDescription = description || t('meta.description', locale);
 const metaKeywords = keywords || t('meta.keywords', locale);
 
-const siteUrl = "https://freexpensetracker.com";
-const canonical = canonicalUrl || (locale === DEFAULT_LOCALE ? `${siteUrl}/` : `${siteUrl}/${locale}/`);
+const siteUrl = SITE_URL;
+const canonical = getCanonicalUrl(canonicalUrl || Astro.url.pathname, locale);
 const ogImageUrl = `${siteUrl}/web-app-manifest-512x512.png`;
 
 // Hreflang links for SEO

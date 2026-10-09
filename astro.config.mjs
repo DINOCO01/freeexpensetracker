@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://freexpensetracker.com',
+  trailingSlash: 'always',
   vite: {
     plugins: [tailwindcss()],
   },

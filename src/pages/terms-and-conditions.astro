@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { getCanonicalUrl } from '../utils/canonical';
 ---
 
 <Layout
   title="Terms & Conditions - Free Expense Tracker | Usage Terms & Financial Disclaimer"
   description="Review the Terms and Conditions for Free Expense Tracker. Understand user guidelines, template licensing, and our educational financial disclaimer."
-  canonicalUrl="https://freexpensetracker.com/terms-and-conditions"
+  canonicalUrl={getCanonicalUrl('/terms-and-conditions/')}
 >
   <Navbar />
 
@@ -123,7 +124,7 @@ import Footer from '../components/Footer.astro';
         </p>
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 font-mono">
           <div>Email: <a href="mailto:legal@freexpensetracker.com" class="text-emerald-700 font-bold hover:underline">legal@freexpensetracker.com</a></div>
-          <div>Website: <a href="https://freexpensetracker.com" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
+          <div>Website: <a href="https://freexpensetracker.com/" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
         </div>
       </section>
     </article>

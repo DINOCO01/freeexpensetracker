@@ -1,2 +1,5 @@
 https://freexpensetracker.pages.dev*
   X-Robots-Tag: noindex
+
+/templates/*
+  X-Robots-Tag: noindex

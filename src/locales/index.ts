@@ -126,7 +126,10 @@ export function t(
  */
 export function getLocaleUrl(path: string = '/', locale?: string | null): string {
   const loc = getLocale(locale);
-  const cleanPath = path.startsWith('/') ? path : '/' + path;
+  let cleanPath = path.startsWith('/') ? path : '/' + path;
+  if (!cleanPath.endsWith('/') && !/\.[a-zA-Z0-9]+$/.test(cleanPath)) {
+    cleanPath += '/';
+  }
   
   if (loc === DEFAULT_LOCALE) {
     // English default uses canonical root
@@ -149,18 +152,19 @@ export function getAllHreflangLinks(currentPath: string = '/', siteUrl: string =
   // Strip existing locale prefix from currentPath if present
   let purePath = currentPath;
   for (const loc of LOCALES_LIST) {
-    if (loc !== DEFAULT_LOCALE) {
-      if (purePath.startsWith(`/${loc}/`)) {
-        purePath = purePath.replace(`/${loc}/`, '/');
-        break;
-      } else if (purePath === `/${loc}`) {
-        purePath = '/';
-        break;
-      }
+    if (purePath.startsWith(`/${loc}/`)) {
+      purePath = purePath.replace(`/${loc}/`, '/');
+      break;
+    } else if (purePath === `/${loc}`) {
+      purePath = '/';
+      break;
     }
   }
 
-  const cleanPure = purePath.startsWith('/') ? purePath : '/' + purePath;
+  let cleanPure = purePath.startsWith('/') ? purePath : '/' + purePath;
+  if (!cleanPure.endsWith('/') && !/\.[a-zA-Z0-9]+$/.test(cleanPure)) {
+    cleanPure += '/';
+  }
 
   const links = [
     {

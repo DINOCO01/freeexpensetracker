@@ -2,12 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { getCanonicalUrl } from '../utils/canonical';
 ---
 
 <Layout
   title="Privacy Policy - Free Expense Tracker | 100% Client-Side Privacy & Zero Data Collection"
   description="Read our comprehensive Privacy Policy. Free Expense Tracker operates 100% client-side with zero accounts, zero database uploads, and full user data sovereignty."
-  canonicalUrl="https://freexpensetracker.com/privacy-policy"
+  canonicalUrl={getCanonicalUrl('/privacy-policy/')}
 >
   <Navbar />
 
@@ -150,7 +151,7 @@ import Footer from '../components/Footer.astro';
         </p>
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1 font-mono">
           <div>Email: <a href="mailto:privacy@freexpensetracker.com" class="text-emerald-700 font-bold hover:underline">privacy@freexpensetracker.com</a></div>
-          <div>Website: <a href="https://freexpensetracker.com" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
+          <div>Website: <a href="https://freexpensetracker.com/" class="text-emerald-700 hover:underline">https://freexpensetracker.com</a></div>
         </div>
       </section>
     </article>
