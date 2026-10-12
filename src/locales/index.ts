@@ -166,15 +166,30 @@ export function getAllHreflangLinks(currentPath: string = '/', siteUrl: string =
     cleanPure += '/';
   }
 
+  // Legal, info, and single-language pages only exist in English.
+  // Output only canonical English and x-default pointing to the English URL to avoid 404s.
+  if (cleanPure !== '/') {
+    return [
+      {
+        hreflang: 'x-default',
+        href: `${siteUrl}${cleanPure}`
+      },
+      {
+        hreflang: 'en',
+        href: `${siteUrl}${cleanPure}`
+      }
+    ];
+  }
+
   const links = [
     {
       hreflang: 'x-default',
-      href: `${siteUrl}${cleanPure === '/' ? '/' : cleanPure}`
+      href: `${siteUrl}/`
     }
   ];
 
   for (const loc of LOCALES_LIST) {
-    const locUrl = getLocaleUrl(cleanPure, loc);
+    const locUrl = getLocaleUrl('/', loc);
     links.push({
       hreflang: loc,
       href: `${siteUrl}${locUrl}`

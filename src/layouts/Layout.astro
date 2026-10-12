@@ -17,6 +17,7 @@ interface Props {
   keywords?: string;
   canonicalUrl?: string;
   currentLocale?: SupportedLocale;
+  noindex?: boolean;
 }
 
 const {
@@ -24,7 +25,8 @@ const {
   title,
   description,
   keywords,
-  canonicalUrl
+  canonicalUrl,
+  noindex = false,
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -38,8 +40,8 @@ const siteUrl = SITE_URL;
 const canonical = getCanonicalUrl(canonicalUrl || Astro.url.pathname, locale);
 const ogImageUrl = `${siteUrl}/web-app-manifest-512x512.png`;
 
-// Hreflang links for SEO
-const hreflangLinks = getAllHreflangLinks(Astro.url.pathname, siteUrl);
+// Hreflang links for SEO (omitted for noindex pages)
+const hreflangLinks = noindex ? [] : getAllHreflangLinks(Astro.url.pathname, siteUrl);
 
 // Locale mappings for Open Graph
 const ogLocaleMap: Record<SupportedLocale, string> = {
@@ -156,13 +158,17 @@ const structuredData = [
     <meta name="title" content={metaTitle} />
     <meta name="description" content={metaDescription} />
     <meta name="keywords" content={metaKeywords} />
-    <link rel="canonical" href={canonical} />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    )}
     <meta name="author" content="Free Expense Tracker" />
     <meta name="theme-color" content="#0f766e" />
 
     <!-- Multilingual Alternate Hreflang Tags & x-default -->
-    {hreflangLinks.map((link) => (
+    {!noindex && hreflangLinks.map((link) => (
       <link rel="alternate" hreflang={link.hreflang} href={link.href} />
     ))}
 
@@ -197,7 +203,7 @@ const structuredData = [
     />
 
     <!-- JSON-LD Structured Data Schema -->
-    {structuredData.map((schema) => (
+    {!noindex && structuredData.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
 

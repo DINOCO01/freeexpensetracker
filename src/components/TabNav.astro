@@ -6,6 +6,18 @@ interface Props {
 }
 
 const { locale = DEFAULT_LOCALE } = Astro.props;
+
+const currencyLabels: Record<SupportedLocale, string> = {
+  en: 'Change Currency',
+  de: 'Währung ändern',
+  fr: 'Changer de devise',
+  es: 'Cambiar moneda',
+  pt: 'Mudar moeda',
+  ja: '通貨を変更',
+  ko: '통화 변경',
+  hi: 'मुद्रा बदलें'
+};
+const currencyLabel = currencyLabels[locale] || 'Change Currency';
 ---
 
 <nav aria-label="Main Navigation Tabs" class="no-print w-full">
@@ -92,12 +104,12 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-1.5 sm:gap-2 shrink-0">
         <!-- Currency Selector Dropdown -->
         <div class="relative">
-          <label for="currency-selector" class="sr-only">Change Currency</label>
+          <label for="currency-selector" class="sr-only">{currencyLabel}</label>
           <div class="relative flex items-center">
             <select
               id="currency-selector"
               class="min-h-[36px] sm:min-h-[38px] text-xs font-semibold bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 rounded-xl pl-2 sm:pl-2.5 pr-6 py-1.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none"
-              title="Change Currency"
+              title={currencyLabel}
             >
               <option value="USD" selected>USD ($)</option>
               <option value="INR">INR (₹)</option>

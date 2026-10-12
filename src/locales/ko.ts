@@ -723,6 +723,12 @@ export const ko = {
     addContribution: "적립금 추가",
     wipeOrRestoreHint: "빈 페이지로 새롭게 시작하거나, 차트와 대시보드 시연을 위해 현실적인 샘플 데이터를 다시 불러올 수 있습니다.",
     restoreSampleData: "샘플 데이터 복원",
+  },
+  feedback: {
+    helpful: "이 내용이 도움이 되셨나요?",
+    yes: "예",
+    no: "아니오",
+    thanks: "피드백을 보내주셔서 감사합니다!"
   }
 };
 

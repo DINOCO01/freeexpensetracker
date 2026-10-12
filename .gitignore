@@ -26,3 +26,6 @@ pnpm-debug.log*
 # OCR cache artifacts
 *.traineddata
 
+# wrangler
+.wrangler/
+

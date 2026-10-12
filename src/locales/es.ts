@@ -724,6 +724,12 @@ export const es = {
     addContribution: "Añadir Aporte",
     wipeOrRestoreHint: "Puede limpiar todo para empezar desde cero o recargar datos de ejemplo realistas para ver los gráficos en funcionamiento.",
     restoreSampleData: "Restaurar Datos de Muestra",
+  },
+  feedback: {
+    helpful: "¿Fue útil esta información?",
+    yes: "Sí",
+    no: "No",
+    thanks: "¡Gracias por sus comentarios!"
   }
 };
 

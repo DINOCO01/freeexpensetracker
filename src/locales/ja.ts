@@ -723,6 +723,12 @@ export const ja = {
     addContribution: "積立を記録する",
     wipeOrRestoreHint: "すべてをクリアして真っ新な状態から始めることも、グラフの動作確認のためにサンプルデータを再読み込みすることもできます。",
     restoreSampleData: "サンプルデータを復元",
+  },
+  feedback: {
+    helpful: "この内容は役に立ちましたか？",
+    yes: "はい",
+    no: "いいえ",
+    thanks: "フィードバックありがとうございます！"
   }
 };
 

@@ -723,6 +723,12 @@ export const de = {
     addContribution: "Sparbeitrag hinzufügen",
     wipeOrRestoreHint: "Sie können alle Daten komplett zurücksetzen oder realistische Beispieldaten laden, um die Diagramme in Aktion zu sehen.",
     restoreSampleData: "Beispieldaten laden",
+  },
+  feedback: {
+    helpful: "War das hilfreich?",
+    yes: "Ja",
+    no: "Nein",
+    thanks: "Vielen Dank für Ihr Feedback!"
   }
 };
 

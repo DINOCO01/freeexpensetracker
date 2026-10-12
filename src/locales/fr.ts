@@ -723,6 +723,12 @@ export const fr = {
     addContribution: "Ajouter le Versement",
     wipeOrRestoreHint: "Vous pouvez repartir d'une feuille vierge ou charger des données réalistes de démonstration pour visualiser les graphiques.",
     restoreSampleData: "Charger les Données de Démonstration",
+  },
+  feedback: {
+    helpful: "Cet outil vous a-t-il été utile ?",
+    yes: "Oui",
+    no: "Non",
+    thanks: "Merci pour votre retour !"
   }
 };
 

@@ -45,7 +45,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         type="button"
         id="btn-export-csv"
         class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
-        title="Export to CSV"
+        title={t('ledger.exportCsv', locale)}
       >
         <span>CSV</span>
       </button>
@@ -55,7 +55,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         type="button"
         id="btn-export-excel-quick"
         class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
-        title="Download Excel Workbook"
+        title={t('ledger.exportExcel', locale)}
       >
         <span>XLSX</span>
       </button>

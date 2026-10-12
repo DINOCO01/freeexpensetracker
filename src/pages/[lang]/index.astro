@@ -3,7 +3,7 @@ import MainApp from '../../components/MainApp.astro';
 import { LOCALES_LIST, type SupportedLocale } from '../../locales';
 
 export function getStaticPaths() {
-  return LOCALES_LIST.map((lang) => ({
+  return LOCALES_LIST.filter((lang) => lang !== 'en').map((lang) => ({
     params: { lang },
     props: { locale: lang }
   }));

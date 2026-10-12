@@ -7,7 +7,7 @@
   <!-- Homepage & Live Web Expense Tracker Application -->
   <url>
     <loc>https://freexpensetracker.com/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,43 +15,43 @@
   <!-- Localized Editions -->
   <url>
     <loc>https://freexpensetracker.com/es/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/de/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/fr/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/hi/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/ja/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/ko/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://freexpensetracker.com/pt/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -59,7 +59,7 @@
   <!-- About Us -->
   <url>
     <loc>https://freexpensetracker.com/about-us/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -67,7 +67,7 @@
   <!-- Contact Us -->
   <url>
     <loc>https://freexpensetracker.com/contact-us/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -75,7 +75,7 @@
   <!-- Privacy Policy -->
   <url>
     <loc>https://freexpensetracker.com/privacy-policy/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -83,7 +83,7 @@
   <!-- Terms & Conditions -->
   <url>
     <loc>https://freexpensetracker.com/terms-and-conditions/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

@@ -723,6 +723,12 @@ export const en = {
     addContribution: "Add Contribution",
     wipeOrRestoreHint: "You can clear everything to start with an empty slate, or reload realistic sample data to see the charts in action.",
     restoreSampleData: "Restore Sample Data",
+  },
+  feedback: {
+    helpful: "Was this helpful?",
+    yes: "Yes",
+    no: "No",
+    thanks: "Thanks for your feedback!"
   }
 };
 

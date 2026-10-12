@@ -723,6 +723,12 @@ export const pt = {
     addContribution: "Adicionar Aporte",
     wipeOrRestoreHint: "Você pode zerar o painel para começar do zero ou carregar dados ilustrativos para ver os gráficos funcionando.",
     restoreSampleData: "Recarregar Dados de Exemplo",
+  },
+  feedback: {
+    helpful: "Isso foi útil para você?",
+    yes: "Sim",
+    no: "Não",
+    thanks: "Obrigado pelo seu feedback!"
   }
 };
 
