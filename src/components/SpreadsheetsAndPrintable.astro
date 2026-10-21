@@ -215,6 +215,24 @@ function getCategoryColor(categoryKey: string): { bg: string; text: string; bord
     border: 'border-rose-200/70 dark:border-rose-800/60'
   };
 }
+
+const slugMap: Record<string, string> = {
+  'paycheck-budget': 'paycheck-budget',
+  'debt-snowball': 'debt-snowball',
+  'debt-avalanche': 'debt-avalanche',
+  'debt-to-income': 'debt-to-income-calculator',
+  'student-loan': 'student-loan-planner',
+  'auto-loan': 'auto-loan-calculator',
+  'mortgage-planner': 'mortgage-planner',
+  '401k-retirement': '401k-retirement-planner',
+  'roth-ira': 'roth-ira-planner',
+  'emergency-fund': 'emergency-fund-planner',
+  'subscription-audit': 'subscription-audit',
+  'sinking-fund': 'sinking-fund-planner',
+  'net-worth': 'net-worth-tracker',
+  'financial-dashboard': 'financial-dashboard',
+  'monthly-spending': 'monthly-spending-analyzer'
+};
 ---
 
 <div class="space-y-6">
@@ -334,7 +352,7 @@ function getCategoryColor(categoryKey: string): { bg: string; text: string; bord
               </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
               <a
                 href={`/templates/${tmpl.fileName}`}
                 download={tmpl.fileName}
@@ -345,6 +363,12 @@ function getCategoryColor(categoryKey: string): { bg: string; text: string; bord
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 <span>{t('templates.btnDownloadExcel', locale)}</span>
+              </a>
+              <a
+                href={`/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                class="w-full inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline pt-0.5"
+              >
+                <span>Guide &amp; Formulas &rarr;</span>
               </a>
             </div>
           </div>

@@ -1,0 +1,230 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+import { TEMPLATES_DATA, type TemplateData } from '../../data/templatesData';
+
+export function getStaticPaths() {
+  return TEMPLATES_DATA.map((template) => ({
+    params: { slug: template.slug },
+    props: { template }
+  }));
+}
+
+interface Props {
+  template: TemplateData;
+}
+
+const { template } = Astro.props;
+const downloadUrl = `/templates/${template.fileName}`;
+const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
+---
+
+<Layout
+  title={template.title}
+  description={template.metaDescription}
+  canonicalUrl={canonicalUrl}
+>
+  <Navbar />
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+      <span>/</span>
+      <a href="/templates/" class="hover:text-emerald-700 transition-colors">Templates</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold" aria-current="page">{template.h1}</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span>{template.categoryIcon}</span>
+          <span>{template.category}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span>📊</span>
+          <span>Excel .xlsx</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono text-slate-500 bg-slate-50 border border-slate-200">
+          <span>💾</span>
+          <span>{template.fileSize}</span>
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        {template.h1}
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
+        {template.overview}
+      </p>
+
+      <!-- Primary Action: Direct Download & Hub Back-link -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+        <a
+          href={downloadUrl}
+          download={template.fileName}
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-md shadow-emerald-700/15 cursor-pointer"
+          aria-label={`Download ${template.fileName}`}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Download Free Template (.xlsx)</span>
+        </a>
+        <a
+          href="/templates/"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+        >
+          <span>&larr;</span>
+          <span>All 15 Templates</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Section 1: Purpose & Workbook Architecture -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">🎯</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Purpose &amp; Design
+        </h2>
+      </div>
+      <p class="text-sm sm:text-base text-slate-700 leading-relaxed">
+        {template.purpose}
+      </p>
+
+      <div class="pt-2 border-t border-slate-100 space-y-2">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+          Included Worksheets:
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          {template.sheetNames.map((sheet) => (
+            <span class="px-3 py-1 rounded-lg text-xs font-mono font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
+              📋 {sheet}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Key Verified Formulas & Calculations -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">🧮</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Key Formulas &amp; Calculations
+        </h2>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600">
+        This workbook comes pre-programmed with verified Excel formulas that recalculate instantly as you update your data:
+      </p>
+      <ul class="space-y-2">
+        {template.keyFormulas.map((formula) => (
+          <li class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm text-slate-800 font-mono">
+            <span class="text-emerald-600 font-bold shrink-0">✓</span>
+            <span>{formula}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Section 3: Step-by-Step Instructions -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">📝</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          How to Use This Spreadsheet
+        </h2>
+      </div>
+      <ol class="space-y-3">
+        {template.howToUse.map((step, idx) => (
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+              {idx + 1}
+            </span>
+            <span class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              {step}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Section 4: Who Would Benefit -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">👥</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Who Benefits from This Template?
+        </h2>
+      </div>
+      <ul class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {template.whoBenefits.map((item) => (
+          <li class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-xs sm:text-sm text-slate-800 space-y-1.5">
+            <span class="text-emerald-700 font-bold text-sm block">💡</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Section 5: Frequently Asked Questions -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">❓</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Template Questions &amp; Answers
+        </h2>
+      </div>
+      <div class="space-y-3">
+        {template.faq.map((item) => (
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 class="font-bold text-xs sm:text-sm text-slate-900">
+              {item.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {item.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom CTA Bar -->
+    <aside class="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+      <div class="space-y-1 text-center sm:text-left">
+        <div class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
+          Ready to Get Started?
+        </div>
+        <div class="text-lg sm:text-xl font-extrabold font-['Outfit',sans-serif]">
+          Download {template.fileName}
+        </div>
+        <p class="text-xs text-slate-300">
+          100% free • Microsoft Excel &amp; Google Sheets compatible • No signup needed
+        </p>
+      </div>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a
+          href={downloadUrl}
+          download={template.fileName}
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-sm"
+        >
+          Download Now (.xlsx)
+        </a>
+        <a
+          href="/templates/"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+        >
+          Browse All Templates
+        </a>
+      </div>
+    </aside>
+  </main>
+
+  <Footer />
+</Layout>

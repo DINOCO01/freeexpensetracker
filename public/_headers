@@ -1,5 +1,50 @@
 https://freexpensetracker.pages.dev*
   X-Robots-Tag: noindex
 
-/templates/*
+/templates/*.xlsx
+  X-Robots-Tag: noindex
+
+/templates/01_US_Paycheck_Budget.xlsx
+  X-Robots-Tag: noindex
+
+/templates/02_US_Debt_Snowball.xlsx
+  X-Robots-Tag: noindex
+
+/templates/03_US_Debt_Avalanche.xlsx
+  X-Robots-Tag: noindex
+
+/templates/04_US_Debt_to_Income_Calculator.xlsx
+  X-Robots-Tag: noindex
+
+/templates/05_US_Student_Loan_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/06_US_Auto_Loan_Calculator.xlsx
+  X-Robots-Tag: noindex
+
+/templates/07_US_Mortgage_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/08_US_401k_Retirement_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/09_US_Roth_IRA_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/10_US_Emergency_Fund_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/11_US_Subscription_Audit.xlsx
+  X-Robots-Tag: noindex
+
+/templates/12_US_Sinking_Fund_Planner.xlsx
+  X-Robots-Tag: noindex
+
+/templates/13_US_Net_Worth_Tracker.xlsx
+  X-Robots-Tag: noindex
+
+/templates/14_US_Financial_Dashboard.xlsx
+  X-Robots-Tag: noindex
+
+/templates/15_US_Monthly_Spending_Analyzer.xlsx
   X-Robots-Tag: noindex

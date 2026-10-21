@@ -1,0 +1,257 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+import { TEMPLATES_DATA } from '../../data/templatesData';
+
+const canonicalUrl = getCanonicalUrl('/templates/');
+const categories = [
+  'All',
+  'Budgeting',
+  'Debt Management',
+  'Investing & Retirement',
+  'Savings',
+  'Audits & Tracking'
+] as const;
+---
+
+<Layout
+  title="15 Free Financial Spreadsheets & Budget Excel Templates (.xlsx) | Free Expense Tracker"
+  description="Download 15 free financial spreadsheets in Excel (.xlsx) and Google Sheets. Master budgeting, debt snowball, mortgage amortization, retirement, and cash flow analysis."
+  canonicalUrl={canonicalUrl}
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold" aria-current="page">Templates</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-4 max-w-3xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>Free Personal Finance Library</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Free Financial Spreadsheets &amp; Excel Budget Templates
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+        Take complete control of your financial journey with our library of 15 handcrafted, formula-ready spreadsheets. Built for Microsoft Excel (.xlsx) and 100% compatible with Google Sheets, each template is completely free to download with zero signup, no paywalls, and private offline functionality.
+      </p>
+    </header>
+
+    <!-- Key Advantages Grid -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-label="Template Benefits">
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">📊</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">Pre-Programmed Formulas</h2>
+        <p class="text-xs text-slate-600">Dynamic SUM, PMT, and FV financial formulas recalculate totals and payoff projections automatically.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">🔒</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">100% Private &amp; Offline</h2>
+        <p class="text-xs text-slate-600">Your financial numbers stay on your machine. Work completely offline in Excel or upload privately to your Google Drive.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">⚡</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">Zero Subscription Lock-In</h2>
+        <p class="text-xs text-slate-600">No monthly app subscriptions, no credit card requirements, and zero advertising tracking.</p>
+      </div>
+    </section>
+
+    <!-- Filter Buttons (Accessible via JS) -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 border-b border-slate-200 pb-4">
+        <div class="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filter templates by category">
+          {categories.map((cat, index) => (
+            <button
+              type="button"
+              class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                index === 0
+                  ? 'active bg-emerald-700 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              data-category={cat}
+              aria-pressed={index === 0 ? "true" : "false"}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div class="text-xs font-mono text-slate-500">
+          Showing <span id="template-count" class="font-bold text-slate-900">{TEMPLATES_DATA.length}</span> templates
+        </div>
+      </div>
+
+      <!-- 15 Templates Grid -->
+      <div id="templates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {TEMPLATES_DATA.map((t) => (
+          <article
+            class="template-card flex flex-col justify-between bg-white border border-slate-200 hover:border-emerald-300 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all group"
+            data-category={t.category}
+          >
+            <div class="space-y-3">
+              <!-- Card Header -->
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                  <span>{t.categoryIcon}</span>
+                  <span>{t.category}</span>
+                </span>
+                <span class="text-[11px] font-mono text-slate-400">
+                  {t.fileSize}
+                </span>
+              </div>
+
+              <!-- Title & Purpose -->
+              <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-800 transition-colors font-['Outfit',sans-serif]">
+                <a href={`/templates/${t.slug}/`} class="hover:underline focus:outline-none">
+                  {t.h1}
+                </a>
+              </h3>
+
+              <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                {t.purpose}
+              </p>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <a
+                href={`/templates/${t.slug}/`}
+                class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 focus:outline-none"
+              >
+                <span>Guide &amp; Formulas</span>
+                <span>&rarr;</span>
+              </a>
+
+              <a
+                href={`/templates/${t.fileName}`}
+                download={t.fileName}
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-emerald-600 hover:text-white active:scale-95 transition-all shadow-2xs"
+                aria-label={`Download ${t.fileName}`}
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download .xlsx</span>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Comprehensive Overview of Available Financial Templates -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6 text-slate-700 leading-relaxed text-sm">
+      <div class="space-y-2">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-['Outfit',sans-serif]">
+          Choosing the Right Financial Spreadsheet for Your Goals
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Financial management is not one-size-fits-all. Our collection is divided into five targeted disciplines to help you master every phase of personal wealth building:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <span>💰</span>
+            <span>Zero-Based &amp; Cash Flow Budgeting</span>
+          </div>
+          <p class="text-xs text-slate-600">
+            Use the <a href="/templates/paycheck-budget/" class="text-emerald-700 font-medium hover:underline">Paycheck Budget</a> to allocate paychecks before spending occurs, track ongoing cash flow in the <a href="/templates/financial-dashboard/" class="text-emerald-700 font-medium hover:underline">Financial Dashboard</a>, or audit line items using the <a href="/templates/monthly-spending-analyzer/" class="text-emerald-700 font-medium hover:underline">Monthly Spending Analyzer</a>.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <span>💳</span>
+            <span>Strategic Debt Payoff</span>
+          </div>
+          <p class="text-xs text-slate-600">
+            Choose behavioral momentum with the <a href="/templates/debt-snowball/" class="text-emerald-700 font-medium hover:underline">Debt Snowball</a> or maximize interest savings with the <a href="/templates/debt-avalanche/" class="text-emerald-700 font-medium hover:underline">Debt Avalanche</a>. Test loan approvals using the <a href="/templates/debt-to-income-calculator/" class="text-emerald-700 font-medium hover:underline">Debt-to-Income Calculator</a>.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <span>🛡️</span>
+            <span>Emergency Reserves &amp; Sinking Funds</span>
+          </div>
+          <p class="text-xs text-slate-600">
+            Establish a 3 to 6-month safety net with the <a href="/templates/emergency-fund-planner/" class="text-emerald-700 font-medium hover:underline">Emergency Fund Planner</a> and prevent unexpected bills with the <a href="/templates/sinking-fund-planner/" class="text-emerald-700 font-medium hover:underline">Sinking Fund Planner</a>.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+          <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <span>📈</span>
+            <span>Retirement &amp; Long-Term Net Worth</span>
+          </div>
+          <p class="text-xs text-slate-600">
+            Simulate company 401(k) matches with the <a href="/templates/401k-retirement-planner/" class="text-emerald-700 font-medium hover:underline">401(k) Planner</a>, calculate tax-free Roth growth with the <a href="/templates/roth-ira-planner/" class="text-emerald-700 font-medium hover:underline">Roth IRA Planner</a>, and monitor balance sheet growth with the <a href="/templates/net-worth-tracker/" class="text-emerald-700 font-medium hover:underline">Net Worth Tracker</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- App Cross-Promotion CTA -->
+    <aside class="p-6 sm:p-8 rounded-3xl bg-emerald-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+      <div class="space-y-1.5 text-center sm:text-left">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-300">Live In-Browser Tool</span>
+        <h2 class="text-xl sm:text-2xl font-bold font-['Outfit',sans-serif]">Prefer an Interactive Web Tracker?</h2>
+        <p class="text-xs sm:text-sm text-emerald-100 max-w-xl">
+          Try our 100% free web app. Log expenses on the go, scan receipt photos with client-side OCR, and simulate cash flow without spreadsheets or software downloads.
+        </p>
+      </div>
+      <a
+        href="/"
+        class="shrink-0 px-6 py-3 rounded-xl text-xs font-bold text-emerald-950 bg-white hover:bg-emerald-50 active:scale-95 transition-all shadow-md"
+      >
+        Open Free Expense Tracker &rarr;
+      </a>
+    </aside>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.template-card');
+  const countEl = document.getElementById('template-count');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const selected = btn.getAttribute('data-category');
+
+      buttons.forEach((b) => {
+        b.classList.remove('active', 'bg-emerald-700', 'text-white', 'shadow-xs');
+        b.classList.add('bg-slate-100', 'text-slate-600');
+        b.setAttribute('aria-pressed', 'false');
+      });
+
+      btn.classList.add('active', 'bg-emerald-700', 'text-white', 'shadow-xs');
+      btn.classList.remove('bg-slate-100', 'text-slate-600');
+      btn.setAttribute('aria-pressed', 'true');
+
+      let visible = 0;
+      cards.forEach((card) => {
+        const cat = card.getAttribute('data-category');
+        if (selected === 'All' || cat === selected) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      if (countEl) countEl.textContent = String(visible);
+    });
+  });
+</script>

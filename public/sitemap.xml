@@ -7,7 +7,7 @@
   <!-- Homepage & Live Web Expense Tracker Application -->
   <url>
     <loc>https://freexpensetracker.com/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -56,10 +56,110 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- Templates Hub Page -->
+  <url>
+    <loc>https://freexpensetracker.com/templates/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Individual Template Landing Pages -->
+  <url>
+    <loc>https://freexpensetracker.com/templates/paycheck-budget/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/debt-snowball/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/debt-avalanche/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/debt-to-income-calculator/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/student-loan-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/auto-loan-calculator/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/mortgage-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/401k-retirement-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/roth-ira-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/emergency-fund-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/subscription-audit/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/sinking-fund-planner/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/net-worth-tracker/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/financial-dashboard/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/monthly-spending-analyzer/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- About Us -->
   <url>
     <loc>https://freexpensetracker.com/about-us/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -67,7 +167,7 @@
   <!-- Contact Us -->
   <url>
     <loc>https://freexpensetracker.com/contact-us/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -75,7 +175,7 @@
   <!-- Privacy Policy -->
   <url>
     <loc>https://freexpensetracker.com/privacy-policy/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -83,7 +183,7 @@
   <!-- Terms & Conditions -->
   <url>
     <loc>https://freexpensetracker.com/terms-and-conditions/</loc>
-    <lastmod>2026-10-12</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
