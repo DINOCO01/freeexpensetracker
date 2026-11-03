@@ -10,6 +10,7 @@ import {
   SUPPORTED_LOCALES
 } from '../locales';
 import { getCanonicalUrl, SITE_URL } from '../utils/canonical';
+import ActivityPromotionPopup from '../components/ActivityPromotionPopup.astro';
 
 interface Props {
   title?: string;
@@ -290,5 +291,7 @@ const structuredData = [
       data-x_margin="18"
       data-y_margin="18"
     ></script>
+    <!-- Activity-Based Promotional Popup: My Real Budget -->
+    <ActivityPromotionPopup />
   </body>
 </html>

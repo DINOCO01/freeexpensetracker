@@ -1,0 +1,306 @@
+---
+/**
+ * ActivityPromotionPopup.astro
+ * Smart Activity-Based Cross-Promotion Popup recommending My Real Budget (https://myrealbudget.com/).
+ * 
+ * Display Conditions:
+ * 1. Active browsing time >= 30 seconds (pauses on inactive background tabs, persists across navigation).
+ * 2. Successful completion of a meaningful expense-tracking activity (adding expense, statement import, receipt save).
+ * 
+ * Behavior:
+ * - Appears only once per browser session via sessionStorage.
+ * - Smooth 5-second fade-in animation with subtle upward movement.
+ * - Respects prefers-reduced-motion.
+ * - Non-blocking floating dialog (does not interrupt active user operations).
+ * - Full light & dark mode support.
+ */
+---
+
+<div
+  id="mrb-activity-popup"
+  role="dialog"
+  aria-labelledby="mrb-popup-heading"
+  aria-describedby="mrb-popup-desc"
+  class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-md w-auto pointer-events-auto"
+>
+  <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
+    <!-- Close Button (accessible, dismisses popup) -->
+    <button
+      type="button"
+      id="btn-mrb-popup-close"
+      aria-label="Close promotion dialog"
+      class="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Header Section: Micro Label + Heading -->
+    <div class="space-y-1.5 pr-8">
+      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+        <span>YOUR NEXT STEP</span>
+      </div>
+      <h3 id="mrb-popup-heading" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
+        Finished tracking your expenses?
+      </h3>
+    </div>
+
+    <!-- Description -->
+    <p id="mrb-popup-desc" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+      You've got your spending recorded. Now plan where your money should go next.
+    </p>
+
+    <!-- Supporting Section -->
+    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-1">
+      <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Plan your budget with My Real Budget.
+      </h4>
+      <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        Create a monthly budget, follow the 50/30/20 rule and take control of your finances.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+      <a
+        href="https://myrealbudget.com/"
+        target="_blank"
+        rel="noopener"
+        id="btn-mrb-popup-cta"
+        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
+      >
+        <span>Explore My Real Budget</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+      <button
+        type="button"
+        id="btn-mrb-popup-later"
+        class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center"
+      >
+        Maybe later
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes mrbFadeInSlow {
+    0% {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mrb-popup-fadein {
+    animation: mrbFadeInSlow 2.5s ease-out forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mrb-popup-fadein {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const STORAGE_KEY_ACTIVE_SECS = 'fet_active_seconds';
+    const STORAGE_KEY_ACTIVITY_DONE = 'fet_activity_completed';
+    const STORAGE_KEY_POPUP_SHOWN = 'fet_popup_shown';
+    const STORAGE_KEY_POPUP_DISMISSED = 'fet_popup_dismissed';
+    const REQUIRED_ACTIVE_SECONDS = 30;
+
+    // Fast exit if already shown or dismissed in this session
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY_POPUP_DISMISSED) === 'true' ||
+          sessionStorage.getItem(STORAGE_KEY_POPUP_SHOWN) === 'true') {
+        return;
+      }
+    } catch (_) {}
+
+    let activeSeconds = 0;
+    try {
+      activeSeconds = parseInt(sessionStorage.getItem(STORAGE_KEY_ACTIVE_SECS) || '0', 10);
+      if (isNaN(activeSeconds)) activeSeconds = 0;
+    } catch (_) {}
+
+    function isWorkflowActive() {
+      // Check if any modal is currently open
+      const modalIds = [
+        'file-import-modal',
+        'reset-confirm-modal',
+        'debt-payment-modal',
+        'goal-contribution-modal'
+      ];
+      for (let i = 0; i < modalIds.length; i++) {
+        const el = document.getElementById(modalIds[i]);
+        if (el && !el.classList.contains('hidden')) {
+          return true;
+        }
+      }
+
+      // Check if receipt scanning is in progress
+      const receiptIndicator = document.getElementById('receipt-scanning-indicator');
+      if (receiptIndicator && !receiptIndicator.classList.contains('hidden')) {
+        return true;
+      }
+
+      // Check if tab importer is actively parsing
+      const tabProgress = document.getElementById('tab-importer-progress');
+      if (tabProgress && !tabProgress.classList.contains('hidden')) {
+        return true;
+      }
+
+      // Check if user is actively typing in an input/textarea
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function evaluateDisplayConditions() {
+      try {
+        if (sessionStorage.getItem(STORAGE_KEY_POPUP_DISMISSED) === 'true' ||
+            sessionStorage.getItem(STORAGE_KEY_POPUP_SHOWN) === 'true') {
+          return;
+        }
+
+        const activityDone = sessionStorage.getItem(STORAGE_KEY_ACTIVITY_DONE) === 'true';
+
+        // Both Condition A (>= 30 active seconds) and Condition B (activity completed) required
+        if (activeSeconds < REQUIRED_ACTIVE_SECONDS || !activityDone) {
+          return;
+        }
+
+        // Avoid triggering during ongoing workflows
+        if (isWorkflowActive()) {
+          return;
+        }
+
+        displayPopup();
+      } catch (_) {}
+    }
+
+    function displayPopup() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_POPUP_SHOWN, 'true');
+      } catch (_) {}
+
+      const popup = document.getElementById('mrb-activity-popup');
+      if (!popup) return;
+
+      if (!popup.classList.contains('hidden')) return;
+
+      popup.classList.remove('hidden');
+      popup.classList.add('mrb-popup-fadein');
+    }
+
+    function dismissPopup() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_POPUP_DISMISSED, 'true');
+        sessionStorage.setItem(STORAGE_KEY_POPUP_SHOWN, 'true');
+      } catch (_) {}
+
+      const popup = document.getElementById('mrb-activity-popup');
+      if (!popup) return;
+
+      popup.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        popup.classList.add('hidden');
+      }, 250);
+    }
+
+    // Bind Global Activity Hook
+    window.fetMarkActivityCompleted = function () {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_ACTIVITY_DONE, 'true');
+      } catch (_) {}
+      evaluateDisplayConditions();
+    };
+
+    window.addEventListener('fet:activity-completed', function () {
+      try {
+        sessionStorage.setItem(STORAGE_KEY_ACTIVITY_DONE, 'true');
+      } catch (_) {}
+      evaluateDisplayConditions();
+    });
+
+    // Active Time Counting Loop (Every 1 second while tab is visible)
+    const timerInterval = setInterval(() => {
+      try {
+        if (sessionStorage.getItem(STORAGE_KEY_POPUP_DISMISSED) === 'true' ||
+            sessionStorage.getItem(STORAGE_KEY_POPUP_SHOWN) === 'true') {
+          clearInterval(timerInterval);
+          return;
+        }
+      } catch (_) {}
+
+      if (!document.hidden) {
+        activeSeconds++;
+        try {
+          sessionStorage.setItem(STORAGE_KEY_ACTIVE_SECS, activeSeconds.toString());
+        } catch (_) {}
+        evaluateDisplayConditions();
+      }
+    }, 1000);
+
+    // Visibility change handler (pauses/resumes active time evaluation)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        evaluateDisplayConditions();
+      }
+    });
+
+    // Button event bindings
+    function initButtons() {
+      const btnClose = document.getElementById('btn-mrb-popup-close');
+      const btnLater = document.getElementById('btn-mrb-popup-later');
+      const btnCta = document.getElementById('btn-mrb-popup-cta');
+
+      if (btnClose && !btnClose.dataset.bound) {
+        btnClose.dataset.bound = 'true';
+        btnClose.addEventListener('click', dismissPopup);
+      }
+
+      if (btnLater && !btnLater.dataset.bound) {
+        btnLater.dataset.bound = 'true';
+        btnLater.addEventListener('click', dismissPopup);
+      }
+
+      if (btnCta && !btnCta.dataset.bound) {
+        btnCta.dataset.bound = 'true';
+        btnCta.addEventListener('click', () => {
+          if (typeof gtag === 'function') {
+            gtag('event', 'cross_site_cta_click', {
+              destination: 'myrealbudget.com',
+              source_page: window.location.pathname,
+              cta_name: 'popup_my_real_budget'
+            });
+          }
+          dismissPopup();
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initButtons);
+    } else {
+      initButtons();
+    }
+  })();
+</script>
+

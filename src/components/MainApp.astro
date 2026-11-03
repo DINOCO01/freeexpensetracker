@@ -17,6 +17,7 @@ import StatementImporterTab from '../components/StatementImporterTab.astro';
 import SpreadsheetsAndPrintable from '../components/SpreadsheetsAndPrintable.astro';
 import SEOContentSection from '../components/SEOContentSection.astro';
 import FAQSection from '../components/FAQSection.astro';
+import MyRealBudgetCTA from '../components/MyRealBudgetCTA.astro';
 import Footer from '../components/Footer.astro';
 import FileImportModal from '../components/FileImportModal.astro';
 import ResetModal from '../components/ResetModal.astro';
@@ -100,6 +101,11 @@ const { locale = 'en' } = Astro.props;
     <!-- Comprehensive On-Page SEO Educational & Explanatory Guide (800-1200 words) -->
     <section id="section-seo-guide" class="pt-6">
       <SEOContentSection locale={locale} />
+    </section>
+
+    <!-- Contextual Cross-Link: My Real Budget -->
+    <section id="section-budget-cta" class="pt-2">
+      <MyRealBudgetCTA />
     </section>
 
     <!-- SEO-Friendly Interactive FAQ Section with JSON-LD Schema -->
@@ -3321,6 +3327,13 @@ const { locale = 'en' } = Astro.props;
     if (!feedbackEl || !targetContainer) return;
     targetContainer.appendChild(feedbackEl);
     feedbackEl.classList.remove('hidden');
+
+    try {
+      sessionStorage.setItem('fet_activity_completed', 'true');
+    } catch (_) {}
+    if (typeof (window as any).fetMarkActivityCompleted === 'function') {
+      (window as any).fetMarkActivityCompleted();
+    }
   }
 
   const btnFeedbackYes = document.getElementById('btn-feedback-yes');
