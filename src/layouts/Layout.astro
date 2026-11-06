@@ -151,7 +151,16 @@ const structuredData = [
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-XR6MG2FM4M');
+      try {
+        var isDebug = new URLSearchParams(window.location.search).get('debug_mode') === '1';
+        if (isDebug) {
+          gtag('config', 'G-XR6MG2FM4M', { debug_mode: true });
+        } else {
+          gtag('config', 'G-XR6MG2FM4M');
+        }
+      } catch (_) {
+        gtag('config', 'G-XR6MG2FM4M');
+      }
     </script>
     
     <!-- Primary SEO Meta Tags -->

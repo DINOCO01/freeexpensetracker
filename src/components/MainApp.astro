@@ -181,6 +181,7 @@ const { locale = 'en' } = Astro.props;
     saveStoredState,
     clearAllStoredData,
     exportTransactionsToCSV,
+    exportBudgetToExcel,
     type AppState
   } from '../utils/storage';
 
@@ -1841,11 +1842,38 @@ const { locale = 'en' } = Astro.props;
 
   // --- 10. Event Listeners ---
 
+  // --- GA4 Event Tracking Helper ---
+  function track(name: string, params?: Record<string, any>) {
+    try {
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', name, params);
+      }
+    } catch (_) {
+      // never throws
+    }
+  }
+
+  // GA4 event tracking states
+  let expenseLoggerMethod: 'manual' | 'preset' = 'manual';
+  let incomeSetTracked = false;
+  let incomeSetDebounceTimer: any = null;
+
+  function trackIncomeSet() {
+    if (incomeSetTracked) return;
+    clearTimeout(incomeSetDebounceTimer);
+    incomeSetDebounceTimer = setTimeout(() => {
+      if (incomeSetTracked) return;
+      incomeSetTracked = true;
+      track('income_set', { frequency: state.frequency });
+    }, 500);
+  }
+
   // Currency
   currencySelector?.addEventListener('change', () => {
     state.currency = currencySelector.value;
     saveStoredState({ currency: state.currency });
     renderAll();
+    track('currency_changed', { currency: state.currency });
   });
 
   // Income Input
@@ -1853,6 +1881,7 @@ const { locale = 'en' } = Astro.props;
     state.income = parseFloat(inputIncome.value) || 0;
     saveStoredState({ income: state.income });
     renderAll();
+    trackIncomeSet();
   });
 
   // Income Slider
@@ -1867,6 +1896,7 @@ const { locale = 'en' } = Astro.props;
     }
     saveStoredState({ income: state.income });
     renderAll();
+    trackIncomeSet();
   });
 
   // Frequency Buttons
@@ -1877,6 +1907,7 @@ const { locale = 'en' } = Astro.props;
         state.frequency = freq;
         saveStoredState({ frequency: state.frequency });
         renderAll();
+        trackIncomeSet();
       }
     });
   });
@@ -1913,6 +1944,12 @@ const { locale = 'en' } = Astro.props;
     state.transactions.unshift(newTx);
     saveStoredState({ transactions: state.transactions });
 
+    track('expense_added', {
+      category: category.toLowerCase(),
+      method: expenseLoggerMethod
+    });
+
+    expenseLoggerMethod = 'manual';
     pendingReceiptMeta = null;
     inputItemName.value = '';
     inputItemAmount.value = '';
@@ -1925,6 +1962,7 @@ const { locale = 'en' } = Astro.props;
   presetChips.forEach((chip) => {
     chip.addEventListener('click', () => {
       pendingReceiptMeta = null;
+      expenseLoggerMethod = 'preset';
       const name = chip.getAttribute('data-preset-name');
       const amount = chip.getAttribute('data-preset-amount');
       const cat = chip.getAttribute('data-preset-category');
@@ -1937,8 +1975,12 @@ const { locale = 'en' } = Astro.props;
     });
   });
 
+  inputItemName?.addEventListener('input', () => { expenseLoggerMethod = 'manual'; });
+  inputItemAmount?.addEventListener('input', () => { expenseLoggerMethod = 'manual'; });
+
   // Clear Quick Expense Logger entry
   btnClearLogger?.addEventListener('click', () => {
+    expenseLoggerMethod = 'manual';
     pendingReceiptMeta = null;
     if (inputItemName) inputItemName.value = '';
     if (inputItemAmount) inputItemAmount.value = '';
@@ -1977,7 +2019,9 @@ const { locale = 'en' } = Astro.props;
       };
 
       inputItemAmount?.focus();
+      track('receipt_scanned', { success: true });
     } catch (err: any) {
+      track('receipt_scanned', { success: false });
       alert(err.message || 'Failed to scan receipt image. Please ensure image is well-lit and legible.');
     } finally {
       receiptScanningIndicator?.classList.add('hidden');
@@ -1993,6 +2037,14 @@ const { locale = 'en' } = Astro.props;
   // CSV Export
   btnExportCsv?.addEventListener('click', () => {
     exportTransactionsToCSV(state.transactions, getCurrencySymbol());
+    track('ledger_exported', { format: 'csv' });
+  });
+
+  // Excel / XLSX Export
+  const btnExportExcelQuick = document.getElementById('btn-export-excel-quick');
+  btnExportExcelQuick?.addEventListener('click', () => {
+    exportBudgetToExcel(getMonthlyIncome(), state.currency, state.transactions);
+    track('ledger_exported', { format: 'xlsx' });
   });
 
   // Debt Strategy Buttons (Vertical Tabs)
@@ -2926,6 +2978,17 @@ const { locale = 'en' } = Astro.props;
       renderModalImporterResults();
 
       if (importPreviewBox) importPreviewBox.classList.remove('hidden');
+
+      const firstFile = fileList[0];
+      const ext = firstFile?.name ? firstFile.name.split('.').pop()?.toLowerCase() : '';
+      const fileType = ext === 'pdf' ? 'pdf' : (ext === 'xlsx' || ext === 'xls') ? 'xlsx' : 'csv';
+      const rowCount = result.recordCount || result.transactions.length || 0;
+      if (rowCount > 0) {
+        track('statement_imported', {
+          file_type: fileType,
+          row_count: rowCount
+        });
+      }
     } catch (err: any) {
       if (importErrorMsg) {
         importErrorMsg.textContent = err.message || 'Failed to read file. Please ensure it has column headers and valid amounts.';
@@ -3112,6 +3175,22 @@ const { locale = 'en' } = Astro.props;
         tabImporterResults.classList.remove('hidden');
         showContextualFeedback(tabImporterResults);
       }
+
+      const firstItem = fileArray[0];
+      let fileType = 'csv';
+      if (typeof firstItem === 'string') {
+        fileType = 'csv';
+      } else if (firstItem?.name) {
+        const ext = firstItem.name.split('.').pop()?.toLowerCase();
+        fileType = ext === 'pdf' ? 'pdf' : (ext === 'xlsx' || ext === 'xls') ? 'xlsx' : 'csv';
+      }
+      const rowCount = result.recordCount || result.transactions.length || 0;
+      if (rowCount > 0) {
+        track('statement_imported', {
+          file_type: fileType,
+          row_count: rowCount
+        });
+      }
     } catch (err: any) {
       if (tabImporterProgress) tabImporterProgress.classList.add('hidden');
       if (tabImporterError) {
@@ -3164,8 +3243,23 @@ const { locale = 'en' } = Astro.props;
     if (tabImporterError) tabImporterError.classList.add('hidden');
   });
 
+  const TAB_PARAM_MAP: Record<string, string> = {
+    'tracker': 'live_tracker',
+    'templates': 'templates',
+    'debt': 'debt_planner',
+    'targets': 'budget_goals',
+    'knowledge': 'guides'
+  };
+  let currentActiveTab = 'tracker';
+
   // Tab Navigation
   function switchTab(tabId: string) {
+    if (tabId !== currentActiveTab && TAB_PARAM_MAP[tabId]) {
+      track('tab_opened', { tab: TAB_PARAM_MAP[tabId] });
+      currentActiveTab = tabId;
+    } else if (tabId) {
+      currentActiveTab = tabId;
+    }
     tabButtons.forEach((btn) => {
       const target = btn.getAttribute('data-tab');
       const isCapsule = btn.classList.contains('capsule-tab-btn');
@@ -3306,6 +3400,7 @@ const { locale = 'en' } = Astro.props;
       const tmplUrl = btn.getAttribute('data-url');
 
       if (tmplType === 'google-sheet' && tmplUrl) {
+        track('template_sheet_opened', { template_name: tmplId });
         window.open(tmplUrl, '_blank', 'noopener,noreferrer');
       } else if (tmplType === 'excel-download') {
         generateExcelTemplate(tmplId);
@@ -3319,6 +3414,14 @@ const { locale = 'en' } = Astro.props;
     switchTab('import');
     const tabImportEl = document.getElementById('tab-view-import');
     tabImportEl?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Template Google Sheets Open Tracking
+  document.querySelectorAll<HTMLAnchorElement>('.btn-open-google-sheets').forEach((link) => {
+    link.addEventListener('click', () => {
+      const tmplName = link.getAttribute('data-template-name') || link.getAttribute('data-id') || 'template';
+      track('template_sheet_opened', { template_name: tmplName });
+    });
   });
 
   // --- Contextual Feedback Flow ---
