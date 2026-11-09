@@ -130,7 +130,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <div class="flex flex-wrap gap-1.5">
         <button
           type="button"
-          data-preset-name="Monthly House Rent"
+          data-preset-name={locale === 'fr' ? 'Loyer mensuel' : 'Monthly Rent'}
           data-preset-amount="15000"
           data-preset-category="Housing"
           class="btn-preset-chip px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
@@ -139,7 +139,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         </button>
         <button
           type="button"
-          data-preset-name="Supermarket & Groceries"
+          data-preset-name={locale === 'fr' ? 'Courses supermarché' : 'Supermarket Groceries'}
           data-preset-amount="3500"
           data-preset-category="Food"
           class="btn-preset-chip px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
@@ -148,7 +148,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         </button>
         <button
           type="button"
-          data-preset-name="Electricity Bill"
+          data-preset-name={locale === 'fr' ? 'Facture électricité' : 'Electricity Bill'}
           data-preset-amount="1800"
           data-preset-category="Utilities"
           class="btn-preset-chip px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
@@ -157,7 +157,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         </button>
         <button
           type="button"
-          data-preset-name="Petrol & Metro Travel"
+          data-preset-name={locale === 'fr' ? 'Transports / Carburant' : 'Metro / Bus Pass'}
           data-preset-amount="1200"
           data-preset-category="Transport"
           class="btn-preset-chip px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
@@ -166,7 +166,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         </button>
         <button
           type="button"
-          data-preset-name="Emergency Fund / SIP"
+          data-preset-name={locale === 'fr' ? 'Épargne mensuelle' : 'Monthly Savings Deposit'}
           data-preset-amount="5000"
           data-preset-category="Savings"
           class="btn-preset-chip px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors border border-emerald-200 dark:border-emerald-800 cursor-pointer"

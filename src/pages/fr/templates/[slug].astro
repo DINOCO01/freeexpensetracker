@@ -1,0 +1,662 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import { getCanonicalUrl } from '../../../utils/canonical';
+import { TEMPLATES_DATA_FR, type TemplateDataFr } from '../../../data/templatesDataFr';
+
+export function getStaticPaths() {
+  return TEMPLATES_DATA_FR.map((template) => ({
+    params: { slug: template.slug },
+    props: { template }
+  }));
+}
+
+interface Props {
+  template: TemplateDataFr;
+}
+
+const { template } = Astro.props;
+const downloadUrl = `/templates/${template.fileName}`;
+const canonicalUrl = getCanonicalUrl(`/fr/templates/${template.slug}/`, 'fr');
+
+const TEMPLATE_APP_TARGETS: Record<string, string> = {
+  'paycheck-budget': '/fr/?tab=budget&preset=paycheck',
+  'debt-snowball': '/fr/?tab=debt&preset=snowball',
+  'debt-avalanche': '/fr/?tab=debt&preset=avalanche',
+  'debt-to-income-calculator': '/fr/?tab=debt&preset=dti',
+  'student-loan-planner': '/fr/?tab=debt&preset=student-loan',
+  'auto-loan-calculator': '/fr/?tab=debt&preset=auto-loan',
+  'mortgage-planner': '/fr/?tab=debt&preset=mortgage',
+  '401k-retirement-planner': '/fr/?tab=goals&preset=retirement',
+  'roth-ira-planner': '/fr/?tab=goals&preset=roth-ira',
+  'emergency-fund-planner': '/fr/?tab=goals&preset=emergency-fund',
+  'subscription-audit': '/fr/?tab=tracker&preset=subscriptions',
+  'sinking-fund-planner': '/fr/?tab=goals&preset=sinking-fund',
+  'net-worth-tracker': '/fr/?tab=goals&preset=net-worth',
+  'financial-dashboard': '/fr/?tab=tracker&preset=dashboard',
+  'monthly-spending-analyzer': '/fr/?tab=tracker&preset=spending-analyzer',
+  'monthly-bill-tracker': '/fr/?tab=tracker&preset=bill-tracker'
+};
+
+const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/fr/?tab=tracker';
+
+// French Related templates mapping
+const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
+  'debt-snowball': [
+    { slug: 'debt-avalanche', title: 'Feuille Dette Avalanche', desc: 'Priorisez le taux d\'intérêt le plus élevé en premier pour économiser un maximum d\'intérêts.' },
+    { slug: 'debt-to-income-calculator', title: 'Calculateur Taux d\'Endettement', desc: 'Évaluez votre capacité d\'emprunt et comparez vos charges à vos revenus bruts.' },
+    { slug: 'student-loan-planner', title: 'Planificateur Prêt Étudiant', desc: 'Simulez l\'impact de versements supplémentaires sur votre calendrier de remboursement.' }
+  ],
+  'student-loan-planner': [
+    { slug: 'debt-snowball', title: 'Feuille Remboursement Boule de Neige', desc: 'Soldez les plus petits montants d\'abord pour stimuler votre motivation financière.' },
+    { slug: 'debt-to-income-calculator', title: 'Calculateur Taux d\'Endettement', desc: 'Mesurez le poids de vos mensualités de crédit par rapport à vos revenus mensuels.' },
+    { slug: 'debt-avalanche', title: 'Feuille Dette Avalanche', desc: 'Attaquez les taux les plus coûteux pour réduire le coût global de vos emprunts.' }
+  ],
+  'monthly-bill-tracker': [
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez chaque euro de votre salaire net avant que vos dépenses ne commencent.' },
+    { slug: 'subscription-audit', title: 'Audit des Abonnements', desc: 'Pistez vos abonnements récurrents et résiliez les dépenses inutiles.' },
+    { slug: 'monthly-spending-analyzer', title: 'Analyseur Mensuel des Dépenses', desc: 'Ventilez vos dépenses par catégorie et identifiez vos postes d\'économies.' }
+  ],
+  'paycheck-budget': [
+    { slug: 'monthly-bill-tracker', title: 'Suivi Mensuel des Factures', desc: 'Centralisez factures récurrentes, échéances et prélèvements automatiques.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez un matelas de sécurité de 3 à 6 mois de dépenses courantes.' },
+    { slug: 'subscription-audit', title: 'Audit des Abonnements', desc: 'Identifiez et supprimez les abonnements récurrents qui réduisent votre paie.' }
+  ],
+  'emergency-fund-planner': [
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez une part fixe de votre paie directement vers votre réserve de secours.' },
+    { slug: 'sinking-fund-planner', title: 'Planificateur Épargne Ciblée', desc: 'Provisionnez vos dépenses futures prévisibles pour éviter les chocs de trésorerie.' },
+    { slug: 'debt-snowball', title: 'Remboursement Boule de Neige', desc: 'Équilibrez épargne de précaution et remboursement accéléré de vos dettes.' }
+  ]
+};
+
+const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
+  { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Planifiez chaque euro par cycle de paie : charges fixes, dépenses et épargne.' },
+  { slug: 'monthly-bill-tracker', title: 'Suivi Mensuel des Factures', desc: 'Centralisez factures récurrentes, échéances et prélèvements automatiques.' },
+  { slug: 'debt-snowball', title: 'Remboursement Boule de Neige', desc: 'Éliminez vos emprunts avec la méthode d\'accélération boule de neige.' }
+];
+---
+
+<Layout
+  title={template.title}
+  description={template.metaDescription}
+  canonicalUrl={canonicalUrl}
+  currentLocale="fr"
+  faqSchema={template.faq}
+>
+  <Navbar currentLocale="fr" />
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Fil d'Ariane">
+      <a href="/fr/" class="hover:text-emerald-700 transition-colors">Accueil</a>
+      <span>/</span>
+      <a href="/fr/templates/" class="hover:text-emerald-700 transition-colors">Modèles</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold" aria-current="page">{template.h1}</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span>{template.categoryIcon}</span>
+          <span>{template.category}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span>📊</span>
+          <span>Excel .xlsx</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono text-slate-500 bg-slate-50 border border-slate-200">
+          <span>💾</span>
+          <span>{template.fileSize}</span>
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        {template.h1}
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
+        {template.overview}
+      </p>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center gap-3 pt-2">
+        <a
+          href={downloadUrl}
+          download={template.fileName}
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-md shadow-emerald-700/15 cursor-pointer"
+          aria-label={`Télécharger ${template.fileName}`}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span>Télécharger le Fichier Excel (.xlsx)</span>
+        </a>
+        <a
+          href="/fr/templates/"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 border border-slate-200 transition-colors"
+        >
+          &larr; Tous les Modèles
+        </a>
+      </div>
+    </header>
+
+    <!-- TOP PROMOTIONAL CTA BLOCK -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+          ⚡
+        </div>
+        <div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+            Vous préférez ne pas utiliser de tableur ?
+          </p>
+          <p class="text-xs text-slate-600">
+            Suivez vos dépenses gratuitement dans votre navigateur avec zéro configuration ni inscription.
+          </p>
+        </div>
+      </div>
+      <a
+        href={appTargetUrl}
+        data-template-id={template.slug}
+        class="template-to-app-btn shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+      >
+        <span>Suivre Gratuitement en Ligne &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Section 1: Template Purpose & Specs -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">🎯</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Objectif du Modèle &amp; Spécifications
+        </h2>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+        {template.purpose}
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+          <span class="font-bold text-slate-900 block">Feuilles incluses :</span>
+          <span class="text-slate-600 font-mono text-[11px]">{template.sheetNames.join(', ')}</span>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+          <span class="font-bold text-slate-900 block">Compatibilité logicielle :</span>
+          <span class="text-slate-600">Microsoft Excel, Google Sheets, Apple Numbers, LibreOffice</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE SNOWBALL CALCULATOR (only on debt-snowball) -->
+    {template.slug === 'debt-snowball' && (
+      <section id="interactive-snowball-calculator" class="bg-white border-2 border-emerald-500/30 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-2.5 text-slate-900">
+            <span class="text-2xl">❄️</span>
+            <div>
+              <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+                Simulateur Interactif Boule de Neige
+              </h2>
+              <p class="text-xs text-slate-500">Testez le remboursement de vos dettes en direct avant de télécharger le classeur.</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+            Calcul en Direct
+          </span>
+        </div>
+
+        <!-- Debt Input Table -->
+        <div class="space-y-3">
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+            <table class="w-full text-xs text-left min-w-[520px]">
+              <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Nom de la Dette</th>
+                  <th class="py-2.5 px-3">Capital Restant (€)</th>
+                  <th class="py-2.5 px-3">Taux (TAEG %)</th>
+                  <th class="py-2.5 px-3">Mensualité Min. (€)</th>
+                  <th class="py-2.5 px-2 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="snowball-debts-body" class="divide-y divide-slate-100">
+                <tr class="debt-row">
+                  <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Carte de Crédit" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="1200" min="0" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="18.9" min="0" max="100" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="65" min="1" step="any" /></td>
+                  <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                </tr>
+                <tr class="debt-row">
+                  <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Prêt Automobile" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="4500" min="0" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="5.2" min="0" max="100" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="140" min="1" step="any" /></td>
+                  <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                </tr>
+                <tr class="debt-row">
+                  <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Prêt Personnel" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="7000" min="0" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="6.5" min="0" max="100" step="any" /></td>
+                  <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="210" min="1" step="any" /></td>
+                  <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              id="btn-add-snowball-debt"
+              class="px-3.5 py-1.5 rounded-xl border border-dashed border-emerald-600 text-emerald-800 text-xs font-semibold hover:bg-emerald-50 transition-colors"
+            >
+              + Ajouter une Dette
+            </button>
+            <div class="flex items-center gap-2">
+              <label for="input-snowball-extra" class="text-xs font-bold text-slate-700 whitespace-nowrap">
+                Extra Mensuel Boule de Neige :
+              </label>
+              <div class="relative">
+                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">€</span>
+                <input
+                  type="number"
+                  id="input-snowball-extra"
+                  class="pl-6 pr-3 py-1.5 rounded-xl border border-slate-300 w-28 text-xs font-mono font-bold text-slate-900"
+                  value="150"
+                  min="0"
+                  step="10"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation Results Summary -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center">
+          <div>
+            <span class="block text-[11px] text-emerald-800 font-medium">Durée Totale</span>
+            <span id="calc-result-months" class="text-base sm:text-lg font-black text-emerald-950 font-mono">—</span>
+          </div>
+          <div>
+            <span class="block text-[11px] text-emerald-800 font-medium">Fin de Dette Estimée</span>
+            <span id="calc-result-date" class="text-xs sm:text-sm font-bold text-emerald-900">—</span>
+          </div>
+          <div>
+            <span class="block text-[11px] text-emerald-800 font-medium">Intérêts Totaux Payés</span>
+            <span id="calc-result-interest" class="text-base sm:text-lg font-black text-emerald-950 font-mono">—</span>
+          </div>
+          <div>
+            <span class="block text-[11px] text-emerald-800 font-medium">Économie vs Minimums</span>
+            <span id="calc-result-saved" class="text-base sm:text-lg font-black text-emerald-700 font-mono">—</span>
+          </div>
+        </div>
+
+        <!-- Timeline Payoff Preview -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Ordre d'Extinction des Dettes (Boule de Neige) :</h4>
+          <div id="calc-timeline-list" class="space-y-1.5 text-xs text-slate-700"></div>
+        </div>
+      </section>
+    )}
+
+    <!-- Section 2: Key Formulas -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">🧮</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Formules Clés du Modèle
+        </h2>
+      </div>
+      <div class="space-y-2.5">
+        {template.keyFormulas.map((formula) => (
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-emerald-900">
+            {formula}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 3: How to Use -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">📝</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Comment Utiliser ce Tableur
+        </h2>
+      </div>
+      <ol class="space-y-3">
+        {template.howToUse.map((step, idx) => (
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+              {idx + 1}
+            </span>
+            <span class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              {step}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Section 4: Who Benefits -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">👥</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          À Qui S'adresse ce Modèle ?
+        </h2>
+      </div>
+      <ul class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {template.whoBenefits.map((item) => (
+          <li class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-xs sm:text-sm text-slate-800 space-y-1.5">
+            <span class="text-emerald-700 font-bold text-sm block">💡</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- SECOND CTA BLOCK -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+          💻
+        </div>
+        <div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+            Vous préférez ne pas utiliser de tableur ?
+          </p>
+          <p class="text-xs text-slate-600">
+            Gérez vos finances gratuitement en ligne dans votre navigateur sans inscription.
+          </p>
+        </div>
+      </div>
+      <a
+        href={appTargetUrl}
+        data-template-id={template.slug}
+        class="template-to-app-btn shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+      >
+        <span>Suivre Gratuitement en Ligne &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Section 5: FAQs -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center gap-2.5 text-slate-900">
+        <span class="text-xl">❓</span>
+        <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+          Foire Aux Questions
+        </h2>
+      </div>
+      <div class="space-y-3">
+        {template.faq.map((item) => (
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 class="font-bold text-xs sm:text-sm text-slate-900">
+              {item.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {item.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Financial Templates -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5 text-slate-900">
+          <span class="text-xl">🔗</span>
+          <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+            Modèles Financiers Associés
+          </h2>
+        </div>
+        <a href="/fr/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
+          Voir Tous les Modèles &rarr;
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {relatedTemplates.map((rel) => (
+          <a
+            href={`/fr/templates/${rel.slug}/`}
+            class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
+          >
+            <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
+              {rel.title}
+            </div>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              {rel.desc}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom CTA Bar -->
+    <aside class="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+      <div class="space-y-1 text-center sm:text-left">
+        <div class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
+          Prêt à Démarrer ?
+        </div>
+        <div class="text-lg sm:text-xl font-extrabold font-['Outfit',sans-serif]">
+          Télécharger {template.fileName}
+        </div>
+        <p class="text-xs text-slate-300">
+          100% gratuit • Compatible Microsoft Excel &amp; Google Sheets • Sans inscription
+        </p>
+      </div>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a
+          href={downloadUrl}
+          download={template.fileName}
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-sm"
+        >
+          Télécharger (.xlsx)
+        </a>
+        <a
+          href="/fr/templates/"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+        >
+          Tous les Modèles
+        </a>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Client-side event tracking & calculator logic -->
+  <script is:inline>
+    // GA4 Template to App Event Tracking
+    try {
+      var appBtns = document.querySelectorAll('.template-to-app-btn');
+      if (appBtns && appBtns.length > 0) {
+        appBtns.forEach(function(btn) {
+          if (!btn) return;
+          btn.addEventListener('click', function() {
+            try {
+              var templateId = btn.getAttribute('data-template-id') || '';
+              if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+                window.gtag('event', 'template_to_app', { template_id: templateId });
+              }
+            } catch (_) {}
+          });
+        });
+      }
+    } catch (_) {}
+  </script>
+
+  {template.slug === 'debt-snowball' && (
+    <script is:inline>
+      // Interactive Debt Snowball Calculator (only on debt-snowball)
+      (function initSnowballCalculator() {
+        try {
+          var calcSection = document.getElementById('interactive-snowball-calculator');
+          var tbody = document.getElementById('snowball-debts-body');
+          var extraInput = document.getElementById('input-snowball-extra');
+          if (!calcSection || !tbody || !extraInput) return;
+
+          var btnAdd = document.getElementById('btn-add-snowball-debt');
+          var resultMonths = document.getElementById('calc-result-months');
+          var resultDate = document.getElementById('calc-result-date');
+          var resultInterest = document.getElementById('calc-result-interest');
+          var resultSaved = document.getElementById('calc-result-saved');
+          var timelineList = document.getElementById('calc-timeline-list');
+
+          function recalculateSnowball() {
+            try {
+              if (!tbody) return;
+              var rows = tbody.querySelectorAll('.debt-row');
+              var debts = [];
+              if (rows) {
+                rows.forEach(function(r) {
+                  var nameEl = r.querySelector('.debt-name');
+                  var balEl = r.querySelector('.debt-balance');
+                  var rateEl = r.querySelector('.debt-rate');
+                  var minEl = r.querySelector('.debt-min');
+
+                  var name = (nameEl && nameEl.value) ? nameEl.value : 'Dette';
+                  var balance = balEl ? (parseFloat(balEl.value) || 0) : 0;
+                  var rate = rateEl ? (parseFloat(rateEl.value) || 0) : 0;
+                  var minPay = minEl ? (parseFloat(minEl.value) || 0) : 0;
+                  if (balance > 0 && minPay > 0) {
+                    debts.push({ name: name, balance: balance, rate: rate, minPay: minPay });
+                  }
+                });
+              }
+
+              var extra = (extraInput && extraInput.value) ? (parseFloat(extraInput.value) || 0) : 0;
+              if (debts.length === 0) {
+                if (resultMonths) resultMonths.textContent = '0 Mois';
+                if (resultInterest) resultInterest.textContent = '0 €';
+                if (resultSaved) resultSaved.textContent = '0 €';
+                return;
+              }
+
+              // Snowball: Sort by balance ascending
+              debts.sort(function(a, b) { return a.balance - b.balance; });
+
+              var simDebts = debts.map(function(d) {
+                return { name: d.name, balance: d.balance, rate: d.rate, minPay: d.minPay, paidOffMonth: 0 };
+              });
+
+              var month = 0;
+              var totalInterestPaid = 0;
+              var maxMonths = 360;
+
+              while (month < maxMonths) {
+                var activeDebts = simDebts.filter(function(d) { return d.balance > 0; });
+                if (activeDebts.length === 0) break;
+                month++;
+
+                var freedSnowball = extra;
+                simDebts.forEach(function(d) {
+                  if (d.balance <= 0) {
+                    freedSnowball += d.minPay;
+                  }
+                });
+
+                activeDebts.forEach(function(d) {
+                  var monthlyInterest = d.balance * (d.rate / 100 / 12);
+                  totalInterestPaid += monthlyInterest;
+                  d.balance += monthlyInterest;
+                });
+
+                activeDebts.forEach(function(d) {
+                  var payment = Math.min(d.balance, d.minPay);
+                  d.balance -= payment;
+                  if (d.balance <= 0.01 && d.paidOffMonth === 0) {
+                    d.paidOffMonth = month;
+                  }
+                });
+
+                var targetDebt = activeDebts.find(function(d) { return d.balance > 0.01; });
+                if (targetDebt && freedSnowball > 0) {
+                  var snowPayment = Math.min(targetDebt.balance, freedSnowball);
+                  targetDebt.balance -= snowPayment;
+                  if (targetDebt.balance <= 0.01 && targetDebt.paidOffMonth === 0) {
+                    targetDebt.paidOffMonth = month;
+                  }
+                }
+              }
+
+              var minDebts = debts.map(function(d) {
+                return { balance: d.balance, rate: d.rate, minPay: d.minPay };
+              });
+              var minMonth = 0;
+              var minInterest = 0;
+              while (minMonth < maxMonths) {
+                var act = minDebts.filter(function(d) { return d.balance > 0; });
+                if (act.length === 0) break;
+                minMonth++;
+                act.forEach(function(d) {
+                  var intCost = d.balance * (d.rate / 100 / 12);
+                  minInterest += intCost;
+                  d.balance += intCost;
+                  d.balance -= Math.min(d.balance, d.minPay);
+                });
+              }
+
+              var saved = Math.max(0, minInterest - totalInterestPaid);
+
+              if (resultMonths) resultMonths.textContent = month + ' Mois';
+              if (resultInterest) resultInterest.textContent = Math.round(totalInterestPaid).toLocaleString('fr-FR') + ' €';
+              if (resultSaved) resultSaved.textContent = Math.round(saved).toLocaleString('fr-FR') + ' €';
+
+              var estDate = new Date();
+              estDate.setMonth(estDate.getMonth() + month);
+              var dateStr = estDate.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+              if (resultDate) resultDate.textContent = 'Libéré de dette vers ' + dateStr;
+
+              if (timelineList) {
+                timelineList.innerHTML = simDebts.map(function(d, idx) {
+                  var m = d.paidOffMonth || month;
+                  return '<div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/80">' +
+                    '<span><strong>#' + (idx + 1) + ' ' + d.name + '</strong></span>' +
+                    '<span class="font-mono text-emerald-800 font-bold">Remboursé au mois ' + m + '</span>' +
+                  '</div>';
+                }).join('');
+              }
+            } catch (_) {}
+          }
+
+          tbody.addEventListener('input', recalculateSnowball);
+          extraInput.addEventListener('input', recalculateSnowball);
+
+          tbody.addEventListener('click', function(e) {
+            try {
+              if (e && e.target && e.target.classList && e.target.classList.contains('btn-remove-row')) {
+                var row = e.target.closest('.debt-row');
+                if (row && tbody.querySelectorAll('.debt-row').length > 1) {
+                  row.remove();
+                  recalculateSnowball();
+                }
+              }
+            } catch (_) {}
+          });
+
+          if (btnAdd) {
+            btnAdd.addEventListener('click', function() {
+              try {
+                var tr = document.createElement('tr');
+                tr.className = 'debt-row';
+                tr.innerHTML = '<td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Prêt Personnel" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="1500" min="0" step="any" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="10" min="0" max="100" step="any" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="60" min="1" step="any" /></td>' +
+                  '<td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>';
+                tbody.appendChild(tr);
+                recalculateSnowball();
+              } catch (_) {}
+            });
+          }
+
+          recalculateSnowball();
+        } catch (_) {}
+      })();
+    </script>
+  )}
+
+  <Footer locale="fr" />
+</Layout>
+

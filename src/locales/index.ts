@@ -166,6 +166,24 @@ export function getAllHreflangLinks(currentPath: string = '/', siteUrl: string =
     cleanPure += '/';
   }
 
+  // For template hub and template detail pages, English and French equivalents exist.
+  if (cleanPure.startsWith('/templates/')) {
+    return [
+      {
+        hreflang: 'x-default',
+        href: `${siteUrl}${cleanPure}`
+      },
+      {
+        hreflang: 'en',
+        href: `${siteUrl}${cleanPure}`
+      },
+      {
+        hreflang: 'fr',
+        href: `${siteUrl}/fr${cleanPure}`
+      }
+    ];
+  }
+
   // Legal, info, and single-language pages only exist in English.
   // Output only canonical English and x-default pointing to the English URL to avoid 404s.
   if (cleanPure !== '/') {

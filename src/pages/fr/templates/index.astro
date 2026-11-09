@@ -1,0 +1,207 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import { getCanonicalUrl } from '../../../utils/canonical';
+import { TEMPLATES_DATA_FR } from '../../../data/templatesDataFr';
+
+const canonicalUrl = getCanonicalUrl('/fr/templates/', 'fr');
+const categories = [
+  'Tous',
+  'Gestion de budget',
+  'Gestion des dettes',
+  'Investissement & Retraite',
+  'Épargne',
+  'Audits & Suivi'
+] as const;
+---
+
+<Layout
+  title={`${TEMPLATES_DATA_FR.length} Modèles de Budget Excel & Tableurs Financiers Gratuits (.xlsx) | Free Expense Tracker`}
+  description={`Téléchargez ${TEMPLATES_DATA_FR.length} modèles de budget Excel gratuits (.xlsx) et Google Sheets. Suivi des dépenses personnelles, planificateur de dettes, factures et épargne sans inscription.`}
+  canonicalUrl={canonicalUrl}
+  currentLocale="fr"
+>
+  <Navbar currentLocale="fr" />
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Fil d'Ariane">
+      <a href="/fr/" class="hover:text-emerald-700 transition-colors">Accueil</a>
+      <span>/</span>
+      <span class="text-slate-900 font-semibold" aria-current="page">Modèles</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-4 max-w-3xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span>Bibliothèque Financière Gratuite</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        Modèles de Budget Excel &amp; Tableurs Financiers Gratuits
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+        Prenez le contrôle total de vos finances avec notre collection de {TEMPLATES_DATA_FR.length} tableurs pré-programmés. Conçus pour Microsoft Excel (.xlsx) et 100% compatibles avec Google Sheets, chaque modèle de budget gratuit est téléchargeable sans inscription, sans abonnement et utilisable hors ligne en toute confidentialité.
+      </p>
+    </header>
+
+    <!-- Key Advantages Grid -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-label="Avantages des Modèles">
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">📊</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">Formules Pré-Remplies</h2>
+        <p class="text-xs text-slate-600">Formules financières SOMME, VPM et VC automatisées pour calculer totaux, mensualités et projections d'épargne en direct.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">🔒</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">100% Privé &amp; Hors Ligne</h2>
+        <p class="text-xs text-slate-600">Vos données financières restent sur votre appareil. Travaillez hors ligne dans Excel ou importez dans votre Google Drive privé.</p>
+      </div>
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1.5">
+        <div class="text-xl">⚡</div>
+        <h2 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">Sans Abonnement ni Inscription</h2>
+        <p class="text-xs text-slate-600">Aucun abonnement mensuel, aucune carte bancaire requise et aucun traçage commercial de vos opérations.</p>
+      </div>
+    </section>
+
+    <!-- Filter Buttons -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 border-b border-slate-200 pb-4">
+        <div class="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filtrer les modèles par catégorie">
+          {categories.map((cat, index) => (
+            <button
+              type="button"
+              class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                index === 0
+                  ? 'active bg-emerald-700 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              data-category={cat}
+              aria-pressed={index === 0 ? "true" : "false"}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div class="text-xs font-mono text-slate-500">
+          Affichage de <span id="template-count" class="font-bold text-slate-900">{TEMPLATES_DATA_FR.length}</span> modèles
+        </div>
+      </div>
+
+      <!-- Templates Grid -->
+      <div id="templates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {TEMPLATES_DATA_FR.map((t) => (
+          <article
+            class="template-card flex flex-col justify-between bg-white border border-slate-200 hover:border-emerald-300 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all group"
+            data-category={t.category}
+          >
+            <div class="space-y-3">
+              <!-- Card Header -->
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                  <span>{t.categoryIcon}</span>
+                  <span>{t.category}</span>
+                </span>
+                <span class="text-[11px] font-mono text-slate-400">
+                  {t.fileSize}
+                </span>
+              </div>
+
+              <!-- Title & Purpose -->
+              <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-800 transition-colors font-['Outfit',sans-serif]">
+                <a href={`/fr/templates/${t.slug}/`} class="hover:underline focus:outline-none">
+                  {t.h1}
+                </a>
+              </h3>
+
+              <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                {t.purpose}
+              </p>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="pt-5 border-t border-slate-100 flex items-center gap-2.5 mt-4">
+              <a
+                href={`/templates/${t.fileName}`}
+                download={t.fileName}
+                class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs"
+                aria-label={`Télécharger ${t.h1}`}
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span>Télécharger</span>
+              </a>
+              <a
+                href={`/fr/templates/${t.slug}/`}
+                class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-emerald-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors"
+                aria-label={`Guide et formules pour ${t.h1}`}
+              >
+                Guide &rarr;
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Interactive App Promo Banner -->
+    <aside class="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+      <div class="space-y-1.5 text-center md:text-left">
+        <div class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
+          Alternative Sans Tableur
+        </div>
+        <div class="text-xl sm:text-2xl font-extrabold font-['Outfit',sans-serif]">
+          Préférez-vous une application web en direct ?
+        </div>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl">
+          Utilisez notre outil gratuit de suivi des dépenses directement dans votre navigateur : scanner de reçus par OCR, diagnostic de santé financière et simulation de dettes sans créer de compte.
+        </p>
+      </div>
+      <a
+        href="/fr/#live-tool-anchor"
+        class="shrink-0 px-6 py-3 rounded-xl text-xs sm:text-sm font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-sm"
+      >
+        Lancer le Suivi en Direct &rarr;
+      </a>
+    </aside>
+  </main>
+
+  <script is:inline>
+    // Client-side category filtering
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.template-card');
+    const countDisplay = document.getElementById('template-count');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => {
+          b.classList.remove('active', 'bg-emerald-700', 'text-white', 'shadow-xs');
+          b.classList.add('bg-slate-100', 'text-slate-600');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active', 'bg-emerald-700', 'text-white', 'shadow-xs');
+        btn.classList.remove('bg-slate-100', 'text-slate-600');
+        btn.setAttribute('aria-pressed', 'true');
+
+        const cat = btn.getAttribute('data-category');
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          if (cat === 'Tous' || card.getAttribute('data-category') === cat) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (countDisplay) {
+          countDisplay.textContent = visibleCount;
+        }
+      });
+    });
+  </script>
+
+  <Footer locale="fr" />
+</Layout>
+

@@ -80,8 +80,8 @@ const { locale = 'en' } = Astro.props;
             </a>
           </li>
           <li>
-            <a href="/templates/" class="hover:text-emerald-700 transition-colors">
-              Spreadsheet Templates (.xlsx)
+            <a href={locale === 'fr' ? '/fr/templates/' : '/templates/'} class="hover:text-emerald-700 transition-colors">
+              {t('footer.linkTemplates', locale)}
             </a>
           </li>
           <li>

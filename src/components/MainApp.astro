@@ -105,7 +105,7 @@ const { locale = 'en' } = Astro.props;
 
     <!-- Contextual Cross-Link: My Real Budget -->
     <section id="section-budget-cta" class="pt-2">
-      <MyRealBudgetCTA />
+      <MyRealBudgetCTA locale={locale} />
     </section>
 
     <!-- SEO-Friendly Interactive FAQ Section with JSON-LD Schema -->
@@ -812,13 +812,13 @@ const { locale = 'en' } = Astro.props;
       if (netCashflow < 0) {
         statRemainingBalance.className = 'text-xl sm:text-2xl font-bold font-mono text-rose-600 tracking-tight';
         if (statCashflowLabel) {
-          statCashflowLabel.textContent = 'Deficit / Shortfall';
+          statCashflowLabel.textContent = activeLocale === 'fr' ? 'Déficit / Solde négatif' : 'Deficit / Shortfall';
           statCashflowLabel.className = 'text-[11px] text-rose-600 font-semibold';
         }
       } else {
         statRemainingBalance.className = 'text-xl sm:text-2xl font-bold font-mono text-emerald-700 tracking-tight';
         if (statCashflowLabel) {
-          statCashflowLabel.textContent = 'Positive surplus';
+          statCashflowLabel.textContent = activeLocale === 'fr' ? 'Excédent positif' : 'Positive surplus';
           statCashflowLabel.className = 'text-[11px] text-emerald-800 font-semibold';
         }
       }
@@ -833,7 +833,19 @@ const { locale = 'en' } = Astro.props;
 
     // Financial Health Indicator — already computed above before the KPI cards.
     if (healthScoreNumber) healthScoreNumber.textContent = health.score.toString();
-    if (healthTierText) healthTierText.textContent = health.tier;
+    if (healthTierText) {
+      if (activeLocale === 'fr') {
+        const tierFr: Record<string, string> = {
+          'Excellent': 'Excellent',
+          'Good': 'Bon',
+          'Caution': 'Vigilance',
+          'Financial Stress': 'Tension financière'
+        };
+        healthTierText.textContent = tierFr[health.tier] || health.tier;
+      } else {
+        healthTierText.textContent = health.tier;
+      }
+    }
     if (healthTierBadge) {
       healthTierBadge.style.backgroundColor = health.tierBg;
       healthTierBadge.style.color = health.tierColor;
@@ -854,7 +866,39 @@ const { locale = 'en' } = Astro.props;
 
     if (healthRecommendationsList) {
       healthRecommendationsList.innerHTML = health.recommendations
-        .map((rec) => `<div class="flex items-start gap-2"><span class="text-emerald-700 font-bold">•</span><span>${rec}</span></div>`)
+        .map((rec) => {
+          let localizedRec = rec;
+          if (activeLocale === 'fr') {
+            if (rec.includes('Set your monthly take-home income')) {
+              localizedRec = 'Renseignez vos revenus nets mensuels ci-dessus pour activer l\'évaluation personnalisée de votre santé financière.';
+            } else if (rec.includes('Log recurring expenses')) {
+              localizedRec = 'Enregistrez vos dépenses courantes (loyer, courses, transports) pour mesurer le poids de vos charges incompressibles.';
+            } else if (rec.includes('Fixed obligations take up')) {
+              const m = rec.match(/(\d+)%/);
+              const pct = m ? m[1] : '';
+              localizedRec = `Vos charges fixes absorbent ${pct}% de vos revenus. Réduisez vos abonnements, renégociez vos contrats d'assurance ou d'énergie pour alléger ce poste.`;
+            } else if (rec.includes('Outstanding fixed cost discipline')) {
+              const m = rec.match(/(\d+)%/);
+              const pct = m ? m[1] : '';
+              localizedRec = `Excellente maîtrise de vos charges fixes ! Vos dépenses essentielles ne représentent que ${pct}% de vos revenus, bien en dessous du seuil de vigilance.`;
+            } else if (rec.includes('Your current savings rate is')) {
+              const m = rec.match(/(\d+)%/);
+              const pct = m ? m[1] : '';
+              localizedRec = `Votre taux d'épargne actuel est de ${pct}%. Viser un objectif de 20% constitue un matelas de sécurité robuste face aux imprévus.`;
+            } else if (rec.includes('Solid savings momentum')) {
+              const m = rec.match(/(\d+)%/);
+              const pct = m ? m[1] : '';
+              localizedRec = `Très bonne dynamique d'épargne avec ${pct}%. Automatisez vos virements d'épargne le jour de votre paie pour pérenniser cette habitude.`;
+            } else if (rec.includes('Monthly expenses exceed income')) {
+              const m = rec.match(/(\d+)%/);
+              const pct = m ? m[1] : '';
+              localizedRec = `Vos dépenses mensuelles dépassent vos revenus de ${pct}%. Réduisez immédiatement les dépenses superflues pour éviter d'entamer vos réserves ou de vous endetter.`;
+            } else if (rec.includes('Healthy monthly cash surplus')) {
+              localizedRec = 'Excédent de trésorerie mensuel équilibré. Affectez ce disponible à votre épargne de précaution ou au remboursement de vos dettes.';
+            }
+          }
+          return `<div class="flex items-start gap-2"><span class="text-emerald-700 font-bold">•</span><span>${localizedRec}</span></div>`;
+        })
         .join('');
     }
 
@@ -894,9 +938,17 @@ const { locale = 'en' } = Astro.props;
     // If tracker has no recorded expenses
     if (state.transactions.length === 0 || totalExpenses === 0) {
       if (potentialSavingsTotal) {
-        potentialSavingsTotal.textContent = `+${formatMoney(0)}/mo`;
+        potentialSavingsTotal.textContent = activeLocale === 'fr' ? `+${formatMoney(0)}/mois` : `+${formatMoney(0)}/mo`;
       }
-      smartSuggestionsContainer.innerHTML = `
+      smartSuggestionsContainer.innerHTML = activeLocale === 'fr' ? `
+        <div class="col-span-1 md:col-span-2 p-8 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 space-y-2">
+          <div class="text-2xl">📊</div>
+          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">Aucune dépense enregistrée dans le suivi</div>
+          <p class="max-w-md mx-auto text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
+            Le conseiller intelligent génère des optimisations de dépenses personnalisées basées sur vos transactions. Ajoutez vos dépenses du quotidien ou importez un relevé ci-dessus pour afficher vos recommandations.
+          </p>
+        </div>
+      ` : `
         <div class="col-span-1 md:col-span-2 p-8 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 space-y-2">
           <div class="text-2xl">📊</div>
           <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">No Recorded Expenses in Tracker</div>
@@ -913,12 +965,16 @@ const { locale = 'en' } = Astro.props;
       const foodSavings = Math.round(catTotals.Food * 0.20);
       const foodPct = totalExpenses > 0 ? Math.round((catTotals.Food / totalExpenses) * 100) : 0;
       suggestions.push({
-        category: 'Food & Groceries',
-        title: 'Batch Cooking & Grocery Brand Swapping',
-        currentProblem: `You have logged ${formatMoney(catTotals.Food)} on food and dining (${foodPct}% of your tracked expenses).`,
-        alternativeSolution: `Substituting 2 restaurant deliveries per week with home-cooked batch meals and opting for quality private-label pantry staples can lower food costs by ~${formatMoney(foodSavings)} monthly.`,
+        category: activeLocale === 'fr' ? 'Alimentation & Courses' : 'Food & Groceries',
+        title: activeLocale === 'fr' ? 'Cuisiner maison & alternatives marques distributeur' : 'Batch Cooking & Grocery Brand Swapping',
+        currentProblem: activeLocale === 'fr'
+          ? `Vous avez enregistré ${formatMoney(catTotals.Food)} en alimentation et restauration (${foodPct}% de vos dépenses suivies).`
+          : `You have logged ${formatMoney(catTotals.Food)} on food and dining (${foodPct}% of your tracked expenses).`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Remplacer 2 livraisons ou restaurants par semaine par des repas faits maison et privilégier les marques de distributeur de qualité permet d'économiser ~${formatMoney(foodSavings)} par mois.`
+          : `Substituting 2 restaurant deliveries per week with home-cooked batch meals and opting for quality private-label pantry staples can lower food costs by ~${formatMoney(foodSavings)} monthly.`,
         estimatedSavings: foodSavings,
-        tag: 'High Impact'
+        tag: activeLocale === 'fr' ? 'Impact élevé' : 'High Impact'
       });
     }
 
@@ -927,12 +983,16 @@ const { locale = 'en' } = Astro.props;
     if (discretionarySpend > 0) {
       const discSavings = Math.round(discretionarySpend * 0.30);
       suggestions.push({
-        category: 'Entertainment & Discretionary',
-        title: 'Streaming & Discretionary Rotation',
-        currentProblem: `Discretionary leisure and entertainment spending is currently ${formatMoney(discretionarySpend)} across your recorded transactions.`,
-        alternativeSolution: `Rotating streaming subscriptions to maintain only 1 active service per month and applying a 72-hour delay to impulse purchases can save ~${formatMoney(discSavings)} monthly.`,
+        category: activeLocale === 'fr' ? 'Loisirs & Dépenses discrétionnaires' : 'Entertainment & Discretionary',
+        title: activeLocale === 'fr' ? 'Rotation des abonnements streaming & achats réfléchis' : 'Streaming & Discretionary Rotation',
+        currentProblem: activeLocale === 'fr'
+          ? `Les dépenses de loisirs et divertissements s'élèvent actuellement à ${formatMoney(discretionarySpend)} sur vos transactions enregistrées.`
+          : `Discretionary leisure and entertainment spending is currently ${formatMoney(discretionarySpend)} across your recorded transactions.`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Faire tourner vos abonnements de streaming pour n'en garder qu'un seul actif à la fois et appliquer un délai de réflexion de 72h avant tout achat impulsif peut vous faire économiser ~${formatMoney(discSavings)} par mois.`
+          : `Rotating streaming subscriptions to maintain only 1 active service per month and applying a 72-hour delay to impulse purchases can save ~${formatMoney(discSavings)} monthly.`,
         estimatedSavings: discSavings,
-        tag: 'Quick Win'
+        tag: activeLocale === 'fr' ? 'Gain rapide' : 'Quick Win'
       });
     }
 
@@ -940,12 +1000,16 @@ const { locale = 'en' } = Astro.props;
     if (catTotals.Utilities > 0) {
       const utilitySavings = Math.round(catTotals.Utilities * 0.12);
       suggestions.push({
-        category: 'Utilities & Bills',
-        title: 'Broadband Retention & Energy Conservation',
-        currentProblem: `Recorded utilities and recurring connectivity bills account for ${formatMoney(catTotals.Utilities)}.`,
-        alternativeSolution: `Contacting your internet/telecom service provider for retention loyalty plans and eliminating phantom appliance power drain can save ~${formatMoney(utilitySavings)} each month.`,
+        category: activeLocale === 'fr' ? 'Charges & Factures' : 'Utilities & Bills',
+        title: activeLocale === 'fr' ? 'Renégociation box/mobile & économies d\'énergie' : 'Broadband Retention & Energy Conservation',
+        currentProblem: activeLocale === 'fr'
+          ? `Vos factures récurrentes d'énergie et de télécommunications s'élèvent à ${formatMoney(catTotals.Utilities)}.`
+          : `Recorded utilities and recurring connectivity bills account for ${formatMoney(catTotals.Utilities)}.`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Contacter vos fournisseurs pour basculer sur des offres promotionnelles ou forfaits sans engagement et éliminer la consommation en veille de vos appareils peut vous faire économiser ~${formatMoney(utilitySavings)} par mois.`
+          : `Contacting your internet/telecom service provider for retention loyalty plans and eliminating phantom appliance power drain can save ~${formatMoney(utilitySavings)} each month.`,
         estimatedSavings: utilitySavings,
-        tag: 'Recurring'
+        tag: activeLocale === 'fr' ? 'Récurrent' : 'Recurring'
       });
     }
 
@@ -953,12 +1017,16 @@ const { locale = 'en' } = Astro.props;
     if (catTotals.Transport > 0) {
       const transportSavings = Math.round(catTotals.Transport * 0.18);
       suggestions.push({
-        category: 'Transport & Mobility',
-        title: 'Route Consolidation & Transit Optimization',
-        currentProblem: `Transportation and mobility expenses are currently ${formatMoney(catTotals.Transport)} based on your tracker.`,
-        alternativeSolution: `Combining weekly travel errands, comparing monthly public transit passes, or carpooling for regular commutes can reduce monthly transport spend by ~${formatMoney(transportSavings)}.`,
+        category: activeLocale === 'fr' ? 'Transports & Mobilité' : 'Transport & Mobility',
+        title: activeLocale === 'fr' ? 'Mutualisation des trajets & optimisation des transports' : 'Route Consolidation & Transit Optimization',
+        currentProblem: activeLocale === 'fr'
+          ? `Les frais de déplacement et de mobilité représentent actuellement ${formatMoney(catTotals.Transport)} selon votre suivi.`
+          : `Transportation and mobility expenses are currently ${formatMoney(catTotals.Transport)} based on your tracker.`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Regrouper vos courses hebdomadaires, comparer le coût d'un abonnement mensuel de transport ou covoiturer sur vos trajets réguliers peut réduire vos frais de déplacement de ~${formatMoney(transportSavings)} par mois.`
+          : `Combining weekly travel errands, comparing monthly public transit passes, or carpooling for regular commutes can reduce monthly transport spend by ~${formatMoney(transportSavings)}.`,
         estimatedSavings: transportSavings,
-        tag: 'Easy Switch'
+        tag: activeLocale === 'fr' ? 'Ajustement simple' : 'Easy Switch'
       });
     }
 
@@ -967,12 +1035,16 @@ const { locale = 'en' } = Astro.props;
       const housingSavings = Math.round(catTotals.Housing * 0.05);
       const housingPct = Math.round((catTotals.Housing / monthlyIncome) * 100);
       suggestions.push({
-        category: 'Housing & Fixed Obligations',
-        title: 'Housing Ratio Rebalancing',
-        currentProblem: `Housing commitments of ${formatMoney(catTotals.Housing)} consume ${housingPct}% of your monthly take-home income (ideal benchmark is under 30%–35%).`,
-        alternativeSolution: `Consider auditing ancillary tenant charges, utility efficiency, or applying upcoming income raises specifically to rebalance your fixed cost ratio.`,
+        category: activeLocale === 'fr' ? 'Logement & Charges fixes' : 'Housing & Fixed Obligations',
+        title: activeLocale === 'fr' ? 'Rééquilibrage du taux d\'effort logement' : 'Housing Ratio Rebalancing',
+        currentProblem: activeLocale === 'fr'
+          ? `Votre loyer ou remboursement de prêt de ${formatMoney(catTotals.Housing)} absorbe ${housingPct}% de vos revenus mensuels nets (le seuil de référence recommandé est inférieur à 30%–35%).`
+          : `Housing commitments of ${formatMoney(catTotals.Housing)} consume ${housingPct}% of your monthly take-home income (ideal benchmark is under 30%–35%).`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Pensez à auditer vos charges locatives annexes, l'efficacité énergétique, ou à affecter vos prochaines hausses de revenus à la baisse de ce ratio fixe.`
+          : `Consider auditing ancillary tenant charges, utility efficiency, or applying upcoming income raises specifically to rebalance your fixed cost ratio.`,
         estimatedSavings: housingSavings,
-        tag: 'Structural'
+        tag: activeLocale === 'fr' ? 'Structurel' : 'Structural'
       });
     }
 
@@ -980,23 +1052,31 @@ const { locale = 'en' } = Astro.props;
     if (monthlyIncome > 0 && netCashflow < 0) {
       const deficitAmount = Math.abs(netCashflow);
       suggestions.push({
-        category: 'Cash Flow Protection',
-        title: 'Immediate Deficit Mitigation',
-        currentProblem: `Tracked expenses (${formatMoney(totalExpenses)}) exceed your monthly income (${formatMoney(monthlyIncome)}) by ${formatMoney(deficitAmount)}.`,
-        alternativeSolution: `Pausing non-essential discretionary orders and delaying new commitments is advised to immediately eliminate this ${formatMoney(deficitAmount)} monthly cash outflow deficit.`,
+        category: activeLocale === 'fr' ? 'Protection de la trésorerie' : 'Cash Flow Protection',
+        title: activeLocale === 'fr' ? 'Résorption immédiate du déficit mensuel' : 'Immediate Deficit Mitigation',
+        currentProblem: activeLocale === 'fr'
+          ? `Vos dépenses suivies (${formatMoney(totalExpenses)}) dépassent vos revenus mensuels (${formatMoney(monthlyIncome)}) de ${formatMoney(deficitAmount)}.`
+          : `Tracked expenses (${formatMoney(totalExpenses)}) exceed your monthly income (${formatMoney(monthlyIncome)}) by ${formatMoney(deficitAmount)}.`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Il est fortement recommandé de suspendre les achats discrétionnaires non essentiels pour résorber immédiatement ce déficit mensuel de ${formatMoney(deficitAmount)}.`
+          : `Pausing non-essential discretionary orders and delaying new commitments is advised to immediately eliminate this ${formatMoney(deficitAmount)} monthly cash outflow deficit.`,
         estimatedSavings: deficitAmount,
-        tag: 'Critical Priority'
+        tag: activeLocale === 'fr' ? 'Priorité absolue' : 'Critical Priority'
       });
     } else if (monthlyIncome > 0 && netCashflow > 0) {
       // Surplus allocation based on tracker net cashflow
       const monthlyYield = Math.max(1, Math.round((netCashflow * 0.065) / 12));
       suggestions.push({
-        category: 'Surplus Cash Growth',
-        title: 'Surplus Liquidity Yield Optimization',
-        currentProblem: `Your tracker shows an unassigned net surplus of +${formatMoney(netCashflow)} remaining after recorded expenses.`,
-        alternativeSolution: `Instead of letting surplus cash sit idle in low-yield checking accounts, parking it in an auto-sweep term deposit or liquid mutual fund yielding ~6.5% p.a. generates ~${formatMoney(monthlyYield)} in passive monthly earnings.`,
+        category: activeLocale === 'fr' ? 'Croissance de l\'épargne' : 'Surplus Cash Growth',
+        title: activeLocale === 'fr' ? 'Optimisation du rendement des liquidités excédentaires' : 'Surplus Liquidity Yield Optimization',
+        currentProblem: activeLocale === 'fr'
+          ? `Votre suivi fait apparaître un excédent net non alloué de +${formatMoney(netCashflow)} après prise en compte de vos dépenses.`
+          : `Your tracker shows an unassigned net surplus of +${formatMoney(netCashflow)} remaining after recorded expenses.`,
+        alternativeSolution: activeLocale === 'fr'
+          ? `Plutôt que de laisser dormir cet excédent sur un compte courant sans rendement, le placer sur un livret d'épargne ou placement liquide à ~6,5% génère ~${formatMoney(monthlyYield)} de revenus passifs par mois.`
+          : `Instead of letting surplus cash sit idle in low-yield checking accounts, parking it in an auto-sweep term deposit or liquid mutual fund yielding ~6.5% p.a. generates ~${formatMoney(monthlyYield)} in passive monthly earnings.`,
         estimatedSavings: monthlyYield,
-        tag: 'Passive Wealth'
+        tag: activeLocale === 'fr' ? 'Patrimoine & Épargne' : 'Passive Wealth'
       });
     }
 
@@ -1006,11 +1086,15 @@ const { locale = 'en' } = Astro.props;
     // Calculate total potential monthly savings
     const totalPotential = suggestions.reduce((sum, s) => sum + s.estimatedSavings, 0);
     if (potentialSavingsTotal) {
-      potentialSavingsTotal.textContent = `+${formatMoney(totalPotential)}/mo`;
+      potentialSavingsTotal.textContent = activeLocale === 'fr' ? `+${formatMoney(totalPotential)}/mois` : `+${formatMoney(totalPotential)}/mo`;
     }
 
     if (suggestions.length === 0) {
-      smartSuggestionsContainer.innerHTML = `
+      smartSuggestionsContainer.innerHTML = activeLocale === 'fr' ? `
+        <div class="col-span-1 md:col-span-2 p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+          🎉 Excellente discipline budgétaire ! Aucune anomalie de dépenses détectée. Enregistrez d'autres dépenses pour recevoir des alternatives d'économies sur mesure.
+        </div>
+      ` : `
         <div class="col-span-1 md:col-span-2 p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
           🎉 Great budget discipline! No immediate spending anomalies detected from your recorded transactions. Log additional expenses to receive customized cost-saving alternatives.
         </div>
@@ -1027,13 +1111,13 @@ const { locale = 'en' } = Astro.props;
             ${s.tag}
           </span>
           <span class="text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400">
-            Save ~${formatMoney(s.estimatedSavings)}/mo
+            ${activeLocale === 'fr' ? `Économisez ~${formatMoney(s.estimatedSavings)}/mois` : `Save ~${formatMoney(s.estimatedSavings)}/mo`}
           </span>
         </div>
         <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100">${s.title}</h4>
         <p class="text-[11px] text-slate-600 dark:text-slate-300">${s.currentProblem}</p>
         <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 text-[11px] text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-          <strong class="text-emerald-800 dark:text-emerald-400">Actionable Switch:</strong> ${s.alternativeSolution}
+          <strong class="text-emerald-800 dark:text-emerald-400">${activeLocale === 'fr' ? 'Alternative recommandée :' : 'Actionable Switch:'}</strong> ${s.alternativeSolution}
         </div>
       </div>
     `
@@ -1073,7 +1157,7 @@ const { locale = 'en' } = Astro.props;
     if (activeDebts.length === 0) {
       if (statDtiRatio) statDtiRatio.textContent = '0%';
       if (statDtiTier) {
-        statDtiTier.textContent = 'No active debt';
+        statDtiTier.textContent = activeLocale === 'fr' ? 'Aucune dette active' : 'No active debt';
         statDtiTier.className = 'text-[11px] text-slate-500 dark:text-slate-400 font-semibold';
       }
       if (statDebtFreeDate) statDebtFreeDate.textContent = '—';
@@ -1082,7 +1166,7 @@ const { locale = 'en' } = Astro.props;
       if (debtExtraSlider) debtExtraSlider.disabled = true;
       if (inputDebtExtraNumber) {
         inputDebtExtraNumber.disabled = true;
-        inputDebtExtraNumber.title = 'Add a debt account to enable extra payments.';
+        inputDebtExtraNumber.title = activeLocale === 'fr' ? 'Ajoutez une dette pour activer les paiements supplémentaires.' : 'Add a debt account to enable extra payments.';
       }
     } else {
       if (debtExtraSlider) debtExtraSlider.disabled = false;
@@ -1096,13 +1180,13 @@ const { locale = 'en' } = Astro.props;
       if (statDtiRatio) statDtiRatio.textContent = `${dtiRatio}%`;
       if (statDtiTier) {
         if (dtiRatio <= 40) {
-          statDtiTier.textContent = 'Comfortable Range (<40%)';
+          statDtiTier.textContent = activeLocale === 'fr' ? 'Niveau maîtrisé (<40%)' : 'Comfortable Range (<40%)';
           statDtiTier.className = 'text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold';
         } else if (dtiRatio <= 50) {
-          statDtiTier.textContent = 'Moderate FOIR (40–50%)';
+          statDtiTier.textContent = activeLocale === 'fr' ? 'Endettement modéré (40–50%)' : 'Moderate FOIR (40–50%)';
           statDtiTier.className = 'text-[11px] text-amber-600 dark:text-amber-400 font-semibold';
         } else {
-          statDtiTier.textContent = 'High Debt Burden (>50%)';
+          statDtiTier.textContent = activeLocale === 'fr' ? 'Taux d\'endettement élevé (>50%)' : 'High Debt Burden (>50%)';
           statDtiTier.className = 'text-[11px] text-rose-600 dark:text-rose-400 font-semibold';
         }
       }
@@ -1145,18 +1229,47 @@ const { locale = 'en' } = Astro.props;
     // Active strategy pill
     if (activeStrategyPill) {
       if (debtStrategy === 'avalanche') {
-        activeStrategyPill.textContent = 'Avalanche (Highest Interest First)';
+        activeStrategyPill.textContent = activeLocale === 'fr'
+          ? 'Avalanche (taux d\'intérêt le plus élevé en premier)'
+          : 'Avalanche (Highest Interest First)';
       } else if (debtStrategy === 'snowball') {
-        activeStrategyPill.textContent = 'Snowball (Smallest Balance First)';
+        activeStrategyPill.textContent = activeLocale === 'fr'
+          ? 'Boule de neige (plus petit solde en premier)'
+          : 'Snowball (Smallest Balance First)';
       } else {
-        activeStrategyPill.textContent = 'Cash Flow Relief (Highest Monthly EMI First)';
+        activeStrategyPill.textContent = activeLocale === 'fr'
+          ? 'Allègement de trésorerie (mensualité la plus élevée d\'abord)'
+          : 'Cash Flow Relief (Highest Monthly EMI First)';
       }
     }
 
     // Dynamic Model Recommendation Banner
     if (debtStrategyRecommendation) {
       if (debtStrategy === 'avalanche') {
-        debtStrategyRecommendation.innerHTML = `
+        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
+          <div class="space-y-3">
+            <div class="flex items-start gap-2.5">
+              <span class="text-xl shrink-0">⚡</span>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle d'optimisation des coûts</span>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Avalanche (Économie d'intérêts)</h4>
+                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
+                  Priorise l'affectation de toute capacité de remboursement supplémentaire à la dette ayant le taux d'intérêt annuel le plus élevé (cartes de crédit revolving, prêts personnels à taux élevé), tout en maintenant les mensualités minimales obligatoires sur tous les autres comptes.
+                </p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
+                <span class="text-slate-600 dark:text-slate-400">Réduit mathématiquement le coût total des intérêts cumulés et minimise le montant final remboursé.</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
+                <span class="text-slate-600 dark:text-slate-400">Idéal pour préserver vos liquidités et éliminer au plus vite les frais financiers les plus lourds.</span>
+              </div>
+            </div>
+          </div>
+        ` : `
           <div class="space-y-3">
             <div class="flex items-start gap-2.5">
               <span class="text-xl shrink-0">⚡</span>
@@ -1181,7 +1294,30 @@ const { locale = 'en' } = Astro.props;
           </div>
         `;
       } else if (debtStrategy === 'snowball') {
-        debtStrategyRecommendation.innerHTML = `
+        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
+          <div class="space-y-3">
+            <div class="flex items-start gap-2.5">
+              <span class="text-xl shrink-0">❄️</span>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle de dynamique comportementale</span>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Boule de neige (Victoires rapides)</h4>
+                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
+                  Priorise le remboursement des plus petits soldes restants en premier, indépendamment de leur taux d'intérêt. Dès qu'un compte est soldé, la totalité de sa mensualité est reportée sur le compte suivant le plus petit.
+                </p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
+                <span class="text-slate-600 dark:text-slate-400">Procure des victoires psychologiques rapides et réduit le nombre de lignes de crédit ouvertes.</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
+                <span class="text-slate-600 dark:text-slate-400">Idéal si vous avez besoin d'étapes visibles et motivantes pour maintenir votre engagement dans la durée.</span>
+              </div>
+            </div>
+          </div>
+        ` : `
           <div class="space-y-3">
             <div class="flex items-start gap-2.5">
               <span class="text-xl shrink-0">❄️</span>
@@ -1206,7 +1342,30 @@ const { locale = 'en' } = Astro.props;
           </div>
         `;
       } else {
-        debtStrategyRecommendation.innerHTML = `
+        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
+          <div class="space-y-3">
+            <div class="flex items-start gap-2.5">
+              <span class="text-xl shrink-0">🚀</span>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle de trésorerie et liquidité</span>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Allègement de mensualité & trésorerie</h4>
+                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
+                  Priorise le remboursement du prêt ayant la mensualité obligatoire la plus élevée en premier. Solder les mensualités lourdes allège directement le taux d'endettement mensuel et libère immédiatement du reste à vivre.
+                </p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
+                <span class="text-slate-600 dark:text-slate-400">Libère rapidement votre trésorerie mensuelle et redonne de l'oxygène au budget du ménage.</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
+                <span class="text-slate-600 dark:text-slate-400">Recommandé si vos mensualités fixes actuelles sont trop pesantes et que vous manquez de liquidités.</span>
+              </div>
+            </div>
+          </div>
+        ` : `
           <div class="space-y-3">
             <div class="flex items-start gap-2.5">
               <span class="text-xl shrink-0">🚀</span>
@@ -1241,7 +1400,27 @@ const { locale = 'en' } = Astro.props;
         const totalPlannedForTop = topDebt.monthlyEMI + extraForTop;
 
         debtRolloverBanner.classList.remove('hidden');
-        debtRolloverBanner.innerHTML = `
+        debtRolloverBanner.innerHTML = activeLocale === 'fr' ? `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-0.5">
+              <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+                <span>🚀</span> Cible prioritaire d'accélération : <span class="text-emerald-700 dark:text-emerald-400 font-extrabold">${escapeHtml(topDebt.name)}</span>
+              </div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-300">
+                ${freedMonthlyEMI > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(freedMonthlyEMI)}/mois</strong> libérés des dettes soldées + ` : ''}
+                ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mois</strong> d'apport supplémentaire` : `${formatMoney(0)} d'apport supplémentaire`}
+                reportés sur votre cible prioritaire.
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 font-mono text-[11px] bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/70 shrink-0 shadow-2xs">
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Mensualité</span><span class="font-bold text-slate-800 dark:text-slate-200">${formatMoney(topDebt.monthlyEMI)}</span></div>
+              <span class="text-slate-400 font-bold">+</span>
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Report / Extra</span><span class="font-bold text-emerald-700 dark:text-emerald-400">+${formatMoney(extraForTop)}</span></div>
+              <span class="text-slate-400 font-bold">=</span>
+              <div class="text-center"><span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-bold">Total prévu</span><span class="font-extrabold text-slate-900 dark:text-slate-100">${formatMoney(totalPlannedForTop)}/mois</span></div>
+            </div>
+          </div>
+        ` : `
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="space-y-0.5">
               <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
@@ -1275,12 +1454,18 @@ const { locale = 'en' } = Astro.props;
             <div class="space-y-1.5 max-w-sm mx-auto">
               <div class="text-2xl">${paidDebts.length > 0 ? '🎉' : '📋'}</div>
               <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                ${paidDebts.length > 0 ? 'All Recorded Debts are Paid Off!' : 'No Active Loans or Debts Recorded'}
+                ${paidDebts.length > 0
+                  ? (activeLocale === 'fr' ? 'Toutes les dettes enregistrées sont remboursées !' : 'All Recorded Debts are Paid Off!')
+                  : (activeLocale === 'fr' ? 'Aucun prêt ou dette en cours enregistré' : 'No Active Loans or Debts Recorded')}
               </div>
               <p class="text-slate-500 dark:text-slate-400 text-[11px]">
                 ${paidDebts.length > 0
-                  ? 'Congratulations! You have cleared all your active loan accounts. See the Paid Off Accounts section below.'
-                  : 'Add your credit card dues, personal loans, car/two-wheeler EMIs, or home loans using the form on the left to view your prioritized payoff order.'}
+                  ? (activeLocale === 'fr'
+                      ? 'Félicitations ! Vous avez soldé tous vos crédits en cours. Consultez la section Dettes soldées ci-dessous.'
+                      : 'Congratulations! You have cleared all your active loan accounts. See the Paid Off Accounts section below.')
+                  : (activeLocale === 'fr'
+                      ? 'Ajoutez vos dettes de carte de crédit, prêts personnels ou crédits immobiliers pour voir votre ordre de remboursement prioritaire.'
+                      : 'Add your credit card dues, personal loans, car/two-wheeler EMIs, or home loans using the form on the left to view your prioritized payoff order.')}
               </p>
             </div>
           </td>
@@ -1292,9 +1477,16 @@ const { locale = 'en' } = Astro.props;
           (d, index) => {
             let reasonTag = '';
             if (index === 0) {
-              if (debtStrategy === 'avalanche') reasonTag = '<span class="text-[9px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded ml-1.5">Top Rate</span>';
-              else if (debtStrategy === 'snowball') reasonTag = '<span class="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded ml-1.5">Lowest Balance</span>';
-              else reasonTag = '<span class="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded ml-1.5">Highest EMI</span>';
+              if (debtStrategy === 'avalanche') {
+                const label = activeLocale === 'fr' ? 'Taux max' : 'Top Rate';
+                reasonTag = `<span class="text-[9px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded ml-1.5">${label}</span>`;
+              } else if (debtStrategy === 'snowball') {
+                const label = activeLocale === 'fr' ? 'Plus petit solde' : 'Lowest Balance';
+                reasonTag = `<span class="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded ml-1.5">${label}</span>`;
+              } else {
+                const label = activeLocale === 'fr' ? 'Mensualité max' : 'Highest EMI';
+                reasonTag = `<span class="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded ml-1.5">${label}</span>`;
+              }
             }
 
             const origNote = d.originalPrincipal > d.currentOutstandingPrincipal
@@ -1312,23 +1504,23 @@ const { locale = 'en' } = Astro.props;
           </td>
           <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">${formatMoney(d.currentOutstandingPrincipal)}</td>
           <td class="py-2.5 px-3 text-right font-mono font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">${d.interestRate}%</td>
-          <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-300 whitespace-nowrap">${formatMoney(d.monthlyEMI)}/mo</td>
+          <td class="py-2.5 px-3 text-right font-mono text-slate-700 dark:text-slate-300 whitespace-nowrap">${formatMoney(d.monthlyEMI)}${activeLocale === 'fr' ? '/mois' : '/mo'}</td>
           <td class="py-2.5 px-3 text-center whitespace-nowrap">
             <div class="flex items-center justify-center gap-1.5">
               <button
                 type="button"
                 data-record-payment-id="${d.id}"
                 class="btn-record-debt-payment px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors cursor-pointer shadow-2xs"
-                title="Record monthly payment / principal reduction"
+                title="${activeLocale === 'fr' ? 'Enregistrer un versement mensuel / réduction du capital' : 'Record monthly payment / principal reduction'}"
               >
-                Record Payment
+                ${activeLocale === 'fr' ? 'Enregistrer versement' : 'Record Payment'}
               </button>
               <button
                 type="button"
                 data-history-debt-id="${d.id}"
                 class="btn-history-debt text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1 rounded-md transition-colors cursor-pointer"
-                title="View Payment History (${historyCount} records)"
-                aria-label="View Payment History"
+                title="${activeLocale === 'fr' ? `Voir l'historique des versements (${historyCount} enregistrements)` : `View Payment History (${historyCount} records)`}"
+                aria-label="${activeLocale === 'fr' ? 'Voir l\'historique des versements' : 'View Payment History'}"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               </button>
@@ -1336,8 +1528,8 @@ const { locale = 'en' } = Astro.props;
                 type="button"
                 data-delete-debt-id="${d.id}"
                 class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-                title="Delete debt account"
-                aria-label="Delete debt account"
+                title="${activeLocale === 'fr' ? 'Supprimer le compte de dette' : 'Delete debt account'}"
+                aria-label="${activeLocale === 'fr' ? 'Supprimer le compte de dette' : 'Delete debt account'}"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
               </button>
@@ -1362,12 +1554,12 @@ const { locale = 'en' } = Astro.props;
             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
               <td class="py-2.5 px-3">
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                  ✓ Paid Off
+                  ${activeLocale === 'fr' ? '✓ Soldé' : '✓ Paid Off'}
                 </span>
               </td>
               <td class="py-2.5 px-3 font-medium text-slate-900 dark:text-slate-100">${escapeHtml(d.name)}</td>
               <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300">${formatMoney(d.originalPrincipal)}</td>
-              <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">+${formatMoney(d.monthlyEMI)}/mo</td>
+              <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">+${formatMoney(d.monthlyEMI)}${activeLocale === 'fr' ? '/mois' : '/mo'}</td>
               <td class="py-2.5 px-3 text-center">
                 <div class="flex items-center justify-center gap-1.5">
                   <button
@@ -1375,14 +1567,14 @@ const { locale = 'en' } = Astro.props;
                     data-history-debt-id="${d.id}"
                     class="btn-history-debt px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                   >
-                    History (${historyCount})
+                    ${activeLocale === 'fr' ? `Historique (${historyCount})` : `History (${historyCount})`}
                   </button>
                   <button
                     type="button"
                     data-reopen-debt-id="${d.id}"
                     class="btn-reopen-debt text-slate-400 hover:text-emerald-600 p-1 rounded-md transition-colors cursor-pointer"
-                    title="Reopen account / adjust balance"
-                    aria-label="Reopen account"
+                    title="${activeLocale === 'fr' ? 'Rouvrir le compte / ajuster le solde' : 'Reopen account / adjust balance'}"
+                    aria-label="${activeLocale === 'fr' ? 'Rouvrir le compte' : 'Reopen account'}"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                   </button>
@@ -1390,8 +1582,8 @@ const { locale = 'en' } = Astro.props;
                     type="button"
                     data-delete-debt-id="${d.id}"
                     class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-                    title="Delete debt record"
-                    aria-label="Delete debt record"
+                    title="${activeLocale === 'fr' ? 'Supprimer la dette' : 'Delete debt record'}"
+                    aria-label="${activeLocale === 'fr' ? 'Supprimer la dette' : 'Delete debt record'}"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                   </button>
@@ -1436,7 +1628,10 @@ const { locale = 'en' } = Astro.props;
         const id = btn.getAttribute('data-reopen-debt-id');
         const debt = debts.find((d) => d.id === id);
         if (!debt) return;
-        const newPrincipal = prompt(`Reopen "${debt.name}". Enter new outstanding principal amount:`, debt.originalPrincipal.toString());
+        const promptMsg = activeLocale === 'fr'
+          ? `Rouvrir « ${debt.name} ». Entrez le nouveau montant du capital restant dû :`
+          : `Reopen "${debt.name}". Enter new outstanding principal amount:`;
+        const newPrincipal = prompt(promptMsg, debt.originalPrincipal.toString());
         if (newPrincipal !== null) {
           const parsed = parseFloat(newPrincipal);
           if (!isNaN(parsed) && parsed > 0) {
@@ -1466,9 +1661,13 @@ const { locale = 'en' } = Astro.props;
       goalsContainer.innerHTML = `
         <div class="col-span-1 md:col-span-2 lg:col-span-3 p-8 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
           <div class="text-2xl">🎯</div>
-          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">No Financial Targets Added Yet</div>
+          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">
+            ${activeLocale === 'fr' ? 'Aucun objectif financier défini pour l\'instant' : 'No Financial Targets Added Yet'}
+          </div>
           <p class="max-w-md mx-auto text-slate-600 dark:text-slate-300">
-            Define your custom financial milestones, savings targets, or vehicle/home fund using the form below.
+            ${activeLocale === 'fr'
+              ? 'Définissez vos objectifs d\'épargne, projets personnels ou fonds d\'urgence à l\'aide du formulaire ci-dessous.'
+              : 'Define your custom financial milestones, savings targets, or vehicle/home fund using the form below.'}
           </p>
         </div>
       `;
@@ -1487,11 +1686,11 @@ const { locale = 'en' } = Astro.props;
 
         let plannedProjectionText = '';
         if (remaining === 0) {
-          plannedProjectionText = 'Goal Reached!';
+          plannedProjectionText = activeLocale === 'fr' ? 'Objectif atteint !' : 'Goal Reached!';
         } else if (g.monthly > 0) {
-          plannedProjectionText = `${plannedMonthsLeft} mos to goal`;
+          plannedProjectionText = activeLocale === 'fr' ? `${plannedMonthsLeft} mois restants` : `${plannedMonthsLeft} mos to goal`;
         } else {
-          plannedProjectionText = 'No monthly plan set';
+          plannedProjectionText = activeLocale === 'fr' ? 'Aucun plan mensuel défini' : 'No monthly plan set';
         }
 
         // Distinct monthly totals for actual pace
@@ -1507,13 +1706,17 @@ const { locale = 'en' } = Astro.props;
 
         let actualProjectionText = '';
         if (remaining === 0) {
-          actualProjectionText = 'Goal Reached!';
+          actualProjectionText = activeLocale === 'fr' ? 'Objectif atteint !' : 'Goal Reached!';
         } else if (contributions.length > 0) {
           if (avgActual > 0) {
             const actualMonthsLeft = Math.ceil(remaining / avgActual);
-            actualProjectionText = `${actualMonthsLeft} mos left (~${formatMoney(Math.round(avgActual))}/mo)`;
+            actualProjectionText = activeLocale === 'fr'
+              ? `${actualMonthsLeft} mois restants (~${formatMoney(Math.round(avgActual))}/mois)`
+              : `${actualMonthsLeft} mos left (~${formatMoney(Math.round(avgActual))}/mo)`;
           } else {
-            actualProjectionText = `${getCurrencySymbol()}0 contributed recently`;
+            actualProjectionText = activeLocale === 'fr'
+              ? `0 ${getCurrencySymbol()} versé récemment`
+              : `${getCurrencySymbol()}0 contributed recently`;
           }
         }
 
@@ -1553,8 +1756,8 @@ const { locale = 'en' } = Astro.props;
                 <div class="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono border-b border-slate-200/60 dark:border-slate-800 pb-1">
                   <span class="font-bold text-slate-800 dark:text-slate-200">${formatMonthYear(m)}</span>
                   <div class="flex items-center gap-1.5 sm:gap-2">
-                    <span class="text-slate-500 dark:text-slate-400">Plan: ${formatMoney(monthPlanned)}</span>
-                    <span class="font-bold text-slate-900 dark:text-slate-100">Actual: ${formatMoney(monthActual)}</span>
+                    <span class="text-slate-500 dark:text-slate-400">${activeLocale === 'fr' ? 'Prévu :' : 'Plan:'} ${formatMoney(monthPlanned)}</span>
+                    <span class="font-bold text-slate-900 dark:text-slate-100">${activeLocale === 'fr' ? 'Réalisé :' : 'Actual:'} ${formatMoney(monthActual)}</span>
                     <span class="${diffClass}">(${diffText})</span>
                   </div>
                 </div>
@@ -1572,8 +1775,8 @@ const { locale = 'en' } = Astro.props;
                             data-edit-contrib-id="${c.id}"
                             data-goal-id="${g.id}"
                             class="btn-edit-contrib text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 p-0.5 rounded transition-colors cursor-pointer"
-                            title="Edit contribution (${formatDateDisplay(c.date || c.month)})"
-                            aria-label="Edit contribution (${formatDateDisplay(c.date || c.month)})"
+                            title="${activeLocale === 'fr' ? `Modifier le versement (${formatDateDisplay(c.date || c.month)})` : `Edit contribution (${formatDateDisplay(c.date || c.month)})`}"
+                            aria-label="${activeLocale === 'fr' ? 'Modifier le versement' : 'Edit contribution'}"
                           >
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                           </button>
@@ -1582,8 +1785,8 @@ const { locale = 'en' } = Astro.props;
                             data-delete-contrib-id="${c.id}"
                             data-goal-id="${g.id}"
                             class="btn-delete-contrib text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
-                            title="Remove contribution"
-                            aria-label="Remove contribution"
+                            title="${activeLocale === 'fr' ? 'Supprimer le versement' : 'Remove contribution'}"
+                            aria-label="${activeLocale === 'fr' ? 'Supprimer le versement' : 'Remove contribution'}"
                           >
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                           </button>
@@ -1606,14 +1809,14 @@ const { locale = 'en' } = Astro.props;
               <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate pr-2" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</h4>
               <div class="flex items-center gap-1.5 shrink-0">
                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-                  ${pct}% Done
+                  ${pct}% ${activeLocale === 'fr' ? 'atteint' : 'Done'}
                 </span>
                 <button
                   type="button"
                   data-delete-goal-id="${g.id}"
                   class="btn-delete-goal text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-md transition-colors cursor-pointer"
-                  title="Remove financial target"
-                  aria-label="Remove financial target"
+                  title="${activeLocale === 'fr' ? 'Supprimer l\'objectif financier' : 'Remove financial target'}"
+                  aria-label="${activeLocale === 'fr' ? 'Supprimer l\'objectif financier' : 'Remove financial target'}"
                 >
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1625,11 +1828,11 @@ const { locale = 'en' } = Astro.props;
             <div class="space-y-1">
               <div class="flex justify-between items-baseline text-xs font-mono">
                 <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(totalSaved)}</span>
-                <span class="text-slate-500 dark:text-slate-400">Target: ${formatMoney(g.target)}</span>
+                <span class="text-slate-500 dark:text-slate-400">${activeLocale === 'fr' ? 'Cible :' : 'Target:'} ${formatMoney(g.target)}</span>
               </div>
               <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                <span>Remaining: <strong class="text-slate-700 dark:text-slate-300 font-semibold">${formatMoney(remaining)}</strong></span>
-                <span>Starting: ${formatMoney(startingAmount)}</span>
+                <span>${activeLocale === 'fr' ? 'Restant :' : 'Remaining:'} <strong class="text-slate-700 dark:text-slate-300 font-semibold">${formatMoney(remaining)}</strong></span>
+                <span>${activeLocale === 'fr' ? 'Départ :' : 'Starting:'} ${formatMoney(startingAmount)}</span>
               </div>
             </div>
 
@@ -1640,13 +1843,13 @@ const { locale = 'en' } = Astro.props;
             <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
               <div class="flex justify-between items-center">
                 <span class="flex items-center gap-1">
-                  Plan: +${formatMoney(g.monthly)}/mo
+                  ${activeLocale === 'fr' ? 'Prévu :' : 'Plan:'} +${formatMoney(g.monthly)}${activeLocale === 'fr' ? '/mois' : '/mo'}
                   <button
                     type="button"
                     data-edit-plan-goal-id="${g.id}"
                     class="btn-edit-plan text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer"
-                    title="Edit planned monthly allocation"
-                    aria-label="Edit planned monthly allocation"
+                    title="${activeLocale === 'fr' ? 'Modifier l\'allocation mensuelle prévue' : 'Edit planned monthly allocation'}"
+                    aria-label="${activeLocale === 'fr' ? 'Modifier l\'allocation mensuelle prévue' : 'Edit planned monthly allocation'}"
                   >
                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                   </button>
@@ -1655,7 +1858,7 @@ const { locale = 'en' } = Astro.props;
               </div>
               ${actualProjectionText ? `
               <div class="flex justify-between items-center text-[10px]">
-                <span class="text-slate-400">Actual:</span>
+                <span class="text-slate-400">${activeLocale === 'fr' ? 'Réalisé :' : 'Actual:'}</span>
                 <span class="font-medium text-emerald-800 dark:text-emerald-300">${actualProjectionText}</span>
               </div>
               ` : ''}
@@ -1668,14 +1871,14 @@ const { locale = 'en' } = Astro.props;
               class="btn-open-contrib-modal w-full text-xs font-semibold py-1.5 px-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-              <span>Record Contribution</span>
+              <span>${activeLocale === 'fr' ? 'Enregistrer un versement' : 'Record Contribution'}</span>
             </button>
 
             <!-- Compact Contribution History Section -->
             ${contributions.length > 0 ? `
             <details class="text-[11px] border border-slate-200/70 dark:border-slate-800 rounded-xl p-2 bg-slate-50/60 dark:bg-slate-850/60 group">
               <summary class="cursor-pointer font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between select-none text-[11px]">
-                <span>Contribution History (${contributions.length} ${contributions.length === 1 ? 'entry' : 'entries'})</span>
+                <span>${activeLocale === 'fr' ? `Historique des versements (${contributions.length} ${contributions.length === 1 ? 'saisie' : 'saisies'})` : `Contribution History (${contributions.length} ${contributions.length === 1 ? 'entry' : 'entries'})`}</span>
                 <span class="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
               </summary>
               <div class="mt-2 space-y-2">
@@ -1684,7 +1887,7 @@ const { locale = 'en' } = Astro.props;
             </details>
             ` : `
             <div class="text-[10px] text-slate-500 dark:text-slate-400 text-center py-0.5">
-              No actual contributions recorded yet
+              ${activeLocale === 'fr' ? 'Aucun versement enregistré pour l\'instant' : 'No actual contributions recorded yet'}
             </div>
             `}
           </div>
@@ -1799,8 +2002,8 @@ const { locale = 'en' } = Astro.props;
         <td class="py-2 px-3 whitespace-nowrap">
           ${
             tx.source === 'imported'
-              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">file</span>`
-              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">manual</span>`
+              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${activeLocale === 'fr' ? 'fichier' : 'file'}</span>`
+              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${activeLocale === 'fr' ? 'manuel' : 'manual'}</span>`
           }
         </td>
         <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
@@ -1811,7 +2014,8 @@ const { locale = 'en' } = Astro.props;
             type="button"
             data-delete-id="${tx.id}"
             class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-            title="Delete entry"
+            title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+            aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </button>
@@ -2022,7 +2226,10 @@ const { locale = 'en' } = Astro.props;
       track('receipt_scanned', { success: true });
     } catch (err: any) {
       track('receipt_scanned', { success: false });
-      alert(err.message || 'Failed to scan receipt image. Please ensure image is well-lit and legible.');
+      const errorMsg = activeLocale === 'fr'
+        ? (err.message || 'Échec de la numérisation du reçu. Assurez-vous que l\'image est bien éclairée et lisible.')
+        : (err.message || 'Failed to scan receipt image. Please ensure image is well-lit and legible.');
+      alert(errorMsg);
     } finally {
       receiptScanningIndicator?.classList.add('hidden');
       inputReceiptPhoto.value = '';
@@ -2331,7 +2538,11 @@ const { locale = 'en' } = Astro.props;
 
     const total = parseFloat(inputDebtPaymentTotal.value) || 0;
     if (total <= 0) {
-      showDebtPaymentError('Please enter a total payment amount first.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Veuillez d\'abord saisir un montant total de versement.'
+          : 'Please enter a total payment amount first.'
+      );
       return;
     }
 
@@ -2383,13 +2594,21 @@ const { locale = 'en' } = Astro.props;
     if (!debt) return;
 
     if (debt.paidOff) {
-      showDebtPaymentError('This debt is already fully paid off. Reopen the account to record further payments.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Cette dette est déjà entièrement remboursée. Rouvrez le compte pour enregistrer d\'autres versements.'
+          : 'This debt is already fully paid off. Reopen the account to record further payments.'
+      );
       return;
     }
 
     const dateVal = inputDebtPaymentDate?.value;
     if (!dateVal) {
-      showDebtPaymentError('Please select a valid payment date.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Veuillez sélectionner une date de versement valide.'
+          : 'Please select a valid payment date.'
+      );
       return;
     }
 
@@ -2401,31 +2620,53 @@ const { locale = 'en' } = Astro.props;
 
     // Validations (Requirement 11)
     if (isNaN(total) || total < 0) {
-      showDebtPaymentError('Total payment amount cannot be negative.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Le montant total du versement ne peut pas être négatif.'
+          : 'Total payment amount cannot be negative.'
+      );
       return;
     }
     if (isNaN(principal) || principal < 0) {
-      showDebtPaymentError('Principal paid cannot be negative.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Le capital remboursé ne peut pas être négatif.'
+          : 'Principal paid cannot be negative.'
+      );
       return;
     }
     if (isNaN(interest) || interest < 0) {
-      showDebtPaymentError('Interest paid cannot be negative.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Les intérêts payés ne peuvent pas être négatifs.'
+          : 'Interest paid cannot be negative.'
+      );
       return;
     }
     if (isNaN(extra) || extra < 0) {
-      showDebtPaymentError('Extra pre-payment cannot be negative.');
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Le remboursement anticipé supplémentaire ne peut pas être négatif.'
+          : 'Extra pre-payment cannot be negative.'
+      );
       return;
     }
 
     const totalReduction = principal + extra;
     if (totalReduction <= 0) {
-      showDebtPaymentError(`Principal paid or extra pre-payment must be greater than ${getCurrencySymbol()}0.`);
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? `Le capital remboursé ou le remboursement anticipé doit être supérieur à ${getCurrencySymbol()}0.`
+          : `Principal paid or extra pre-payment must be greater than ${getCurrencySymbol()}0.`
+      );
       return;
     }
 
     if (totalReduction > debt.currentOutstandingPrincipal) {
       showDebtPaymentError(
-        `Total principal reduction (${formatMoney(totalReduction)}) cannot exceed current outstanding principal (${formatMoney(debt.currentOutstandingPrincipal)}).`
+        activeLocale === 'fr'
+          ? `La réduction totale du capital (${formatMoney(totalReduction)}) ne peut pas dépasser le capital restant dû (${formatMoney(debt.currentOutstandingPrincipal)}).`
+          : `Total principal reduction (${formatMoney(totalReduction)}) cannot exceed current outstanding principal (${formatMoney(debt.currentOutstandingPrincipal)}).`
       );
       return;
     }

@@ -376,10 +376,10 @@ const slugMap: Record<string, string> = {
                 <span>{t('templates.btnDownloadExcel', locale)}</span>
               </a>
               <a
-                href={`/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                 class="w-full inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline pt-0.5"
               >
-                <span>Guide &amp; Formulas &rarr;</span>
+                <span>{t('templates.guideFormulas', locale)}</span>
               </a>
             </div>
           </div>

@@ -14,6 +14,14 @@
  * - Non-blocking floating dialog (does not interrupt active user operations).
  * - Full light & dark mode support.
  */
+import { DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
+const isFr = locale === 'fr';
 ---
 
 <div
@@ -40,25 +48,25 @@
     <div class="space-y-1.5 pr-8">
       <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
-        <span>YOUR NEXT STEP</span>
+        <span>{isFr ? 'VOTRE PROCHAINE ÉTAPE' : 'YOUR NEXT STEP'}</span>
       </div>
       <h3 id="mrb-popup-heading" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
-        Finished tracking your expenses?
+        {isFr ? 'Vous avez terminé le suivi de vos dépenses ?' : 'Finished tracking your expenses?'}
       </h3>
     </div>
 
     <!-- Description -->
     <p id="mrb-popup-desc" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-      You've got your spending recorded. Now plan where your money should go next.
+      {isFr ? 'Vos dépenses sont bien enregistrées. Planifiez maintenant l\'utilisation de votre argent.' : "You've got your spending recorded. Now plan where your money should go next."}
     </p>
 
     <!-- Supporting Section -->
     <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-1">
       <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-        Plan your budget with My Real Budget.
+        {isFr ? 'Planifiez votre budget avec My Real Budget.' : 'Plan your budget with My Real Budget.'}
       </h4>
       <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        Create a monthly budget, follow the 50/30/20 rule and take control of your finances.
+        {isFr ? 'Créez un budget mensuel, suivez la règle 50/30/20 et prenez le contrôle de vos finances.' : 'Create a monthly budget, follow the 50/30/20 rule and take control of your finances.'}
       </p>
     </div>
 
@@ -71,7 +79,7 @@
         id="btn-mrb-popup-cta"
         class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
       >
-        <span>Explore My Real Budget</span>
+        <span>{isFr ? 'Découvrir My Real Budget' : 'Explore My Real Budget'}</span>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
         </svg>
@@ -81,7 +89,7 @@
         id="btn-mrb-popup-later"
         class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center"
       >
-        Maybe later
+        {isFr ? 'Peut-être plus tard' : 'Maybe later'}
       </button>
     </div>
   </div>
