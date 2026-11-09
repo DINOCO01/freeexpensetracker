@@ -22,6 +22,7 @@ export const es = {
     selectLanguage: "Seleccionar Idioma"
   },
   hero: {
+    h1: "Rastreador de Gastos Gratuito",
     badge: "100% Gratuito • Sin Registro • Almacenamiento Local Privado",
     title1: "Tome el Control Total de su Dinero.",
     title2: "Seguimiento en Vivo, Liquidación de Deudas y Claridad Financiera.",

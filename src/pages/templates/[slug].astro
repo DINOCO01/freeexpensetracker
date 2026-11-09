@@ -19,12 +19,74 @@ interface Props {
 const { template } = Astro.props;
 const downloadUrl = `/templates/${template.fileName}`;
 const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
+
+const TEMPLATE_APP_TARGETS: Record<string, string> = {
+  'paycheck-budget': '/?tab=budget&preset=paycheck',
+  'debt-snowball': '/?tab=debt&preset=snowball',
+  'debt-avalanche': '/?tab=debt&preset=avalanche',
+  'debt-to-income-calculator': '/?tab=debt&preset=dti',
+  'student-loan-planner': '/?tab=debt&preset=student-loan',
+  'auto-loan-calculator': '/?tab=debt&preset=auto-loan',
+  'mortgage-planner': '/?tab=debt&preset=mortgage',
+  '401k-retirement-planner': '/?tab=goals&preset=retirement',
+  'roth-ira-planner': '/?tab=goals&preset=roth-ira',
+  'emergency-fund-planner': '/?tab=goals&preset=emergency-fund',
+  'subscription-audit': '/?tab=tracker&preset=subscriptions',
+  'sinking-fund-planner': '/?tab=goals&preset=sinking-fund',
+  'net-worth-tracker': '/?tab=goals&preset=net-worth',
+  'financial-dashboard': '/?tab=tracker&preset=dashboard',
+  'monthly-spending-analyzer': '/?tab=tracker&preset=spending-analyzer',
+  'monthly-bill-tracker': '/?tab=tracker&preset=bill-tracker'
+};
+
+const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/?tab=tracker';
+
+// Related templates mapping for internal link architecture
+const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
+  'debt-snowball': [
+    { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Prioritize highest-interest APR debts first to save maximum total interest.' },
+    { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Assess your borrowing health and calculate front-end and back-end DTI.' },
+    { slug: 'student-loan-planner', title: 'Student Loan Planner', desc: 'Model extra monthly payments and accelerated payoff schedules.' }
+  ],
+  'student-loan-planner': [
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Knock out smallest balances first to build lasting financial momentum.' },
+    { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Track your total debt obligations against gross monthly earnings.' },
+    { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Attack highest-APR loans first for maximum lifetime interest savings.' }
+  ],
+  'monthly-bill-tracker': [
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate net income per paycheck deposit before spending occurs.' },
+    { slug: 'subscription-audit', title: 'Subscription Audit Worksheet', desc: 'Audit recurring digital subscriptions, streaming services, and bills.' },
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Categorize spending by merchant and detect budget leaks.' }
+  ],
+  'paycheck-budget': [
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track recurring monthly bills, calendar due dates, and autopay status.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a 3 to 6-month living expense cash safety net.' },
+    { slug: 'subscription-audit', title: 'Subscription Audit Worksheet', desc: 'Identify and cancel recurring subscriptions eating into your pay.' }
+  ],
+  'subscription-audit': [
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, payment deadlines, and auto-debit amounts.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Plan every dollar per pay cycle with take-home pay and fixed bills.' },
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Review historical spending categories and identify cost leaks.' }
+  ],
+  'emergency-fund-planner': [
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per paycheck directly into your emergency savings.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' },
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Balance emergency safety savings with rapid debt reduction.' }
+  ]
+};
+
+const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
+  { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Plan every dollar per pay cycle with take-home pay and fixed bills.' },
+  { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, due dates, and autopay tracking.' },
+  { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Eliminate consumer debt with behavioral momentum.' }
+];
 ---
 
 <Layout
   title={template.title}
   description={template.metaDescription}
   canonicalUrl={canonicalUrl}
+  faqSchema={template.faq}
 >
   <Navbar />
 
@@ -63,6 +125,30 @@ const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
         {template.overview}
       </p>
 
+      <!-- TOP CTA BLOCK: Prefer not to use a spreadsheet? -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+            ⚡
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+              Prefer not to use a spreadsheet?
+            </p>
+            <p class="text-xs text-slate-600">
+              Track this free in your browser with zero setup or sign-up.
+            </p>
+          </div>
+        </div>
+        <a
+          href={appTargetUrl}
+          data-template-id={template.slug}
+          class="template-to-app-btn shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+        >
+          <span>Track Free in Browser &rarr;</span>
+        </a>
+      </div>
+
       <!-- Primary Action: Direct Download & Hub Back-link -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
         <a
@@ -81,10 +167,237 @@ const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
           class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
         >
           <span>&larr;</span>
-          <span>All 15 Templates</span>
+          <span>All Templates</span>
         </a>
       </div>
     </header>
+
+    {/* SPECIALIZED DEEP-DIVE & INTERACTIVE CALCULATOR: Debt Snowball */}
+    {template.slug === 'debt-snowball' && (
+      <>
+        <!-- Interactive Debt Snowball Calculator Section -->
+        <section id="interactive-snowball-calculator" class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
+                <span>🧮</span>
+                <span>Interactive Tool</span>
+              </span>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+                Live Debt Snowball Calculator
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-600">
+                Input your balances and see your customized payoff order, debt-free date, and total interest saved in real time.
+              </p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-mono text-emerald-700 font-semibold bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
+                100% Client-Side Math
+              </span>
+            </div>
+          </div>
+
+          <!-- Debt Input Rows Form -->
+          <div class="space-y-4">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-500 uppercase font-mono text-[10px]">
+                    <th class="py-2 px-2">Debt Name</th>
+                    <th class="py-2 px-2">Balance ($)</th>
+                    <th class="py-2 px-2">Interest Rate (APR %)</th>
+                    <th class="py-2 px-2">Min Payment ($)</th>
+                    <th class="py-2 px-2 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="snowball-debts-body" class="divide-y divide-slate-100">
+                  <tr class="debt-row">
+                    <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Medical Bill" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="600" min="0" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="0" min="0" max="100" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="50" min="1" step="any" /></td>
+                    <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                  </tr>
+                  <tr class="debt-row">
+                    <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Credit Card" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="2400" min="0" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="19.9" min="0" max="100" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="85" min="1" step="any" /></td>
+                    <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                  </tr>
+                  <tr class="debt-row">
+                    <td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Auto Loan" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="7000" min="0" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="6.5" min="0" max="100" step="any" /></td>
+                    <td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="210" min="1" step="any" /></td>
+                    <td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <button
+                type="button"
+                id="btn-add-snowball-debt"
+                class="px-3.5 py-1.5 rounded-xl border border-dashed border-emerald-600 text-emerald-800 text-xs font-semibold hover:bg-emerald-50 transition-colors"
+              >
+                + Add Another Debt
+              </button>
+              <div class="flex items-center gap-2">
+                <label for="input-snowball-extra" class="text-xs font-bold text-slate-700 whitespace-nowrap">
+                  Extra Monthly Snowball:
+                </label>
+                <div class="relative">
+                  <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                  <input
+                    type="number"
+                    id="input-snowball-extra"
+                    class="pl-6 pr-3 py-1.5 rounded-xl border border-slate-300 w-28 text-xs font-mono font-bold text-slate-900"
+                    value="155"
+                    min="0"
+                    step="10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Output KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-1">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold">Debt-Free In</div>
+              <div id="calc-result-months" class="text-2xl font-extrabold text-emerald-900 font-mono">22 Months</div>
+              <div id="calc-result-date" class="text-xs text-emerald-700 font-medium">Estimated Date</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-slate-600 font-bold">Total Interest Paid</div>
+              <div id="calc-result-interest" class="text-2xl font-extrabold text-slate-900 font-mono">$842</div>
+              <div class="text-xs text-slate-500">With snowball acceleration</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-teal-50 border border-teal-200 text-center space-y-1">
+              <div class="text-[10px] font-mono uppercase tracking-wider text-teal-800 font-bold">Interest Saved</div>
+              <div id="calc-result-saved" class="text-2xl font-extrabold text-teal-900 font-mono">$1,480</div>
+              <div class="text-xs text-teal-700 font-medium">Vs. minimum payments only</div>
+            </div>
+          </div>
+
+          <!-- Payoff Sequence Timeline -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <h3 class="text-xs font-bold text-slate-900 font-mono uppercase">
+              Snowball Payoff Sequence (Smallest Balance First):
+            </h3>
+            <div id="calc-timeline-list" class="space-y-1.5 text-xs text-slate-700">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 350-500 Word Content Guide: Debt Snowball Method -->
+        <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6 text-slate-700 leading-relaxed">
+          <div class="space-y-2 border-b border-slate-100 pb-4">
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+              Understanding the Debt Snowball Method
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500">
+              Why behavioral momentum knocks out debt faster than pure mathematical interest formulas.
+            </p>
+          </div>
+
+          <div class="space-y-4 text-xs sm:text-sm">
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+              What the Debt Snowball Method Is
+            </h3>
+            <p>
+              The debt snowball is an accelerated debt-elimination strategy that organizes your debts from the smallest balance to the largest balance, regardless of interest rates. You commit to paying the minimum payment on every account except the smallest one. With the smallest debt, you throw every available extra dollar from your monthly budget at it until the balance is completely wiped out.
+            </p>
+            <p>
+              While mathematical models suggest attacking high-interest rates first, the debt snowball works because human behavior drives personal finance. Eliminating a small debt in just two or three months delivers an immediate psychological boost. That early sense of victory creates momentum, proving that your debt-free goal is attainable and keeping you committed over the long haul.
+            </p>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              Worked Example: Three Debts in Action
+            </h3>
+            <p>
+              To see the snowball effect in practice, consider someone with three consumer debts and a total debt payoff budget of $500 per month:
+            </p>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 font-mono text-xs text-slate-800">
+              <div>1. <strong>Medical Bill</strong>: $600 balance ($50 monthly minimum)</div>
+              <div>2. <strong>Credit Card</strong>: $2,400 balance ($85 monthly minimum at 19.9% APR)</div>
+              <div>3. <strong>Auto Loan</strong>: $7,000 balance ($210 monthly minimum at 6.5% APR)</div>
+            </div>
+            <p>
+              Their contractual minimum payments total $345 ($50 + $85 + $210), leaving $155 in extra monthly cash.
+            </p>
+            <ul class="space-y-2 list-disc list-inside">
+              <li><strong>Months 1 to 3</strong>: The borrower pays $205 per month ($50 minimum + $155 extra) toward the $600 medical bill while maintaining minimums on the credit card and car. In under three months, Debt #1 is completely eliminated.</li>
+              <li><strong>Months 4 to 11</strong>: The full $205 is rolled directly into the credit card. The monthly credit card payment jumps to $290 ($85 minimum + $205 snowball). That $2,400 balance is paid off in roughly 8 months.</li>
+              <li><strong>Months 12 and Beyond</strong>: The entire $500 monthly budget rolls into the $7,000 auto loan. With $500 hitting the principal every month, the vehicle is paid off years ahead of schedule.</li>
+            </ul>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              Snowball vs. Avalanche: Which Should You Choose?
+            </h3>
+            <p>
+              The debt snowball prioritizes psychological momentum by paying off your smallest account balances first, while the debt avalanche attacks your highest-interest debts first to save the maximum amount on interest charges. If your primary goal is minimizing lifetime interest rather than quick motivational wins, check out our <a href="/templates/debt-avalanche/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">free debt avalanche spreadsheet</a>.
+            </p>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              How to Use This Spreadsheet in 4 Steps
+            </h3>
+            <ol class="space-y-2 list-decimal list-inside">
+              <li><strong>List Your Debts Smallest to Largest</strong>: Input all non-mortgage loans and credit cards into the sheet, sorted strictly in ascending order by current balance.</li>
+              <li><strong>Record Balances, Rates, and Minimums</strong>: Fill in each account's current payoff amount, interest rate (APR), and monthly minimum obligation.</li>
+              <li><strong>Set Your Extra Monthly Snowball</strong>: Enter the extra cash you can comfortably direct toward debt repayment each month into the acceleration box.</li>
+              <li><strong>Follow the Roll-Forward Plan</strong>: Pay the calculated snowball payment on Debt #1, make minimum payments on the rest, and update the sheet as each account hits zero.</li>
+            </ol>
+          </div>
+        </article>
+      </>
+    )}
+
+    {/* SPECIALIZED DEEP-DIVE: Student Loan Planner */}
+    {template.slug === 'student-loan-planner' && (
+      <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6 text-slate-700 leading-relaxed">
+        <div class="space-y-2 border-b border-slate-100 pb-4">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+            Student Loan Payoff Timelines, Prepayment &amp; Refinancing Guide
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            A comprehensive overview of how amortization timelines work, how extra payments crush interest, and when refinancing makes sense.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+            Understanding Student Loan Payoff Timelines
+          </h3>
+          <p>
+            Understanding how student loan interest accumulates and how payoff timelines are calculated is the essential foundation for becoming debt-free. The vast majority of federal and private student loans default to a standard 10-year (120-month) repayment timeline. While extended repayment options or income-driven repayment plans lower your mandatory monthly payment by stretching your schedule across 20 to 25 years, they dramatically increase the total interest paid over the life of your debt. For example, a $35,000 student loan at a 6.8% interest rate costs approximately $13,200 in total interest under a standard 10-year term, but surges to more than $31,000 in interest if extended across 20 years.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            The Power of Extra Principal Payments
+          </h3>
+          <p>
+            The most potent lever borrowers control is making targeted extra principal payments. Student loans accrue interest daily based on the simple interest formula: current principal multiplied by the annual interest rate divided by 365. Whenever you make a payment beyond your mandatory monthly minimum, that extra cash reduces the outstanding principal balance immediately (always verify with your loan servicer that extra funds are applied to principal rather than advancing your next due date). Because subsequent daily interest charges are calculated on this reduced principal, extra payments trigger a powerful compounding savings effect. Contributing just $75 to $150 extra each month toward a $35,000 balance eliminates almost three full years of payments and saves over $4,000 in direct out-of-pocket interest.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            Student Loan Refinancing Basics: Private vs. Federal Debt
+          </h3>
+          <p>
+            When structuring a comprehensive payoff strategy, many borrowers also evaluate student loan refinancing. Refinancing replaces one or more existing student loans with a brand-new loan from a private lender at a lower interest rate or different repayment term. If you carry private student loans with double-digit interest rates (often 8% to 14% APR) and have built a strong credit score and steady income, refinancing can instantly lower your monthly payment or overall borrowing costs.
+          </p>
+          <p>
+            However, refinancing federal student loans into private debt requires extreme caution. Private refinancing permanently strips away federal borrower protections, including income-driven repayment plans (such as SAVE and PAYE), Public Service Loan Forgiveness (PSLF), and access to federal administrative deferment or forbearance during unexpected hardship. As a general rule, maintain federal protections for federal balances and focus refinancing and accelerated payoffs aggressively on private student debt.
+          </p>
+          <p class="pt-2 text-xs text-slate-500">
+            Compare payoff approaches with our <a href="/templates/debt-snowball/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">free debt snowball spreadsheet</a> or evaluate your overall debt load with the <a href="/templates/debt-to-income-calculator/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">debt-to-income calculator</a>.
+          </p>
+        </div>
+      </article>
+    )}
 
     <!-- Section 1: Purpose & Workbook Architecture -->
     <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
@@ -173,12 +486,36 @@ const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
       </ul>
     </section>
 
+    <!-- SECOND CTA BLOCK: Prefer not to use a spreadsheet? -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+          💻
+        </div>
+        <div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+            Prefer not to use a spreadsheet?
+          </p>
+          <p class="text-xs text-slate-600">
+            Track this free in your browser with zero setup or sign-up.
+          </p>
+        </div>
+      </div>
+      <a
+        href={appTargetUrl}
+        data-template-id={template.slug}
+        class="template-to-app-btn shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+      >
+        <span>Track Free in Browser &rarr;</span>
+      </a>
+    </div>
+
     <!-- Section 5: Frequently Asked Questions -->
     <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
       <div class="flex items-center gap-2.5 text-slate-900">
         <span class="text-xl">❓</span>
         <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
-          Template Questions &amp; Answers
+          Frequently Asked Questions
         </h2>
       </div>
       <div class="space-y-3">
@@ -191,6 +528,36 @@ const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
               {item.answer}
             </p>
           </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Financial Templates Internal Links -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5 text-slate-900">
+          <span class="text-xl">🔗</span>
+          <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+            Related Financial Templates
+          </h2>
+        </div>
+        <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
+          View All Templates &rarr;
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {relatedTemplates.map((rel) => (
+          <a
+            href={`/templates/${rel.slug}/`}
+            class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
+          >
+            <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
+              {rel.title}
+            </div>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              {rel.desc}
+            </p>
+          </a>
         ))}
       </div>
     </section>
@@ -225,6 +592,203 @@ const canonicalUrl = getCanonicalUrl(`/templates/${template.slug}/`);
       </div>
     </aside>
   </main>
+
+  <!-- Client-side event tracking & calculator logic -->
+  <script is:inline>
+    // GA4 Template to App Event Tracking
+    try {
+      var appBtns = document.querySelectorAll('.template-to-app-btn');
+      if (appBtns && appBtns.length > 0) {
+        appBtns.forEach(function(btn) {
+          if (!btn) return;
+          btn.addEventListener('click', function() {
+            try {
+              var templateId = btn.getAttribute('data-template-id') || '';
+              if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+                window.gtag('event', 'template_to_app', { template_id: templateId });
+              }
+            } catch (_) {}
+          });
+        });
+      }
+    } catch (_) {}
+  </script>
+
+  {template.slug === 'debt-snowball' && (
+    <script is:inline>
+      // Interactive Debt Snowball Calculator (only on debt-snowball)
+      (function initSnowballCalculator() {
+        try {
+          var calcSection = document.getElementById('interactive-snowball-calculator');
+          var tbody = document.getElementById('snowball-debts-body');
+          var extraInput = document.getElementById('input-snowball-extra');
+          if (!calcSection || !tbody || !extraInput) return;
+
+          var btnAdd = document.getElementById('btn-add-snowball-debt');
+          var resultMonths = document.getElementById('calc-result-months');
+          var resultDate = document.getElementById('calc-result-date');
+          var resultInterest = document.getElementById('calc-result-interest');
+          var resultSaved = document.getElementById('calc-result-saved');
+          var timelineList = document.getElementById('calc-timeline-list');
+
+          function recalculateSnowball() {
+            try {
+              if (!tbody) return;
+              var rows = tbody.querySelectorAll('.debt-row');
+              var debts = [];
+              if (rows) {
+                rows.forEach(function(r) {
+                  var nameEl = r.querySelector('.debt-name');
+                  var balEl = r.querySelector('.debt-balance');
+                  var rateEl = r.querySelector('.debt-rate');
+                  var minEl = r.querySelector('.debt-min');
+
+                  var name = (nameEl && nameEl.value) ? nameEl.value : 'Debt';
+                  var balance = balEl ? (parseFloat(balEl.value) || 0) : 0;
+                  var rate = rateEl ? (parseFloat(rateEl.value) || 0) : 0;
+                  var minPay = minEl ? (parseFloat(minEl.value) || 0) : 0;
+                  if (balance > 0 && minPay > 0) {
+                    debts.push({ name: name, balance: balance, rate: rate, minPay: minPay });
+                  }
+                });
+              }
+
+              var extra = (extraInput && extraInput.value) ? (parseFloat(extraInput.value) || 0) : 0;
+              if (debts.length === 0) {
+                if (resultMonths) resultMonths.textContent = '0 Months';
+                if (resultInterest) resultInterest.textContent = '$0';
+                if (resultSaved) resultSaved.textContent = '$0';
+                return;
+              }
+
+              // Snowball: Sort by balance ascending
+              debts.sort(function(a, b) { return a.balance - b.balance; });
+
+              // Simulate Snowball
+              var simDebts = debts.map(function(d) {
+                return { name: d.name, balance: d.balance, rate: d.rate, minPay: d.minPay, paidOffMonth: 0 };
+              });
+
+              var month = 0;
+              var totalInterestPaid = 0;
+              var maxMonths = 360;
+
+              while (month < maxMonths) {
+                var activeDebts = simDebts.filter(function(d) { return d.balance > 0; });
+                if (activeDebts.length === 0) break;
+                month++;
+
+                var freedSnowball = extra;
+                simDebts.forEach(function(d) {
+                  if (d.balance <= 0) {
+                    freedSnowball += d.minPay;
+                  }
+                });
+
+                // Accrue interest on all active debts
+                activeDebts.forEach(function(d) {
+                  var monthlyInterest = d.balance * (d.rate / 100 / 12);
+                  totalInterestPaid += monthlyInterest;
+                  d.balance += monthlyInterest;
+                });
+
+                // Pay minimums first
+                activeDebts.forEach(function(d) {
+                  var payment = Math.min(d.balance, d.minPay);
+                  d.balance -= payment;
+                  if (d.balance <= 0.01 && d.paidOffMonth === 0) {
+                    d.paidOffMonth = month;
+                  }
+                });
+
+                // Apply all freed-up snowball cash to the smallest remaining balance
+                var targetDebt = activeDebts.find(function(d) { return d.balance > 0.01; });
+                if (targetDebt && freedSnowball > 0) {
+                  var snowPayment = Math.min(targetDebt.balance, freedSnowball);
+                  targetDebt.balance -= snowPayment;
+                  if (targetDebt.balance <= 0.01 && targetDebt.paidOffMonth === 0) {
+                    targetDebt.paidOffMonth = month;
+                  }
+                }
+              }
+
+              // Simulate minimums only for baseline comparison
+              var minDebts = debts.map(function(d) {
+                return { balance: d.balance, rate: d.rate, minPay: d.minPay };
+              });
+              var minMonth = 0;
+              var minInterest = 0;
+              while (minMonth < maxMonths) {
+                var act = minDebts.filter(function(d) { return d.balance > 0; });
+                if (act.length === 0) break;
+                minMonth++;
+                act.forEach(function(d) {
+                  var intCost = d.balance * (d.rate / 100 / 12);
+                  minInterest += intCost;
+                  d.balance += intCost;
+                  d.balance -= Math.min(d.balance, d.minPay);
+                });
+              }
+
+              var saved = Math.max(0, minInterest - totalInterestPaid);
+
+              if (resultMonths) resultMonths.textContent = month + ' Months';
+              if (resultInterest) resultInterest.textContent = '$' + Math.round(totalInterestPaid).toLocaleString();
+              if (resultSaved) resultSaved.textContent = '$' + Math.round(saved).toLocaleString();
+
+              var estDate = new Date();
+              estDate.setMonth(estDate.getMonth() + month);
+              var dateStr = estDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+              if (resultDate) resultDate.textContent = 'Debt-Free by ' + dateStr;
+
+              if (timelineList) {
+                timelineList.innerHTML = simDebts.map(function(d, idx) {
+                  var m = d.paidOffMonth || month;
+                  return '<div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/80">' +
+                    '<span><strong>#' + (idx + 1) + ' ' + d.name + '</strong></span>' +
+                    '<span class="font-mono text-emerald-800 font-bold">Paid off in Month ' + m + '</span>' +
+                  '</div>';
+                }).join('');
+              }
+            } catch (_) {}
+          }
+
+          tbody.addEventListener('input', recalculateSnowball);
+          extraInput.addEventListener('input', recalculateSnowball);
+
+          tbody.addEventListener('click', function(e) {
+            try {
+              if (e && e.target && e.target.classList && e.target.classList.contains('btn-remove-row')) {
+                var row = e.target.closest('.debt-row');
+                if (row && tbody.querySelectorAll('.debt-row').length > 1) {
+                  row.remove();
+                  recalculateSnowball();
+                }
+              }
+            } catch (_) {}
+          });
+
+          if (btnAdd) {
+            btnAdd.addEventListener('click', function() {
+              try {
+                var tr = document.createElement('tr');
+                tr.className = 'debt-row';
+                tr.innerHTML = '<td class="py-2 px-2"><input type="text" class="debt-name w-full p-2 rounded-lg border border-slate-200 font-medium" value="Personal Loan" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-balance w-28 p-2 rounded-lg border border-slate-200 font-mono font-bold" value="1500" min="0" step="any" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-rate w-24 p-2 rounded-lg border border-slate-200 font-mono" value="10" min="0" max="100" step="any" /></td>' +
+                  '<td class="py-2 px-2"><input type="number" class="debt-min w-24 p-2 rounded-lg border border-slate-200 font-mono" value="60" min="1" step="any" /></td>' +
+                  '<td class="py-2 px-2 text-center"><button type="button" class="btn-remove-row text-slate-400 hover:text-rose-600 px-2 py-1 font-bold">✕</button></td>';
+                tbody.appendChild(tr);
+                recalculateSnowball();
+              } catch (_) {}
+            });
+          }
+
+          recalculateSnowball();
+        } catch (_) {}
+      })();
+    </script>
+  )}
 
   <Footer />
 </Layout>

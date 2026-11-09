@@ -3305,6 +3305,77 @@ const { locale = 'en' } = Astro.props;
     });
   });
 
+  // --- Check URL Query Parameters for Tab & Preset Selection on Page Load ---
+  (function handleQueryDeepLinks() {
+    try {
+      if (typeof window === 'undefined' || !window.location || !window.location.search) return;
+      var urlParams = new URLSearchParams(window.location.search);
+      var requestedTab = urlParams.get('tab');
+      var requestedPreset = urlParams.get('preset');
+
+      if (requestedTab) {
+        var tabAliases = {
+          'debt': 'debt',
+          'goals': 'targets',
+          'targets': 'targets',
+          'budget': 'tracker',
+          'tracker': 'tracker',
+          'live_tracker': 'tracker',
+          'templates': 'templates',
+          'import': 'import',
+          'knowledge': 'knowledge'
+        };
+        var lowerTab = (requestedTab || '').toLowerCase();
+        var mappedTab = tabAliases[lowerTab];
+        if (mappedTab && typeof switchTab === 'function') {
+          switchTab(mappedTab);
+          if (requestedPreset) {
+            var p = (requestedPreset || '').toLowerCase();
+            setTimeout(function() {
+              try {
+                if (mappedTab === 'debt') {
+                  if (p === 'snowball') {
+                    var btnSnow = document.getElementById('btn-strat-snowball');
+                    if (btnSnow && typeof btnSnow.click === 'function') btnSnow.click();
+                  } else if (p === 'avalanche') {
+                    var btnAva = document.getElementById('btn-strat-avalanche');
+                    if (btnAva && typeof btnAva.click === 'function') btnAva.click();
+                  }
+                  var tabDebt = document.getElementById('tab-view-debt');
+                  if (tabDebt && typeof tabDebt.scrollIntoView === 'function') {
+                    tabDebt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                } else if (mappedTab === 'targets') {
+                  if (p === 'emergency-fund') {
+                    var efundCard = document.getElementById('target-efund-3mo');
+                    var cardParent = efundCard ? efundCard.closest('div') : null;
+                    if (cardParent && typeof cardParent.scrollIntoView === 'function') {
+                      cardParent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  } else {
+                    var tabTargets = document.getElementById('tab-view-targets');
+                    if (tabTargets && typeof tabTargets.scrollIntoView === 'function') {
+                      tabTargets.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }
+                } else if (mappedTab === 'tracker') {
+                  if (p === 'paycheck') {
+                    var inputInc = document.getElementById('input-income');
+                    if (inputInc && typeof inputInc.scrollIntoView === 'function') {
+                      inputInc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }
+                }
+              } catch (_) {}
+            }, 150);
+          }
+        }
+      }
+    } catch (_) {
+      // Ignore unknown or inaccessible search parameters safely
+    }
+  })();
+
   // Universal handler: Scroll to Live Tracker from ANY tab or link
   const scrollToLiveTrackerElements = document.querySelectorAll('a[href="#live-tool-anchor"], #btn-scroll-to-live-tracker');
   scrollToLiveTrackerElements.forEach((el) => {

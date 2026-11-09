@@ -22,6 +22,7 @@ export const pt = {
     selectLanguage: "Selecionar Idioma"
   },
   hero: {
+    h1: "Rastreador de Despesas Gratuito",
     badge: "100% Gratuito • Sem Cadastro • Armazenamento Local Privado",
     title1: "Assuma o Controle Total do Seu Dinheiro.",
     title2: "Acompanhamento em Tempo Real, Quitação de Dívidas & Clareza Financeira.",

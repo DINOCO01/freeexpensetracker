@@ -1,9 +1,9 @@
 export const fr = {
   meta: {
     siteName: "Free Expense Tracker",
-    title: "Suivi des Dépenses Gratuit - Meilleure Appli & Modèles de Budget Gratuits",
-    description: "Gérez vos finances avec notre outil gratuit de suivi des dépenses. Téléchargez des modèles Excel et Google Sheets ou utilisez notre application web privée avec scan OCR de reçus. 100% gratuit et sans inscription.",
-    keywords: "suivi des dépenses gratuit, gestion de budget personnel, feuille excel budget gratuite, modèle google sheets dépenses, finances personnelles"
+    title: "Tracker de dépenses gratuit – Suivi de budget sans inscription",
+    description: "Tracker de dépenses gratuit et complet pour gérer votre budget personnel. Suivez vos dépenses facilement, sans inscription, avec données privées et sécurisées.",
+    keywords: "tracker dépenses gratuit, suivi des dépenses gratuit, gestion de budget personnel, feuille excel budget gratuite, modèle google sheets dépenses, finances personnelles"
   },
   nav: {
     brand: "Free Expense Tracker",
@@ -22,6 +22,7 @@ export const fr = {
     selectLanguage: "Choisir la langue"
   },
   hero: {
+    h1: "Tracker de dépenses gratuit",
     badge: "100% Gratuit • Sans Inscription • Données Privées dans le Navigateur",
     title1: "Prenez le Contrôle Total de Votre Argent.",
     title2: "Suivi en Direct, Remboursement de Dettes & Clarté Financière.",

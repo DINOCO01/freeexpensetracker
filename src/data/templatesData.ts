@@ -61,9 +61,9 @@ export const TEMPLATES_DATA: TemplateData[] = [
   {
     id: 'debt-snowball',
     slug: 'debt-snowball',
-    title: 'Free Debt Snowball Spreadsheet (Excel .xlsx) | Free Expense Tracker',
-    metaDescription: 'Download our free Debt Snowball Excel (.xlsx) template. Pay off debt faster by knocking out smallest balances first to build lasting financial momentum.',
-    h1: 'Free Debt Snowball Spreadsheet Calculator',
+    title: 'Free Debt Snowball Spreadsheet (Excel & Google Sheets) | Free Expense Tracker',
+    metaDescription: 'Download our free debt snowball spreadsheet for Excel & Google Sheets. Pay off debt faster with no sign-up required. Free, private, and easy to use.',
+    h1: 'Free Debt Snowball Spreadsheet',
     category: 'Debt Management',
     categoryIcon: '💳',
     fileName: '02_US_Debt_Snowball.xlsx',
@@ -76,11 +76,10 @@ export const TEMPLATES_DATA: TemplateData[] = [
     purpose: 'Accelerate debt payoff using the psychological debt snowball method, targeting your smallest balances first while paying minimums on everything else.',
     overview: 'The Debt Snowball strategy prioritizes behavioral momentum. By organizing debts from smallest remaining balance to largest, you score quick emotional victories as smaller accounts reach zero. As each balance is eliminated, its former minimum payment is "snowballed" into the next smallest account, accelerating repayment velocity without increasing your overall monthly out-of-pocket budget.',
     howToUse: [
-      'List all non-mortgage debts (credit cards, medical bills, personal loans, auto loans) sorted in ascending order by current balance.',
-      'Input the exact balance, annual percentage rate (APR), and mandatory monthly minimum payment for each creditor.',
-      'Enter your available extra monthly debt payoff contribution in the designated extra payment column.',
-      'Apply all extra funds to Debt #1 until paid off, while maintaining mandatory minimum payments on all remaining accounts.',
-      'Once an account reaches zero, roll its full payment amount into the next debt on the list.'
+      'Enter all non-mortgage debts sorted in ascending order by current balance (smallest balance first).',
+      'Input the exact balance, interest rate (APR), and required monthly minimum payment for each creditor.',
+      'Enter your available extra monthly debt payoff contribution in the acceleration field.',
+      'Apply all extra funds toward Debt #1 while continuing minimum payments on the others, rolling each eliminated payment forward until you are debt-free.'
     ],
     whoBenefits: [
       'Individuals with multiple small consumer debts seeking fast, visible progress to stay motivated.',
@@ -89,12 +88,20 @@ export const TEMPLATES_DATA: TemplateData[] = [
     ],
     faq: [
       {
-        question: 'What is the difference between the debt snowball and debt avalanche?',
-        answer: 'The debt snowball targets accounts with the lowest dollar balances first for quick motivation, whereas the avalanche targets debts with the highest interest rates (APR) first to minimize total interest paid.'
+        question: 'What is the debt snowball method and why does it work?',
+        answer: 'The debt snowball is a debt payoff strategy where you list your debts from smallest balance to largest balance, regardless of interest rates. You make minimum payments on all accounts while putting every extra dollar toward the smallest debt. Eliminating smaller balances early provides immediate psychological wins and builds unstoppable motivation to pay off larger debts.'
       },
       {
-        question: 'Can I add extra one-time payments like bonuses or tax refunds?',
-        answer: 'Yes. You can adjust the extra payment field in the workbook whenever you have windfall income to speed up payoff.'
+        question: 'What is the difference between the debt snowball and debt avalanche?',
+        answer: 'The debt snowball prioritizes psychological momentum by paying off your smallest account balances first, while the debt avalanche attacks your highest-interest debts first to save the maximum amount on interest charges. If your primary goal is minimizing lifetime interest rather than quick motivational wins, check out our free debt avalanche spreadsheet.'
+      },
+      {
+        question: 'Can I use this debt snowball spreadsheet in Google Sheets and Microsoft Excel?',
+        answer: 'Yes. The download is an unlocked .xlsx file that opens natively in Microsoft Excel, Apple Numbers, and LibreOffice, and imports seamlessly into Google Sheets with all formulas intact and zero signup required.'
+      },
+      {
+        question: 'What happens to my payment when a debt is fully paid off?',
+        answer: 'When an account reaches zero, you roll its entire monthly payment (its minimum payment plus whatever extra money you were adding) directly into the next smallest debt on your list. This creates a growing snowball payment that accelerates repayment without increasing your overall monthly budget.'
       }
     ]
   },
@@ -182,9 +189,9 @@ export const TEMPLATES_DATA: TemplateData[] = [
   {
     id: 'student-loan',
     slug: 'student-loan-planner',
-    title: 'Free Student Loan Payoff Planner Spreadsheet (.xlsx) | Free Expense Tracker',
-    metaDescription: 'Download our free Student Loan Planner Excel (.xlsx) template. Model extra monthly payments, payoff dates, interest savings, and loan acceleration schedules.',
-    h1: 'Free Student Loan Payoff Planner Spreadsheet',
+    title: 'Free Student Loan Planner (Spreadsheet + Calculator) | Free Expense Tracker',
+    metaDescription: 'Download our free student loan planner spreadsheet and calculator. Model payoff timelines, interest savings, and extra payments with no sign-up.',
+    h1: 'Free Student Loan Planner',
     category: 'Debt Management',
     categoryIcon: '💳',
     fileName: '05_US_Student_Loan_Planner.xlsx',
@@ -199,10 +206,9 @@ export const TEMPLATES_DATA: TemplateData[] = [
     overview: 'Student loan debt can span decades if borrowers pay only the standard minimum amounts. This spreadsheet calculates your exact repayment timeline and total interest burden based on your current balance and interest rate. By testing varying extra monthly payments, you can visualize how even modest extra contributions ($50 to $200 per month) shave years off your repayment timeline.',
     howToUse: [
       'Enter your current student loan principal balance and nominal annual interest rate.',
-      'Specify your baseline contractual monthly payment.',
+      'Specify your baseline contractual monthly minimum payment.',
       'Enter an optional extra monthly payment to simulate accelerated principal payoff.',
-      'Review the updated estimated months to payoff and total lifetime interest calculation.',
-      'Compare outcomes to find a comfortable balance between loan prepayment and other life goals.'
+      'Review your updated estimated debt-free date and total lifetime interest savings.'
     ],
     whoBenefits: [
       'College graduates with federal or private student loans seeking a clear roadmap to becoming debt-free.',
@@ -211,12 +217,20 @@ export const TEMPLATES_DATA: TemplateData[] = [
     ],
     faq: [
       {
-        question: 'Can I use this for multiple student loan accounts?',
-        answer: 'You can either enter your weighted average balance and interest rate, or duplicate the sheet tab to calculate individual loans separately.'
+        question: 'How does making extra payments change my student loan payoff timeline?',
+        answer: 'Any payment made above your contractual monthly minimum goes directly toward reducing the loan principal. Lowering the principal balance immediately decreases the daily interest accrual, shortening your overall repayment period by months or years and saving thousands of dollars in interest.'
       },
       {
-        question: 'Why does the sheet say "Payment too low"?',
-        answer: 'If your total monthly payment is less than the monthly interest accumulating on the balance, the loan balance would grow (negative amortization). Increase the payment above the monthly interest threshold.'
+        question: 'Should I pay off federal student loans early or pursue forgiveness?',
+        answer: 'If you qualify for Public Service Loan Forgiveness (PSLF) or substantial forgiveness through an income-driven repayment plan, paying the minimum may be the optimal strategy. However, if you work in the private sector or carry private student loans ineligible for forgiveness, accelerating payoff saves substantial interest.'
+      },
+      {
+        question: 'When does refinancing student loans make financial sense?',
+        answer: 'Refinancing is advantageous if you hold high-interest private student loans and have built strong credit or income to qualify for a lower interest rate. Exercise caution before refinancing federal loans into private debt, as you permanently surrender federal protections like income-driven plans and deferment.'
+      },
+      {
+        question: 'Can I use this student loan planner for multiple student loans?',
+        answer: 'Yes. You can enter your combined weighted average balance and interest rate to see overall timelines, or evaluate each loan account individually to prioritize extra principal toward your highest-interest loans first.'
       }
     ]
   },
@@ -627,6 +641,55 @@ export const TEMPLATES_DATA: TemplateData[] = [
       {
         question: 'Can I add custom categories to the analysis tab?',
         answer: 'Yes. You can add new category rows in the Analysis sheet using the SUMIF formula format provided in the workbook.'
+      }
+    ]
+  },
+  {
+    id: 'monthly-bill-tracker',
+    slug: 'monthly-bill-tracker',
+    title: 'Free Monthly Bill Tracker Spreadsheet (Excel & Google Sheets) | Free Expense Tracker',
+    metaDescription: 'Download our free monthly bill tracker spreadsheet for Excel and Google Sheets. Organize recurring bills, due dates, autopay, and payments with no sign-up.',
+    h1: 'Free Monthly Bill Tracker Spreadsheet',
+    category: 'Budgeting',
+    categoryIcon: '📅',
+    fileName: '16_US_Monthly_Bill_Tracker.xlsx',
+    fileSize: '31.5 KB',
+    sheetNames: ['Monthly Bill Tracker', 'Annual Bill Calendar'],
+    keyFormulas: [
+      'Total Monthly Bills = SUM(Bill_Amounts)',
+      'Autopay Total = SUMIF(Autopay_Range, "Yes", Bill_Amounts)',
+      'Unpaid Amount = SUMIF(Status_Range, "Pending", Bill_Amounts)',
+      'Annualized Cost = Monthly_Amount * 12'
+    ],
+    purpose: 'Keep track of every recurring monthly expense, payment due dates, autopay status, and confirmation numbers to eliminate late fees and stay ahead of bill cycles.',
+    overview: 'Managing dozens of scattered utility, rent, subscription, and loan payments every month often leads to missed due dates and costly late penalties. The Monthly Bill Tracker Spreadsheet provides an organized, centralized command center for your recurring obligations. Log bill names, payment amounts, due dates, payment methods, and autopay indicators across all 12 calendar months with instant summary calculations.',
+    howToUse: [
+      'List all recurring monthly expenses including rent/mortgage, utilities, insurance, subscriptions, and debt minimums.',
+      'Enter the calendar due date, expected bill amount, and whether the account is enrolled in automatic bank debit.',
+      'Mark each bill as paid as you complete payments during the month and record confirmation numbers.',
+      'Review your total monthly fixed obligations against your take-home income to keep essential bills within sustainable budget limits.'
+    ],
+    whoBenefits: [
+      'Households balancing multiple utility, credit card, and housing due dates across different paycheck cycles.',
+      'Individuals who want to verify that automated recurring subscriptions and bill debits do not cause account overdrafts.',
+      'Anyone transitioning from disorganized paper bills to a clean, reliable digital checklist.'
+    ],
+    faq: [
+      {
+        question: 'How does a monthly bill tracker spreadsheet prevent late fees and penalties?',
+        answer: 'By listing all your recurring bills in chronological order by due date and noting whether each is on autopay or manual payment, you can see upcoming obligations at a glance. Marking bills as paid as they clear prevents oversight and ensures your account always has sufficient funds on debit days.'
+      },
+      {
+        question: 'Can I track variable bills like electric, heating, or water in this spreadsheet?',
+        answer: 'Yes. For utilities that fluctuate with seasons, enter an estimated monthly average or update the expected amount when your monthly statement arrives. The sheet dynamically recalculates your overall monthly total.'
+      },
+      {
+        question: 'How does this bill tracker differ from the paycheck budget spreadsheet?',
+        answer: 'The monthly bill tracker focuses specifically on recurring obligations, due dates, and payment confirmations across the calendar month. The paycheck budget spreadsheet aligns all spending and savings categories directly to individual paycheck deposits.'
+      },
+      {
+        question: 'Is this bill tracker compatible with both Microsoft Excel and Google Sheets?',
+        answer: 'Yes. The workbook is provided in standard .xlsx format without macros or password protection. You can open and edit it offline in Microsoft Excel or import it into Google Drive to update on your phone or desktop.'
       }
     ]
   }

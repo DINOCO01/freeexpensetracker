@@ -19,6 +19,7 @@ interface Props {
   canonicalUrl?: string;
   currentLocale?: SupportedLocale;
   noindex?: boolean;
+  faqSchema?: { question: string; answer: string }[];
 }
 
 const {
@@ -28,6 +29,7 @@ const {
   keywords,
   canonicalUrl,
   noindex = false,
+  faqSchema,
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -115,11 +117,21 @@ const structuredData = [
         "item": `${siteUrl}/`
       }
     ]
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [1, 2, 3, 4, 5, 6, 7, 8].map((num) => ({
+  }
+];
+
+const isHomepage = Astro.url.pathname === '/' || /^\/[a-z]{2}\/?$/.test(Astro.url.pathname);
+const faqEntities = faqSchema && faqSchema.length > 0
+  ? faqSchema.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  : isHomepage
+  ? [1, 2, 3, 4, 5, 6, 7, 8].map((num) => ({
       "@type": "Question",
       "name": t(`faq.q${num}`, locale),
       "acceptedAnswer": {
@@ -127,8 +139,15 @@ const structuredData = [
         "text": t(`faq.a${num}`, locale)
       }
     }))
-  }
-];
+  : [];
+
+if (faqEntities.length > 0) {
+  structuredData.push({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqEntities
+  });
+}
 ---
 
 <!doctype html>

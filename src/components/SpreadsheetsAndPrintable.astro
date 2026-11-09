@@ -168,16 +168,26 @@ const TEMPLATES: TemplateDefinition[] = [
     fileName: '15_US_Monthly_Spending_Analyzer.xlsx',
     googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1ywTkoRZ6OVYltMSEPxkZ-yaGZoxsrchfzNQeI6iZfpU/copy',
     fileSize: '12.8 KB'
+  },
+  {
+    id: 'monthly-bill-tracker',
+    nameKey: 'templates.t16_name',
+    descKey: 'templates.t16_desc',
+    categoryKey: 'catBills',
+    categoryIcon: '📅',
+    fileName: '16_US_Monthly_Bill_Tracker.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/copy',
+    fileSize: '31.5 KB'
   }
 ];
 
 const CATEGORIES = [
-  { key: 'all', labelKey: 'templates.catAll', count: 15, icon: '📂' },
+  { key: 'all', labelKey: 'templates.catAll', count: 16, icon: '📂' },
   { key: 'catBudget', labelKey: 'templates.catBudget', count: 3, icon: '💰' },
   { key: 'catDebt', labelKey: 'templates.catDebt', count: 6, icon: '💳' },
   { key: 'catSavings', labelKey: 'templates.catSavings', count: 2, icon: '🛡️' },
   { key: 'catInvesting', labelKey: 'templates.catInvesting', count: 3, icon: '📈' },
-  { key: 'catBills', labelKey: 'templates.catBills', count: 1, icon: '🧾' }
+  { key: 'catBills', labelKey: 'templates.catBills', count: 2, icon: '🧾' }
 ];
 
 function getCategoryColor(categoryKey: string): { bg: string; text: string; border: string } {
@@ -231,7 +241,8 @@ const slugMap: Record<string, string> = {
   'sinking-fund': 'sinking-fund-planner',
   'net-worth': 'net-worth-tracker',
   'financial-dashboard': 'financial-dashboard',
-  'monthly-spending': 'monthly-spending-analyzer'
+  'monthly-spending': 'monthly-spending-analyzer',
+  'monthly-bill-tracker': 'monthly-bill-tracker'
 };
 ---
 

@@ -20,8 +20,10 @@ const isEn = locale === 'en';
 
     <!-- Main Headline -->
     <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-tight">
-      {isEn ? (
+      {locale === 'en' ? (
         <span>Free Expense Tracker</span>
+      ) : locale === 'fr' ? (
+        <span>{t('hero.h1', locale)}</span>
       ) : (
         <>
           {t('hero.title1', locale)} <br class="hidden sm:inline" />
@@ -34,7 +36,7 @@ const isEn = locale === 'en';
 
     <!-- Shorter supporting line -->
     <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed px-2">
-      {isEn ? 'Take control of your money: track income and spending, plan budgets, and download free financial templates.' : t('hero.description', locale)}
+      {isEn ? 'Take control of your money with our free monthly expense tracker: monitor income and spending, plan budgets, and download free financial templates.' : t('hero.description', locale)}
     </p>
   </div>
 </section>

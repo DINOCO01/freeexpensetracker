@@ -22,6 +22,7 @@ export const en = {
     selectLanguage: "Select Language"
   },
   hero: {
+    h1: "Free Expense Tracker",
     badge: "100% Free • No Sign-Up • Private Browser Storage",
     title1: "Take Full Control of Your Money.",
     title2: "Live Tracker, Debt Payoff & Financial Clarity.",
@@ -235,6 +236,8 @@ export const en = {
     t14_desc: "Track income, expenses, net cash flow and savings rate in one workbook.",
     t15_name: "Monthly Spending Analyzer",
     t15_desc: "Log spending and automatically see totals by category.",
+    t16_name: "Monthly Bill Tracker",
+    t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
     sheetsTitle: "Google Sheets Templates",
     sheetsDesc: "Pre-built spreadsheets with automated category SUMIFs and balance dashboards.",
     btnMakeCopy: "Make a Copy",

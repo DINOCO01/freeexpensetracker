@@ -22,6 +22,7 @@ export const de = {
     selectLanguage: "Sprache wählen"
   },
   hero: {
+    h1: "Kostenloser Ausgaben-Tracker",
     badge: "100% Kostenlos • Keine Registrierung • Lokaler Browserspeicher",
     title1: "Volle Kontrolle über Ihre Finanzen.",
     title2: "Live-Tracking, Schuldenfreiheit & Finanzielle Klarheit.",
