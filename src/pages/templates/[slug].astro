@@ -83,6 +83,16 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Jumpstart your starter emergency fund by saving $1,378 in one year.' },
     { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' },
     { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per paycheck directly into your emergency savings.' }
+  ],
+  'financial-dashboard': [
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Break down categorized spending trends feeding your financial dashboard.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Channel positive monthly cash flow into a structured $1,378 savings ladder.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Assign every dollar from net take-home pay to expenses and savings goals.' }
+  ],
+  'monthly-spending-analyzer': [
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Consolidate monthly cash flow, savings rate, and net worth in one workbook.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Redirect trimmed discretionary spending into weekly automated deposits.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Plan ahead for annual bills, car maintenance, and seasonal travel costs.' }
   ]
 };
 
@@ -801,6 +811,27 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       <p class="text-sm sm:text-base text-slate-700 leading-relaxed">
         {template.purpose}
       </p>
+
+      {template.slug === 'emergency-fund-planner' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Building your initial starter reserve from scratch? Pair this target worksheet with the <a href="/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">52-Week Savings Challenge</a> to accumulate your first $1,378 through small progressive deposits.
+        </p>
+      )}
+      {template.slug === 'sinking-fund-planner' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Prefer an easy weekly deposit schedule to pre-fund holiday gifts or travel buckets? You can <a href="/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">Start a 52-Week Savings Plan</a> right alongside your sinking fund categories.
+        </p>
+      )}
+      {template.slug === 'paycheck-budget' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Once you allocate savings from each paycheck, <a href="/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">track your weekly savings</a> (including our biweekly 26-payday variation) to grow an extra $1,378 reserve over the year.
+        </p>
+      )}
+      {(template.slug === 'financial-dashboard' || template.slug === 'monthly-spending-analyzer') && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Turn freed-up monthly cash flow into a tangible milestone using our <a href="/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">Free Savings Challenge Template</a> or ring-fence irregular bills with the <a href="/templates/sinking-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">Sinking Fund Planner</a>.
+        </p>
+      )}
 
       <div class="pt-2 border-t border-slate-100 space-y-2">
         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">

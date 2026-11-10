@@ -65,9 +65,19 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'monthly-spending-analyzer', title: 'Analyseur Mensuel des Dépenses', desc: 'Ventilez vos dépenses par catégorie et identifiez vos postes d\'économies.' }
   ],
   'paycheck-budget': [
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Transformez une part de chaque paie en un objectif d\'épargne annuel de 1 378 €.' },
     { slug: 'monthly-bill-tracker', title: 'Suivi Mensuel des Factures', desc: 'Centralisez factures récurrentes, échéances et prélèvements automatiques.' },
-    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez un matelas de sécurité de 3 à 6 mois de dépenses courantes.' },
-    { slug: 'subscription-audit', title: 'Audit des Abonnements', desc: 'Identifiez et supprimez les abonnements récurrents qui réduisent votre paie.' }
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez un matelas de sécurité de 3 à 6 mois de dépenses courantes.' }
+  ],
+  'financial-dashboard': [
+    { slug: 'monthly-spending-analyzer', title: 'Analyseur Mensuel des Dépenses', desc: 'Examinez vos postes de dépenses pour optimiser votre taux d\'épargne mensuel.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Transformez votre excédent mensuel en cagnotte annuelle de 1 378 €.' },
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Planifiez chaque euro dès réception du salaire avec la méthode base zéro.' }
+  ],
+  'monthly-spending-analyzer': [
+    { slug: 'financial-dashboard', title: 'Tableau de Bord Financier', desc: 'Visualisez votre trésorerie nette et vos indicateurs d\'épargne consolidés.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Réallouez les économies réalisées sur vos dépenses vers une épargne hebdomadaire.' },
+    { slug: 'sinking-fund-planner', title: 'Planificateur Épargne Ciblée', desc: 'Provisionnez vos dépenses annuelles ou saisonnières sans surprise.' }
   ],
   'emergency-fund-planner': [
     { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Accumulez 1 378 € d\'épargne en 52 semaines grâce à des dépôts graduels.' },
@@ -187,6 +197,27 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
         {template.purpose}
       </p>
+
+      {template.slug === 'emergency-fund-planner' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Vous démarrez votre première réserve de sécurité ? Associez cet objectif au <a href="/fr/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">Défi Épargne 52 Semaines</a> pour cumuler 1 378 € de façon progressive sur un an.
+        </p>
+      )}
+      {template.slug === 'sinking-fund-planner' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Pour alimenter vos enveloppes dédiées semaine après semaine, appuyez-vous sur notre <a href="/fr/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">plan d'épargne sur 52 semaines</a> adapté à votre rythme de paie.
+        </p>
+      )}
+      {template.slug === 'paycheck-budget' && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Dès qu'une part d'épargne est réservée sur votre salaire, vous pouvez <a href="/fr/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">suivre votre épargne hebdomadaire</a> pas à pas avec notre grille annuelle et sa variante bimensuelle.
+        </p>
+      )}
+      {(template.slug === 'financial-dashboard' || template.slug === 'monthly-spending-analyzer') && (
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Convertissez votre excédent mensuel en épargne concrète avec le <a href="/fr/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">modèle gratuit Défi Épargne 52 Semaines</a> ou anticipez vos charges annuelles via le <a href="/fr/templates/sinking-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">Planificateur Épargne Ciblée</a>.
+        </p>
+      )}
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">

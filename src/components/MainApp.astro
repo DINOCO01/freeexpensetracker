@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import TrackingChoiceHero from '../components/TrackingChoiceHero.astro';
+import SeasonalSavingsBanner from '../components/SeasonalSavingsBanner.astro';
+import { SEASONAL_PROMOTIONS } from '../config/promotions';
 import TabNav from '../components/TabNav.astro';
 import HeroSummary from '../components/HeroSummary.astro';
 import FinancialHealthCard from '../components/FinancialHealthCard.astro';
@@ -43,6 +45,9 @@ const { locale = 'en' } = Astro.props;
   <main class="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-8">
     <!-- Hero Header & Value Proposition -->
     <TrackingChoiceHero locale={locale} />
+
+    {/* Prepared December 2026 seasonal banner (disabled by default via src/config/promotions.ts) */}
+    {SEASONAL_PROMOTIONS.enableDecember2026SavingsPromo && <SeasonalSavingsBanner locale={locale} />}
 
     <!-- Navigation Tab Bar -->
     <TabNav locale={locale} />

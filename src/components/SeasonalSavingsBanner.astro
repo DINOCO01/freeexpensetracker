@@ -1,0 +1,65 @@
+---
+import { DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
+const isFr = locale === 'fr';
+const homeGoalHref = locale === 'en' ? '/?tab=goals&preset=savings-challenge' : `/${locale}/?tab=goals&preset=savings-challenge`;
+
+const copy = isFr
+  ? {
+      badge: 'Planification 2027',
+      title: 'Lancez votre Défi Épargne 52 Semaines pour 2027',
+      body: 'Planifiez vos dépôts hebdomadaires, suivez votre progression et atteignez votre objectif avec nos modèles gratuits Excel, Google Sheets et imprimables.',
+      primaryCta: 'Démarrer le Défi',
+      secondaryCta: 'Télécharger le Modèle Gratuit',
+      primaryHref: homeGoalHref,
+      secondaryHref: '/fr/templates/52-week-savings-challenge/'
+    }
+  : {
+      badge: '2027 Savings Prep',
+      title: 'Start Your 52-Week Savings Challenge for 2027',
+      body: 'Plan your weekly savings, track your progress and work towards your savings goal with our free Excel, Google Sheets and printable templates.',
+      primaryCta: 'Start the Challenge',
+      secondaryCta: 'Download Free Template',
+      primaryHref: homeGoalHref,
+      secondaryHref: '/templates/52-week-savings-challenge/'
+    };
+---
+
+<aside
+  id="seasonal-savings-2027-banner"
+  aria-label={copy.title}
+  class="no-print max-w-4xl mx-auto p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4"
+>
+  <div class="space-y-1">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700/60">
+      <span>🎯</span>
+      <span>{copy.badge}</span>
+    </span>
+    <p class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+      {copy.title}
+    </p>
+    <p class="text-xs text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+      {copy.body}
+    </p>
+  </div>
+
+  <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
+    <a
+      href={copy.primaryHref}
+      class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 transition-colors shadow-2xs"
+    >
+      {copy.primaryCta}
+    </a>
+    <a
+      href={copy.secondaryHref}
+      class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-semibold text-emerald-900 dark:text-emerald-200 bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-slate-750 border border-emerald-200 dark:border-emerald-700 transition-colors"
+    >
+      {copy.secondaryCta}
+    </a>
+  </div>
+</aside>
