@@ -378,17 +378,20 @@ try {
   // Test Interactive Calculator
   console.log('Testing 52-Week Calculator interactions...');
   const calc52Result = await savings52Page.eval(`(function() {
-    var totalEl = document.getElementById('calc-52-total');
-    var startInput = document.getElementById('input-52-start');
-    var reverseBtn = document.getElementById('btn-52-mode-reverse');
-    var rows = document.querySelectorAll('#calc-52-schedule-body tr');
+    var totalEl = document.getElementById('calc-challenge-total');
+    var peakEl = document.getElementById('calc-challenge-peak');
+    var startInput = document.getElementById('input-challenge-start');
+    var reverseBtn = document.getElementById('btn-mode-reverse');
+    var rows = document.querySelectorAll('#challenge-schedule-body tr');
 
     var defaultTotal = totalEl ? totalEl.textContent.trim() : '';
+    var defaultPeak = peakEl ? peakEl.textContent.trim() : '';
     var initialRowsCount = rows.length;
 
     // Click reverse
     if (reverseBtn) reverseBtn.click();
     var reverseTotal = totalEl ? totalEl.textContent.trim() : '';
+    var reversePeak = peakEl ? peakEl.textContent.trim() : '';
 
     // Change start input
     if (startInput) {
@@ -399,13 +402,17 @@ try {
 
     return {
       defaultTotal: defaultTotal,
+      defaultPeak: defaultPeak,
       reverseTotal: reverseTotal,
+      reversePeak: reversePeak,
       modifiedTotal: modifiedTotal,
       rowsCount: initialRowsCount
     };
   })()`);
   console.log('52-Week Calculator results:', calc52Result);
-  assert.strictEqual(calc52Result.defaultTotal, '$1,378', 'Default calculation equals $1,378');
+  assert(calc52Result.defaultTotal.includes('$1,378'), 'Default calculation equals $1,378');
+  assert.strictEqual(calc52Result.defaultPeak, '$52.00', 'Default week 52 deposit is $52.00');
+  assert.strictEqual(calc52Result.reversePeak, '$1.00', 'Reverse mode sets week 52 deposit to $1.00');
   assert.strictEqual(calc52Result.rowsCount, 52, 'Schedule table has 52 rows');
   assert(calc52Result.modifiedTotal.includes('$1,586'), 'Recalculates when start value is updated');
 
