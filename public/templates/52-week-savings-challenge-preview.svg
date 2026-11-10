@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="800" height="420" role="img" aria-label="52-week savings challenge spreadsheet in Excel preview">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="420" rx="16" fill="#f8fafc" />
+
+  <!-- Window Frame -->
+  <rect x="24" y="20" width="752" height="380" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow)" />
+
+  <!-- Top Excel Toolbar / Header -->
+  <path d="M 24 32 Q 24 20 36 20 L 764 20 Q 776 20 776 32 L 776 68 L 24 68 Z" fill="url(#headerGrad)" />
+  <circle cx="48" cy="44" r="5" fill="#34d399" />
+  <text x="64" y="49" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#ffffff">17_US_52_Week_Savings_Challenge.xlsx — Excel &amp; Google Sheets</text>
+  <rect x="652" y="31" width="104" height="24" rx="6" fill="#ffffff" fill-opacity="0.16" />
+  <text x="704" y="47" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#ecfdf5" text-anchor="middle">Target: $1,378</text>
+
+  <!-- Summary KPI Row -->
+  <rect x="44" y="84" width="224" height="58" rx="8" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1" />
+  <text x="58" y="104" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#065f46">52-WEEK TOTAL GOAL</text>
+  <text x="58" y="129" font-family="ui-monospace, monospace" font-size="22" font-weight="800" fill="#047857">$1,378.00</text>
+
+  <rect x="288" y="84" width="224" height="58" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+  <text x="302" y="104" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#475569">STARTING DEPOSIT</text>
+  <text x="302" y="129" font-family="ui-monospace, monospace" font-size="22" font-weight="700" fill="#0f172a">$1.00 / wk 1</text>
+
+  <rect x="532" y="84" width="224" height="58" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+  <text x="546" y="104" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#475569">WEEKLY INCREASE</text>
+  <text x="546" y="129" font-family="ui-monospace, monospace" font-size="22" font-weight="700" fill="#0f172a">+$1.00 / week</text>
+
+  <!-- Spreadsheet Grid Header -->
+  <rect x="44" y="156" width="712" height="30" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+  <text x="64" y="175" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#334155">WEEK</text>
+  <text x="200" y="175" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#334155">SCHEDULED DATE</text>
+  <text x="410" y="175" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#334155" text-anchor="end">DEPOSIT</text>
+  <text x="570" y="175" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#334155" text-anchor="end">RUNNING TOTAL</text>
+  <text x="690" y="175" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">STATUS</text>
+
+  <!-- Spreadsheet Rows -->
+  <g font-family="ui-monospace, monospace" font-size="12" fill="#0f172a">
+    <!-- Row 1 -->
+    <rect x="44" y="186" width="712" height="28" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.75" />
+    <text x="64" y="204" font-weight="700">Week 1</text>
+    <text x="200" y="204" fill="#64748b">Jan 01</text>
+    <text x="410" y="204" text-anchor="end">$1.00</text>
+    <text x="570" y="204" text-anchor="end" font-weight="700" fill="#047857">$1.00</text>
+    <rect x="664" y="191" width="52" height="18" rx="4" fill="#d1fae5" />
+    <text x="690" y="204" font-size="10" font-weight="700" fill="#065f46" text-anchor="middle">SAVED</text>
+
+    <!-- Row 2 -->
+    <rect x="44" y="214" width="712" height="28" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.75" />
+    <text x="64" y="232" font-weight="700">Week 2</text>
+    <text x="200" y="232" fill="#64748b">Jan 08</text>
+    <text x="410" y="232" text-anchor="end">$2.00</text>
+    <text x="570" y="232" text-anchor="end" font-weight="700" fill="#047857">$3.00</text>
+    <rect x="664" y="219" width="52" height="18" rx="4" fill="#d1fae5" />
+    <text x="690" y="232" font-size="10" font-weight="700" fill="#065f46" text-anchor="middle">SAVED</text>
+
+    <!-- Row 3 -->
+    <rect x="44" y="242" width="712" height="28" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.75" />
+    <text x="64" y="260" font-weight="700">Week 26 (Midyear)</text>
+    <text x="200" y="260" fill="#64748b">Jun 25</text>
+    <text x="410" y="260" text-anchor="end">$26.00</text>
+    <text x="570" y="260" text-anchor="end" font-weight="700" fill="#047857">$351.00</text>
+    <rect x="664" y="247" width="52" height="18" rx="4" fill="#e2e8f0" />
+    <text x="690" y="260" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">PLANNED</text>
+
+    <!-- Row 4 -->
+    <rect x="44" y="270" width="712" height="28" fill="#f8fafc" stroke="#e2e8f0" stroke-width="0.75" />
+    <text x="64" y="288" font-weight="700">Week 51</text>
+    <text x="200" y="288" fill="#64748b">Dec 17</text>
+    <text x="410" y="288" text-anchor="end">$51.00</text>
+    <text x="570" y="288" text-anchor="end" font-weight="700" fill="#047857">$1,326.00</text>
+    <rect x="664" y="275" width="52" height="18" rx="4" fill="#e2e8f0" />
+    <text x="690" y="288" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">PLANNED</text>
+
+    <!-- Row 5 (Final) -->
+    <rect x="44" y="298" width="712" height="32" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1" />
+    <text x="64" y="318" font-weight="800" fill="#065f46">Week 52 (Complete)</text>
+    <text x="200" y="318" fill="#047857">Dec 24</text>
+    <text x="410" y="318" text-anchor="end" font-weight="700" fill="#065f46">$52.00</text>
+    <text x="570" y="318" text-anchor="end" font-weight="800" fill="#065f46">$1,378.00</text>
+    <rect x="664" y="305" width="52" height="18" rx="4" fill="#059669" />
+    <text x="690" y="318" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle">GOAL</text>
+  </g>
+
+  <!-- Sheet Tabs Bar -->
+  <rect x="24" y="352" width="752" height="48" rx="0" fill="#f1f5f9" />
+  <rect x="44" y="362" width="110" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+  <text x="99" y="380" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">Challenge</text>
+
+  <rect x="162" y="362" width="110" height="28" rx="6" fill="#e2e8f0" />
+  <text x="217" y="380" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Reverse</text>
+
+  <rect x="280" y="362" width="120" height="28" rx="6" fill="#e2e8f0" />
+  <text x="340" y="380" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">Printable (A4/Letter)</text>
+</svg>
+

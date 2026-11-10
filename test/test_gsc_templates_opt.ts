@@ -234,6 +234,129 @@ for (const locTag of locMatches) {
   assert(url.endsWith('/'), `Sitemap URL has trailing slash: ${url}`);
 }
 
+// ==========================================
+// PART 5: On-Page SEO for /templates/52-week-savings-challenge/
+// ==========================================
+console.log('\n--- PART 5: Verifying On-Page SEO for /templates/52-week-savings-challenge/ ---');
+
+assert(fs.existsSync(path.join(distDir, 'templates/52-week-savings-challenge/index.html')), 'Route /templates/52-week-savings-challenge/ exists in build');
+assert(fs.existsSync(path.join(distDir, 'templates/17_US_52_Week_Savings_Challenge.xlsx')), 'Excel workbook 17_US_52_Week_Savings_Challenge.xlsx exists in build');
+assert(fs.existsSync(path.join(distDir, 'templates/52-week-savings-challenge-preview.svg')), 'Preview SVG image exists in build');
+
+const savingsHtml = fs.readFileSync(path.join(distDir, 'templates/52-week-savings-challenge/index.html'), 'utf-8');
+
+assert(
+  savingsHtml.includes('<title>Free 52-Week Savings Challenge (Excel, Google Sheets &amp; Printable) | Free Expense Tracker</title>') ||
+  savingsHtml.includes('<title>Free 52-Week Savings Challenge (Excel, Google Sheets & Printable) | Free Expense Tracker</title>'),
+  '52-week-savings-challenge has exact Title tag'
+);
+
+// Check meta description
+const descMatch52 = savingsHtml.match(/<meta name="description" content="([^"]+)"/);
+assert(Boolean(descMatch52), '52-week-savings-challenge meta description exists');
+if (descMatch52) {
+  const desc = descMatch52[1];
+  assert(desc.length < 155, `52-week meta description is under 155 chars (${desc.length} chars)`);
+  assert(desc.toLowerCase().includes('free'), '52-week meta description mentions free');
+  assert(desc.includes('Excel'), '52-week meta description mentions Excel');
+  assert(desc.includes('Google Sheets'), '52-week meta description mentions Google Sheets');
+  assert(desc.toLowerCase().includes('printable'), '52-week meta description mentions printable');
+  assert(desc.includes('$1,378'), '52-week meta description mentions $1,378');
+  assert(desc.toLowerCase().includes('no sign-up') || desc.toLowerCase().includes('no signup'), '52-week meta description mentions no sign-up');
+}
+
+// Check single H1
+const h1Matches = savingsHtml.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) || [];
+assert(h1Matches.length === 1, `52-week-savings-challenge has exactly 1 H1 (found ${h1Matches.length})`);
+assert(savingsHtml.includes('>Free 52-Week Savings Challenge</h1>'), 'H1 is "Free 52-Week Savings Challenge"');
+
+// Check intro paragraph
+const introMatch = savingsHtml.match(/<\/h1>\s*<p[^>]*>([\s\S]*?)<\/p>/);
+assert(Boolean(introMatch), 'Intro paragraph directly follows H1');
+if (introMatch) {
+  const introText = introMatch[1].trim();
+  const sentences = introText.split(/(?<=[.!?])\s+/).filter(Boolean);
+  assert(sentences.length === 2, `Intro has exactly 2 sentences (found ${sentences.length})`);
+  assert(sentences[0].toLowerCase().includes('52-week savings challenge'), 'First sentence includes "52-week savings challenge"');
+  assert(introText.includes('$1,378') && introText.toLowerCase().includes('year'), 'Opening 2 sentences explain what it is and that it saves $1,378 in a year');
+}
+
+// Check exact H2 sequence
+const h2Matches = Array.from(savingsHtml.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/g)).map(m =>
+  m[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+);
+const expectedH2s = [
+  'How the 52-Week Savings Challenge Works',
+  '52-Week Savings Challenge Chart',
+  'Reverse 52-Week Challenge',
+  'Biweekly Version (Paid Every Two Weeks)',
+  'Tips to Finish the Challenge',
+  'FAQ'
+];
+assert(
+  JSON.stringify(h2Matches) === JSON.stringify(expectedH2s),
+  `H2s match exact required order (found: ${JSON.stringify(h2Matches)})`
+);
+
+// Check full 52-week static HTML table
+assert(savingsHtml.includes('<table id="challenge-chart-table"'), 'Static HTML table #challenge-chart-table is present');
+const tbodyMatch = savingsHtml.match(/<tbody id="challenge-schedule-body"[^>]*>([\s\S]*?)<\/tbody>/);
+assert(Boolean(tbodyMatch), '#challenge-schedule-body exists in static HTML');
+if (tbodyMatch) {
+  const trMatches = tbodyMatch[1].match(/<tr\b/g) || [];
+  assert(trMatches.length === 52, `Static HTML table contains all 52 weeks (found ${trMatches.length} rows)`);
+  assert(tbodyMatch[1].includes('Week 1') && tbodyMatch[1].includes('$1.00'), 'Static table includes Week 1 row ($1.00)');
+  assert(tbodyMatch[1].includes('Week 52') && tbodyMatch[1].includes('$52.00') && tbodyMatch[1].includes('$1,378.00'), 'Static table includes Week 52 row ($52.00 / $1,378.00)');
+}
+
+// Check canonical, OG, Twitter tags
+assert(
+  savingsHtml.includes('<link rel="canonical" href="https://freexpensetracker.com/templates/52-week-savings-challenge/">') ||
+  savingsHtml.includes('<link rel="canonical" href="https://freexpensetracker.com/templates/52-week-savings-challenge/" />'),
+  'Canonical URL points to /templates/52-week-savings-challenge/ with trailing slash'
+);
+assert(savingsHtml.includes('property="og:title"'), 'og:title tag present');
+assert(savingsHtml.includes('property="og:description"'), 'og:description tag present');
+assert(savingsHtml.includes('property="og:url" content="https://freexpensetracker.com/templates/52-week-savings-challenge/"'), 'og:url matches canonical');
+assert(savingsHtml.includes('property="og:image" content="https://freexpensetracker.com/web-app-manifest-512x512.png"'), 'og:image uses site image system');
+assert(savingsHtml.includes('name="twitter:card"'), 'twitter:card present');
+assert(savingsHtml.includes('name="twitter:title"'), 'twitter:title present');
+assert(savingsHtml.includes('name="twitter:description"'), 'twitter:description present');
+assert(savingsHtml.includes('name="twitter:image"'), 'twitter:image present');
+
+// Check preview image attributes
+const imgMatch = savingsHtml.match(/<img\b[^>]*src="\/templates\/52-week-savings-challenge-preview\.svg"[^>]*>/);
+assert(Boolean(imgMatch), 'Preview image tag is present');
+if (imgMatch) {
+  const imgTag = imgMatch[0];
+  assert(imgTag.includes('alt="52-week savings challenge spreadsheet in Excel"'), 'Image has descriptive alt text');
+  assert(imgTag.includes('width="800"') && imgTag.includes('height="420"'), 'Image sets explicit width and height');
+  assert(imgTag.includes('loading="lazy"'), 'Image uses loading="lazy" below the fold');
+}
+
+// Check BreadcrumbList JSON-LD & visible breadcrumbs
+assert(savingsHtml.includes('aria-label="Breadcrumb"'), 'Visible breadcrumb nav is present');
+assert(savingsHtml.includes('"@type":"BreadcrumbList"'), 'BreadcrumbList schema present');
+assert(
+  savingsHtml.includes('"name":"Home"') &&
+  savingsHtml.includes('"name":"Templates"') &&
+  savingsHtml.includes('"name":"52-Week Savings Challenge"'),
+  'BreadcrumbList schema includes Home > Templates > 52-Week Savings Challenge'
+);
+assert(savingsHtml.includes('"@type":"FAQPage"'), 'FAQPage JSON-LD schema is present');
+
+// Check internal links & descriptive anchor text
+assert(savingsHtml.includes('>sinking fund planner</a>'), 'Internal link uses descriptive anchor text "sinking fund planner"');
+assert(savingsHtml.includes('>emergency fund planner</a>'), 'Internal link uses descriptive anchor text "emergency fund planner"');
+assert(!savingsHtml.toLowerCase().includes('>click here</a>'), 'Never uses "click here" anchor text');
+
+// Check Homepage link & download button text
+assert(indexHtml.includes('/templates/52-week-savings-challenge/'), 'Homepage templates section links to /templates/52-week-savings-challenge/');
+assert(indexHtml.includes('52-Week Savings Challenge</a>'), 'Homepage templates section uses descriptive anchor text');
+assert(savingsHtml.includes('>Download the 52-Week Savings Challenge (Excel)<'), 'Download button text matches "Download the 52-Week Savings Challenge (Excel)"');
+assert(savingsHtml.includes('/?tab=goals&amp;preset=savings-challenge') || savingsHtml.includes('/?tab=goals&preset=savings-challenge'), 'App CTA links to /?tab=goals&preset=savings-challenge');
+assert(sitemapContent.includes('<loc>https://freexpensetracker.com/templates/52-week-savings-challenge/</loc>'), 'Sitemap includes /templates/52-week-savings-challenge/');
+
 console.log(`\n========================================================`);
 console.log(`ALL VERIFICATION TESTS PASSED: ${passedTests} / ${totalTests} assertions verified!`);
 console.log(`========================================================\n`);

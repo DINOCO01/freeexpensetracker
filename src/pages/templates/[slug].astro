@@ -98,6 +98,11 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   description={template.metaDescription}
   canonicalUrl={canonicalUrl}
   faqSchema={template.faq}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'Templates', url: '/templates/' },
+    { name: template.slug === '52-week-savings-challenge' ? '52-Week Savings Challenge' : template.h1, url: `/templates/${template.slug}/` }
+  ]}
 >
   <Navbar />
 
@@ -171,7 +176,7 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          <span>Download Free Template (.xlsx)</span>
+          <span>{template.slug === '52-week-savings-challenge' ? 'Download the 52-Week Savings Challenge (Excel)' : 'Download Free Template (.xlsx)'}</span>
         </a>
         <a
           href="/templates/"
@@ -410,78 +415,135 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       </article>
     )}
 
-    {/* SPECIALIZED DEEP-DIVE & INTERACTIVE CALCULATOR: 52-Week Savings Challenge */}
+    {/* SPECIALIZED DEEP-DIVE, STATIC HTML CHART & INTERACTIVE CALCULATOR: 52-Week Savings Challenge */}
     {template.slug === '52-week-savings-challenge' && (
       <>
-        <!-- Interactive 52-Week Savings Calculator Section -->
-        <section id="interactive-challenge-calculator" class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-            <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
-                Interactive Savings Simulator
-              </span>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
-                Live 52-Week Savings Calculator
-              </h2>
+        <!-- H2 #1: How the 52-Week Savings Challenge Works -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5 text-slate-700 leading-relaxed">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+            How the 52-Week Savings Challenge Works
+          </h2>
+          <p class="text-xs sm:text-sm">
+            The classic 52-week savings challenge turns pocket change into a dependable year-end cash reserve. You deposit <strong>$1 in week 1</strong>, <strong>$2 in week 2</strong>, <strong>$3 in week 3</strong>, and continue adding $1 each week until depositing <strong>$52 in week 52</strong>. Because the weekly contribution grows gently over time, saving feels manageable early on while building lasting momentum toward <strong>$1,378.00</strong> in total savings.
+          </p>
+
+          <!-- Lazy-loaded Excel Preview Image with explicit width/height and descriptive alt text -->
+          <figure class="rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 p-3">
+            <img
+              src="/templates/52-week-savings-challenge-preview.svg"
+              alt="52-week savings challenge spreadsheet in Excel"
+              width="800"
+              height="420"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-auto rounded-xl border border-slate-200/80"
+            />
+            <figcaption class="text-[11px] text-slate-500 text-center pt-2 font-mono">
+              Preview of the Challenge, Reverse, and Printable worksheet tabs in 17_US_52_Week_Savings_Challenge.xlsx
+            </figcaption>
+          </figure>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Included Excel &amp; Printable Tabs
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {template.sheetNames.map((sheet) => (
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
+                    📋 {sheet}
+                  </span>
+                ))}
+              </div>
             </div>
-            <span class="text-xs text-slate-500 font-mono">
-              Model Regular vs. Reverse Pace
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Verified Dynamic Spreadsheet Formulas
+              </h3>
+              <ul class="space-y-1 text-xs font-mono text-slate-700">
+                {template.keyFormulas.map((formula) => (
+                  <li class="flex items-start gap-1.5">
+                    <span class="text-emerald-600 font-bold shrink-0">✓</span>
+                    <span>{formula}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- H2 #2: 52-Week Savings Challenge Chart (Full Static HTML Table + Interactive Calculator) -->
+        <section id="interactive-challenge-calculator" class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="space-y-1.5 border-b border-slate-100 pb-4">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
+              Complete Schedule &amp; Live Calculator
             </span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+              52-Week Savings Challenge Chart
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-600">
+              Review every weekly deposit and cumulative balance in the full 52-week chart below, or adjust your starting amount and direction using the interactive controls.
+            </p>
           </div>
 
           <!-- Controls: Starting Amount, Weekly Step, Direction Mode -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div>
-              <label for="input-challenge-start" class="block text-xs font-bold text-slate-700 mb-1">
-                Starting Amount ($)
-              </label>
-              <input
-                type="number"
-                id="input-challenge-start"
-                class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                value="1"
-                min="0.1"
-                step="0.5"
-              />
-              <span class="text-[10px] text-slate-500">Default: $1.00</span>
-            </div>
-
-            <div>
-              <label for="input-challenge-step" class="block text-xs font-bold text-slate-700 mb-1">
-                Weekly Increase ($)
-              </label>
-              <input
-                type="number"
-                id="input-challenge-step"
-                class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                value="1"
-                min="0.1"
-                step="0.5"
-              />
-              <span class="text-[10px] text-slate-500">Default: $1.00</span>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">
-                Challenge Direction
-              </label>
-              <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-200/70 border border-slate-300">
-                <button
-                  type="button"
-                  id="btn-mode-standard"
-                  class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer"
-                >
-                  Standard ($1 ➔ $52)
-                </button>
-                <button
-                  type="button"
-                  id="btn-mode-reverse"
-                  class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer"
-                >
-                  Reverse ($52 ➔ $1)
-                </button>
+          <div class="space-y-3">
+            <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+              Customize Starting Amount &amp; Pace
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div>
+                <label for="input-challenge-start" class="block text-xs font-bold text-slate-700 mb-1">
+                  Starting Amount ($)
+                </label>
+                <input
+                  type="number"
+                  id="input-challenge-start"
+                  class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  value="1"
+                  min="0.1"
+                  step="0.5"
+                />
+                <span class="text-[10px] text-slate-500">Default: $1.00</span>
               </div>
-              <span class="text-[10px] text-slate-500">Reverse starts with largest deposit</span>
+
+              <div>
+                <label for="input-challenge-step" class="block text-xs font-bold text-slate-700 mb-1">
+                  Weekly Increase ($)
+                </label>
+                <input
+                  type="number"
+                  id="input-challenge-step"
+                  class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  value="1"
+                  min="0.1"
+                  step="0.5"
+                />
+                <span class="text-[10px] text-slate-500">Default: $1.00</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">
+                  Challenge Direction
+                </label>
+                <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-200/70 border border-slate-300">
+                  <button
+                    type="button"
+                    id="btn-mode-standard"
+                    class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer"
+                  >
+                    Standard ($1 ➔ $52)
+                  </button>
+                  <button
+                    type="button"
+                    id="btn-mode-reverse"
+                    class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer"
+                  >
+                    Reverse ($52 ➔ $1)
+                  </button>
+                </div>
+                <span class="text-[10px] text-slate-500">Reverse starts with largest deposit</span>
+              </div>
             </div>
           </div>
 
@@ -518,92 +580,218 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
             </div>
           </div>
 
-          <!-- 52-Row Schedule Table -->
+          <!-- Real Full Static HTML Table (All 52 Weeks Rendered at Build Time + Interactive JS Updates) -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 font-mono">
-                52-Week Deposit &amp; Balance Schedule
+                Full 52-Week Deposit &amp; Running Total Table
               </h3>
-              <span class="text-[11px] text-slate-500 font-mono">Scroll to view all 52 weeks</span>
+              <span class="text-[11px] text-slate-500 font-mono">Weeks 1–52 ($1,378.00 Goal)</span>
             </div>
-            <div class="border border-slate-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
-              <table class="w-full text-xs text-left">
+            <div class="border border-slate-200 rounded-2xl overflow-hidden max-h-96 overflow-y-auto">
+              <table id="challenge-chart-table" class="w-full text-xs text-left">
                 <thead class="bg-slate-100 text-slate-700 font-bold font-mono border-b border-slate-200 sticky top-0 z-10">
                   <tr>
-                    <th class="py-2.5 px-3">Week #</th>
-                    <th class="py-2.5 px-3 text-right">Weekly Deposit</th>
-                    <th class="py-2.5 px-3 text-right">Cumulative Total</th>
+                    <th class="py-2.5 px-3">Week</th>
+                    <th class="py-2.5 px-3 text-right">Deposit</th>
+                    <th class="py-2.5 px-3 text-right">Running Total</th>
                     <th class="py-2.5 px-3 text-center">Quarter</th>
                   </tr>
                 </thead>
                 <tbody id="challenge-schedule-body" class="divide-y divide-slate-100 font-mono">
-                  <!-- Generated dynamically by inline script -->
+                  {Array.from({ length: 52 }, (_, i) => {
+                    const wk = i + 1;
+                    const dep = wk;
+                    const cumulative = (wk * (wk + 1)) / 2;
+                    const quarter = wk <= 13 ? 'Q1' : wk <= 26 ? 'Q2' : wk <= 39 ? 'Q3' : 'Q4';
+                    const qClass = wk <= 13 ? 'bg-sky-50 text-sky-700' : wk <= 26 ? 'bg-teal-50 text-teal-700' : wk <= 39 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700';
+                    return (
+                      <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="py-2 px-3 font-bold text-slate-800">Week {wk}</td>
+                        <td class="py-2 px-3 text-right font-medium text-slate-900">${dep.toFixed(2)}</td>
+                        <td class="py-2 px-3 text-right font-bold text-emerald-800">${cumulative.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td class="py-2 px-3 text-center">
+                          <span class={`px-2 py-0.5 rounded text-[10px] font-bold ${qClass}`}>{quarter}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- Deep-Dive Editorial Guide (350-500 words) -->
-        <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6 text-slate-700 leading-relaxed">
-          <div class="space-y-2 border-b border-slate-100 pb-4">
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
-              52-Week Savings Challenge Guide: Variations &amp; Finishing Strategies
+        <!-- H2 #3: Reverse 52-Week Challenge -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+            Reverse 52-Week Challenge
+          </h2>
+          <p class="text-xs sm:text-sm">
+            While the standard challenge feels painless in January, its highest required payments arrive in November and December, when weekly deposits jump to $49, $50, $51, and $52 ($202 total in month 12). Because holiday gifts, winter travel, and family hosting already stretch December cash flow, many savers drop out right before finishing.
+          </p>
+          <p class="text-xs sm:text-sm">
+            The <strong>Reverse 52-Week Challenge</strong> flips the table completely: you save <strong>$52 in week 1</strong>, <strong>$51 in week 2</strong>, <strong>$50 in week 3</strong>, and decrease by $1 per week down to just <strong>$1 in week 52</strong>. By front-loading larger deposits while New Year resolution energy is highest, you cross $1,000+ saved by early autumn and only need to set aside $10 across the final four weeks of December.
+          </p>
+          <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-1.5">
+            <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+              Why Reverse Works Better for Holiday Budgets
+            </h3>
+            <p class="text-xs text-slate-700">
+              Both plans save the exact same <strong>$1,378.00</strong> over 52 weeks, but reversing the order protects your December discretionary cash flow while locking in most of your savings before summer ends.
+            </p>
+          </div>
+        </section>
+
+        <!-- H2 #4: Biweekly Version (Paid Every Two Weeks) -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+            Biweekly Version (Paid Every Two Weeks)
+          </h2>
+          <p class="text-xs sm:text-sm">
+            If you receive a biweekly paycheck (26 paydays per year), aligning transfers with your payday cycle is easier than making 52 separate deposits. Combine each pair of consecutive weeks into a single payday transfer using the biweekly method:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Combined Progressive Pairs (26 Paychecks)
+              </h3>
+              <ul class="space-y-1 text-xs text-slate-700 list-disc list-inside">
+                <li><strong>Paycheck 1:</strong> Deposit $3 (Week 1 + Week 2)</li>
+                <li><strong>Paycheck 2:</strong> Deposit $7 (Week 3 + Week 4)</li>
+                <li><strong>Paycheck 3:</strong> Deposit $11 (Week 5 + Week 6)</li>
+                <li><strong>Paycheck 26:</strong> Deposit $103 (Week 51 + Week 52)</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Flat Biweekly Shortcut ($53 Every Payday)
+              </h3>
+              <p class="text-xs text-slate-700">
+                Prefer a fixed automatic transfer? Simply auto-transfer <strong>$53.00 every two weeks</strong> across 26 paychecks ($53 &times; 26 = <strong>$1,378.00</strong>). Pair your pay-cycle savings directly inside our <a href="/templates/paycheck-budget/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">paycheck budget spreadsheet</a>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- H2 #5: Tips to Finish the Challenge -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5 text-slate-700 leading-relaxed">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+            Tips to Finish the Challenge
+          </h2>
+          <ol class="space-y-2.5 text-xs sm:text-sm list-decimal list-inside">
+            <li><strong>Separate Your Savings Account:</strong> Send weekly deposits to an external high-yield savings account rather than keeping them inside your primary checking account so you are not tempted to spend them.</li>
+            <li><strong>Keep the Printable Grid Visible:</strong> Print Tab 3 from this Excel file and hang it on your fridge or desk so checking off completed boxes reinforces weekly progress.</li>
+            <li><strong>Cross Off Big Weeks with Windfalls:</strong> Whenever you receive tax refunds, cash-back bonuses, or overtime pay, immediately check off weeks 50, 51, and 52 to eliminate peak-week pressure.</li>
+            <li><strong>Give Your $1,378 a Clear Purpose:</strong> Assign your savings target to an <a href="/templates/emergency-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">emergency fund planner</a> for unexpected bills or a <a href="/templates/sinking-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">sinking fund planner</a> for planned vacations and car repairs.</li>
+          </ol>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                How to Use This Spreadsheet in 4 Steps
+              </h3>
+              <ol class="space-y-1.5 text-xs text-slate-600 list-decimal list-inside">
+                {template.howToUse.map((step) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Who Benefits Most
+              </h3>
+              <ul class="space-y-1.5 text-xs text-slate-600 list-disc list-inside">
+                {template.whoBenefits.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECOND CTA BLOCK: Prefer not to use a spreadsheet? -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+              💻
+            </div>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+                Prefer not to use a spreadsheet?
+              </p>
+              <p class="text-xs text-slate-600">
+                Track this free in your browser with zero setup or sign-up.
+              </p>
+            </div>
+          </div>
+          <a
+            href={appTargetUrl}
+            data-template-id={template.slug}
+            class="template-to-app-btn shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+          >
+            <span>Track Free in Browser &rarr;</span>
+          </a>
+        </div>
+
+        <!-- H2 #6: FAQ -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+          <div class="flex items-center gap-2.5 text-slate-900">
+            <span class="text-xl">❓</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold font-['Outfit',sans-serif]">
+              FAQ
             </h2>
-            <p class="text-xs sm:text-sm text-slate-500">
-              Master the classic $1,378 challenge, avoid holiday burnout with the reverse version, or adapt it to your biweekly paycheck cycle.
-            </p>
           </div>
-
-          <div class="space-y-4 text-xs sm:text-sm">
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
-              How the 52-Week Savings Challenge Works
-            </h3>
-            <p>
-              The standard 52-week savings challenge is one of the most accessible personal finance routines ever designed. The concept is straightforward: you deposit an amount corresponding to the week of the year. In week 1, you save $1; in week 2, $2; in week 3, $3; gradually increasing each week until you deposit $52 in week 52. Starting with loose pocket change lowers the psychological barrier to saving and progressively conditions your money habits. Over 52 weeks, these micro-deposits compound into exactly <strong>$1,378.00</strong>—an ideal emergency starter fund, holiday shopping reserve, or sinking fund cushion.
-            </p>
-
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
-              The Reverse 52-Week Challenge: Avoiding December Budget Shock
-            </h3>
-            <p>
-              While the standard schedule feels effortless in January, its heaviest financial strain hits in November and December, when deposits rise to $49, $50, $51, and $52 ($202 total in month 12). For many households, December is already the most expensive month of the year due to travel, gifts, and holiday meals.
-            </p>
-            <p>
-              The <strong>Reverse 52-Week Challenge</strong> flips the order: you deposit $52 in week 1, $51 in week 2, $50 in week 3, and descend to just $1 during week 52. This structure takes advantage of high New Year resolution motivation when enthusiasm is peak, while tapering your weekly commitment to single digits when holiday expenses peak at year-end.
-            </p>
-
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
-              The Biweekly Paycheck Variation
-            </h3>
-            <p>
-              If your employer pays you on a biweekly schedule (26 pay periods per year), making 52 distinct weekly transfers can feel awkward to track against your checking account cash flow. You can adapt the challenge seamlessly by combining consecutive pairs of weeks on each payday:
-            </p>
-            <ul class="space-y-1.5 list-disc list-inside pl-2">
-              <li><strong>Paycheck 1:</strong> Deposit $3 (Week 1 + Week 2)</li>
-              <li><strong>Paycheck 2:</strong> Deposit $7 (Week 3 + Week 4)</li>
-              <li><strong>Paycheck 3:</strong> Deposit $11 (Week 5 + Week 6)</li>
-            </ul>
-            <p>
-              Alternatively, you can smooth the biweekly schedule into an even automated deposit of <strong>$53.00 every two weeks</strong> ($53 &times; 26 = $1,378), capturing the exact same cash reserve with zero manual math.
-            </p>
-
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
-              4 Practical Tips to Actually Finish the Challenge
-            </h3>
-            <ol class="space-y-2 list-decimal list-inside">
-              <li><strong>Automate Transfers into a Dedicated Account:</strong> Move each deposit into a separate high-yield savings account away from your everyday checking balance so you are never tempted to spend it.</li>
-              <li><strong>Post the Printable Sheet in Plain View:</strong> Print the one-page 52-box grid included in this workbook and tape it to your refrigerator or workspace to enjoy the tangible gratification of checking off boxes.</li>
-              <li><strong>Use Windfalls to Cross Off Big Weeks Early:</strong> Whenever you receive unexpected cash (such as tax refunds, birthday money, or cash-back bonuses), immediately cross off weeks 50, 51, and 52 to remove pressure later in the year.</li>
-              <li><strong>Anchor to Long-Term Financial Milestones:</strong> Pair your challenge directly with an <a href="/templates/emergency-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">emergency fund planner</a>, <a href="/templates/sinking-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">sinking fund planner</a>, or your monthly <a href="/templates/paycheck-budget/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">paycheck budget spreadsheet</a>.</li>
-            </ol>
+          <div class="space-y-3">
+            {template.faq.map((item) => (
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900">
+                  {item.question}
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {item.answer}
+                </p>
+              </div>
+            ))}
           </div>
-        </article>
+        </section>
+
+        <!-- Related Financial Templates (H3 to keep strict 6-H2 outline) -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5 text-slate-900">
+              <span class="text-xl">🔗</span>
+              <h3 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+                Related Financial Templates
+              </h3>
+            </div>
+            <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
+              View All Templates &rarr;
+            </a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {relatedTemplates.map((rel) => (
+              <a
+                href={`/templates/${rel.slug}/`}
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
+              >
+                <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
+                  {rel.title}
+                </div>
+                <p class="text-[11px] text-slate-600 leading-snug">
+                  {rel.desc}
+                </p>
+              </a>
+            ))}
+          </div>
+        </section>
       </>
     )}
 
-    <!-- Section 1: Purpose & Workbook Architecture -->
-    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+    {template.slug !== '52-week-savings-challenge' && (
+      <>
+        <!-- Section 1: Purpose & Workbook Architecture -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
       <div class="flex items-center gap-2.5 text-slate-900">
         <span class="text-xl">🎯</span>
         <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
@@ -757,13 +945,15 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
             <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
               {rel.title}
             </div>
-            <p class="text-[11px] text-slate-600 leading-snug">
-              {rel.desc}
-            </p>
-          </a>
-        ))}
-      </div>
-    </section>
+        <p class="text-[11px] text-slate-600 leading-snug">
+          {rel.desc}
+        </p>
+      </a>
+    ))}
+  </div>
+</section>
+      </>
+    )}
 
     <!-- Bottom CTA Bar -->
     <aside class="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">

@@ -366,7 +366,12 @@ const slugMap: Record<string, string> = {
 
               <div>
                 <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
-                  {t(tmpl.nameKey, locale)}
+                  <a
+                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                    class="hover:underline focus:outline-none"
+                  >
+                    {t(tmpl.nameKey, locale)}
+                  </a>
                 </h3>
                 <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                   {t(tmpl.descKey, locale)}
@@ -423,7 +428,12 @@ const slugMap: Record<string, string> = {
 
               <div>
                 <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
-                  {t(tmpl.nameKey, locale)}
+                  <a
+                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                    class="hover:underline focus:outline-none"
+                  >
+                    {t(tmpl.nameKey, locale)}
+                  </a>
                 </h3>
                 <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                   {t(tmpl.descKey, locale)}

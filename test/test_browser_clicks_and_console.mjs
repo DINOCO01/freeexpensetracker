@@ -359,6 +359,36 @@ try {
   console.log(`52-Week Challenge H1: "${savingsH1}"`);
   assert.strictEqual(savingsH1, 'Free 52-Week Savings Challenge', 'H1 is exactly "Free 52-Week Savings Challenge"');
 
+  // Verify H1 count, H2 outline order, Download Button text, and Lazy Preview image
+  const seoAudit52 = await savings52Page.eval(`(function() {
+    var h1Count = document.querySelectorAll('h1').length;
+    var h2Texts = Array.from(document.querySelectorAll('h2')).map(function(el) { return el.textContent.trim(); });
+    var dl = document.querySelector('a[download]');
+    var img = document.querySelector('img[src*="52-week-savings-challenge-preview"]');
+    return {
+      h1Count: h1Count,
+      h2Texts: h2Texts,
+      dlText: dl ? dl.textContent.trim() : '',
+      imgAlt: img ? img.getAttribute('alt') : '',
+      imgWidth: img ? img.getAttribute('width') : '',
+      imgHeight: img ? img.getAttribute('height') : '',
+      imgLoading: img ? img.getAttribute('loading') : ''
+    };
+  })()`);
+  console.log('52-Week On-Page SEO Audit:', seoAudit52);
+  assert.strictEqual(seoAudit52.h1Count, 1, 'Page has only 1 H1');
+  assert.deepStrictEqual(seoAudit52.h2Texts, [
+    'How the 52-Week Savings Challenge Works',
+    '52-Week Savings Challenge Chart',
+    'Reverse 52-Week Challenge',
+    'Biweekly Version (Paid Every Two Weeks)',
+    'Tips to Finish the Challenge',
+    'FAQ'
+  ], 'H2s appear in exact required order');
+  assert.strictEqual(seoAudit52.dlText, 'Download the 52-Week Savings Challenge (Excel)', 'Download button text matches requirement');
+  assert(seoAudit52.imgAlt.includes('52-week savings challenge spreadsheet in Excel'), 'Preview image has descriptive alt text');
+  assert(seoAudit52.imgWidth && seoAudit52.imgHeight && seoAudit52.imgLoading === 'lazy', 'Preview image specifies width, height, and loading="lazy"');
+
   // Check center element overlay
   const savingsCenterTag = await savings52Page.eval(`(function() {
     var el = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);

@@ -711,7 +711,7 @@ export const TEMPLATES_DATA: TemplateData[] = [
       'Running Balance = Previous_Balance + Weekly_Deposit'
     ],
     purpose: 'Systematically build a $1,378 cash cushion in one year by saving small, progressive weekly deposits using a classic or reverse 52-week money schedule.',
-    overview: 'The 52-Week Savings Challenge is a proven behavioral finance strategy to automate consistent savings without shocking your monthly cash flow. Starting with just $1 on week 1 and building to $52 in week 52, you painlessly accumulate $1,378 over 12 months. This free spreadsheet and printable tracker provides standard progressive, reverse, and biweekly models with dynamic progress formulas and checkbox accountability.',
+    overview: 'The 52-week savings challenge is a progressive weekly saving plan where you deposit $1 in week 1, $2 in week 2, and increase by $1 each week up to $52 in week 52. Following this simple schedule saves $1,378 in a year without putting sudden strain on your monthly budget.',
     howToUse: [
       'Choose your preferred savings direction: the classic progressive ladder ($1 to $52) or the reverse challenge ($52 down to $1).',
       'Set your challenge start date to automatically generate dates for all 52 weeks of the calendar year.',

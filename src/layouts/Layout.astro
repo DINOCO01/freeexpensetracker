@@ -20,6 +20,7 @@ interface Props {
   currentLocale?: SupportedLocale;
   noindex?: boolean;
   faqSchema?: { question: string; answer: string }[];
+  breadcrumbs?: { name: string; url: string }[];
 }
 
 const {
@@ -30,6 +31,7 @@ const {
   canonicalUrl,
   noindex = false,
   faqSchema,
+  breadcrumbs,
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -109,14 +111,21 @@ const structuredData = [
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": t('meta.siteName', locale),
-        "item": `${siteUrl}/`
-      }
-    ]
+    "itemListElement": breadcrumbs && breadcrumbs.length > 0
+      ? breadcrumbs.map((crumb, idx) => ({
+          "@type": "ListItem",
+          "position": idx + 1,
+          "name": crumb.name,
+          "item": crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url.startsWith('/') ? crumb.url : '/' + crumb.url}`
+        }))
+      : [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": t('meta.siteName', locale),
+            "item": `${siteUrl}/`
+          }
+        ]
   }
 ];
 
