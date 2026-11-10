@@ -2057,6 +2057,13 @@ const { locale = 'en' } = Astro.props;
     }
   }
 
+  function trackFormComplete(formId: string, extra: Record<string, any> = {}) {
+    track('form_complete', {
+      form_id: formId,
+      ...extra
+    });
+  }
+
   // GA4 event tracking states
   let expenseLoggerMethod: 'manual' | 'preset' = 'manual';
   let incomeSetTracked = false;
@@ -2146,11 +2153,20 @@ const { locale = 'en' } = Astro.props;
     };
 
     state.transactions.unshift(newTx);
-    saveStoredState({ transactions: state.transactions });
+    const saved = saveStoredState({ transactions: state.transactions });
+    if (!saved) {
+      state.transactions.shift();
+      return;
+    }
 
+    const usedMethod = expenseLoggerMethod;
     track('expense_added', {
       category: category.toLowerCase(),
-      method: expenseLoggerMethod
+      method: usedMethod
+    });
+    trackFormComplete('expense_entry', {
+      form_type: txType,
+      entry_method: usedMethod
     });
 
     expenseLoggerMethod = 'manual';
@@ -2343,7 +2359,15 @@ const { locale = 'en' } = Astro.props;
       paidOff: isPaid
     });
 
-    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+    let savedDebt = false;
+    try {
+      localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+      savedDebt = true;
+    } catch (_) {
+      debts.pop();
+    }
+    if (!savedDebt) return;
+    trackFormComplete('debt_entry', { form_type: 'debt' });
     inputDebtName.value = '';
     inputDebtBalance.value = '';
     inputDebtRate.value = '';
@@ -2702,7 +2726,23 @@ const { locale = 'en' } = Astro.props;
       debt.active = false;
     }
 
-    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+    let savedDebtPayment = false;
+    try {
+      localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+      savedDebtPayment = true;
+    } catch (_) {
+      isSubmittingDebtPayment = false;
+      if (btnSaveDebtPayment) btnSaveDebtPayment.disabled = false;
+      showDebtPaymentError(
+        activeLocale === 'fr'
+          ? 'Impossible d\'enregistrer le paiement localement.'
+          : 'Failed to save payment locally. Please try again.'
+      );
+      return;
+    }
+    if (savedDebtPayment) {
+      trackFormComplete('debt_payment', { form_type: 'debt_payment' });
+    }
     closeDebtPaymentModal();
     renderAll();
     showContextualFeedback(document.getElementById('tab-view-debt'));
@@ -2735,7 +2775,15 @@ const { locale = 'en' } = Astro.props;
       contributions: []
     });
 
-    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    let savedGoal = false;
+    try {
+      localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+      savedGoal = true;
+    } catch (_) {
+      goals.pop();
+    }
+    if (!savedGoal) return;
+    trackFormComplete('savings_goal', { form_type: 'goal' });
     inputGoalName.value = '';
     inputGoalTarget.value = '';
     inputGoalCurrent.value = '';
@@ -2946,7 +2994,22 @@ const { locale = 'en' } = Astro.props;
     const totalActual = goal.contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
     goal.current = startingAmount + totalActual;
 
-    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    let savedContrib = false;
+    try {
+      localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+      savedContrib = true;
+    } catch (_) {
+      isSubmittingContrib = false;
+      if (btnSubmitContribution) btnSubmitContribution.disabled = false;
+      if (contribErrorMsg) {
+        contribErrorMsg.textContent = 'Failed to save contribution locally. Please try again.';
+        contribErrorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+    if (savedContrib) {
+      trackFormComplete('goal_contribution', { form_type: 'goal_contribution' });
+    }
     closeContributionModal();
     renderAll();
     showContextualFeedback(document.getElementById('tab-view-targets'));

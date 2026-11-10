@@ -105,16 +105,18 @@ export function loadStoredState(): AppState {
   }
 }
 
-export function saveStoredState(state: Partial<AppState>): void {
-  if (typeof window === 'undefined') return;
+export function saveStoredState(state: Partial<AppState>): boolean {
+  if (typeof window === 'undefined') return false;
   try {
     if (state.income !== undefined) localStorage.setItem(STORAGE_KEYS.INCOME, state.income.toString());
     if (state.frequency !== undefined) localStorage.setItem(STORAGE_KEYS.FREQUENCY, state.frequency);
     if (state.model !== undefined) localStorage.setItem(STORAGE_KEYS.MODEL, state.model);
     if (state.currency !== undefined) localStorage.setItem(STORAGE_KEYS.CURRENCY, state.currency);
     if (state.transactions !== undefined) localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(state.transactions));
+    return true;
   } catch (e) {
     console.error('Failed to save state to localStorage:', e);
+    return false;
   }
 }
 

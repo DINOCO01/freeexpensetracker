@@ -191,11 +191,31 @@ import { getCanonicalUrl } from '../utils/canonical';
     const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
     const successBanner = document.getElementById('contact-success-banner');
     const submitBtn = contactForm?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    let isSubmittingContact = false;
+
+    function trackFormComplete(formId: string, extra: Record<string, any> = {}) {
+      try {
+        if (typeof (window as any).gtag === 'function') {
+          (window as any).gtag('event', 'form_complete', {
+            form_id: formId,
+            ...extra
+          });
+        }
+      } catch (_) {
+        // never throws
+      }
+    }
 
     if (contactForm && successBanner) {
       contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (isSubmittingContact) return;
+        if (typeof contactForm.checkValidity === 'function' && !contactForm.checkValidity()) {
+          if (typeof contactForm.reportValidity === 'function') contactForm.reportValidity();
+          return;
+        }
 
+        isSubmittingContact = true;
         const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
         if (submitBtn) {
           submitBtn.disabled = true;
@@ -218,6 +238,15 @@ import { getCanonicalUrl } from '../utils/canonical';
         const topic = topicInput?.value || 'feedback';
         const message = messageInput?.value.trim() || '';
 
+        if (!name || !email || !message) {
+          isSubmittingContact = false;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+          }
+          return;
+        }
+
         const payload = {
           name,
           email,
@@ -229,7 +258,7 @@ import { getCanonicalUrl } from '../utils/canonical';
         };
 
         try {
-          await fetch('https://formsubmit.co/ajax/livetoolworld@gmail.com', {
+          const resp = await fetch('https://formsubmit.co/ajax/livetoolworld@gmail.com', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -237,16 +266,21 @@ import { getCanonicalUrl } from '../utils/canonical';
             },
             body: JSON.stringify(payload)
           });
+          if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}`);
+          }
+          trackFormComplete('contact_us', { form_type: 'contact', topic });
+          successBanner.classList.remove('hidden');
+          contactForm.reset();
+          successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } catch (err) {
           console.error('Contact form submission error:', err);
         } finally {
+          isSubmittingContact = false;
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnHtml;
           }
-          successBanner.classList.remove('hidden');
-          contactForm.reset();
-          successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       });
     }

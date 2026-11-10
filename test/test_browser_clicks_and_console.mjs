@@ -100,8 +100,15 @@ async function openPage(url) {
   await page.send('Runtime.enable');
   await page.send('Log.enable');
 
-  // Wait for load event and hydration
-  await new Promise((r) => setTimeout(r, 3000));
+  // Wait for load event and module hydration cleanly
+  for (let w = 0; w < 25; w++) {
+    await new Promise((r) => setTimeout(r, 250));
+    try {
+      const ready = await page.eval(`document.readyState`);
+      if (ready === 'complete') break;
+    } catch (_) {}
+  }
+  await new Promise((r) => setTimeout(r, 1500));
   return page;
 }
 
@@ -204,6 +211,102 @@ try {
   console.log('Preset chip click result:', presetResult);
   assert(presetResult && presetResult.namePopulated && presetResult.added, 'Quick Preset chip populates inputs and adds row when submitted');
 
+  // Verify Tab Numbering & Privacy Comparison Wording + GA4 form_complete live behavior
+  console.log('Testing Tab Numbering, Privacy Wording, & Live GA4 form_complete behavior...');
+  const session2LiveCheck = await homePage.eval(`(function() {
+    var primaryTabs = ['tracker', 'templates', 'debt', 'targets'].map(function(id) {
+      var btn = document.querySelector('.tab-btn[data-tab="' + id + '"]');
+      return btn ? btn.textContent.replace(/\\s+/g, ' ').trim() : '';
+    });
+    var bodyText = document.body.textContent || '';
+    var hasAccuratePrivacy = bodyText.indexOf('No transaction data leaves your browser.') !== -1;
+    var hasZeroTracking = bodyText.toLowerCase().indexOf('zero tracking') !== -1;
+
+    // Install gtag spy
+    var events = [];
+    var origGtag = window.gtag;
+    window.gtag = function(cmd, name, params) {
+      if (cmd === 'event') events.push({ name: name, params: params || {} });
+      if (typeof origGtag === 'function') {
+        try { origGtag.apply(window, arguments); } catch(_) {}
+      }
+    };
+
+    var form = document.getElementById('form-expense-logger');
+    var nameInput = document.getElementById('input-item-name');
+    var amountInput = document.getElementById('input-item-amount');
+    var catSelect = document.getElementById('select-item-category');
+    var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+
+    // 1. Invalid submission (empty name & 0 amount) -> 0 form_complete events
+    events.length = 0;
+    nameInput.value = '';
+    amountInput.value = '0';
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    var afterInvalid = events.filter(function(e) { return e.name === 'form_complete'; }).length;
+
+    // 2. Valid expense submission -> 1 form_complete event + no amount/description
+    events.length = 0;
+    nameInput.value = 'Valid Coffee';
+    amountInput.value = '6.25';
+    catSelect.value = 'Food';
+    submitBtn.click();
+    var expenseEvents = events.filter(function(e) { return e.name === 'form_complete'; });
+
+    // 3. Immediate duplicate click after clearing -> 0 additional form_complete events
+    events.length = 0;
+    submitBtn.click();
+    var duplicateEvents = events.filter(function(e) { return e.name === 'form_complete'; }).length;
+
+    // 4. Valid income submission -> 1 form_complete with form_type='income'
+    events.length = 0;
+    nameInput.value = 'Freelance Deposit';
+    amountInput.value = '500';
+    catSelect.value = 'Income';
+    submitBtn.click();
+    var incomeEvents = events.filter(function(e) { return e.name === 'form_complete'; });
+
+    // 5. Failed localStorage save -> 0 form_complete events
+    events.length = 0;
+    var origSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function() { throw new Error('QuotaExceededError'); };
+    nameInput.value = 'Should Fail';
+    amountInput.value = '25';
+    catSelect.value = 'Food';
+    submitBtn.click();
+    Storage.prototype.setItem = origSetItem;
+    var failedSaveEvents = events.filter(function(e) { return e.name === 'form_complete'; }).length;
+
+    return {
+      primaryTabs: primaryTabs,
+      hasAccuratePrivacy: hasAccuratePrivacy,
+      hasZeroTracking: hasZeroTracking,
+      afterInvalid: afterInvalid,
+      expenseEvents: expenseEvents,
+      duplicateEvents: duplicateEvents,
+      incomeEvents: incomeEvents,
+      failedSaveEvents: failedSaveEvents
+    };
+  })()`);
+  console.log('Session 2 live verification result:', JSON.stringify(session2LiveCheck, null, 2));
+  assert(
+    session2LiveCheck.primaryTabs[0].includes('1.') &&
+    session2LiveCheck.primaryTabs[1].includes('2.') &&
+    session2LiveCheck.primaryTabs[2].includes('3.') &&
+    session2LiveCheck.primaryTabs[3].includes('4.'),
+    'Homepage tabs are numbered sequentially 1, 2, 3, 4'
+  );
+  assert(session2LiveCheck.hasAccuratePrivacy && !session2LiveCheck.hasZeroTracking, 'Privacy comparison wording accurately states "No transaction data leaves your browser." without "zero tracking"');
+  assert.strictEqual(session2LiveCheck.afterInvalid, 0, 'Invalid submission produces 0 form_complete events');
+  assert.strictEqual(session2LiveCheck.expenseEvents.length, 1, 'Valid expense submission fires exactly 1 form_complete event');
+  assert.strictEqual(session2LiveCheck.expenseEvents[0].params.form_id, 'expense_entry', 'Expense form_complete has form_id=expense_entry');
+  assert.strictEqual(session2LiveCheck.expenseEvents[0].params.form_type, 'expense', 'Expense form_complete has form_type=expense');
+  assert(!('amount' in session2LiveCheck.expenseEvents[0].params) && !('description' in session2LiveCheck.expenseEvents[0].params), 'No sensitive amount/description sent in form_complete');
+  assert.strictEqual(session2LiveCheck.duplicateEvents, 0, 'Repeated button click produces 0 duplicate form_complete events');
+  assert.strictEqual(session2LiveCheck.incomeEvents.length, 1, 'Valid income submission fires exactly 1 form_complete event');
+  assert.strictEqual(session2LiveCheck.incomeEvents[0].params.form_type, 'income', 'Income form_complete has form_type=income');
+  assert.strictEqual(session2LiveCheck.failedSaveEvents, 0, 'Failed localStorage save produces 0 form_complete events');
+
   // Test Language Switcher
   console.log('Testing Language Switcher click...');
   const langClick = await homePage.eval(`(function() {
@@ -212,6 +315,56 @@ try {
   })()`);
   console.log('Language switcher to French link:', langClick);
   assert(langClick.exists, 'Language switcher to French link exists');
+
+  // Test Debt & Goal form_complete + Mobile 375px Tab Numbering & Responsive Overflow
+  await homePage.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 812, deviceScaleFactor: 2, mobile: true });
+  const mobileAndOtherForms = await homePage.eval(`(function() {
+    var events = [];
+    window.gtag = function(cmd, name, params) {
+      if (cmd === 'event') events.push({ name: name, params: params || {} });
+    };
+
+    var mobileTabs = Array.from(document.querySelectorAll('.tab-btn:not(.capsule-tab-btn)')).map(function(b) {
+      return b.textContent.replace(/\\s+/g, ' ').trim();
+    });
+    var noHorizontalOverflow = document.documentElement.scrollWidth <= window.innerWidth + 1;
+
+    // Debt entry form
+    document.querySelector('.tab-btn[data-tab="debt"]').click();
+    document.getElementById('input-debt-name').value = 'Visa Test';
+    document.getElementById('input-debt-balance').value = '500';
+    document.getElementById('input-debt-rate').value = '12';
+    document.getElementById('input-debt-minimum').value = '30';
+    document.querySelector('#form-add-debt button[type="submit"]').click();
+
+    // Goal entry form
+    document.querySelector('.tab-btn[data-tab="targets"]').click();
+    document.getElementById('input-goal-name').value = 'Vacation Test';
+    document.getElementById('input-goal-target').value = '1000';
+    document.getElementById('input-goal-current').value = '0';
+    document.getElementById('input-goal-monthly').value = '100';
+    document.querySelector('#form-add-goal button[type="submit"]').click();
+
+    return {
+      mobileTabs: mobileTabs,
+      noHorizontalOverflow: noHorizontalOverflow,
+      formCompleteEvents: events.filter(function(e) { return e.name === 'form_complete'; })
+    };
+  })()`);
+  console.log('Mobile 375px & Debt/Goal form_complete result:', JSON.stringify(mobileAndOtherForms, null, 2));
+  assert(
+    mobileAndOtherForms.mobileTabs[0].includes('1.') &&
+    mobileAndOtherForms.mobileTabs[1].includes('2.') &&
+    mobileAndOtherForms.mobileTabs[2].includes('3.') &&
+    mobileAndOtherForms.mobileTabs[3].includes('4.'),
+    'Mobile tabs are numbered 1, 2, 3, 4 cleanly'
+  );
+  assert(mobileAndOtherForms.noHorizontalOverflow, 'No horizontal overflow on 375px mobile viewport');
+  assert.strictEqual(mobileAndOtherForms.formCompleteEvents.length, 2, 'Debt & Goal forms each fired 1 form_complete event');
+  assert.strictEqual(mobileAndOtherForms.formCompleteEvents[0].params.form_id, 'debt_entry', 'Debt form fired debt_entry');
+  assert.strictEqual(mobileAndOtherForms.formCompleteEvents[1].params.form_id, 'savings_goal', 'Goal form fired savings_goal');
+  assert(!('amount' in mobileAndOtherForms.formCompleteEvents[0].params) && !('name' in mobileAndOtherForms.formCompleteEvents[0].params), 'No sensitive debt data sent');
+  await homePage.send('Emulation.clearDeviceMetricsOverride');
 
   await homePage.close();
   console.log('✅ Homepage tests passed!\n');

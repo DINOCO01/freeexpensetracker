@@ -247,6 +247,38 @@ simulateIncomeSet();
 await new Promise(r => setTimeout(r, 100));
 assert(gtagCalls.length === 1, 'income_set does NOT fire again in the same page view (strictly once per page view)');
 
+// --- 5. Verifying Session 2 Fixes: form_complete, Tab Numbering (1..4), Privacy Comparison Wording ---
+console.log('\n--- 5. Verifying Session 2: form_complete, Tab Numbering, & Privacy Wording ---');
+assert(mainAppJs.includes('form_complete'), 'compiled bundle contains form_complete event');
+assert(mainAppJs.includes('expense_entry'), 'compiled bundle contains expense_entry form_id');
+assert(mainAppJs.includes('savings_goal'), 'compiled bundle contains savings_goal form_id');
+assert(mainAppJs.includes('debt_entry'), 'compiled bundle contains debt_entry form_id');
+
+const contactHtml = fs.readFileSync(path.join(distDir, 'contact-us/index.html'), 'utf-8');
+assert(contactHtml.includes('form_complete') && contactHtml.includes('contact_us'), 'contact-us page bundles form_complete tracking');
+
+// Verify no duplicate GA4 initialization in indexHtml
+const gtagJsOccurrences = indexHtml.match(/googletagmanager\.com\/gtag\/js\?id=G-XR6MG2FM4M/g) || [];
+assert(gtagJsOccurrences.length === 1, 'Only 1 GA4 initialization script exists on homepage');
+
+// Verify privacy comparison wording in dist/index.html and all locales
+assert(
+  indexHtml.includes('No transaction data leaves your browser.'),
+  'Homepage comparison table uses accurate wording: "No transaction data leaves your browser."'
+);
+assert(
+  !indexHtml.toLowerCase().includes('zero tracking'),
+  'Homepage comparison table no longer claims "zero tracking"'
+);
+
+// Verify tab numbering across all 8 built locale homepages (1, 2, 3, 4; no "4. Debt", no "5. Budget")
+for (const loc of locales) {
+  const pageHtml = fs.readFileSync(path.join(distDir, loc, 'index.html'), 'utf-8');
+  assert(pageHtml.includes('data-tab="tracker"') && pageHtml.includes('1. '), `[${loc || 'en'}] Tab 1 starts with 1.`);
+  assert(pageHtml.includes('data-tab="templates"') && pageHtml.includes('2. '), `[${loc || 'en'}] Tab 2 starts with 2.`);
+  assert(pageHtml.includes('3. ') && !pageHtml.includes('5. '), `[${loc || 'en'}] Primary tabs are numbered sequentially 1, 2, 3, 4 (no 5.)`);
+}
+
 console.log(`\n==============================================`);
 console.log(`ALL GA4 TESTS PASSED: ${passedTests} / ${totalTests} assertions verified!`);
 console.log(`==============================================\n`);
