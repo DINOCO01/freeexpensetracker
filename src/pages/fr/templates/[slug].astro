@@ -36,13 +36,19 @@ const TEMPLATE_APP_TARGETS: Record<string, string> = {
   'net-worth-tracker': '/fr/?tab=goals&preset=net-worth',
   'financial-dashboard': '/fr/?tab=tracker&preset=dashboard',
   'monthly-spending-analyzer': '/fr/?tab=tracker&preset=spending-analyzer',
-  'monthly-bill-tracker': '/fr/?tab=tracker&preset=bill-tracker'
+  'monthly-bill-tracker': '/fr/?tab=tracker&preset=bill-tracker',
+  '52-week-savings-challenge': '/fr/?tab=goals&preset=savings-challenge'
 };
 
 const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/fr/?tab=tracker';
 
 // French Related templates mapping
 const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
+  '52-week-savings-challenge': [
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Calculez 3 à 6 mois de dépenses de sécurité et suivez vos paliers de précaution.' },
+    { slug: 'sinking-fund-planner', title: 'Planificateur Fonds Dédiés', desc: 'Provisionnez vos dépenses prévisibles (vacances, impôts, révisions) sans impacter votre trésorerie.' },
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez chaque euro de votre salaire net dès son encaissement avec le budget base zéro.' }
+  ],
   'debt-snowball': [
     { slug: 'debt-avalanche', title: 'Feuille Dette Avalanche', desc: 'Priorisez le taux d\'intérêt le plus élevé en premier pour économiser un maximum d\'intérêts.' },
     { slug: 'debt-to-income-calculator', title: 'Calculateur Taux d\'Endettement', desc: 'Évaluez votre capacité d\'emprunt et comparez vos charges à vos revenus bruts.' },
@@ -64,9 +70,14 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'subscription-audit', title: 'Audit des Abonnements', desc: 'Identifiez et supprimez les abonnements récurrents qui réduisent votre paie.' }
   ],
   'emergency-fund-planner': [
-    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez une part fixe de votre paie directement vers votre réserve de secours.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Accumulez 1 378 € d\'épargne en 52 semaines grâce à des dépôts graduels.' },
     { slug: 'sinking-fund-planner', title: 'Planificateur Épargne Ciblée', desc: 'Provisionnez vos dépenses futures prévisibles pour éviter les chocs de trésorerie.' },
-    { slug: 'debt-snowball', title: 'Remboursement Boule de Neige', desc: 'Équilibrez épargne de précaution et remboursement accéléré de vos dettes.' }
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez une part fixe de votre paie directement vers votre réserve de secours.' }
+  ],
+  'sinking-fund-planner': [
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Créez une routine d\'épargne hebdomadaire automatique pour vos objectifs annuels.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez 3 à 6 mois de charges fixes pour sécuriser vos imprévus.' },
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Planifiez vos versements d\'épargne dès la réception de chaque salaire.' }
   ]
 };
 

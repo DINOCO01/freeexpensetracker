@@ -161,6 +161,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://freexpensetracker.com/templates/52-week-savings-challenge/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
   <!-- French Templates Hub Page -->
   <url>
@@ -264,6 +270,12 @@
   <url>
     <loc>https://freexpensetracker.com/fr/templates/monthly-bill-tracker/</loc>
     <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://freexpensetracker.com/fr/templates/52-week-savings-challenge/</loc>
+    <lastmod>2026-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

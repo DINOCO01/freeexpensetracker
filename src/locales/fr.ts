@@ -238,6 +238,8 @@ export const fr = {
     t15_desc: "Consignez vos dépenses et visualisez automatiquement les totaux par catégorie.",
     t16_name: "Suivi Mensuel des Factures",
     t16_desc: "Centralisez vos factures récurrentes, dates d'échéance et gestion des prélèvements automatiques.",
+    t17_name: "Défi Épargne 52 Semaines",
+    t17_desc: "Développez votre habitude d'épargne semaine après semaine pour cumuler 1 378 € en un an.",
     guideFormulas: "Guide et formules →",
     sheetsTitle: "Modèles Google Sheets",
     sheetsDesc: "Feuilles configurées avec formules SOMME.SI automatiques et tableaux de bord de synthèse.",

@@ -238,6 +238,8 @@ export const de = {
     t15_desc: "Ausgaben protokollieren und Summen automatisch nach Kategorien aufschlüsseln.",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "52-Wochen-Spar-Challenge",
+    t17_desc: "Bauen Sie Woche für Woche Sparmotivation auf, um in einem Jahr 1.378 $ zu sparen.",
     guideFormulas: "Anleitung & Formeln →",
     sheetsTitle: "Google Sheets Vorlagen",
     sheetsDesc: "Vorkonfigurierte Tabellen mit automatischen SUMMEWENN-Formeln und Monats-Dashboards.",

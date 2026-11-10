@@ -238,6 +238,8 @@ export const ko = {
     t15_desc: "지출을 기록하면 카테고리별 합계가 자동으로 정리됩니다.",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "52주 저축 챌린지",
+    t17_desc: "매주 점진적으로 저축하여 1년에 $1,378를 모으는 챌린지 템플릿.",
     guideFormulas: "가이드 및 수식 →",
     sheetsTitle: "구글 스프레드시트 가계부",
     sheetsDesc: "SUMIF 자동 집계 수식과 월별 대시보드 그래프가 내장된 스마트 시트.",

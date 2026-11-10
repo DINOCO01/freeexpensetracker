@@ -3593,6 +3593,19 @@ const { locale = 'en' } = Astro.props;
                     if (cardParent && typeof cardParent.scrollIntoView === 'function') {
                       cardParent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
+                  } else if (p === 'savings-challenge') {
+                    var goalNameInput = document.getElementById('input-goal-name');
+                    var goalTargetInput = document.getElementById('input-goal-target');
+                    var goalCurrentInput = document.getElementById('input-goal-current');
+                    var goalMonthlyInput = document.getElementById('input-goal-monthly');
+                    if (goalNameInput) goalNameInput.value = '52-Week Challenge';
+                    if (goalTargetInput) goalTargetInput.value = '1378';
+                    if (goalCurrentInput && !goalCurrentInput.value) goalCurrentInput.value = '0';
+                    if (goalMonthlyInput && !goalMonthlyInput.value) goalMonthlyInput.value = '115';
+                    var formGoal = document.getElementById('form-add-goal');
+                    if (formGoal && typeof formGoal.scrollIntoView === 'function') {
+                      formGoal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                   } else {
                     var tabTargets = document.getElementById('tab-view-targets');
                     if (tabTargets && typeof tabTargets.scrollIntoView === 'function') {

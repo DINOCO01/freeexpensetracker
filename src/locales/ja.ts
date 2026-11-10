@@ -238,6 +238,8 @@ export const ja = {
     t15_desc: "支出を記録し、カテゴリー別の集計を自動で確認します。",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "52週間貯金チャレンジ",
+    t17_desc: "毎週コツコツ貯金を続けて1年で1,378ドルを達成するテンプレート。",
     guideFormulas: "ガイドと計算式 →",
     sheetsTitle: "Googleスプレッドシート用テンプレート",
     sheetsDesc: "SUMIF自動集計関数とダッシュボードグラフを完備したクラウド対応シート。",

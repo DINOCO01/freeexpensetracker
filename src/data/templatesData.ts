@@ -692,6 +692,55 @@ export const TEMPLATES_DATA: TemplateData[] = [
         answer: 'Yes. The workbook is provided in standard .xlsx format without macros or password protection. You can open and edit it offline in Microsoft Excel or import it into Google Drive to update on your phone or desktop.'
       }
     ]
+  },
+  {
+    id: '52-week-savings-challenge',
+    slug: '52-week-savings-challenge',
+    title: 'Free 52-Week Savings Challenge (Excel, Google Sheets & Printable) | Free Expense Tracker',
+    metaDescription: 'Download our free 52-week savings challenge spreadsheet for Excel & Google Sheets or printable PDF. Save $1,378 in a year with no sign-up.',
+    h1: 'Free 52-Week Savings Challenge',
+    category: 'Savings',
+    categoryIcon: '💰',
+    fileName: '17_US_52_Week_Savings_Challenge.xlsx',
+    fileSize: '47.0 KB',
+    sheetNames: ['Challenge', 'Reverse', 'Printable'],
+    keyFormulas: [
+      'Total Target = SUM(Deposit_Range)',
+      'Total Saved = SUMIF(Done_Range, TRUE, Deposit_Range)',
+      'Weeks Completed = COUNTIF(Done_Range, TRUE)',
+      'Running Balance = Previous_Balance + Weekly_Deposit'
+    ],
+    purpose: 'Systematically build a $1,378 cash cushion in one year by saving small, progressive weekly deposits using a classic or reverse 52-week money schedule.',
+    overview: 'The 52-Week Savings Challenge is a proven behavioral finance strategy to automate consistent savings without shocking your monthly cash flow. Starting with just $1 on week 1 and building to $52 in week 52, you painlessly accumulate $1,378 over 12 months. This free spreadsheet and printable tracker provides standard progressive, reverse, and biweekly models with dynamic progress formulas and checkbox accountability.',
+    howToUse: [
+      'Choose your preferred savings direction: the classic progressive ladder ($1 to $52) or the reverse challenge ($52 down to $1).',
+      'Set your challenge start date to automatically generate dates for all 52 weeks of the calendar year.',
+      'Transfer the scheduled weekly amount into a dedicated savings or high-yield bank account each week.',
+      'Check off the Done box in the spreadsheet or mark your printable tracker to watch your total saved climb toward $1,378.'
+    ],
+    whoBenefits: [
+      'Beginner savers establishing their first $1,000+ emergency starter fund or cash reserve.',
+      'Budgeters wanting a clear visual tracker to prepare for holiday gifts, vacation expenses, or sinking fund goals.',
+      'Households looking for a fun, achievable financial habit to build lasting money discipline.'
+    ],
+    faq: [
+      {
+        question: 'How much money do you save in the 52-week savings challenge?',
+        answer: 'By depositing an amount matching each week\'s number ($1 in week 1 up to $52 in week 52), you accumulate exactly $1,378.00 at the end of 52 weeks. If you double the challenge ($2 to $104), you will save $2,756.00.'
+      },
+      {
+        question: 'Is it better to do the regular or reverse 52-week challenge?',
+        answer: 'The reverse challenge (starting at $52 and ending at $1) is recommended for most people because it places the largest deposits in January when resolution motivation is high, and leaves the smallest $1 to $4 deposits for December when holiday expenses are heaviest.'
+      },
+      {
+        question: 'How do I do the 52-week challenge if I get paid bi-weekly?',
+        answer: 'If you are paid every two weeks (26 paychecks per year), simply combine two weeks of deposits per paycheck (e.g., Paycheck 1 = $1 + $2 = $3, Paycheck 2 = $3 + $4 = $7), or deposit an even $53 every payday to hit the exact same $1,378 goal.'
+      },
+      {
+        question: 'Can I use this spreadsheet in Google Sheets or print it out?',
+        answer: 'Yes. The workbook is 100% compatible with Microsoft Excel and Google Sheets with no macros. It also includes a pre-formatted \'Printable\' sheet formatted to fit standard A4 or US Letter paper for offline tracking.'
+      }
+    ]
   }
 ];
 

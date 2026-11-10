@@ -785,6 +785,54 @@ export const TEMPLATES_DATA_FR: TemplateDataFr[] = [
         answer: 'Oui. Le format .xlsx s\'ouvre immédiatement dans Microsoft Excel, Google Sheets et toute suite bureautique compatible.'
       }
     ]
+  },
+  {
+    id: '52-week-savings-challenge',
+    slug: '52-week-savings-challenge',
+    title: 'Défi Épargne 52 Semaines Gratuit (Excel, Google Sheets & Imprimable) | Free Expense Tracker',
+    metaDescription: 'Téléchargez notre modèle gratuit défi épargne 52 semaines pour Excel, Google Sheets ou PDF imprimable. Économisez 1 378 € en un an sans inscription.',
+    h1: 'Défi Épargne 52 Semaines Gratuit',
+    category: 'Épargne',
+    categoryIcon: '🎯',
+    fileName: '17_US_52_Week_Savings_Challenge.xlsx',
+    fileSize: '47.0 Ko',
+    sheetNames: ['Défi 52 Semaines', 'Version Inversée', 'Grille Imprimable'],
+    keyFormulas: [
+      'Épargne Semaine N = Montant Initial + (N - 1) * Incrément Hebdomadaire',
+      'Total Cumulé = SOMME(PlageVersements)',
+      'Semaines Validées = NB.SI(PlageCases; VRAI)'
+    ],
+    purpose: 'Un système progressif d\'épargne guidée pour accumuler 1 378 € en 52 semaines sans effort brutal grâce à des dépôts hebdomadaires croissants.',
+    overview: 'Le défi d\'épargne sur 52 semaines est l\'un des exercices d\'éducation financière les plus populaires au monde. Le principe est simple : en semaine 1, vous mettez 1 € de côté ; en semaine 2, 2 € ; et ainsi de suite jusqu\'à la semaine 52 (52 €), pour atteindre un pactole total de 1 378 €. Notre classeur comprend également la variante inversée (commencer par 52 € pour aborder décembre en toute légèreté) et une grille imprimable pratique.',
+    howToUse: [
+      'Téléchargez le fichier .xlsx et ouvrez-le sous Excel ou importez-le dans Google Sheets.',
+      'Choisissez votre variante préférée : classique (1 € à 52 €), inversée (52 € à 1 €) ou personnalisée.',
+      'Chaque semaine, transférez le montant prévu vers votre compte d\'épargne ou votre tirelire.',
+      'Cochez la case correspondante pour visualiser l\'avancement de votre cagnotte et rester motivé.'
+    ],
+    whoBenefits: [
+      'Débutants souhaitant installer une habitude d\'épargne automatique et régulière.',
+      'Épargnants préparant un budget vacances, un fonds de Noël ou une amorce de réserve de secours.',
+      'Toute personne préférant des micro-efforts hebdomadaires faciles à un gros virement mensuel.'
+    ],
+    faq: [
+      {
+        question: 'Combien peut-on économiser avec le défi des 52 semaines ?',
+        answer: 'Avec le format standard (1 € la 1re semaine puis +1 € chaque semaine), vous accumulez exactement 1 378 € à la fin de la 52e semaine. Si vous doublez les montants (2 € la 1re semaine), vous obtenez 2 756 €.'
+      },
+      {
+        question: 'Pourquoi choisir la version inversée (du plus grand au plus petit) ?',
+        answer: 'La version inversée démarre à 52 € en janvier lorsque la motivation est au plus haut et se termine par les plus petites sommes (quelques euros) en fin d\'année, ce qui évite de surcharger votre budget pendant les fêtes de décembre.'
+      },
+      {
+        question: 'Puis-je adapter ce défi si je suis payé tous les mois ou toutes les deux semaines ?',
+        answer: 'Oui. Pour un rythme bimensuel (toutes les deux semaines), regroupez deux semaines consécutives (26 versements). Pour un rythme mensuel, versez le total des 4 ou 5 semaines du mois (environ 115 € par mois en moyenne).'
+      },
+      {
+        question: 'La grille imprimable est-elle incluse ?',
+        answer: 'Oui. Le troisième onglet du classeur est préformaté pour une impression directe sur une seule page A4/Letter à afficher sur votre réfrigérateur.'
+      }
+    ]
   }
 ];
 

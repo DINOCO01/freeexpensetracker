@@ -178,14 +178,24 @@ const TEMPLATES: TemplateDefinition[] = [
     fileName: '16_US_Monthly_Bill_Tracker.xlsx',
     googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/copy',
     fileSize: '31.5 KB'
+  },
+  {
+    id: '52-week-savings-challenge',
+    nameKey: 'templates.t17_name',
+    descKey: 'templates.t17_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '🎯',
+    fileName: '17_US_52_Week_Savings_Challenge.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1G5_-PMG417ewdgcHNHoCDYeZMJFB9zfdxdaotBmLFys/copy',
+    fileSize: '47.0 KB'
   }
 ];
 
 const CATEGORIES = [
-  { key: 'all', labelKey: 'templates.catAll', count: 16, icon: '📂' },
+  { key: 'all', labelKey: 'templates.catAll', count: 17, icon: '📂' },
   { key: 'catBudget', labelKey: 'templates.catBudget', count: 3, icon: '💰' },
   { key: 'catDebt', labelKey: 'templates.catDebt', count: 6, icon: '💳' },
-  { key: 'catSavings', labelKey: 'templates.catSavings', count: 2, icon: '🛡️' },
+  { key: 'catSavings', labelKey: 'templates.catSavings', count: 3, icon: '🛡️' },
   { key: 'catInvesting', labelKey: 'templates.catInvesting', count: 3, icon: '📈' },
   { key: 'catBills', labelKey: 'templates.catBills', count: 2, icon: '🧾' }
 ];
@@ -242,7 +252,8 @@ const slugMap: Record<string, string> = {
   'net-worth': 'net-worth-tracker',
   'financial-dashboard': 'financial-dashboard',
   'monthly-spending': 'monthly-spending-analyzer',
-  'monthly-bill-tracker': 'monthly-bill-tracker'
+  'monthly-bill-tracker': 'monthly-bill-tracker',
+  '52-week-savings-challenge': '52-week-savings-challenge'
 };
 ---
 

@@ -238,6 +238,8 @@ export const pt = {
     t15_desc: "Registre despesas e visualize automaticamente totais por categoria.",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "Desafio de Poupança de 52 Semanas",
+    t17_desc: "Construa o hábito de poupar semana a semana para juntar $1.378 em um ano.",
     guideFormulas: "Guia e Fórmulas →",
     sheetsTitle: "Modelos para Google Sheets",
     sheetsDesc: "Planilhas com fórmulas SOMASE automáticas e painéis de acompanhamento visual.",

@@ -238,6 +238,8 @@ export const en = {
     t15_desc: "Log spending and automatically see totals by category.",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "52-Week Savings Challenge",
+    t17_desc: "Build savings momentum week by week to stash $1,378 in a year.",
     guideFormulas: "Guide & Formulas →",
     sheetsTitle: "Google Sheets Templates",
     sheetsDesc: "Pre-built spreadsheets with automated category SUMIFs and balance dashboards.",

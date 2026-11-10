@@ -100,8 +100,8 @@ async function openPage(url) {
   await page.send('Runtime.enable');
   await page.send('Log.enable');
 
-  // Wait for load event
-  await new Promise((r) => setTimeout(r, 1200));
+  // Wait for load event and hydration
+  await new Promise((r) => setTimeout(r, 3000));
   return page;
 }
 
@@ -348,6 +348,106 @@ try {
 
   await paycheckPage.close();
   console.log('✅ /templates/paycheck-budget/ tests passed!\n');
+
+  // Test 7: /templates/52-week-savings-challenge/
+  console.log('--- Testing /templates/52-week-savings-challenge/ ---');
+  const savings52Page = await openPage('http://localhost:4321/templates/52-week-savings-challenge/');
+  assert.strictEqual(savings52Page.consoleErrors.length, 0, 'No console errors on /templates/52-week-savings-challenge/');
+  assert.strictEqual(savings52Page.pageErrors.length, 0, 'No uncaught exceptions on /templates/52-week-savings-challenge/');
+
+  const savingsH1 = await savings52Page.eval(`document.querySelector('h1')?.textContent?.trim()`);
+  console.log(`52-Week Challenge H1: "${savingsH1}"`);
+  assert.strictEqual(savingsH1, 'Free 52-Week Savings Challenge', 'H1 is exactly "Free 52-Week Savings Challenge"');
+
+  // Check center element overlay
+  const savingsCenterTag = await savings52Page.eval(`(function() {
+    var el = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    return el ? { tag: el.tagName, id: el.id, className: el.className } : null;
+  })()`);
+  console.log('Center element on 52-week page:', savingsCenterTag);
+  assert(savingsCenterTag && !savingsCenterTag.id.includes('modal') && !savingsCenterTag.id.includes('popup'), 'No overlay blocking center on 52-week page');
+
+  // Check Download Button
+  const savingsDl = await savings52Page.eval(`(function() {
+    var dl = document.querySelector('a[download]');
+    return dl ? { exists: true, href: dl.getAttribute('href'), download: dl.getAttribute('download') } : { exists: false };
+  })()`);
+  console.log('52-Week download link:', savingsDl);
+  assert(savingsDl.exists && savingsDl.download.includes('17_US_52_Week_Savings_Challenge.xlsx'), 'Download button points to 17_US_52_Week_Savings_Challenge.xlsx');
+
+  // Test Interactive Calculator
+  console.log('Testing 52-Week Calculator interactions...');
+  const calc52Result = await savings52Page.eval(`(function() {
+    var totalEl = document.getElementById('calc-52-total');
+    var startInput = document.getElementById('input-52-start');
+    var reverseBtn = document.getElementById('btn-52-mode-reverse');
+    var rows = document.querySelectorAll('#calc-52-schedule-body tr');
+
+    var defaultTotal = totalEl ? totalEl.textContent.trim() : '';
+    var initialRowsCount = rows.length;
+
+    // Click reverse
+    if (reverseBtn) reverseBtn.click();
+    var reverseTotal = totalEl ? totalEl.textContent.trim() : '';
+
+    // Change start input
+    if (startInput) {
+      startInput.value = '5';
+      startInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    var modifiedTotal = totalEl ? totalEl.textContent.trim() : '';
+
+    return {
+      defaultTotal: defaultTotal,
+      reverseTotal: reverseTotal,
+      modifiedTotal: modifiedTotal,
+      rowsCount: initialRowsCount
+    };
+  })()`);
+  console.log('52-Week Calculator results:', calc52Result);
+  assert.strictEqual(calc52Result.defaultTotal, '$1,378', 'Default calculation equals $1,378');
+  assert.strictEqual(calc52Result.rowsCount, 52, 'Schedule table has 52 rows');
+  assert(calc52Result.modifiedTotal.includes('$1,586'), 'Recalculates when start value is updated');
+
+  // Click CTA buttons
+  console.log('Testing 52-Week CTA clicks...');
+  const savingsCta = await savings52Page.eval(`(function() {
+    var btns = document.querySelectorAll('.template-to-app-btn');
+    var clicks = 0;
+    btns.forEach(function(b) {
+      b.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      clicks++;
+    });
+    return { count: btns.length, clicked: clicks };
+  })()`);
+  console.log('52-Week CTA clicks:', savingsCta);
+  assert.strictEqual(savingsCta.clicked, 2, 'Both CTA buttons clickable on 52-week challenge');
+
+  await savings52Page.close();
+  console.log('✅ /templates/52-week-savings-challenge/ tests passed!\n');
+
+  // Test 8: Deep link ?tab=goals&preset=savings-challenge
+  console.log('--- Testing Query Params (/?tab=goals&preset=savings-challenge) ---');
+  const goalsDeepLink = await openPage('http://localhost:4321/?tab=goals&preset=savings-challenge');
+  assert.strictEqual(goalsDeepLink.consoleErrors.length, 0, 'No console errors on ?tab=goals&preset=savings-challenge');
+  assert.strictEqual(goalsDeepLink.pageErrors.length, 0, 'No uncaught exceptions on ?tab=goals&preset=savings-challenge');
+
+  const goalsPresetState = await goalsDeepLink.eval(`(function() {
+    var targetsView = document.getElementById('tab-view-targets');
+    var nameInput = document.getElementById('input-goal-name');
+    var targetInput = document.getElementById('input-goal-target');
+    return {
+      targetsVisible: targetsView && !targetsView.classList.contains('hidden'),
+      nameValue: nameInput ? nameInput.value : '',
+      targetValue: targetInput ? targetInput.value : ''
+    };
+  })()`);
+  console.log('Goals preset state:', goalsPresetState);
+  assert(goalsPresetState.targetsVisible, 'Targets tab is active from ?tab=goals');
+  assert.strictEqual(goalsPresetState.nameValue, '52-Week Challenge', 'Goal name prefilled with "52-Week Challenge"');
+  assert.strictEqual(goalsPresetState.targetValue, '1378', 'Goal target prefilled with "1378"');
+  await goalsDeepLink.close();
+  console.log('✅ Deep link ?tab=goals&preset=savings-challenge passed!\n');
 
 } catch (err) {
   console.error('❌ Test failure:', err);

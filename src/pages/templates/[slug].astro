@@ -36,13 +36,24 @@ const TEMPLATE_APP_TARGETS: Record<string, string> = {
   'net-worth-tracker': '/?tab=goals&preset=net-worth',
   'financial-dashboard': '/?tab=tracker&preset=dashboard',
   'monthly-spending-analyzer': '/?tab=tracker&preset=spending-analyzer',
-  'monthly-bill-tracker': '/?tab=tracker&preset=bill-tracker'
+  'monthly-bill-tracker': '/?tab=tracker&preset=bill-tracker',
+  '52-week-savings-challenge': '/?tab=goals&preset=savings-challenge'
 };
 
 const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/?tab=tracker';
 
 // Related templates mapping for internal link architecture
 const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
+  '52-week-savings-challenge': [
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a durable 3 to 6-month cash reserve for unexpected life events.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted savings buckets for irregular and seasonal expenses.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds from each paycheck directly into your savings goals.' }
+  ],
+  'sinking-fund-planner': [
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build an extra $1,378 cash cushion with progressive weekly deposits.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect your sinking funds with a baseline 3 to 6-month safety net.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Sync sinking fund contributions with your regular paycheck cycle.' }
+  ],
   'debt-snowball': [
     { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Prioritize highest-interest APR debts first to save maximum total interest.' },
     { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Assess your borrowing health and calculate front-end and back-end DTI.' },
@@ -59,9 +70,9 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Categorize spending by merchant and detect budget leaks.' }
   ],
   'paycheck-budget': [
-    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track recurring monthly bills, calendar due dates, and autopay status.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Automate a $1,378 annual savings goal using weekly progressive deposits.' },
     { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a 3 to 6-month living expense cash safety net.' },
-    { slug: 'subscription-audit', title: 'Subscription Audit Worksheet', desc: 'Identify and cancel recurring subscriptions eating into your pay.' }
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track recurring monthly bills, calendar due dates, and autopay status.' }
   ],
   'subscription-audit': [
     { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, payment deadlines, and auto-debit amounts.' },
@@ -69,9 +80,9 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Review historical spending categories and identify cost leaks.' }
   ],
   'emergency-fund-planner': [
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per paycheck directly into your emergency savings.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Jumpstart your starter emergency fund by saving $1,378 in one year.' },
     { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' },
-    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Balance emergency safety savings with rapid debt reduction.' }
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per paycheck directly into your emergency savings.' }
   ]
 };
 
@@ -397,6 +408,198 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           </p>
         </div>
       </article>
+    )}
+
+    {/* SPECIALIZED DEEP-DIVE & INTERACTIVE CALCULATOR: 52-Week Savings Challenge */}
+    {template.slug === '52-week-savings-challenge' && (
+      <>
+        <!-- Interactive 52-Week Savings Calculator Section -->
+        <section id="interactive-challenge-calculator" class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
+                Interactive Savings Simulator
+              </span>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+                Live 52-Week Savings Calculator
+              </h2>
+            </div>
+            <span class="text-xs text-slate-500 font-mono">
+              Model Regular vs. Reverse Pace
+            </span>
+          </div>
+
+          <!-- Controls: Starting Amount, Weekly Step, Direction Mode -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div>
+              <label for="input-challenge-start" class="block text-xs font-bold text-slate-700 mb-1">
+                Starting Amount ($)
+              </label>
+              <input
+                type="number"
+                id="input-challenge-start"
+                class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                value="1"
+                min="0.1"
+                step="0.5"
+              />
+              <span class="text-[10px] text-slate-500">Default: $1.00</span>
+            </div>
+
+            <div>
+              <label for="input-challenge-step" class="block text-xs font-bold text-slate-700 mb-1">
+                Weekly Increase ($)
+              </label>
+              <input
+                type="number"
+                id="input-challenge-step"
+                class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                value="1"
+                min="0.1"
+                step="0.5"
+              />
+              <span class="text-[10px] text-slate-500">Default: $1.00</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">
+                Challenge Direction
+              </label>
+              <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-200/70 border border-slate-300">
+                <button
+                  type="button"
+                  id="btn-mode-standard"
+                  class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer"
+                >
+                  Standard ($1 ➔ $52)
+                </button>
+                <button
+                  type="button"
+                  id="btn-mode-reverse"
+                  class="py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer"
+                >
+                  Reverse ($52 ➔ $1)
+                </button>
+              </div>
+              <span class="text-[10px] text-slate-500">Reverse starts with largest deposit</span>
+            </div>
+          </div>
+
+          <!-- Summary Metric Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-center sm:text-left space-y-1">
+              <span class="text-[11px] font-semibold text-emerald-800 block uppercase tracking-wider">
+                Total Saved in 52 Weeks
+              </span>
+              <div id="calc-challenge-total" class="text-2xl sm:text-3xl font-black text-emerald-800 font-mono">
+                $1,378.00
+              </div>
+              <span class="text-[10px] text-emerald-700 block">52 weekly deposits completed</span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center sm:text-left space-y-1">
+              <span class="text-[11px] font-semibold text-slate-600 block uppercase tracking-wider">
+                Average Weekly Deposit
+              </span>
+              <div id="calc-challenge-avg" class="text-xl sm:text-2xl font-bold text-slate-900 font-mono">
+                $26.50
+              </div>
+              <span class="text-[10px] text-slate-500 block">Monthly equivalent: ~$114.83</span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center sm:text-left space-y-1">
+              <span class="text-[11px] font-semibold text-slate-600 block uppercase tracking-wider">
+                Final Week Deposit
+              </span>
+              <div id="calc-challenge-peak" class="text-xl sm:text-2xl font-bold text-slate-900 font-mono">
+                $52.00
+              </div>
+              <span id="calc-challenge-peak-label" class="text-[10px] text-slate-500 block">Week 52 scheduled deposit</span>
+            </div>
+          </div>
+
+          <!-- 52-Row Schedule Table -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 font-mono">
+                52-Week Deposit &amp; Balance Schedule
+              </h3>
+              <span class="text-[11px] text-slate-500 font-mono">Scroll to view all 52 weeks</span>
+            </div>
+            <div class="border border-slate-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-100 text-slate-700 font-bold font-mono border-b border-slate-200 sticky top-0 z-10">
+                  <tr>
+                    <th class="py-2.5 px-3">Week #</th>
+                    <th class="py-2.5 px-3 text-right">Weekly Deposit</th>
+                    <th class="py-2.5 px-3 text-right">Cumulative Total</th>
+                    <th class="py-2.5 px-3 text-center">Quarter</th>
+                  </tr>
+                </thead>
+                <tbody id="challenge-schedule-body" class="divide-y divide-slate-100 font-mono">
+                  <!-- Generated dynamically by inline script -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Deep-Dive Editorial Guide (350-500 words) -->
+        <article class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6 text-slate-700 leading-relaxed">
+          <div class="space-y-2 border-b border-slate-100 pb-4">
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+              52-Week Savings Challenge Guide: Variations &amp; Finishing Strategies
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500">
+              Master the classic $1,378 challenge, avoid holiday burnout with the reverse version, or adapt it to your biweekly paycheck cycle.
+            </p>
+          </div>
+
+          <div class="space-y-4 text-xs sm:text-sm">
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+              How the 52-Week Savings Challenge Works
+            </h3>
+            <p>
+              The standard 52-week savings challenge is one of the most accessible personal finance routines ever designed. The concept is straightforward: you deposit an amount corresponding to the week of the year. In week 1, you save $1; in week 2, $2; in week 3, $3; gradually increasing each week until you deposit $52 in week 52. Starting with loose pocket change lowers the psychological barrier to saving and progressively conditions your money habits. Over 52 weeks, these micro-deposits compound into exactly <strong>$1,378.00</strong>—an ideal emergency starter fund, holiday shopping reserve, or sinking fund cushion.
+            </p>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              The Reverse 52-Week Challenge: Avoiding December Budget Shock
+            </h3>
+            <p>
+              While the standard schedule feels effortless in January, its heaviest financial strain hits in November and December, when deposits rise to $49, $50, $51, and $52 ($202 total in month 12). For many households, December is already the most expensive month of the year due to travel, gifts, and holiday meals.
+            </p>
+            <p>
+              The <strong>Reverse 52-Week Challenge</strong> flips the order: you deposit $52 in week 1, $51 in week 2, $50 in week 3, and descend to just $1 during week 52. This structure takes advantage of high New Year resolution motivation when enthusiasm is peak, while tapering your weekly commitment to single digits when holiday expenses peak at year-end.
+            </p>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              The Biweekly Paycheck Variation
+            </h3>
+            <p>
+              If your employer pays you on a biweekly schedule (26 pay periods per year), making 52 distinct weekly transfers can feel awkward to track against your checking account cash flow. You can adapt the challenge seamlessly by combining consecutive pairs of weeks on each payday:
+            </p>
+            <ul class="space-y-1.5 list-disc list-inside pl-2">
+              <li><strong>Paycheck 1:</strong> Deposit $3 (Week 1 + Week 2)</li>
+              <li><strong>Paycheck 2:</strong> Deposit $7 (Week 3 + Week 4)</li>
+              <li><strong>Paycheck 3:</strong> Deposit $11 (Week 5 + Week 6)</li>
+            </ul>
+            <p>
+              Alternatively, you can smooth the biweekly schedule into an even automated deposit of <strong>$53.00 every two weeks</strong> ($53 &times; 26 = $1,378), capturing the exact same cash reserve with zero manual math.
+            </p>
+
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+              4 Practical Tips to Actually Finish the Challenge
+            </h3>
+            <ol class="space-y-2 list-decimal list-inside">
+              <li><strong>Automate Transfers into a Dedicated Account:</strong> Move each deposit into a separate high-yield savings account away from your everyday checking balance so you are never tempted to spend it.</li>
+              <li><strong>Post the Printable Sheet in Plain View:</strong> Print the one-page 52-box grid included in this workbook and tape it to your refrigerator or workspace to enjoy the tangible gratification of checking off boxes.</li>
+              <li><strong>Use Windfalls to Cross Off Big Weeks Early:</strong> Whenever you receive unexpected cash (such as tax refunds, birthday money, or cash-back bonuses), immediately cross off weeks 50, 51, and 52 to remove pressure later in the year.</li>
+              <li><strong>Anchor to Long-Term Financial Milestones:</strong> Pair your challenge directly with an <a href="/templates/emergency-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">emergency fund planner</a>, <a href="/templates/sinking-fund-planner/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">sinking fund planner</a>, or your monthly <a href="/templates/paycheck-budget/" class="text-emerald-700 hover:text-emerald-800 font-semibold underline">paycheck budget spreadsheet</a>.</li>
+            </ol>
+          </div>
+        </article>
+      </>
     )}
 
     <!-- Section 1: Purpose & Workbook Architecture -->
@@ -785,6 +988,107 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           }
 
           recalculateSnowball();
+        } catch (_) {}
+      })();
+    </script>
+  )}
+
+  {template.slug === '52-week-savings-challenge' && (
+    <script is:inline>
+      // Interactive 52-Week Savings Calculator (only on 52-week-savings-challenge)
+      (function initSavingsChallengeCalculator() {
+        try {
+          var calcSection = document.getElementById('interactive-challenge-calculator');
+          var inputStart = document.getElementById('input-challenge-start');
+          var inputStep = document.getElementById('input-challenge-step');
+          var btnStandard = document.getElementById('btn-mode-standard');
+          var btnReverse = document.getElementById('btn-mode-reverse');
+          var totalDisplay = document.getElementById('calc-challenge-total');
+          var avgDisplay = document.getElementById('calc-challenge-avg');
+          var peakDisplay = document.getElementById('calc-challenge-peak');
+          var peakLabel = document.getElementById('calc-challenge-peak-label');
+          var tbody = document.getElementById('challenge-schedule-body');
+
+          if (!calcSection || !inputStart || !inputStep || !tbody) return;
+
+          var isReverse = false;
+
+          function formatMoney(num) {
+            return '$' + (Number(num) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+
+          function renderChallenge() {
+            try {
+              var start = parseFloat(inputStart.value);
+              if (isNaN(start) || start <= 0) start = 1;
+              var step = parseFloat(inputStep.value);
+              if (isNaN(step) || step < 0) step = 1;
+
+              var total = 0;
+              var rowsHtml = '';
+              var weeklyAmounts = [];
+
+              if (!isReverse) {
+                // Standard: Week 1 is start, each subsequent week adds step
+                for (var w = 1; w <= 52; w++) {
+                  var amount = start + (w - 1) * step;
+                  weeklyAmounts.push(amount);
+                  total += amount;
+                }
+              } else {
+                // Reverse: Week 1 is largest deposit, descending by step
+                var maxDeposit = start + 51 * step;
+                for (var w = 1; w <= 52; w++) {
+                  var amount = maxDeposit - (w - 1) * step;
+                  weeklyAmounts.push(amount);
+                  total += amount;
+                }
+              }
+
+              var cumulative = 0;
+              for (var i = 0; i < 52; i++) {
+                var wk = i + 1;
+                var dep = weeklyAmounts[i];
+                cumulative += dep;
+                var quarter = wk <= 13 ? 'Q1' : wk <= 26 ? 'Q2' : wk <= 39 ? 'Q3' : 'Q4';
+                var qClass = wk <= 13 ? 'bg-sky-50 text-sky-700' : wk <= 26 ? 'bg-teal-50 text-teal-700' : wk <= 39 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700';
+
+                rowsHtml += '<tr class="hover:bg-slate-50 transition-colors">' +
+                  '<td class="py-2 px-3 font-bold text-slate-800">Week ' + wk + '</td>' +
+                  '<td class="py-2 px-3 text-right font-medium text-slate-900">' + formatMoney(dep) + '</td>' +
+                  '<td class="py-2 px-3 text-right font-bold text-emerald-800">' + formatMoney(cumulative) + '</td>' +
+                  '<td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ' + qClass + '">' + quarter + '</span></td>' +
+                  '</tr>';
+              }
+
+              tbody.innerHTML = rowsHtml;
+              if (totalDisplay) totalDisplay.textContent = formatMoney(total);
+              if (avgDisplay) avgDisplay.textContent = formatMoney(total / 52);
+              if (peakDisplay) peakDisplay.textContent = formatMoney(weeklyAmounts[51]);
+              if (peakLabel) peakLabel.textContent = isReverse ? 'Week 52 final deposit (easiest week!)' : 'Week 52 final deposit (peak week)';
+            } catch (_) {}
+          }
+
+          if (btnStandard && btnReverse) {
+            btnStandard.addEventListener('click', function() {
+              isReverse = false;
+              btnStandard.className = 'py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer';
+              btnReverse.className = 'py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+              renderChallenge();
+            });
+
+            btnReverse.addEventListener('click', function() {
+              isReverse = true;
+              btnReverse.className = 'py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-2xs cursor-pointer';
+              btnStandard.className = 'py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+              renderChallenge();
+            });
+          }
+
+          inputStart.addEventListener('input', renderChallenge);
+          inputStep.addEventListener('input', renderChallenge);
+
+          renderChallenge();
         } catch (_) {}
       })();
     </script>

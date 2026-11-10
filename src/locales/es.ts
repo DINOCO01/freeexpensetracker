@@ -238,6 +238,8 @@ export const es = {
     t15_desc: "Registre gastos y consulte automáticamente los totales por categoría.",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "Reto de Ahorro de 52 Semanas",
+    t17_desc: "Desarrolle el hábito de ahorrar semana a semana para acumular $1,378 en un año.",
     guideFormulas: "Guía y Fórmulas →",
     sheetsTitle: "Plantillas para Google Sheets",
     sheetsDesc: "Hojas preconfiguradas con SUMAR.SI automáticos y paneles de balance mensual.",

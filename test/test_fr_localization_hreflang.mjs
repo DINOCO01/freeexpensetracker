@@ -18,7 +18,8 @@ const TEMPLATE_SLUGS = [
   'net-worth-tracker',
   'financial-dashboard',
   'monthly-spending-analyzer',
-  'monthly-bill-tracker'
+  'monthly-bill-tracker',
+  '52-week-savings-challenge'
 ];
 
 async function fetchHtml(urlPath) {

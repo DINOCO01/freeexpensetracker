@@ -238,6 +238,8 @@ export const hi = {
     t15_desc: "खर्च दर्ज करें और श्रेणी के अनुसार स्वचालित रूप से कुल योग देखें।",
     t16_name: "Monthly Bill Tracker",
     t16_desc: "Centralize recurring household bills, due dates, autopay, and confirmations.",
+    t17_name: "52-सप्ताह बचत चुनौती",
+    t17_desc: "एक वर्ष में $1,378 जमा करने के लिए सप्ताह-दर-सप्ताह बचत गति बनाएं।",
     guideFormulas: "गाइड और सूत्र →",
     sheetsTitle: "गूगल शीट्स टेम्पलेट्स",
     sheetsDesc: "श्रेणीवार ऑटोमैटिक योग (SUMIF) और बैलेंस डैशबोर्ड वाली प्री-बिल्ट स्प्रेडशीट।",
