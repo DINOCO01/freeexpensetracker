@@ -1,3 +1,6 @@
 /en / 301
 /en/ / 301
 /en/* /:splat 301
+/fr/contact-us/    /contact-us/    301
+/es/contact-us/    /contact-us/    301
+/de/contact-us/    /contact-us/    301
