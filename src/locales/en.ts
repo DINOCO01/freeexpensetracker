@@ -587,7 +587,7 @@ export const en = {
     ctaButton: "Scroll to Live Tracker ↑"
   },
   footer: {
-    about: "A fast, private, and 100% free expense tracker platform. Manage your cash flow with our interactive web app, download free expense tracker spreadsheet templates, or copy automated Google Sheets workbooks—all with zero logins or third-party trackers.",
+    about: "A fast, private, and 100% free expense tracker platform. Manage your cash flow with our interactive web app, download free expense tracker spreadsheet templates, or copy automated Google Sheets workbooks—with zero logins. Your financial data stays in your browser.",
     domainNote: "freexpensetracker.com • Client-side private financial architecture.",
     headingTools: "Budgeting Tools",
     headingResources: "Resources",

@@ -176,7 +176,7 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       </div>
 
       <!-- Primary Action: Direct Download & Hub Back-link -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 pt-2">
         <a
           href={downloadUrl}
           download={template.fileName}
@@ -188,6 +188,34 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           </svg>
           <span>{template.slug === '52-week-savings-challenge' ? 'Download the 52-Week Savings Challenge (Excel)' : 'Download Free Template (.xlsx)'}</span>
         </a>
+        {template.slug === '52-week-savings-challenge' && (
+          <a
+            href="https://docs.google.com/spreadsheets/d/1gLrhOpKjfZ_LdZj9Q2vvPlUCYCHIUQLFNscQGmXHf9w/copy"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-template-name={template.slug}
+            class="btn-open-google-sheets inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-md shadow-emerald-700/15 cursor-pointer"
+            aria-label="Open 52-Week Savings Challenge in Google Sheets"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span>Open Google Sheets ↗</span>
+          </a>
+        )}
+        {template.slug === '52-week-savings-challenge' && (
+          <a
+            href="/templates/52-Week-Savings-Challenge-2027.pdf"
+            download="52-Week-Savings-Challenge-2027.pdf"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+            aria-label="Download 52-Week Savings Challenge 2027 Printable PDF"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download Printable PDF</span>
+          </a>
+        )}
         <a
           href="/templates/"
           class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
