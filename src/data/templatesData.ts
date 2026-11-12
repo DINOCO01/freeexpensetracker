@@ -696,9 +696,9 @@ export const TEMPLATES_DATA: TemplateData[] = [
   {
     id: '52-week-savings-challenge',
     slug: '52-week-savings-challenge',
-    title: 'Free 52-Week Savings Challenge (Excel, Google Sheets & Printable) | Free Expense Tracker',
-    metaDescription: 'Download our free 52-week savings challenge spreadsheet for Excel & Google Sheets or printable PDF. Save $1,378 in a year with no sign-up.',
-    h1: 'Free 52-Week Savings Challenge',
+    title: '52 Week Savings Challenge 2027 (Excel, Google Sheets & Printable) | Free Expense Tracker',
+    metaDescription: 'Download our free 52-week savings challenge 2027 spreadsheet for Excel, Google Sheets or printable PDF. Save $1,378 in a year with no sign-up.',
+    h1: '52 Week Savings Challenge 2027',
     category: 'Savings',
     categoryIcon: '💰',
     fileName: '17_US_52_Week_Savings_Challenge.xlsx',
@@ -739,6 +739,149 @@ export const TEMPLATES_DATA: TemplateData[] = [
       {
         question: 'Can I use this spreadsheet in Google Sheets or print it out?',
         answer: 'Yes. The workbook is 100% compatible with Microsoft Excel and Google Sheets with no macros. It also includes a pre-formatted \'Printable\' sheet formatted to fit standard A4 or US Letter paper for offline tracking.'
+      }
+    ]
+  },
+  {
+    id: '5000-savings-challenge',
+    slug: '5000-savings-challenge',
+    title: 'Free $5,000 Savings Challenge (Excel & Printable PDF) | Free Expense Tracker',
+    metaDescription: 'Download our free $5,000 savings challenge spreadsheet for Excel or printable PDF. Save $5,000 in 52 weeks with a structured, realistic deposit schedule.',
+    h1: 'Free $5,000 Savings Challenge',
+    category: 'Savings',
+    categoryIcon: '💰',
+    fileName: '18_US_5000_Savings_Challenge.xlsx',
+    fileSize: '12.2 KB',
+    sheetNames: ['Challenge', 'Reverse', 'Printable'],
+    keyFormulas: [
+      'Total Target = SUM(Deposit_Range)',
+      'Total Saved = SUMIF(Done_Range, TRUE, Deposit_Range)',
+      'Weeks Completed = COUNTIF(Done_Range, TRUE)',
+      'Remaining = Target - Total_Saved'
+    ],
+    purpose: 'Build a solid $5,000 emergency fund or major sinking fund reserve in 52 weeks using a gentle monthly stepping schedule that avoids holiday burnout.',
+    overview: 'The $5,000 savings challenge provides a practical, stepped 52-week schedule averaging ~$96 per week. Starting gently at $25/week in January, deposits gradually climb through mid-year before stepping down in December, accumulating exactly $5,000 with zero guesswork.',
+    howToUse: [
+      'Choose your preferred savings path: the classic progressive schedule ($25 ramping to $170) or the reverse challenge ($115 front-loaded to $25).',
+      'Set your challenge start date in cell B3 to automatically generate date ranges for all 52 weeks.',
+      'Transfer each week\'s scheduled deposit into your dedicated high-yield savings account.',
+      'Check off each completed week in the Excel dropdown or on your printable one-page chart to track your progress toward $5,000.'
+    ],
+    whoBenefits: [
+      'Savers funding a full 3 to 6-month starter emergency buffer.',
+      'Households preparing for major annual expenses like home maintenance, property taxes, or holiday travel.',
+      'Anyone looking for a structured, realistic alternative to arbitrary lump-sum saving.'
+    ],
+    faq: [
+      {
+        question: 'How does the $5,000 savings challenge schedule work?',
+        answer: 'The plan is divided into 13 four-week phases. Deposits begin at $25/week in month 1, incrementally adjust by $10 to $15 per phase through the year, and finish with a comfortable $115/week in December, adding up to exactly $5,000.00.'
+      },
+      {
+        question: 'What is the average weekly deposit for the $5,000 challenge?',
+        answer: 'The mathematical average is $96.15 per week ($5,000 / 52). Rather than demanding a flat $96.15 every week, our schedule uses clean, whole dollar amounts from $25 to $170.'
+      },
+      {
+        question: 'Can I do this challenge on a biweekly pay schedule?',
+        answer: 'Yes. If paid biweekly across 26 paychecks, you can either combine consecutive two-week pairs or transfer an even $192.31 every payday to reach the exact same $5,000 target.'
+      },
+      {
+        question: 'Is the spreadsheet compatible with Google Sheets?',
+        answer: 'Yes. The workbook is formatted in standard .xlsx format with no macros. You can upload it to Google Drive or edit it offline in Microsoft Excel.'
+      }
+    ]
+  },
+  {
+    id: '10000-savings-challenge',
+    slug: '10000-savings-challenge',
+    title: 'Free $10,000 Savings Challenge (Excel & Printable PDF) | Free Expense Tracker',
+    metaDescription: 'Download our free $10,000 savings challenge spreadsheet for Excel or printable PDF. Accumulate a $10,000 cash cushion in 52 weeks with our structured plan.',
+    h1: 'Free $10,000 Savings Challenge',
+    category: 'Savings',
+    categoryIcon: '🏦',
+    fileName: '19_US_10000_Savings_Challenge.xlsx',
+    fileSize: '12.2 KB',
+    sheetNames: ['Challenge', 'Reverse', 'Printable'],
+    keyFormulas: [
+      'Total Target = SUM(Deposit_Range)',
+      'Total Saved = SUMIF(Done_Range, TRUE, Deposit_Range)',
+      'Weeks Completed = COUNTIF(Done_Range, TRUE)',
+      'Remaining = Target - Total_Saved'
+    ],
+    purpose: 'Systematically amass a transformative $10,000 cash cushion in 52 weeks using an ambitious yet disciplined monthly stepping ladder designed for high savings velocity.',
+    overview: 'The $10,000 savings challenge helps disciplined budgeters build five-figure financial security in one calendar year. By starting at $75/week and scaling predictably to $325/week before tapering to $50/week during the holidays, you hit exactly $10,000 across 52 weeks.',
+    howToUse: [
+      'Review the 52-week deposit ladder and select standard progressive or front-loaded reverse order.',
+      'Enter your start date in cell B3 to dynamically calculate all 52 weekly deadlines.',
+      'Automate weekly bank transfers into a dedicated high-yield account to protect your deposits from everyday spending.',
+      'Mark each completed week TRUE in the spreadsheet or color in your printable tracker to watch your total approach $10,000.'
+    ],
+    whoBenefits: [
+      'Savers establishing a durable 6-month living expense safety cushion.',
+      'Individuals accumulating a house down payment, vehicle replacement fund, or wedding budget.',
+      'High-income or high-saving households seeking a structured annual wealth-building milestone.'
+    ],
+    faq: [
+      {
+        question: 'How much do you need to save each week to reach $10,000 in a year?',
+        answer: 'Saving $10,000 over 52 weeks requires an average of $192.31 per week. Our schedule starts at an accessible $75/week, scales up to $325 during peak earning months, and finishes at $50/week in December, totaling exactly $10,000.00.'
+      },
+      {
+        question: 'How do I handle the $10,000 challenge on a biweekly paycheck?',
+        answer: 'Over 26 biweekly paychecks, saving an even $384.62 per payday reaches the exact $10,000 goal, or you can add the scheduled amounts for each two-week pay period.'
+      },
+      {
+        question: 'Why does the schedule reduce deposits in December?',
+        answer: 'December brings elevated holiday gifting, travel, and festive costs. Our plan front-loads peak savings during late summer and autumn ($325/week) so December only requires $50/week, ensuring you cross the finish line without financial strain.'
+      },
+      {
+        question: 'Is there a printable version included?',
+        answer: 'Yes. Both a dedicated single-page printable PDF and a pre-formatted Printable worksheet tab are provided for home printing and physical tracking.'
+      }
+    ]
+  },
+  {
+    id: 'biweekly-savings-challenge',
+    slug: 'biweekly-savings-challenge',
+    title: 'Free Biweekly Savings Challenge 2027 (Excel & Printable) | Free Expense Tracker',
+    metaDescription: 'Download our free 2027 biweekly savings challenge spreadsheet for Excel and printable PDF. Save $1,378 across 26 paychecks with automated tracking.',
+    h1: 'Free Biweekly Savings Challenge 2027 (26 Paychecks)',
+    category: 'Savings',
+    categoryIcon: '💰',
+    fileName: '20_US_Biweekly_Savings_Challenge.xlsx',
+    fileSize: '10.8 KB',
+    sheetNames: ['Challenge', 'Reverse'],
+    keyFormulas: [
+      'Paycheck Deposit = 4 * Period - 1 ($3 to $103)',
+      'Total Saved = SUMIF(E9:E34, TRUE, C9:C34)',
+      'Paychecks Completed = COUNTIF(E9:E34, TRUE)',
+      'Remaining = Target_Total - Total_Saved'
+    ],
+    purpose: 'Accumulate exactly $1,378 in 2027 across 26 biweekly paychecks without stressing monthly cash flow or remembering 52 individual weekly deposits.',
+    overview: 'The biweekly savings challenge is tailored specifically for employees and budgeters paid every two weeks (26 paydays per calendar year). By pairing two consecutive weeks of savings into each paycheck—starting at $3 on paycheck 1 and climbing by $4 each payday up to $103 on paycheck 26—you accumulate the full $1,378 target smoothly. Includes a reverse variant ($103 down to $3) and a clean printable tracker.',
+    howToUse: [
+      'Download the free Excel workbook (.xlsx) or the printable PDF.',
+      'Select your challenge direction: Classic progressive ($3 to $103) or Reverse ($103 down to $3).',
+      'Transfer the scheduled savings amount into a dedicated savings account on every payday.',
+      'Mark the Done column as TRUE in Excel or check off your printable sheet to track progress toward $1,378.'
+    ],
+    whoBenefits: [
+      'Employees paid on a biweekly (every two weeks) payroll schedule.',
+      'Budgeters who find 52 weekly transfers tedious and prefer syncing savings directly with income.',
+      'Anyone building their initial starter cash cushion or holiday fund without complex budgeting.'
+    ],
+    faq: [
+      {
+        question: 'How do the 26 biweekly amounts add up to $1,378?',
+        answer: 'Each biweekly deposit combines two consecutive weeks from the classic 52-week challenge (Paycheck 1: $1+$2 = $3; Paycheck 2: $3+$4 = $7; up to Paycheck 26: $51+$52 = $103). The mathematical sum across all 26 paychecks equals exactly $1,378.00.'
+      },
+      {
+        question: 'What if I prefer a flat transfer every payday instead of increasing amounts?',
+        answer: 'If you prefer a fixed automated transfer, deposit $53.00 every two weeks across all 26 paychecks ($53 × 26 = $1,378.00). Both methods reach the exact same annual total.'
+      },
+      {
+        question: 'Does the workbook include automated formulas and completion tracking?',
+        answer: 'Yes. The Excel workbook includes TRUE/FALSE dropdown checkboxes, dynamic SUMIF calculation of total saved, countdown of remaining balance, and automated calendar dates starting Monday, January 4, 2027.'
       }
     ]
   }

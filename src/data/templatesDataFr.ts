@@ -789,9 +789,9 @@ export const TEMPLATES_DATA_FR: TemplateDataFr[] = [
   {
     id: '52-week-savings-challenge',
     slug: '52-week-savings-challenge',
-    title: 'Défi Épargne 52 Semaines Gratuit (Excel, Google Sheets & Imprimable) | Free Expense Tracker',
-    metaDescription: 'Téléchargez notre modèle gratuit défi épargne 52 semaines pour Excel, Google Sheets ou PDF imprimable. Économisez 1 378 € en un an sans inscription.',
-    h1: 'Défi Épargne 52 Semaines Gratuit',
+    title: 'Défi Épargne 52 Semaines 2027 Gratuit (Excel, Google Sheets & Imprimable) | Free Expense Tracker',
+    metaDescription: 'Téléchargez notre modèle gratuit défi épargne 52 semaines 2027 pour Excel, Google Sheets ou PDF imprimable. Économisez 1 378 € en un an sans inscription.',
+    h1: 'Défi Épargne 52 Semaines 2027 Gratuit',
     category: 'Épargne',
     categoryIcon: '🎯',
     fileName: '17_US_52_Week_Savings_Challenge.xlsx',
@@ -831,6 +831,139 @@ export const TEMPLATES_DATA_FR: TemplateDataFr[] = [
       {
         question: 'La grille imprimable est-elle incluse ?',
         answer: 'Oui. Le troisième onglet du classeur est préformaté pour une impression directe sur une seule page A4/Letter à afficher sur votre réfrigérateur.'
+      }
+    ]
+  },
+  {
+    id: '5000-savings-challenge',
+    slug: '5000-savings-challenge',
+    title: 'Défi Épargne 5 000 $ Gratuit (Excel & Imprimable) | Free Expense Tracker',
+    metaDescription: 'Téléchargez notre modèle gratuit défi épargne 5 000 $ sur 52 semaines pour Excel ou PDF imprimable. Économisez 5 000 $ en un an avec suivi dynamique.',
+    h1: 'Défi Épargne 5 000 $ Gratuit (52 Semaines)',
+    category: 'Épargne',
+    categoryIcon: '🎯',
+    fileName: '18_US_5000_Savings_Challenge.xlsx',
+    fileSize: '12.2 Ko',
+    sheetNames: ['Challenge', 'Reverse'],
+    keyFormulas: [
+      'Épargne Semaine N = Progression planifiée (20 $ à 173 $)',
+      'Total Épargné = SOMME.SI(E9:E60; VRAI; D9:D60)',
+      'Semaines Validées = NB.SI(E9:E60; VRAI)'
+    ],
+    purpose: 'Un calendrier d\'épargne progressif sur 52 semaines pour accumuler exactement 5 000 $ en un an avec cases à cocher et cumul automatisé.',
+    overview: 'Le Défi Épargne 5 000 $ offre une feuille de route réaliste pour constituer un fonds d\'urgence substantiel ou financer un projet majeur en 52 semaines. En débutant à 20 $ et en progressant de 3 $ chaque semaine jusqu\'à 173 $, vous atteignez exactement 5 000 $ sans à-coups.',
+    howToUse: [
+      'Téléchargez le fichier Excel (.xlsx) ou la version imprimable PDF.',
+      'Choisissez votre variante : Défi classique (croissant) ou Version Inversée (décroissante).',
+      'Chaque semaine, transférez le montant indiqué vers votre compte d\'épargne.',
+      'Cochez la case VRAI sous Excel ou cochez la case papier pour suivre votre progression en direct.'
+    ],
+    whoBenefits: [
+      'Épargnants souhaitant constituer rapidement un solide fonds de sécurité de 5 000 $.',
+      'Personnes préparant un projet spécifique (mariage, vacances, apport personnel).',
+      'Ceux qui recherchent un rythme hebdomadaire clair et motivant.'
+    ],
+    faq: [
+      {
+        question: 'Comment les montants hebdomadaires sont-ils calculés ?',
+        answer: 'Le calendrier démarre à 20 $ en semaine 1 et augmente de 3 $ chaque semaine (23 $, 26 $, etc.) jusqu\'à 173 $ en semaine 52. La somme des 52 semaines donne exactement 5 000 $.'
+      },
+      {
+        question: 'Quelle est la différence entre la version classique et la version inversée ?',
+        answer: 'La version classique commence doucement à 20 $ et augmente avec le temps. La version inversée commence à 173 $ en début d\'année lorsque la motivation est maximale et diminue jusqu\'à 20 $ en fin d\'année.'
+      },
+      {
+        question: 'Une version PDF imprimable est-elle fournie ?',
+        answer: 'Oui, une fiche imprimable sur une seule page au format US Letter avec les 52 semaines et cases à cocher est téléchargeable gratuitement.'
+      }
+    ]
+  },
+  {
+    id: '10000-savings-challenge',
+    slug: '10000-savings-challenge',
+    title: 'Défi Épargne 10 000 $ Gratuit (Excel & Imprimable) | Free Expense Tracker',
+    metaDescription: 'Téléchargez notre modèle gratuit défi épargne 10 000 $ sur 52 semaines pour Excel ou PDF imprimable. Économisez 10 000 $ en un an sans inscription.',
+    h1: 'Défi Épargne 10 000 $ Gratuit (52 Semaines)',
+    category: 'Épargne',
+    categoryIcon: '🎯',
+    fileName: '19_US_10000_Savings_Challenge.xlsx',
+    fileSize: '12.2 Ko',
+    sheetNames: ['Challenge', 'Reverse'],
+    keyFormulas: [
+      'Épargne Semaine N = Progression planifiée (40 $ à 346 $)',
+      'Total Épargné = SOMME.SI(E9:E60; VRAI; D9:D60)',
+      'Semaines Validées = NB.SI(E9:E60; VRAI)'
+    ],
+    purpose: 'Un calendrier d\'épargne ambitieux sur 52 semaines pour accumuler exactement 10 000 $ en un an avec suivi dynamique.',
+    overview: 'Le Défi Épargne 10 000 $ est conçu pour les épargnants ambitieux prêts à transformer leur situation financière en un an. En épargnant en moyenne environ 192 $ par semaine, selon un barème gradué de 40 $ à 346 $, vous cumulez 10 000 $ garantis.',
+    howToUse: [
+      'Téléchargez le classeur Excel (.xlsx) ou la grille imprimable PDF.',
+      'Sélectionnez votre mode : Classique (montants croissants) ou Inversé (dégressif).',
+      'Effectuez votre virement d\'épargne hebdomadaire vers votre livret dédié.',
+      'Validez chaque semaine avec la case à cocher pour observer votre capital grandir.'
+    ],
+    whoBenefits: [
+      'Foyers ou professionnels souhaitant épargner 10 000 $ en un an.',
+      'Personnes préparant un apport immobilier ou un investissement important.',
+      'Ceux qui recherchent un défi financier structuré avec des objectifs hebdomadaires précis.'
+    ],
+    faq: [
+      {
+        question: 'Comment les montants du défi 10 000 $ sont-ils répartis ?',
+        answer: 'Le défi commence à 40 $ en semaine 1 et progresse de 6 $ par semaine (46 $, 52 $, etc.) jusqu\'à 346 $ en semaine 52. Les 52 semaines totalisent exactement 10 000 $.'
+      },
+      {
+        question: 'Puis-je adapter le calendrier si mes rentrées d\'argent sont irrégulières ?',
+        answer: 'Oui, vous pouvez cocher les semaines dans le désordre selon vos capacités du moment, le total enregistré et le reste à épargner s\'actualisent automatiquement.'
+      },
+      {
+        question: 'Le fichier Excel nécessite-t-il des macros ?',
+        answer: 'Non, aucune macro n\'est nécessaire. Le classeur utilise uniquement des formules natives Excel (SOMME.SI, NB.SI) et une validation de données par menu déroulant VRAI/FAUX.'
+      }
+    ]
+  },
+  {
+    id: 'biweekly-savings-challenge',
+    slug: 'biweekly-savings-challenge',
+    title: 'Défi Épargne Bihebdomadaire 2027 Gratuit (Excel & Imprimable) | Free Expense Tracker',
+    metaDescription: 'Téléchargez notre modèle gratuit défi épargne bihebdomadaire 2027 pour Excel ou PDF imprimable. Épargnez 1 378 € sur 26 paies sans inscription.',
+    h1: 'Défi Épargne Bihebdomadaire 2027 Gratuit (26 Paies)',
+    category: 'Épargne',
+    categoryIcon: '🎯',
+    fileName: '20_US_Biweekly_Savings_Challenge.xlsx',
+    fileSize: '10.8 Ko',
+    sheetNames: ['Challenge', 'Reverse'],
+    keyFormulas: [
+      'Versement Paie = 4 * Période - 1 (3 € à 103 €)',
+      'Total Épargné = SOMME.SI(E9:E34; VRAI; C9:C34)',
+      'Paies Validées = NB.SI(E9:E34; VRAI)',
+      'Reste à Épargner = E3 - E4'
+    ],
+    purpose: 'Accumulez exactement 1 378 € en 2027 au rythme de vos 26 versements de salaire bihebdomadaires.',
+    overview: 'Le défi d\'épargne bihebdomadaire s\'adapte aux personnes payées toutes les deux semaines (26 cycles de paie par an). En associant deux semaines d\'épargne progressive à chaque salaire (3 € à la 1re paie, jusqu\'à 103 € à la 26e paie), vous constituez une cagnotte de 1 378 € sans friction.',
+    howToUse: [
+      'Téléchargez le fichier Excel (.xlsx) ou la version PDF imprimable.',
+      'Choisissez votre variante : Défi classique (3 € à 103 €) ou Version Inversée (103 € à 3 €).',
+      'À chaque versement de paie, virez le montant prévu vers votre compte d\'épargne.',
+      'Cochez la case dans le classeur ou sur votre fiche papier pour mesurer votre avancement vers les 1 378 €.'
+    ],
+    whoBenefits: [
+      'Salariés payés à un rythme bihebdomadaire ou bimensuel.',
+      'Épargnants souhaitant automatiser leur virement directement le jour de paie.',
+      'Ceux qui recherchent un objectif de 1 378 € sans avoir à gérer 52 virements distincts.'
+    ],
+    faq: [
+      {
+        question: 'Comment les 26 versements totalisent-ils 1 378 € ?',
+        answer: 'Chaque versement regroupe deux semaines consécutives du défi classique (Paie 1 = 1€+2€ = 3€ ; Paie 2 = 3€+4€ = 7€ ; jusqu\'à la Paie 26 = 51€+52€ = 103€). Le total cumulé sur 26 paies fait exactement 1 378 €.'
+      },
+      {
+        question: 'Puis-je opter pour un montant constant à chaque paie ?',
+        answer: 'Oui. Si vous préférez un virement fixe automatique, épargnez 53,00 € toutes les deux semaines sur vos 26 paies (53 € × 26 = 1 378,00 €).'
+      },
+      {
+        question: 'Le fichier Excel contient-il des cases à cocher ?',
+        answer: 'Oui. Le classeur intègre un menu déroulant VRAI/FAUX pour chaque paie et recalcule automatiquement votre total épargné via la formule SOMME.SI.'
       }
     ]
   }

@@ -246,6 +246,8 @@ assert(fs.existsSync(path.join(distDir, 'templates/52-week-savings-challenge-pre
 const savingsHtml = fs.readFileSync(path.join(distDir, 'templates/52-week-savings-challenge/index.html'), 'utf-8');
 
 assert(
+  savingsHtml.includes('<title>52 Week Savings Challenge 2027 (Excel, Google Sheets &amp; Printable) | Free Expense Tracker</title>') ||
+  savingsHtml.includes('<title>52 Week Savings Challenge 2027 (Excel, Google Sheets & Printable) | Free Expense Tracker</title>') ||
   savingsHtml.includes('<title>Free 52-Week Savings Challenge (Excel, Google Sheets &amp; Printable) | Free Expense Tracker</title>') ||
   savingsHtml.includes('<title>Free 52-Week Savings Challenge (Excel, Google Sheets & Printable) | Free Expense Tracker</title>'),
   '52-week-savings-challenge has exact Title tag'
@@ -268,7 +270,11 @@ if (descMatch52) {
 // Check single H1
 const h1Matches = savingsHtml.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) || [];
 assert(h1Matches.length === 1, `52-week-savings-challenge has exactly 1 H1 (found ${h1Matches.length})`);
-assert(savingsHtml.includes('>Free 52-Week Savings Challenge</h1>'), 'H1 is "Free 52-Week Savings Challenge"');
+assert(
+  savingsHtml.includes('>52 Week Savings Challenge 2027</h1>') ||
+  savingsHtml.includes('>Free 52-Week Savings Challenge</h1>'),
+  'H1 is "52 Week Savings Challenge 2027"'
+);
 
 // Check intro paragraph
 const introMatch = savingsHtml.match(/<\/h1>\s*<p[^>]*>([\s\S]*?)<\/p>/);

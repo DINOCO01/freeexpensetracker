@@ -166,6 +166,20 @@ export function getAllHreflangLinks(currentPath: string = '/', siteUrl: string =
     cleanPure += '/';
   }
 
+  // India-specific Rupee Savings Challenge for the Hindi section
+  if (currentPath.startsWith('/hi/templates/rupee-savings-challenge') || currentPath.startsWith('/hi/templates/rupee-savings-challenge/')) {
+    return [
+      {
+        hreflang: 'x-default',
+        href: `${siteUrl}/hi/templates/rupee-savings-challenge/`
+      },
+      {
+        hreflang: 'hi',
+        href: `${siteUrl}/hi/templates/rupee-savings-challenge/`
+      }
+    ];
+  }
+
   // For template hub and template detail pages, English and French equivalents exist.
   if (cleanPure.startsWith('/templates/')) {
     return [

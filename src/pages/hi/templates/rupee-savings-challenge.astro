@@ -1,0 +1,342 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import { getCanonicalUrl } from '../../../utils/canonical';
+
+const canonicalUrl = getCanonicalUrl('/hi/templates/rupee-savings-challenge/', 'hi');
+const downloadExcelUrl = '/templates/21_IN_Rupee_Savings_Challenge.xlsx';
+const downloadPdfUrl = '/templates/Rupee-Savings-Challenge-2027.pdf';
+const appTargetUrl = '/hi/?tab=goals&preset=savings-challenge';
+
+const rupeeDeposits = [
+  ...Array(4).fill(250),
+  ...Array(4).fill(350),
+  ...Array(4).fill(450),
+  ...Array(4).fill(550),
+  ...Array(4).fill(650),
+  ...Array(4).fill(800),
+  ...Array(4).fill(950),
+  ...Array(4).fill(1100),
+  ...Array(4).fill(1250),
+  ...Array(4).fill(1350),
+  ...Array(4).fill(1500),
+  ...Array(4).fill(1600),
+  ...Array(4).fill(1700)
+];
+
+const startUtc = new Date(Date.UTC(2027, 0, 4));
+const MONTHS_HI = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+
+function formatRangeHi(start: Date, end: Date) {
+  if (start.getUTCFullYear() === end.getUTCFullYear()) {
+    return `${start.getUTCDate()} ${MONTHS_HI[start.getUTCMonth()]} – ${end.getUTCDate()} ${MONTHS_HI[end.getUTCMonth()]}, ${end.getUTCFullYear()}`;
+  }
+  return `${start.getUTCDate()} ${MONTHS_HI[start.getUTCMonth()]} ${start.getUTCFullYear()} – ${end.getUTCDate()} ${MONTHS_HI[end.getUTCMonth()]} ${end.getUTCFullYear()}`;
+}
+
+let runningTotal = 0;
+const schedule52 = rupeeDeposits.map((amt, idx) => {
+  const w = idx + 1;
+  const wStart = new Date(startUtc.getTime() + (w - 1) * 7 * 86400000);
+  const wEnd = new Date(wStart.getTime() + 6 * 86400000);
+  runningTotal += amt;
+  const quarter = w <= 13 ? 'तिमाही 1' : w <= 26 ? 'तिमाही 2' : w <= 39 ? 'तिमाही 3' : 'तिमाही 4';
+  const qClass = w <= 13 ? 'bg-sky-50 text-sky-700' : w <= 26 ? 'bg-teal-50 text-teal-700' : w <= 39 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700';
+  let milestone = '';
+  if (w === 22) milestone = '🎯 ₹10,000 लक्ष्य';
+  else if (w === 36) milestone = '🎯 ₹25,000 लक्ष्य';
+  else if (w === 46) milestone = '🎯 ₹40,000 लक्ष्य';
+  else if (w === 52) milestone = '🏆 ₹50,000 पूर्ण!';
+  return {
+    week: w,
+    dateRange: formatRangeHi(wStart, wEnd),
+    amount: amt,
+    runningTotal,
+    quarter,
+    qClass,
+    milestone
+  };
+});
+
+const faqList = [
+  {
+    question: '52-सप्ताह ₹50,000 बचत चुनौती कैसे काम करती है?',
+    answer: 'यह एक संरचित बचत योजना है जहां आप प्रत्येक सप्ताह एक निश्चित राशि अलग रखते हैं। पहले महीने में मात्र ₹250 प्रति सप्ताह से शुरू होकर यह धीरे-धीरे बढ़ती है, जिससे वर्ष के अंत तक बिना किसी बड़े वित्तीय तनाव के कुल ₹50,000 का फंड जमा हो जाता है।'
+  },
+  {
+    question: 'क्या मैं इसे रिवर्स (उलटे क्रम) में कर सकता हूँ?',
+    answer: 'हाँ। रिवर्स संस्करण में आप वर्ष की शुरुआत में बड़े अंशदान से शुरू करते हैं (जैसे ₹1,700 या ₹1,550) और साल के अंत में जब त्यौहारों व शादियों का खर्च अधिक होता है, तब साप्ताहिक बचत मात्र ₹250 से ₹350 रह जाती है।'
+  },
+  {
+    question: 'क्या इसके लिए मुझे कोई खाता बनाने या साइन-अप करने की आवश्यकता है?',
+    answer: 'बिल्कुल नहीं। यह टेम्पलेट 100% मुफ्त और निजी है। आप सीधे एक्सेल वर्कबुक डाउनलोड कर सकते हैं या घर पर प्रिंट करने के लिए पीडीएफ का उपयोग कर सकते हैं।'
+  },
+  {
+    question: 'क्या मैं इसे सीधे अपने फोन या ब्राउज़र में ट्रैक कर सकता हूँ?',
+    answer: 'हाँ, हमारे निःशुल्क वेब ऐप में लक्ष्य (Goals) टैब के अंतर्गत आप अपनी साप्ताहिक प्रगति को बिना किसी रजिस्ट्रेशन के 100% निजी रूप से ट्रैक कर सकते हैं।'
+  }
+];
+
+const breadcrumbs = [
+  { name: 'होम', url: '/hi/' },
+  { name: 'टेम्पलेट्स', url: '/templates/' },
+  { name: '₹50,000 बचत चुनौती', url: '/hi/templates/rupee-savings-challenge/' }
+];
+---
+
+<Layout
+  currentLocale="hi"
+  title="मुफ्त 52-सप्ताह ₹50,000 बचत चुनौती 2027 (एक्सेल व पीडीएफ) | Free Expense Tracker"
+  description="साल 2027 में ₹50,000 बचाने के लिए मुफ्त 52-सप्ताह बचत चुनौती एक्सेल शीट और प्रिंट करने योग्य पीडीएफ डाउनलोड करें। बिना किसी साइन-अप के 100% मुफ्त।"
+  canonicalUrl="/hi/templates/rupee-savings-challenge/"
+  breadcrumbs={breadcrumbs}
+  faqSchema={faqList}
+>
+  <Navbar currentLocale="hi" />
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
+      <a href="/hi/" class="hover:text-emerald-700 hover:underline">होम</a>
+      <span>/</span>
+      <a href="/templates/" class="hover:text-emerald-700 hover:underline">टेम्पलेट्स</a>
+      <span>/</span>
+      <span class="text-slate-800 font-medium" aria-current="page">₹50,000 बचत चुनौती 2027</span>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span>🎯</span>
+          <span>बचत चुनौती 2027</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono text-slate-500 bg-slate-50 border border-slate-200">
+          <span>🇮🇳</span>
+          <span>भारतीय रुपया (₹)</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono text-slate-500 bg-slate-50 border border-slate-200">
+          <span>💾</span>
+          <span>12.5 KB</span>
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
+        मुफ्त 52-सप्ताह ₹50,000 बचत चुनौती (2027)
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
+        52-सप्ताह की ₹50,000 बचत चुनौती एक अत्यंत व्यावहारिक और प्रेरक व्यक्तिगत वित्त योजना है। पहले सप्ताह में मात्र ₹250 से शुरुआत करके, क्रमशः ₹350, ₹500, और ₹1,000 प्रति सप्ताह की बचत करते हुए आप 2027 के अंत तक पूरे ₹50,000 का फंड आसानी से सुरक्षित कर सकते हैं।
+      </p>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 pt-2">
+        <a
+          href={downloadExcelUrl}
+          download="21_IN_Rupee_Savings_Challenge.xlsx"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-md shadow-emerald-700/15 cursor-pointer"
+          aria-label="डाउनलोड करें ₹50,000 बचत चुनौती एक्सेल शीट"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>एक्सेल शीट डाउनलोड करें (.xlsx)</span>
+        </a>
+
+        <a
+          href={downloadPdfUrl}
+          download="Rupee-Savings-Challenge-2027.pdf"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+          aria-label="डाउनलोड करें प्रिंट करने योग्य पीडीएफ"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>प्रिंटेबल पीडीएफ डाउनलोड करें</span>
+        </a>
+
+        <a
+          href="/hi/"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 border border-slate-200 transition-colors"
+        >
+          &larr; वापस मुख्य पेज पर जाएं
+        </a>
+      </div>
+    </header>
+
+    <!-- Top Promotional CTA -->
+    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-base shadow-xs">
+          ⚡
+        </div>
+        <div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+            स्प्रेडशीट के बिना सीधे ब्राउज़र में ट्रैक करना चाहते हैं?
+          </p>
+          <p class="text-xs text-slate-600">
+            बिना किसी साइन-अप या ऐप डाउनलोड के अपने ब्राउज़र में 100% सुरक्षित और मुफ्त ट्रैक करें।
+          </p>
+        </div>
+      </div>
+      <a
+        href={appTargetUrl}
+        class="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
+      >
+        <span>ब्राउज़र में मुफ्त शुरू करें &rarr;</span>
+      </a>
+    </div>
+
+    <!-- Section 1: How it Works -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+      <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+        ₹50,000 बचत चुनौती कैसे काम करती है?
+      </h2>
+      <p class="text-xs sm:text-sm">
+        अक्सर लोग एकमुश्त बड़ी बचत करने में असफल हो जाते हैं क्योंकि महीने के अंत में पर्याप्त पैसे नहीं बचते। यह 52-सप्ताह का शेड्यूल बचत को छोटी-छोटी साप्ताहिक किस्तों में बांट देता है:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+          <span class="text-[11px] font-semibold text-slate-600 block uppercase tracking-wider">प्रारंभिक सप्ताह 1–4</span>
+          <div class="text-xl font-bold text-slate-900 font-mono">₹250 / सप्ताह</div>
+          <span class="text-[10px] text-slate-500">मासिक बचत: ₹1,000</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+          <span class="text-[11px] font-semibold text-slate-600 block uppercase tracking-wider">मध्यम सप्ताह 25–28</span>
+          <div class="text-xl font-bold text-slate-900 font-mono">₹950 / सप्ताह</div>
+          <span class="text-[10px] text-slate-500">मासिक बचत: ₹3,800</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1">
+          <span class="text-[11px] font-semibold text-emerald-800 block uppercase tracking-wider">कुल वार्षिक संचित राशि</span>
+          <div class="text-xl font-bold text-emerald-800 font-mono">₹50,000.00</div>
+          <span class="text-[10px] text-emerald-700">52 सप्ताह पूर्ण</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Full Schedule Table -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+          52-सप्ताह का सम्पूर्ण बचत चार्ट (2027)
+        </h2>
+        <span class="text-xs font-mono text-slate-500">4 जनवरी 2027 – 2 जनवरी 2028</span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-600">
+        नीचे 2027 के सभी 52 सप्ताहों की निर्धारित जमा राशि और संचयी योग का पूर्ण विवरण दिया गया है। आप अपनी सुविधानुसार इसे चेक कर सकते हैं:
+      </p>
+
+      <div class="border border-slate-200 rounded-2xl overflow-hidden max-h-96 overflow-y-auto">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-100 text-slate-700 font-bold font-mono border-b border-slate-200 sticky top-0 z-10">
+            <tr>
+              <th class="py-2.5 px-3">सप्ताह</th>
+              <th class="py-2.5 px-3">दिनांक अवधि</th>
+              <th class="py-2.5 px-3 text-right">साप्ताहिक बचत</th>
+              <th class="py-2.5 px-3 text-right">संचयी कुल</th>
+              <th class="py-2.5 px-3 text-center">तिमाही</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 font-mono">
+            {schedule52.map((row) => (
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="py-2 px-3 font-bold text-slate-800">सप्ताह {row.week}</td>
+                <td class="py-2 px-3 text-slate-600">{row.dateRange}</td>
+                <td class="py-2 px-3 text-right font-medium text-slate-900">₹{row.amount.toLocaleString('en-IN')}</td>
+                <td class="py-2 px-3 text-right font-bold text-emerald-800">₹{row.runningTotal.toLocaleString('en-IN')}</td>
+                <td class="py-2 px-3 text-center flex items-center justify-center gap-1.5 flex-wrap">
+                  <span class={`px-2 py-0.5 rounded text-[10px] font-bold ${row.qClass}`}>{row.quarter}</span>
+                  {row.milestone && (
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      {row.milestone}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Reverse Challenge -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+      <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+        रिवर्स चुनौती: बड़े अंशदान से शुरुआत करें
+      </h2>
+      <p class="text-xs sm:text-sm">
+        भारतीय परिवारों में साल के अंतिम महीनों (अक्टूबर से दिसंबर) में दिवाली, छठ, शादियों और त्यौहारों के कारण खर्च काफी बढ़ जाता है। ऐसे में नवंबर-दिसंबर में बड़ी रकम बचाना कठिन हो सकता है।
+      </p>
+      <p class="text-xs sm:text-sm">
+        <strong>रिवर्स 52-सप्ताह चुनौती</strong> में आप जनवरी में जब नया साल शुरू होता है और उत्साह चरम पर होता है, तब ₹1,700 या ₹1,550 जैसे बड़े साप्ताहिक अंशदान से शुरुआत करते हैं। जैसे-जैसे साल आगे बढ़ता है, साप्ताहिक अंशदान घटता जाता है और दिसंबर में आपको प्रति सप्ताह मात्र ₹250 ही बचाने होते हैं!
+      </p>
+    </section>
+
+    <!-- Section 4: Tips for Success -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+      <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+        सफलतापूर्वक ₹50,000 बचाने के 4 अचूक नियम
+      </h2>
+      <ol class="space-y-2.5 text-xs sm:text-sm list-decimal list-inside">
+        <li><strong>अलग बचत खाता या डिजिटल गुल्लक बनाएं:</strong> चुनौती की राशि को अपने दैनिक खर्च वाले खाते में न रखें। इसे किसी ऑटो-स्वीप एफडी (Auto-sweep FD) या अलग लिक्विड बचत खाते में ट्रांसफर करें।</li>
+        <li><strong>प्रिंटेड शीट को सामने लगाएं:</strong> हमारे प्रिंटेबल पीडीएफ को प्रिंट करके अपनी स्टडी टेबल या अलमारी पर चिपकाएं और हर हफ्ते पैसे ट्रांसफर करने के बाद पेन से टिक मार्क लगाएं।</li>
+        <li><strong>वेतन के दिन ही साप्ताहिक बचत अलग करें:</strong> जब भी वेतन या आय आए, सप्ताह का हिस्सा तुरंत अलग कर दें। "बचे हुए पैसे बचाने" की जगह "पहले बचत, फिर खर्च" का नियम अपनाएं।</li>
+        <li><strong>छोटे अनावश्यक खर्चों पर नियंत्रण रखें:</strong> ऑनलाइन फूड डिलीवरी या बिना सोचे-समझे की गई खरीदारी से बचकर आप हर हफ्ते ₹250–₹500 आसानी से बचा सकते हैं।</li>
+      </ol>
+    </section>
+
+    <!-- Section 5: FAQ -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4 text-slate-700 leading-relaxed">
+      <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif]">
+        अक्सर पूछे जाने वाले प्रश्न (FAQ)
+      </h2>
+      <div class="space-y-3">
+        {faqList.map((item) => (
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <h3 class="text-sm font-bold text-slate-900 font-['Outfit',sans-serif]">
+              {item.question}
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              {item.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Section 6: Related Templates -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+        अन्य उपयोगी बजट व बचत टेम्पलेट्स
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a
+          href="/templates/52-week-savings-challenge/"
+          class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-xs transition-all space-y-1.5 group"
+        >
+          <span class="text-xs font-bold text-emerald-700 group-hover:underline">52-Week Savings Challenge ($1,378)</span>
+          <p class="text-xs text-slate-600">क्लासिक अंतर्राष्ट्रीय 52-सप्ताह बचत चुनौती एक्सेल व पीडीएफ फॉर्मेट में।</p>
+        </a>
+        <a
+          href="/templates/paycheck-budget/"
+          class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-xs transition-all space-y-1.5 group"
+        >
+          <span class="text-xs font-bold text-emerald-700 group-hover:underline">पे-चेक बजट स्प्रेडशीट</span>
+          <p class="text-xs text-slate-600">हर वेतन चक्र में अपने खर्चों, बिलों और बचत को व्यवस्थित रूप से बांटें।</p>
+        </a>
+        <a
+          href="/templates/emergency-fund-planner/"
+          class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-xs transition-all space-y-1.5 group"
+        >
+          <span class="text-xs font-bold text-emerald-700 group-hover:underline">आपातकालीन फंड योजनाकार</span>
+          <p class="text-xs text-slate-600">किसी भी अनपेक्षित खर्च से सुरक्षा के लिए 3 से 6 महीने का सेफ्टी नेट फंड तैयार करें।</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer currentLocale="hi" />
+</Layout>
+

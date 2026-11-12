@@ -94,7 +94,7 @@ check(
 // ==================================================
 console.log('\n--- 3. Auditing All Built HTML Pages in dist/ ---');
 const allHtml = getAllHtmlFiles(distDir);
-check(allHtml.length === 54, `Total built HTML files = 54 (found ${allHtml.length})`);
+check(allHtml.length === 61, `Total built HTML files === 61 (found ${allHtml.length})`);
 
 const canonicalSet = new Map<string, string[]>();
 const nonIndexableFiles = new Set(['404.html', '500.html']);
@@ -173,7 +173,7 @@ for (const filePath of allHtml) {
   }
 }
 
-check(brokenLinksFound === 0, `Zero broken internal links or missing assets across all 54 HTML pages`);
+check(brokenLinksFound === 0, `Zero broken internal links or missing assets across all ${allHtml.length} HTML pages`);
 
 // Check no duplicate canonicals across non-alias pages
 let duplicateCanonicals = 0;
@@ -188,7 +188,7 @@ check(duplicateCanonicals === 0, 'Zero duplicate canonical URLs across all index
 // Validate all sitemap URLs resolve cleanly in dist/
 const sitemapXml = fs.readFileSync(path.join(distDir, 'sitemap.xml'), 'utf-8');
 const locs = Array.from(sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)).map(m => m[1]);
-check(locs.length >= 48, `Sitemap has ${locs.length} URLs`);
+check(locs.length === 55, `Sitemap has exactly 55 URLs (found ${locs.length})`);
 for (const loc of locs) {
   const relPath = loc.replace('https://freexpensetracker.com', '');
   const expectedFile = relPath === '/' ? 'index.html' : relPath.replace(/^\/+/, '') + 'index.html';

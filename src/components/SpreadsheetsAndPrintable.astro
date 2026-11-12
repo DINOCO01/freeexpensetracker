@@ -188,14 +188,44 @@ const TEMPLATES: TemplateDefinition[] = [
     fileName: '17_US_52_Week_Savings_Challenge.xlsx',
     googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1gLrhOpKjfZ_LdZj9Q2vvPlUCYCHIUQLFNscQGmXHf9w/copy',
     fileSize: '47.0 KB'
+  },
+  {
+    id: '5000-savings-challenge',
+    nameKey: 'templates.t18_name',
+    descKey: 'templates.t18_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '💰',
+    fileName: '18_US_5000_Savings_Challenge.xlsx',
+    googleSheetsUrl: '/templates/5000-savings-challenge/',
+    fileSize: '12.2 KB'
+  },
+  {
+    id: '10000-savings-challenge',
+    nameKey: 'templates.t19_name',
+    descKey: 'templates.t19_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '🏦',
+    fileName: '19_US_10000_Savings_Challenge.xlsx',
+    googleSheetsUrl: '/templates/10000-savings-challenge/',
+    fileSize: '12.2 KB'
+  },
+  {
+    id: 'biweekly-savings-challenge',
+    nameKey: 'templates.t20_name',
+    descKey: 'templates.t20_desc',
+    categoryKey: 'catSavings',
+    categoryIcon: '💰',
+    fileName: '20_US_Biweekly_Savings_Challenge.xlsx',
+    googleSheetsUrl: 'https://docs.google.com/spreadsheets/d/1gLrhOpKjfZ_LdZj9Q2vvPlUCYCHIUQLFNscQGmXHf9w/copy',
+    fileSize: '10.8 KB'
   }
 ];
 
 const CATEGORIES = [
-  { key: 'all', labelKey: 'templates.catAll', count: 17, icon: '📂' },
+  { key: 'all', labelKey: 'templates.catAll', count: 20, icon: '📂' },
   { key: 'catBudget', labelKey: 'templates.catBudget', count: 3, icon: '💰' },
   { key: 'catDebt', labelKey: 'templates.catDebt', count: 6, icon: '💳' },
-  { key: 'catSavings', labelKey: 'templates.catSavings', count: 3, icon: '🛡️' },
+  { key: 'catSavings', labelKey: 'templates.catSavings', count: 6, icon: '🛡️' },
   { key: 'catInvesting', labelKey: 'templates.catInvesting', count: 3, icon: '📈' },
   { key: 'catBills', labelKey: 'templates.catBills', count: 2, icon: '🧾' }
 ];
@@ -253,7 +283,10 @@ const slugMap: Record<string, string> = {
   'financial-dashboard': 'financial-dashboard',
   'monthly-spending': 'monthly-spending-analyzer',
   'monthly-bill-tracker': 'monthly-bill-tracker',
-  '52-week-savings-challenge': '52-week-savings-challenge'
+  '52-week-savings-challenge': '52-week-savings-challenge',
+  '5000-savings-challenge': '5000-savings-challenge',
+  '10000-savings-challenge': '10000-savings-challenge',
+  'biweekly-savings-challenge': 'biweekly-savings-challenge'
 };
 ---
 
@@ -367,7 +400,7 @@ const slugMap: Record<string, string> = {
               <div>
                 <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                   <a
-                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                     class="hover:underline focus:outline-none"
                   >
                     {t(tmpl.nameKey, locale)}
@@ -392,7 +425,7 @@ const slugMap: Record<string, string> = {
                 <span>{t('templates.btnDownloadExcel', locale)}</span>
               </a>
               <a
-                href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                 class="w-full inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline pt-0.5"
               >
                 <span>{t('templates.guideFormulas', locale)}</span>
@@ -429,7 +462,7 @@ const slugMap: Record<string, string> = {
               <div>
                 <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                   <a
-                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
+                    href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                     class="hover:underline focus:outline-none"
                   >
                     {t(tmpl.nameKey, locale)}

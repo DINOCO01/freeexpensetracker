@@ -1,0 +1,61 @@
+# FreeExpenseTracker.com — LLM Discovery Guide
+
+> FreeExpenseTracker.com is a privacy-first, 100% free web application and personal finance template library designed for everyday budgeting, debt payoff modeling, and systematic savings challenges.
+
+## Canonical Domain
+https://freexpensetracker.com/
+
+## Overview & Architecture
+- **Client-Side Storage**: User transaction ledgers, income simulations, and budget allocations run entirely within client-side browser memory (`localStorage`). No transaction rows, account numbers, or bank credentials are ever transmitted to or stored on external database servers.
+- **Zero Logins or Required Accounts**: Every tool, live planner, and spreadsheet download is completely accessible without registration, email capture, or recurring subscriptions.
+- **Google Analytics (GA4)**: Standard privacy-preserving site usage metrics (page views, interactions, device/browser metadata) are collected under measurement ID `G-XR6MG2FM4M`. No financial records, personal identification, or transaction dollar amounts are ever dispatched to analytics.
+
+## Core Application Features
+1. **Live Interactive Expense Tracker**:
+   - Real-time cashflow dashboard with dynamic category allocation charts.
+   - Quick expense logging with preset chips and instant ledger persistence.
+   - Client-side CSV and Excel (.xlsx) export capabilities.
+2. **Universal Statement & Receipt Importer**:
+   - In-browser optical character recognition (OCR) powered by client-side WebAssembly/Web Workers (`tesseract.js`) for receipt photos and mobile payment screenshots.
+   - Tabular statement parsing (`csv`, `xlsx`, and digital PDF statements via `pdfjs-dist`).
+   - Automated category matching and duplicate record identification.
+3. **Debt Payoff Engine**:
+   - Interactive Debt Snowball (lowest balance first) and Debt Avalanche (highest interest rate first) accelerated debt reduction models.
+   - Side-by-side payoff timelines, total interest savings calculations, and custom extra-payment sliders.
+4. **Target & Budget Planning**:
+   - 50/30/20 budget allocation model (Needs, Wants, Savings).
+   - Milestone savings goal visualizer with monthly contribution planning.
+
+## Financial Template & Spreadsheet Library
+All workbooks are provided in standard, unlocked `.xlsx` format (compatible with Microsoft Excel and Google Sheets) and accompanied by dedicated online guides and printable PDF charts:
+- **Paycheck Budget Spreadsheet**: https://freexpensetracker.com/templates/paycheck-budget/
+- **Debt Snowball Calculator**: https://freexpensetracker.com/templates/debt-snowball/
+- **Debt Avalanche Calculator**: https://freexpensetracker.com/templates/debt-avalanche/
+- **Debt-to-Income (DTI) Ratio Planner**: https://freexpensetracker.com/templates/debt-to-income-calculator/
+- **Student Loan Payoff Planner**: https://freexpensetracker.com/templates/student-loan-planner/
+- **Auto Loan Calculator**: https://freexpensetracker.com/templates/auto-loan-calculator/
+- **Mortgage Early Payoff Planner**: https://freexpensetracker.com/templates/mortgage-planner/
+- **401(k) Retirement Forecaster**: https://freexpensetracker.com/templates/401k-retirement-planner/
+- **Roth IRA Growth Forecaster**: https://freexpensetracker.com/templates/roth-ira-planner/
+- **Emergency Fund Planner**: https://freexpensetracker.com/templates/emergency-fund-planner/
+- **Subscription Audit Worksheet**: https://freexpensetracker.com/templates/subscription-audit/
+- **Sinking Fund Planner**: https://freexpensetracker.com/templates/sinking-fund-planner/
+- **Net Worth Tracker**: https://freexpensetracker.com/templates/net-worth-tracker/
+- **Personal Financial Dashboard**: https://freexpensetracker.com/templates/financial-dashboard/
+- **Monthly Spending Analyzer**: https://freexpensetracker.com/templates/monthly-spending-analyzer/
+- **Monthly Bill Tracker**: https://freexpensetracker.com/templates/monthly-bill-tracker/
+- **52-Week Savings Challenge ($1,378)**: https://freexpensetracker.com/templates/52-week-savings-challenge/
+- **$5,000 Savings Challenge**: https://freexpensetracker.com/templates/5000-savings-challenge/
+- **$10,000 Savings Challenge**: https://freexpensetracker.com/templates/10000-savings-challenge/
+- **Biweekly Savings Challenge ($1,378 / 26 Paychecks)**: https://freexpensetracker.com/templates/biweekly-savings-challenge/
+- **₹50,000 Rupee Savings Challenge (Hindi Section)**: https://freexpensetracker.com/hi/templates/rupee-savings-challenge/
+
+## Core Public Pages
+- **Homepage**: https://freexpensetracker.com/
+- **Templates Directory**: https://freexpensetracker.com/templates/
+- **About Us**: https://freexpensetracker.com/about-us/
+- **Contact Us**: https://freexpensetracker.com/contact-us/
+- **Privacy Policy**: https://freexpensetracker.com/privacy-policy/
+- **Terms & Conditions**: https://freexpensetracker.com/terms-and-conditions/
+- **XML Sitemap**: https://freexpensetracker.com/sitemap.xml
+

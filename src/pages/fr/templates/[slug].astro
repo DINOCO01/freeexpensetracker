@@ -37,13 +37,31 @@ const TEMPLATE_APP_TARGETS: Record<string, string> = {
   'financial-dashboard': '/fr/?tab=tracker&preset=dashboard',
   'monthly-spending-analyzer': '/fr/?tab=tracker&preset=spending-analyzer',
   'monthly-bill-tracker': '/fr/?tab=tracker&preset=bill-tracker',
-  '52-week-savings-challenge': '/fr/?tab=goals&preset=savings-challenge'
+  '52-week-savings-challenge': '/fr/?tab=goals&preset=savings-challenge',
+  '5000-savings-challenge': '/fr/?tab=goals&preset=savings-challenge',
+  '10000-savings-challenge': '/fr/?tab=goals&preset=savings-challenge',
+  'biweekly-savings-challenge': '/fr/?tab=goals&preset=savings-challenge'
 };
 
 const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/fr/?tab=tracker';
 
 // French Related templates mapping
 const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
+  'biweekly-savings-challenge': [
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Le défi d\'épargne progressif hebdomadaire classique pour cumuler 1 378 €.' },
+    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez chaque euro de votre salaire net dès son encaissement bihebdomadaire.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez 3 à 6 mois de charges fixes pour sécuriser vos imprévus.' }
+  ],
+  '5000-savings-challenge': [
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Le défi classique de 1 € à 52 € pour accumuler 1 378 € en douceur.' },
+    { slug: '10000-savings-challenge', title: 'Défi Épargne 10 000 $', desc: 'Passez au niveau supérieur avec un calendrier d\'épargne annuel de 10 000 $.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez 3 à 6 mois de charges fixes pour sécuriser vos imprévus.' }
+  ],
+  '10000-savings-challenge': [
+    { slug: '5000-savings-challenge', title: 'Défi Épargne 5 000 $', desc: 'Un objectif d\'épargne intermédiaire de 5 000 $ sur 52 semaines.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Le défi d\'épargne graduel classique pour créer une saine habitude financière.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Sécurisez votre foyer avec une réserve de précaution solide.' }
+  ],
   '52-week-savings-challenge': [
     { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Calculez 3 à 6 mois de dépenses de sécurité et suivez vos paliers de précaution.' },
     { slug: 'sinking-fund-planner', title: 'Planificateur Fonds Dédiés', desc: 'Provisionnez vos dépenses prévisibles (vacances, impôts, révisions) sans impacter votre trésorerie.' },
@@ -153,6 +171,58 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
           <span>Télécharger le Fichier Excel (.xlsx)</span>
         </a>
+        {template.slug === '52-week-savings-challenge' && (
+          <a
+            href="/templates/52-Week-Savings-Challenge-2027.pdf"
+            download="52-Week-Savings-Challenge-2027.pdf"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+            aria-label="Télécharger le PDF Imprimable du Défi 52 Semaines 2027"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Télécharger le PDF Imprimable</span>
+          </a>
+        )}
+        {template.slug === '5000-savings-challenge' && (
+          <a
+            href="/templates/5000-Savings-Challenge-2027.pdf"
+            download="5000-Savings-Challenge-2027.pdf"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+            aria-label="Télécharger le PDF Imprimable du Défi 5 000 $ 2027"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Télécharger le PDF Imprimable</span>
+          </a>
+        )}
+        {template.slug === '10000-savings-challenge' && (
+          <a
+            href="/templates/10000-Savings-Challenge-2027.pdf"
+            download="10000-Savings-Challenge-2027.pdf"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+            aria-label="Télécharger le PDF Imprimable du Défi 10 000 $ 2027"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Télécharger le PDF Imprimable</span>
+          </a>
+        )}
+        {template.slug === 'biweekly-savings-challenge' && (
+          <a
+            href="/templates/Biweekly-Savings-Challenge-2027.pdf"
+            download="Biweekly-Savings-Challenge-2027.pdf"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all border border-slate-300 shadow-xs cursor-pointer"
+            aria-label="Télécharger le PDF Imprimable du Défi Bihebdomadaire 2027"
+          >
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Télécharger le PDF Imprimable</span>
+          </a>
+        )}
         <a
           href="/fr/templates/"
           class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 border border-slate-200 transition-colors"
