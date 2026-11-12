@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
-import type { Frequency, BudgetModel, Transaction } from './calculations';
+import { SUPPORTED_CURRENCIES, type Frequency, type BudgetModel, type Transaction } from './calculations';
+import { getLocaleDefaultCurrency } from '../locales';
 import {
   openDatabase,
   isIndexedDBAvailable,
@@ -72,13 +73,18 @@ export interface AppState {
  * Synchronous initial state load for instant zero-flash DOM hydration.
  * Also initiates background IndexedDB synchronization and idempotent migration.
  */
-export function loadStoredState(): AppState {
+export function loadStoredState(defaultLocale?: string | null): AppState {
+  const getFallbackCurrency = () => {
+    const activeLoc = defaultLocale || (typeof document !== 'undefined' ? document.documentElement?.dataset?.locale : null);
+    return getLocaleDefaultCurrency(activeLoc);
+  };
+
   if (typeof window === 'undefined') {
     return {
       income: 0,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: getFallbackCurrency(),
       transactions: []
     };
   }
@@ -99,11 +105,22 @@ export function loadStoredState(): AppState {
     const rawCur = localStorage.getItem(STORAGE_KEYS.CURRENCY);
     const rawTx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
 
+    // Preference Priority:
+    // 1. Preserved saved preference if valid
+    // 2. Fall back to locale-based default
+    // 3. Fall back safely to USD
+    let effectiveCurrency: string;
+    if (rawCur && rawCur in SUPPORTED_CURRENCIES) {
+      effectiveCurrency = rawCur;
+    } else {
+      effectiveCurrency = getFallbackCurrency();
+    }
+
     return {
       income: rawIncome !== null ? parseFloat(rawIncome) || 0 : 4200,
       frequency: rawFreq || 'monthly',
       model: rawModel || '50-30-20',
-      currency: rawCur || 'USD',
+      currency: effectiveCurrency,
       transactions: rawTx
         ? JSON.parse(rawTx)
         : [
@@ -163,7 +180,7 @@ export function loadStoredState(): AppState {
       income: 4200,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: getFallbackCurrency(),
       transactions: []
     };
   }

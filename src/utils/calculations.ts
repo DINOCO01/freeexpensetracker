@@ -281,17 +281,26 @@ export function formatCurrency(
   localeCode?: string
 ): string {
   const curr = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
-  const isWhole = Math.round(amount) === amount;
-  
+  const num = typeof amount === "number" ? amount : Number(amount);
+  const safeAmount = !isNaN(num) && isFinite(num) ? num : 0;
+  const isNegative = safeAmount < 0;
+  const absAmount = Math.abs(safeAmount);
+
+  // Precision: JPY and KRW have zero decimal places; other currencies preserve 2 decimal places (or 0 if whole).
+  const isZeroDecimalCurrency = currencyCode === "JPY" || currencyCode === "KRW";
+  const isWhole = isZeroDecimalCurrency || Math.round(absAmount) === absAmount;
+
   let activeLocale = localeCode;
-  if (!activeLocale && typeof document !== 'undefined') {
-    activeLocale = document.documentElement.dataset.locale || document.documentElement.lang || 'en';
+  if (!activeLocale && typeof document !== "undefined") {
+    activeLocale = document.documentElement.dataset.locale || document.documentElement.lang || "en";
   }
 
+  const normLocale = activeLocale ? activeLocale.split("-")[0].toLowerCase() : "en";
+
   let locale = "en-US";
-  if (currencyCode === "INR" || activeLocale === "hi") {
-    locale = "en-IN"; // Preserves Indian lakh/crore formatting
-  } else if (activeLocale) {
+  if (currencyCode === "INR" || normLocale === "hi") {
+    locale = "en-IN"; // Preserves Indian lakh/crore formatting with standard numerals
+  } else {
     const localeMap: Record<string, string> = {
       de: "de-DE",
       fr: "fr-FR",
@@ -301,15 +310,16 @@ export function formatCurrency(
       ko: "ko-KR",
       en: "en-US"
     };
-    locale = localeMap[activeLocale] || "en-US";
+    locale = localeMap[normLocale] || "en-US";
   }
 
   const formattedNumber = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: isWhole ? 0 : 2,
-    maximumFractionDigits: 2
-  }).format(amount);
+    useGrouping: "always",
+    minimumFractionDigits: isZeroDecimalCurrency ? 0 : isWhole ? 0 : 2,
+    maximumFractionDigits: isZeroDecimalCurrency ? 0 : 2
+  }).format(absAmount);
 
-  return `${curr.symbol}${formattedNumber}`;
+  return (isNegative ? "-" : "") + curr.symbol + formattedNumber;
 }
 
 export interface ModelTargetBreakdown {

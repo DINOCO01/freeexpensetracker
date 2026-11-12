@@ -239,6 +239,54 @@ export function getLocalizedCategory(category: string, locale?: string | null): 
   return translated !== `categories.${category}` ? translated : category;
 }
 
+const DEMO_TX_MAP: Record<string, string> = {
+  'Apartment Rent': 'rent',
+  'Weekly Supermarket Haul': 'groceries',
+  'Electric & High-Speed Internet': 'utilities',
+  'Car Gas & Metro Pass': 'transport',
+  'Streaming Subscriptions & Dining Out': 'entertainment',
+  'Emergency Fund Transfer': 'savings'
+};
+
+/**
+ * Localized Demo Transaction name helper
+ */
+export function getLocalizedDemoTxName(name: string, locale?: string | null): string {
+  const key = DEMO_TX_MAP[name];
+  if (!key) return name;
+  const translated = t(`demoTransactions.${key}`, locale);
+  return translated !== `demoTransactions.${key}` ? translated : name;
+}
+
+/**
+ * Default currency code for a given locale.
+ * Priority:
+ * - en -> USD ($)
+ * - hi -> INR (₹)
+ * - es -> EUR (€)
+ * - de -> EUR (€)
+ * - fr -> EUR (€)
+ * - pt -> EUR (€)
+ * - ja -> JPY (¥)
+ * - ko -> KRW (₩)
+ * - fallback -> USD ($)
+ */
+export const LOCALE_DEFAULT_CURRENCIES: Record<SupportedLocale, string> = {
+  en: 'USD',
+  hi: 'INR',
+  es: 'EUR',
+  de: 'EUR',
+  fr: 'EUR',
+  pt: 'EUR',
+  ja: 'JPY',
+  ko: 'KRW'
+};
+
+export function getLocaleDefaultCurrency(locale?: string | null): string {
+  const loc = getLocale(locale);
+  return LOCALE_DEFAULT_CURRENCIES[loc] || 'USD';
+}
+
 /**
  * Lazy loads a locale dictionary asynchronously for optimal performance.
  */

@@ -1,11 +1,12 @@
 ---
-import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+import { t, DEFAULT_LOCALE, type SupportedLocale, getLocaleDefaultCurrency } from '../locales';
 
 interface Props {
   locale?: SupportedLocale;
 }
 
 const { locale = DEFAULT_LOCALE } = Astro.props;
+const defaultCurrency = getLocaleDefaultCurrency(locale);
 
 const currencyLabels: Record<SupportedLocale, string> = {
   en: 'Change Currency',
@@ -111,31 +112,31 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
               class="min-h-[36px] sm:min-h-[38px] text-xs font-semibold bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 rounded-xl pl-2 sm:pl-2.5 pr-6 py-1.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none"
               title={currencyLabel}
             >
-              <option value="USD" selected>USD ($)</option>
-              <option value="INR">INR (₹)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="CAD">CAD (CA$)</option>
-              <option value="AUD">AUD (AU$)</option>
-              <option value="JPY">JPY (¥)</option>
-              <option value="CHF">CHF (CHF)</option>
-              <option value="CNY">CNY (¥)</option>
-              <option value="SGD">SGD (S$)</option>
-              <option value="NZD">NZD (NZ$)</option>
-              <option value="AED">AED (AED)</option>
-              <option value="SAR">SAR (SAR)</option>
-              <option value="BRL">BRL (R$)</option>
-              <option value="MXN">MXN (Mex$)</option>
-              <option value="ZAR">ZAR (R)</option>
-              <option value="SEK">SEK (kr)</option>
-              <option value="KRW">KRW (₩)</option>
-              <option value="PHP">PHP (₱)</option>
-              <option value="MYR">MYR (RM)</option>
-              <option value="IDR">IDR (Rp)</option>
-              <option value="TRY">TRY (₺)</option>
-              <option value="PKR">PKR (Rs)</option>
-              <option value="BDT">BDT (৳)</option>
-              <option value="NGN">NGN (₦)</option>
+              <option value="USD" selected={defaultCurrency === 'USD'}>USD ($)</option>
+              <option value="INR" selected={defaultCurrency === 'INR'}>INR (₹)</option>
+              <option value="EUR" selected={defaultCurrency === 'EUR'}>EUR (€)</option>
+              <option value="GBP" selected={defaultCurrency === 'GBP'}>GBP (£)</option>
+              <option value="CAD" selected={defaultCurrency === 'CAD'}>CAD (CA$)</option>
+              <option value="AUD" selected={defaultCurrency === 'AUD'}>AUD (AU$)</option>
+              <option value="JPY" selected={defaultCurrency === 'JPY'}>JPY (¥)</option>
+              <option value="CHF" selected={defaultCurrency === 'CHF'}>CHF (CHF)</option>
+              <option value="CNY" selected={defaultCurrency === 'CNY'}>CNY (¥)</option>
+              <option value="SGD" selected={defaultCurrency === 'SGD'}>SGD (S$)</option>
+              <option value="NZD" selected={defaultCurrency === 'NZD'}>NZD (NZ$)</option>
+              <option value="AED" selected={defaultCurrency === 'AED'}>AED (AED)</option>
+              <option value="SAR" selected={defaultCurrency === 'SAR'}>SAR (SAR)</option>
+              <option value="BRL" selected={defaultCurrency === 'BRL'}>BRL (R$)</option>
+              <option value="MXN" selected={defaultCurrency === 'MXN'}>MXN (Mex$)</option>
+              <option value="ZAR" selected={defaultCurrency === 'ZAR'}>ZAR (R)</option>
+              <option value="SEK" selected={defaultCurrency === 'SEK'}>SEK (kr)</option>
+              <option value="KRW" selected={defaultCurrency === 'KRW'}>KRW (₩)</option>
+              <option value="PHP" selected={defaultCurrency === 'PHP'}>PHP (₱)</option>
+              <option value="MYR" selected={defaultCurrency === 'MYR'}>MYR (RM)</option>
+              <option value="IDR" selected={defaultCurrency === 'IDR'}>IDR (Rp)</option>
+              <option value="TRY" selected={defaultCurrency === 'TRY'}>TRY (₺)</option>
+              <option value="PKR" selected={defaultCurrency === 'PKR'}>PKR (Rs)</option>
+              <option value="BDT" selected={defaultCurrency === 'BDT'}>BDT (৳)</option>
+              <option value="NGN" selected={defaultCurrency === 'NGN'}>NGN (₦)</option>
             </select>
             <div class="pointer-events-none absolute right-1.5 flex items-center text-slate-400">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>

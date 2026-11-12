@@ -159,7 +159,9 @@ const { locale = 'en' } = Astro.props;
   import {
     t,
     getLocalizedCategory,
+    getLocalizedDemoTxName,
     getLocale,
+    getLocaleDefaultCurrency,
     type SupportedLocale
   } from '../locales';
 
@@ -214,7 +216,7 @@ const { locale = 'en' } = Astro.props;
   } from '../utils/templateDownloader';
 
   // --- 1. State Interfaces & Initial Load ---
-  let state: AppState = loadStoredState();
+  let state: AppState = loadStoredState(activeLocale);
   let pendingImportResult: FileInterpretationResult | null = null;
   let pendingTabImportResult: MultiFileInterpretationResult | null = null;
 
@@ -647,7 +649,7 @@ const { locale = 'en' } = Astro.props;
   }
 
   function formatMoney(amount: number): string {
-    return formatCurrency(amount, state.currency);
+    return formatCurrency(amount, state.currency, activeLocale);
   }
 
   function getMonthlyIncome(): number {
@@ -907,22 +909,14 @@ const { locale = 'en' } = Astro.props;
     // If tracker has no recorded expenses
     if (state.transactions.length === 0 || totalExpenses === 0) {
       if (potentialSavingsTotal) {
-        potentialSavingsTotal.textContent = activeLocale === 'fr' ? `+${formatMoney(0)}/mois` : `+${formatMoney(0)}/mo`;
+        potentialSavingsTotal.textContent = t('suggestions.perMonth', activeLocale, { amount: formatMoney(0) });
       }
-      smartSuggestionsContainer.innerHTML = activeLocale === 'fr' ? `
+      smartSuggestionsContainer.innerHTML = `
         <div class="col-span-1 md:col-span-2 p-8 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 space-y-2">
           <div class="text-2xl">📊</div>
-          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">Aucune dépense enregistrée dans le suivi</div>
+          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">${t('suggestions.emptyTitle', activeLocale)}</div>
           <p class="max-w-md mx-auto text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
-            Le conseiller intelligent génère des optimisations de dépenses personnalisées basées sur vos transactions. Ajoutez vos dépenses du quotidien ou importez un relevé ci-dessus pour afficher vos recommandations.
-          </p>
-        </div>
-      ` : `
-        <div class="col-span-1 md:col-span-2 p-8 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 space-y-2">
-          <div class="text-2xl">📊</div>
-          <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">No Recorded Expenses in Tracker</div>
-          <p class="max-w-md mx-auto text-slate-500 dark:text-slate-400 text-[11px] leading-relaxed">
-            Live AI Advisor generates personalized spending optimizations and cost-cutting switches exclusively based on your logged expenses. Add your daily spending or import a statement above to see tailored recommendations.
+            ${t('suggestions.emptyDesc', activeLocale)}
           </p>
         </div>
       `;
@@ -934,16 +928,17 @@ const { locale = 'en' } = Astro.props;
       const foodSavings = Math.round(catTotals.Food * 0.20);
       const foodPct = totalExpenses > 0 ? Math.round((catTotals.Food / totalExpenses) * 100) : 0;
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Alimentation & Courses' : 'Food & Groceries',
-        title: activeLocale === 'fr' ? 'Cuisiner maison & alternatives marques distributeur' : 'Batch Cooking & Grocery Brand Swapping',
-        currentProblem: activeLocale === 'fr'
-          ? `Vous avez enregistré ${formatMoney(catTotals.Food)} en alimentation et restauration (${foodPct}% de vos dépenses suivies).`
-          : `You have logged ${formatMoney(catTotals.Food)} on food and dining (${foodPct}% of your tracked expenses).`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Remplacer 2 livraisons ou restaurants par semaine par des repas faits maison et privilégier les marques de distributeur de qualité permet d'économiser ~${formatMoney(foodSavings)} par mois.`
-          : `Substituting 2 restaurant deliveries per week with home-cooked batch meals and opting for quality private-label pantry staples can lower food costs by ~${formatMoney(foodSavings)} monthly.`,
+        category: t('suggestions.foodCategory', activeLocale),
+        title: t('suggestions.foodTitle', activeLocale),
+        currentProblem: t('suggestions.foodProblem', activeLocale, {
+          amount: formatMoney(catTotals.Food),
+          pct: foodPct
+        }),
+        alternativeSolution: t('suggestions.foodSolution', activeLocale, {
+          savings: formatMoney(foodSavings)
+        }),
         estimatedSavings: foodSavings,
-        tag: activeLocale === 'fr' ? 'Impact élevé' : 'High Impact'
+        tag: t('suggestions.tagHighImpact', activeLocale)
       });
     }
 
@@ -952,16 +947,16 @@ const { locale = 'en' } = Astro.props;
     if (discretionarySpend > 0) {
       const discSavings = Math.round(discretionarySpend * 0.30);
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Loisirs & Dépenses discrétionnaires' : 'Entertainment & Discretionary',
-        title: activeLocale === 'fr' ? 'Rotation des abonnements streaming & achats réfléchis' : 'Streaming & Discretionary Rotation',
-        currentProblem: activeLocale === 'fr'
-          ? `Les dépenses de loisirs et divertissements s'élèvent actuellement à ${formatMoney(discretionarySpend)} sur vos transactions enregistrées.`
-          : `Discretionary leisure and entertainment spending is currently ${formatMoney(discretionarySpend)} across your recorded transactions.`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Faire tourner vos abonnements de streaming pour n'en garder qu'un seul actif à la fois et appliquer un délai de réflexion de 72h avant tout achat impulsif peut vous faire économiser ~${formatMoney(discSavings)} par mois.`
-          : `Rotating streaming subscriptions to maintain only 1 active service per month and applying a 72-hour delay to impulse purchases can save ~${formatMoney(discSavings)} monthly.`,
+        category: t('suggestions.discretionaryCategory', activeLocale),
+        title: t('suggestions.discretionaryTitle', activeLocale),
+        currentProblem: t('suggestions.discretionaryProblem', activeLocale, {
+          amount: formatMoney(discretionarySpend)
+        }),
+        alternativeSolution: t('suggestions.discretionarySolution', activeLocale, {
+          savings: formatMoney(discSavings)
+        }),
         estimatedSavings: discSavings,
-        tag: activeLocale === 'fr' ? 'Gain rapide' : 'Quick Win'
+        tag: t('suggestions.tagQuickWin', activeLocale)
       });
     }
 
@@ -969,16 +964,16 @@ const { locale = 'en' } = Astro.props;
     if (catTotals.Utilities > 0) {
       const utilitySavings = Math.round(catTotals.Utilities * 0.12);
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Charges & Factures' : 'Utilities & Bills',
-        title: activeLocale === 'fr' ? 'Renégociation box/mobile & économies d\'énergie' : 'Broadband Retention & Energy Conservation',
-        currentProblem: activeLocale === 'fr'
-          ? `Vos factures récurrentes d'énergie et de télécommunications s'élèvent à ${formatMoney(catTotals.Utilities)}.`
-          : `Recorded utilities and recurring connectivity bills account for ${formatMoney(catTotals.Utilities)}.`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Contacter vos fournisseurs pour basculer sur des offres promotionnelles ou forfaits sans engagement et éliminer la consommation en veille de vos appareils peut vous faire économiser ~${formatMoney(utilitySavings)} par mois.`
-          : `Contacting your internet/telecom service provider for retention loyalty plans and eliminating phantom appliance power drain can save ~${formatMoney(utilitySavings)} each month.`,
+        category: t('suggestions.utilitiesCategory', activeLocale),
+        title: t('suggestions.utilitiesTitle', activeLocale),
+        currentProblem: t('suggestions.utilitiesProblem', activeLocale, {
+          amount: formatMoney(catTotals.Utilities)
+        }),
+        alternativeSolution: t('suggestions.utilitiesSolution', activeLocale, {
+          savings: formatMoney(utilitySavings)
+        }),
         estimatedSavings: utilitySavings,
-        tag: activeLocale === 'fr' ? 'Récurrent' : 'Recurring'
+        tag: t('suggestions.tagRecurring', activeLocale)
       });
     }
 
@@ -986,16 +981,16 @@ const { locale = 'en' } = Astro.props;
     if (catTotals.Transport > 0) {
       const transportSavings = Math.round(catTotals.Transport * 0.18);
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Transports & Mobilité' : 'Transport & Mobility',
-        title: activeLocale === 'fr' ? 'Mutualisation des trajets & optimisation des transports' : 'Route Consolidation & Transit Optimization',
-        currentProblem: activeLocale === 'fr'
-          ? `Les frais de déplacement et de mobilité représentent actuellement ${formatMoney(catTotals.Transport)} selon votre suivi.`
-          : `Transportation and mobility expenses are currently ${formatMoney(catTotals.Transport)} based on your tracker.`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Regrouper vos courses hebdomadaires, comparer le coût d'un abonnement mensuel de transport ou covoiturer sur vos trajets réguliers peut réduire vos frais de déplacement de ~${formatMoney(transportSavings)} par mois.`
-          : `Combining weekly travel errands, comparing monthly public transit passes, or carpooling for regular commutes can reduce monthly transport spend by ~${formatMoney(transportSavings)}.`,
+        category: t('suggestions.transportCategory', activeLocale),
+        title: t('suggestions.transportTitle', activeLocale),
+        currentProblem: t('suggestions.transportProblem', activeLocale, {
+          amount: formatMoney(catTotals.Transport)
+        }),
+        alternativeSolution: t('suggestions.transportSolution', activeLocale, {
+          savings: formatMoney(transportSavings)
+        }),
         estimatedSavings: transportSavings,
-        tag: activeLocale === 'fr' ? 'Ajustement simple' : 'Easy Switch'
+        tag: t('suggestions.tagEasySwitch', activeLocale)
       });
     }
 
@@ -1004,16 +999,15 @@ const { locale = 'en' } = Astro.props;
       const housingSavings = Math.round(catTotals.Housing * 0.05);
       const housingPct = Math.round((catTotals.Housing / monthlyIncome) * 100);
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Logement & Charges fixes' : 'Housing & Fixed Obligations',
-        title: activeLocale === 'fr' ? 'Rééquilibrage du taux d\'effort logement' : 'Housing Ratio Rebalancing',
-        currentProblem: activeLocale === 'fr'
-          ? `Votre loyer ou remboursement de prêt de ${formatMoney(catTotals.Housing)} absorbe ${housingPct}% de vos revenus mensuels nets (le seuil de référence recommandé est inférieur à 30%–35%).`
-          : `Housing commitments of ${formatMoney(catTotals.Housing)} consume ${housingPct}% of your monthly take-home income (ideal benchmark is under 30%–35%).`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Pensez à auditer vos charges locatives annexes, l'efficacité énergétique, ou à affecter vos prochaines hausses de revenus à la baisse de ce ratio fixe.`
-          : `Consider auditing ancillary tenant charges, utility efficiency, or applying upcoming income raises specifically to rebalance your fixed cost ratio.`,
+        category: t('suggestions.housingCategory', activeLocale),
+        title: t('suggestions.housingTitle', activeLocale),
+        currentProblem: t('suggestions.housingProblem', activeLocale, {
+          amount: formatMoney(catTotals.Housing),
+          pct: housingPct
+        }),
+        alternativeSolution: t('suggestions.housingSolution', activeLocale),
         estimatedSavings: housingSavings,
-        tag: activeLocale === 'fr' ? 'Structurel' : 'Structural'
+        tag: t('suggestions.tagStructural', activeLocale)
       });
     }
 
@@ -1021,31 +1015,33 @@ const { locale = 'en' } = Astro.props;
     if (monthlyIncome > 0 && netCashflow < 0) {
       const deficitAmount = Math.abs(netCashflow);
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Protection de la trésorerie' : 'Cash Flow Protection',
-        title: activeLocale === 'fr' ? 'Résorption immédiate du déficit mensuel' : 'Immediate Deficit Mitigation',
-        currentProblem: activeLocale === 'fr'
-          ? `Vos dépenses suivies (${formatMoney(totalExpenses)}) dépassent vos revenus mensuels (${formatMoney(monthlyIncome)}) de ${formatMoney(deficitAmount)}.`
-          : `Tracked expenses (${formatMoney(totalExpenses)}) exceed your monthly income (${formatMoney(monthlyIncome)}) by ${formatMoney(deficitAmount)}.`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Il est fortement recommandé de suspendre les achats discrétionnaires non essentiels pour résorber immédiatement ce déficit mensuel de ${formatMoney(deficitAmount)}.`
-          : `Pausing non-essential discretionary orders and delaying new commitments is advised to immediately eliminate this ${formatMoney(deficitAmount)} monthly cash outflow deficit.`,
+        category: t('suggestions.deficitCategory', activeLocale),
+        title: t('suggestions.deficitTitle', activeLocale),
+        currentProblem: t('suggestions.deficitProblem', activeLocale, {
+          expenses: formatMoney(totalExpenses),
+          income: formatMoney(monthlyIncome),
+          deficit: formatMoney(deficitAmount)
+        }),
+        alternativeSolution: t('suggestions.deficitSolution', activeLocale, {
+          deficit: formatMoney(deficitAmount)
+        }),
         estimatedSavings: deficitAmount,
-        tag: activeLocale === 'fr' ? 'Priorité absolue' : 'Critical Priority'
+        tag: t('suggestions.tagCriticalPriority', activeLocale)
       });
     } else if (monthlyIncome > 0 && netCashflow > 0) {
       // Surplus allocation based on tracker net cashflow
       const monthlyYield = Math.max(1, Math.round((netCashflow * 0.065) / 12));
       suggestions.push({
-        category: activeLocale === 'fr' ? 'Croissance de l\'épargne' : 'Surplus Cash Growth',
-        title: activeLocale === 'fr' ? 'Optimisation du rendement des liquidités excédentaires' : 'Surplus Liquidity Yield Optimization',
-        currentProblem: activeLocale === 'fr'
-          ? `Votre suivi fait apparaître un excédent net non alloué de +${formatMoney(netCashflow)} après prise en compte de vos dépenses.`
-          : `Your tracker shows an unassigned net surplus of +${formatMoney(netCashflow)} remaining after recorded expenses.`,
-        alternativeSolution: activeLocale === 'fr'
-          ? `Plutôt que de laisser dormir cet excédent sur un compte courant sans rendement, le placer sur un livret d'épargne ou placement liquide à ~6,5% génère ~${formatMoney(monthlyYield)} de revenus passifs par mois.`
-          : `Instead of letting surplus cash sit idle in low-yield checking accounts, parking it in an auto-sweep term deposit or liquid mutual fund yielding ~6.5% p.a. generates ~${formatMoney(monthlyYield)} in passive monthly earnings.`,
+        category: t('suggestions.surplusCategory', activeLocale),
+        title: t('suggestions.surplusTitle', activeLocale),
+        currentProblem: t('suggestions.surplusProblem', activeLocale, {
+          surplus: formatMoney(netCashflow)
+        }),
+        alternativeSolution: t('suggestions.surplusSolution', activeLocale, {
+          yield: formatMoney(monthlyYield)
+        }),
         estimatedSavings: monthlyYield,
-        tag: activeLocale === 'fr' ? 'Patrimoine & Épargne' : 'Passive Wealth'
+        tag: t('suggestions.tagPassiveWealth', activeLocale)
       });
     }
 
@@ -1055,17 +1051,13 @@ const { locale = 'en' } = Astro.props;
     // Calculate total potential monthly savings
     const totalPotential = suggestions.reduce((sum, s) => sum + s.estimatedSavings, 0);
     if (potentialSavingsTotal) {
-      potentialSavingsTotal.textContent = activeLocale === 'fr' ? `+${formatMoney(totalPotential)}/mois` : `+${formatMoney(totalPotential)}/mo`;
+      potentialSavingsTotal.textContent = t('suggestions.perMonth', activeLocale, { amount: formatMoney(totalPotential) });
     }
 
     if (suggestions.length === 0) {
-      smartSuggestionsContainer.innerHTML = activeLocale === 'fr' ? `
+      smartSuggestionsContainer.innerHTML = `
         <div class="col-span-1 md:col-span-2 p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
-          🎉 Excellente discipline budgétaire ! Aucune anomalie de dépenses détectée. Enregistrez d'autres dépenses pour recevoir des alternatives d'économies sur mesure.
-        </div>
-      ` : `
-        <div class="col-span-1 md:col-span-2 p-6 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
-          🎉 Great budget discipline! No immediate spending anomalies detected from your recorded transactions. Log additional expenses to receive customized cost-saving alternatives.
+          ${t('suggestions.disciplineTitle', activeLocale)}
         </div>
       `;
       return;
@@ -1080,13 +1072,13 @@ const { locale = 'en' } = Astro.props;
             ${s.tag}
           </span>
           <span class="text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400">
-            ${activeLocale === 'fr' ? `Économisez ~${formatMoney(s.estimatedSavings)}/mois` : `Save ~${formatMoney(s.estimatedSavings)}/mo`}
+            ${t('suggestions.savePerMonth', activeLocale, { amount: formatMoney(s.estimatedSavings) })}
           </span>
         </div>
         <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100">${s.title}</h4>
         <p class="text-[11px] text-slate-600 dark:text-slate-300">${s.currentProblem}</p>
         <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 text-[11px] text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-          <strong class="text-emerald-800 dark:text-emerald-400">${activeLocale === 'fr' ? 'Alternative recommandée :' : 'Actionable Switch:'}</strong> ${s.alternativeSolution}
+          <strong class="text-emerald-800 dark:text-emerald-400">${t('suggestions.actionableSwitch', activeLocale)}</strong> ${s.alternativeSolution}
         </div>
       </div>
     `
@@ -1198,167 +1190,63 @@ const { locale = 'en' } = Astro.props;
     // Active strategy pill
     if (activeStrategyPill) {
       if (debtStrategy === 'avalanche') {
-        activeStrategyPill.textContent = activeLocale === 'fr'
-          ? 'Avalanche (taux d\'intérêt le plus élevé en premier)'
-          : 'Avalanche (Highest Interest First)';
+        activeStrategyPill.textContent = t('advisor.avalanchePill', activeLocale);
       } else if (debtStrategy === 'snowball') {
-        activeStrategyPill.textContent = activeLocale === 'fr'
-          ? 'Boule de neige (plus petit solde en premier)'
-          : 'Snowball (Smallest Balance First)';
+        activeStrategyPill.textContent = t('advisor.snowballPill', activeLocale);
       } else {
-        activeStrategyPill.textContent = activeLocale === 'fr'
-          ? 'Allègement de trésorerie (mensualité la plus élevée d\'abord)'
-          : 'Cash Flow Relief (Highest Monthly EMI First)';
+        activeStrategyPill.textContent = t('advisor.foirPill', activeLocale);
       }
     }
 
     // Dynamic Model Recommendation Banner
     if (debtStrategyRecommendation) {
-      if (debtStrategy === 'avalanche') {
-        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">⚡</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle d'optimisation des coûts</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Avalanche (Économie d'intérêts)</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Priorise l'affectation de toute capacité de remboursement supplémentaire à la dette ayant le taux d'intérêt annuel le plus élevé (cartes de crédit revolving, prêts personnels à taux élevé), tout en maintenant les mensualités minimales obligatoires sur tous les autres comptes.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
-                <span class="text-slate-600 dark:text-slate-400">Réduit mathématiquement le coût total des intérêts cumulés et minimise le montant final remboursé.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
-                <span class="text-slate-600 dark:text-slate-400">Idéal pour préserver vos liquidités et éliminer au plus vite les frais financiers les plus lourds.</span>
-              </div>
-            </div>
-          </div>
-        ` : `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">⚡</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Cost Optimization Model</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Model Recommendation: Avalanche (Interest Saver)</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Prioritizes allocating all extra prepayment capacity toward the debt carrying the highest annual interest rate first (such as revolving credit cards and high-rate unsecured personal loans), while maintaining mandatory minimums on all other accounts.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Core Advantage</strong>
-                <span class="text-slate-600 dark:text-slate-400">Mathematically minimizes cumulative interest outflow, reducing total repayment expense.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Strategic Advisory</strong>
-                <span class="text-slate-600 dark:text-slate-400">Most effective for borrowers looking to preserve cash and eliminate high borrowing charges.</span>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (debtStrategy === 'snowball') {
-        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">❄️</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle de dynamique comportementale</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Boule de neige (Victoires rapides)</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Priorise le remboursement des plus petits soldes restants en premier, indépendamment de leur taux d'intérêt. Dès qu'un compte est soldé, la totalité de sa mensualité est reportée sur le compte suivant le plus petit.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
-                <span class="text-slate-600 dark:text-slate-400">Procure des victoires psychologiques rapides et réduit le nombre de lignes de crédit ouvertes.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
-                <span class="text-slate-600 dark:text-slate-400">Idéal si vous avez besoin d'étapes visibles et motivantes pour maintenir votre engagement dans la durée.</span>
-              </div>
-            </div>
-          </div>
-        ` : `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">❄️</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Behavioral Momentum Model</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Model Recommendation: Snowball (Quick Closure)</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Prioritizes extinguishing the smallest principal balances first, regardless of the interest rates. Once an account is fully paid off, its entire payment budget rolls directly into the next smallest balance.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Core Advantage</strong>
-                <span class="text-slate-600 dark:text-slate-400">Delivers rapid psychological wins and reduces the total count of monthly open accounts.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Strategic Advisory</strong>
-                <span class="text-slate-600 dark:text-slate-400">Ideal for anyone who benefits from visible early milestones to maintain long-term payoff consistency.</span>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        debtStrategyRecommendation.innerHTML = activeLocale === 'fr' ? `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">🚀</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Modèle de trésorerie et liquidité</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Recommandation : Allègement de mensualité & trésorerie</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Priorise le remboursement du prêt ayant la mensualité obligatoire la plus élevée en premier. Solder les mensualités lourdes allège directement le taux d'endettement mensuel et libère immédiatement du reste à vivre.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Avantage principal</strong>
-                <span class="text-slate-600 dark:text-slate-400">Libère rapidement votre trésorerie mensuelle et redonne de l'oxygène au budget du ménage.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Conseil stratégique</strong>
-                <span class="text-slate-600 dark:text-slate-400">Recommandé si vos mensualités fixes actuelles sont trop pesantes et que vous manquez de liquidités.</span>
-              </div>
-            </div>
-          </div>
-        ` : `
-          <div class="space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="text-xl shrink-0">🚀</span>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">Cash Flow & Liquidity Model</span>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">Model Recommendation: Cash Flow & EMI Relief</h4>
-                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
-                  Prioritizes extinguishing the loan account with the highest mandatory monthly installment first. Clearing major monthly obligations lowers the fixed debt-to-income burden and immediately frees up take-home cash.
-                </p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Core Advantage</strong>
-                <span class="text-slate-600 dark:text-slate-400">Rapidly unburdens monthly cash flow, providing immediate breathing space in the household budget.</span>
-              </div>
-              <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
-                <strong class="text-slate-800 dark:text-slate-200 block font-semibold">Strategic Advisory</strong>
-                <span class="text-slate-600 dark:text-slate-400">Best for individuals feeling constrained by heavy monthly outflows and seeking liquidity.</span>
-              </div>
-            </div>
-          </div>
-        `;
+      let icon = '⚡';
+      let model = t('advisor.avalancheModel', activeLocale);
+      let title = t('advisor.avalancheTitle', activeLocale);
+      let desc = t('advisor.avalancheDesc', activeLocale);
+      let adv = t('advisor.avalancheAdvantage', activeLocale);
+      let advText = t('advisor.avalancheAdvisory', activeLocale);
+
+      if (debtStrategy === 'snowball') {
+        icon = '❄️';
+        model = t('advisor.snowballModel', activeLocale);
+        title = t('advisor.snowballTitle', activeLocale);
+        desc = t('advisor.snowballDesc', activeLocale);
+        adv = t('advisor.snowballAdvantage', activeLocale);
+        advText = t('advisor.snowballAdvisory', activeLocale);
+      } else if (debtStrategy === 'foir') {
+        icon = '🚀';
+        model = t('advisor.foirModel', activeLocale);
+        title = t('advisor.foirTitle', activeLocale);
+        desc = t('advisor.foirDesc', activeLocale);
+        adv = t('advisor.foirAdvantage', activeLocale);
+        advText = t('advisor.foirAdvisory', activeLocale);
       }
+
+      debtStrategyRecommendation.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-start gap-2.5">
+            <span class="text-xl shrink-0">${icon}</span>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">${model}</span>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">${title}</h4>
+              <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed text-xs">
+                ${desc}
+              </p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+            <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+              <strong class="text-slate-800 dark:text-slate-200 block font-semibold">${t('advisor.coreAdvantage', activeLocale)}</strong>
+              <span class="text-slate-600 dark:text-slate-400">${adv}</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900/90 border border-emerald-200/80 dark:border-emerald-800/60 space-y-0.5">
+              <strong class="text-slate-800 dark:text-slate-200 block font-semibold">${t('advisor.strategicAdvisory', activeLocale)}</strong>
+              <span class="text-slate-600 dark:text-slate-400">${advText}</span>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     // Payment Rollover Planning Banner (Section 7)
@@ -1955,8 +1843,8 @@ const { locale = 'en' } = Astro.props;
         (tx) => `
       <tr class="hover:bg-slate-50 transition-colors">
         <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
-        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(tx.name)}">
-          ${escapeHtml(tx.name)}
+        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+          ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
         </td>
         <td class="py-2 px-3 whitespace-nowrap">
           ${tx.type === 'income'
@@ -1971,8 +1859,8 @@ const { locale = 'en' } = Astro.props;
         <td class="py-2 px-3 whitespace-nowrap">
           ${
             tx.source === 'imported'
-              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${activeLocale === 'fr' ? 'fichier' : 'file'}</span>`
-              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${activeLocale === 'fr' ? 'manuel' : 'manual'}</span>`
+              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${t('ledger.sourceImported', activeLocale)}</span>`
+              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${t('ledger.sourceManual', activeLocale)}</span>`
           }
         </td>
         <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
@@ -3195,7 +3083,7 @@ const { locale = 'en' } = Astro.props;
       income: 0,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: getLocaleDefaultCurrency(activeLocale),
       transactions: []
     };
     debts = [];
@@ -3213,7 +3101,7 @@ const { locale = 'en' } = Astro.props;
       income: 4200,
       frequency: 'monthly',
       model: '50-30-20',
-      currency: 'USD',
+      currency: getLocaleDefaultCurrency(activeLocale),
       transactions: [
         { id: 'tx-1', name: 'Apartment Rent', amount: 1350, category: 'Housing', date: new Date().toISOString().split('T')[0], source: 'manual' },
         { id: 'tx-2', name: 'Weekly Supermarket Haul', amount: 380, category: 'Food', date: new Date().toISOString().split('T')[0], source: 'manual' },
