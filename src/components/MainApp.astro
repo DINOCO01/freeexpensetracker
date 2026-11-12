@@ -184,10 +184,19 @@ const { locale = 'en' } = Astro.props;
   import {
     loadStoredState,
     saveStoredState,
+    saveDebtsStorage,
+    saveGoalsStorage,
     clearAllStoredData,
+    downloadBackupFile,
+    validateBackupPayload,
+    restoreFromBackupPayload,
     exportTransactionsToCSV,
     exportBudgetToExcel,
-    type AppState
+    type AppState,
+    type DebtItem,
+    type GoalItem,
+    type GoalContribution,
+    type DebtPaymentRecord
   } from '../utils/storage';
 
   import {
@@ -205,51 +214,6 @@ const { locale = 'en' } = Astro.props;
   } from '../utils/templateDownloader';
 
   // --- 1. State Interfaces & Initial Load ---
-  export interface DebtPaymentRecord {
-    id: string;
-    date: string; // "YYYY-MM-DD"
-    month?: string; // "YYYY-MM"
-    totalPayment: number;
-    principalPaid: number;
-    interestPaid: number;
-    extraPrepayment: number;
-    notes?: string;
-  }
-
-  export interface DebtItem {
-    id: string;
-    name: string;
-    debtName?: string;
-    originalPrincipal: number;
-    currentOutstandingPrincipal: number;
-    balance: number; // Synchronized with currentOutstandingPrincipal for backwards compatibility
-    interestRate: number;
-    rate: number; // Synchronized with interestRate
-    monthlyEMI: number;
-    minimum: number; // Synchronized with monthlyEMI
-    paymentHistory?: DebtPaymentRecord[];
-    active?: boolean;
-    paidOff?: boolean;
-  }
-
-  export interface GoalContribution {
-    id?: string;
-    date?: string; // "YYYY-MM-DD"
-    month: string; // "YYYY-MM"
-    planned?: number;
-    actual: number;
-  }
-
-  export interface GoalItem {
-    id: string;
-    name: string;
-    target: number;
-    current: number;
-    initialAmount?: number;
-    monthly: number;
-    contributions?: GoalContribution[];
-  }
-
   let state: AppState = loadStoredState();
   let pendingImportResult: FileInterpretationResult | null = null;
   let pendingTabImportResult: MultiFileInterpretationResult | null = null;
@@ -1623,7 +1587,7 @@ const { locale = 'en' } = Astro.props;
         const id = btn.getAttribute('data-delete-debt-id');
         if (!id) return;
         debts = debts.filter((d) => d.id !== id);
-        localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+        saveDebtsStorage(debts);
         renderAll();
       });
     });
@@ -1644,7 +1608,7 @@ const { locale = 'en' } = Astro.props;
             debt.balance = parsed;
             debt.paidOff = false;
             debt.active = true;
-            localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+            saveDebtsStorage(debts);
             renderAll();
           }
         }
@@ -1907,7 +1871,7 @@ const { locale = 'en' } = Astro.props;
         const id = btn.getAttribute('data-delete-goal-id');
         if (!id) return;
         goals = goals.filter((g) => g.id !== id);
-        localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+        saveGoalsStorage(goals);
         renderAll();
       });
     });
@@ -1946,7 +1910,7 @@ const { locale = 'en' } = Astro.props;
         const starting = typeof goal.initialAmount === 'number' ? goal.initialAmount : (goal.current || 0);
         const totalActual = goal.contributions.reduce((sum, c) => sum + (Number(c.actual) || 0), 0);
         goal.current = starting + totalActual;
-        localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+        saveGoalsStorage(goals);
         renderAll();
       });
     });
@@ -2275,6 +2239,96 @@ const { locale = 'en' } = Astro.props;
     track('ledger_exported', { format: 'xlsx' });
   });
 
+  // JSON Complete Backup
+  const btnBackupJson = document.getElementById('btn-backup-json');
+  btnBackupJson?.addEventListener('click', async () => {
+    try {
+      await downloadBackupFile();
+      track('ledger_exported', { format: 'json' });
+    } catch (err) {
+      console.error('[Backup Error]:', err);
+      alert('Failed to generate backup file.');
+    }
+  });
+
+  // JSON Complete Restore
+  const btnRestoreJson = document.getElementById('btn-restore-json');
+  const inputRestoreJson = document.getElementById('input-restore-json') as HTMLInputElement;
+  btnRestoreJson?.addEventListener('click', () => {
+    inputRestoreJson?.click();
+  });
+
+  inputRestoreJson?.addEventListener('change', async () => {
+    const file = inputRestoreJson.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      let parsed: any;
+      try {
+        parsed = JSON.parse(text);
+      } catch (_) {
+        alert('Invalid backup file: The selected file does not contain valid JSON.');
+        inputRestoreJson.value = '';
+        return;
+      }
+
+      const validation = validateBackupPayload(parsed);
+      if (!validation.valid) {
+        alert('Restore rejected: ' + (validation.error || 'Invalid backup structure.'));
+        inputRestoreJson.value = '';
+        return;
+      }
+
+      const s = validation.summary!;
+      const confirmMsg =
+        'Are you sure you want to restore this backup?\n\n' +
+        'This will REPLACE your current data with:\n' +
+        `- ${s.transactionCount} transactions\n` +
+        `- ${s.debtCount} debt accounts\n` +
+        `- ${s.goalCount} savings goals\n` +
+        (s.exportedAt ? `Backup Date: ${new Date(s.exportedAt).toLocaleString()}\n\n` : '\n') +
+        'Existing records will be replaced. Proceed?';
+
+      if (!window.confirm(confirmMsg)) {
+        inputRestoreJson.value = '';
+        return;
+      }
+
+      const res = await restoreFromBackupPayload(parsed);
+      if (!res.success) {
+        alert('Restore failed: ' + (res.error || 'Unknown error.'));
+        inputRestoreJson.value = '';
+        return;
+      }
+
+      // Reload in-memory state
+      state = loadStoredState();
+      if (parsed.data?.debts) debts = parsed.data.debts;
+      if (parsed.data?.goals) goals = parsed.data.goals;
+      if (parsed.data?.profile?.debtSettings) {
+        debtStrategy = parsed.data.profile.debtSettings.strategy || debtStrategy;
+        extraMonthlyDebtPayment = parsed.data.profile.debtSettings.extraMonthlyPayment || 0;
+      }
+
+      // Re-render UI inputs and ledger
+      if (inputIncomeNumber) inputIncomeNumber.value = state.income.toString();
+      if (inputIncomeSlider) inputIncomeSlider.value = state.income.toString();
+      if (selectFrequency) selectFrequency.value = state.frequency;
+      if (selectCurrency) selectCurrency.value = state.currency;
+      renderLedger();
+      renderDebtManagement(getMonthlyIncome());
+      renderGoals();
+      updateDashboardCalculations();
+      alert('Financial backup successfully restored!');
+    } catch (err: any) {
+      console.error('[Restore Exception]:', err);
+      alert('An unexpected error occurred during restore: ' + (err?.message || err));
+    } finally {
+      inputRestoreJson.value = '';
+    }
+  });
+
   // Debt Strategy Buttons (Vertical Tabs)
   function updateDebtStratButtons() {
     const stratConfigs = [
@@ -2366,7 +2420,7 @@ const { locale = 'en' } = Astro.props;
 
     let savedDebt = false;
     try {
-      localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+      saveDebtsStorage(debts);
       savedDebt = true;
     } catch (_) {
       debts.pop();
@@ -2487,7 +2541,7 @@ const { locale = 'en' } = Astro.props;
             targetDebt.paidOff = false;
             targetDebt.active = true;
           }
-          localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+          saveDebtsStorage(debts);
           renderDebtModalHistory(targetDebt);
           if (modalDebtCurrentPrincipal) {
             modalDebtCurrentPrincipal.textContent = formatMoney(targetDebt.currentOutstandingPrincipal);
@@ -2733,7 +2787,7 @@ const { locale = 'en' } = Astro.props;
 
     let savedDebtPayment = false;
     try {
-      localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
+      saveDebtsStorage(debts);
       savedDebtPayment = true;
     } catch (_) {
       isSubmittingDebtPayment = false;
@@ -2782,7 +2836,7 @@ const { locale = 'en' } = Astro.props;
 
     let savedGoal = false;
     try {
-      localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+      saveGoalsStorage(goals);
       savedGoal = true;
     } catch (_) {
       goals.pop();
@@ -3001,7 +3055,7 @@ const { locale = 'en' } = Astro.props;
 
     let savedContrib = false;
     try {
-      localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+      saveGoalsStorage(goals);
       savedContrib = true;
     } catch (_) {
       isSubmittingContrib = false;
@@ -3057,7 +3111,7 @@ const { locale = 'en' } = Astro.props;
     }
 
     goal.monthly = newPlan;
-    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    saveGoalsStorage(goals);
     if (displayContribPlanned) displayContribPlanned.textContent = formatMoney(goal.monthly);
     containerEditPlan?.classList.add('hidden');
     updateContributionFeedback(goal);
@@ -3137,8 +3191,6 @@ const { locale = 'en' } = Astro.props;
 
   btnConfirmResetBlank?.addEventListener('click', () => {
     clearAllStoredData();
-    localStorage.removeItem(DEBT_STORAGE_KEY);
-    localStorage.removeItem(GOAL_STORAGE_KEY);
     state = {
       income: 0,
       frequency: 'monthly',
@@ -3149,6 +3201,8 @@ const { locale = 'en' } = Astro.props;
     debts = [];
     goals = [];
     saveStoredState(state);
+    saveDebtsStorage(debts);
+    saveGoalsStorage(goals);
     resetConfirmModal?.classList.add('hidden');
     renderAll();
   });
@@ -3172,8 +3226,8 @@ const { locale = 'en' } = Astro.props;
     debts = [];
     goals = [];
     saveStoredState(state);
-    localStorage.setItem(DEBT_STORAGE_KEY, JSON.stringify(debts));
-    localStorage.setItem(GOAL_STORAGE_KEY, JSON.stringify(goals));
+    saveDebtsStorage(debts);
+    saveGoalsStorage(goals);
     resetConfirmModal?.classList.add('hidden');
     renderAll();
   });

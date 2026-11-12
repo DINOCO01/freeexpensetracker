@@ -314,6 +314,29 @@ if (faqEntities.length > 0) {
       }
     </script>
 
+    <!-- PWA Service Worker Registration -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(function(reg) {
+              reg.onupdatefound = function() {
+                var installingWorker = reg.installing;
+                if (!installingWorker) return;
+                installingWorker.onstatechange = function() {
+                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[PWA] New version ready.');
+                  }
+                };
+              };
+            })
+            .catch(function(err) {
+              console.warn('[PWA] Service worker registration failed:', err);
+            });
+        });
+      }
+    </script>
+
     <!-- Buy Me a Coffee Floating Widget -->
     <script
       is:inline

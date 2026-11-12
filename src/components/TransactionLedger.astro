@@ -59,6 +59,27 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       >
         <span>XLSX</span>
       </button>
+
+      <!-- JSON Backup button -->
+      <button
+        type="button"
+        id="btn-backup-json"
+        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
+        title="Download complete JSON backup of all expenses, debts, goals & settings"
+      >
+        <span>Backup</span>
+      </button>
+
+      <!-- JSON Restore button -->
+      <button
+        type="button"
+        id="btn-restore-json"
+        class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
+        title="Restore data from previously exported JSON backup"
+      >
+        <span>Restore</span>
+      </button>
+      <input type="file" id="input-restore-json" accept=".json,application/json" class="hidden" />
     </div>
   </div>
 

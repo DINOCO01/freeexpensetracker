@@ -1,12 +1,63 @@
 import * as XLSX from 'xlsx';
 import type { Frequency, BudgetModel, Transaction } from './calculations';
+import {
+  openDatabase,
+  isIndexedDBAvailable,
+  getAllTransactionsIDB,
+  saveAllTransactionsIDB,
+  getAllDebtsIDB,
+  saveAllDebtsIDB,
+  getAllGoalsIDB,
+  saveAllGoalsIDB,
+  getProfileIDB,
+  saveProfileIDB,
+  migrateLocalStorageToIndexedDB,
+  exportFullBackupPayload,
+  validateBackupPayload,
+  restoreFromBackupPayload,
+  clearAllIndexedDBAndStorage,
+  type DebtItem,
+  type DebtPaymentRecord,
+  type GoalItem,
+  type GoalContribution,
+  type ProfileState,
+  type BackupPayload,
+  type ValidationResult
+} from './idb';
+
+export {
+  openDatabase,
+  isIndexedDBAvailable,
+  getAllTransactionsIDB,
+  saveAllTransactionsIDB,
+  getAllDebtsIDB,
+  saveAllDebtsIDB,
+  getAllGoalsIDB,
+  saveAllGoalsIDB,
+  getProfileIDB,
+  saveProfileIDB,
+  migrateLocalStorageToIndexedDB,
+  exportFullBackupPayload,
+  validateBackupPayload,
+  restoreFromBackupPayload,
+  clearAllIndexedDBAndStorage,
+  type DebtItem,
+  type DebtPaymentRecord,
+  type GoalItem,
+  type GoalContribution,
+  type ProfileState,
+  type BackupPayload,
+  type ValidationResult
+};
 
 export const STORAGE_KEYS = {
   INCOME: 'fet_income_v4',
   FREQUENCY: 'fet_frequency_v4',
   MODEL: 'fet_model_v4',
   CURRENCY: 'fet_currency_v4',
-  TRANSACTIONS: 'fet_transactions_v4'
+  TRANSACTIONS: 'fet_transactions_v4',
+  DEBTS: 'fet_debts_v4',
+  GOALS: 'fet_goals_v4'
 };
 
 export interface AppState {
@@ -17,6 +68,10 @@ export interface AppState {
   transactions: Transaction[];
 }
 
+/**
+ * Synchronous initial state load for instant zero-flash DOM hydration.
+ * Also initiates background IndexedDB synchronization and idempotent migration.
+ */
 export function loadStoredState(): AppState {
   if (typeof window === 'undefined') {
     return {
@@ -26,6 +81,15 @@ export function loadStoredState(): AppState {
       currency: 'USD',
       transactions: []
     };
+  }
+
+  // Trigger background migration from localStorage to IndexedDB once per browser profile
+  if (typeof setTimeout !== 'undefined') {
+    setTimeout(() => {
+      migrateLocalStorageToIndexedDB().catch((err) => {
+        console.warn('[Storage] Background IDB migration warning:', err);
+      });
+    }, 100);
   }
 
   try {
@@ -105,6 +169,10 @@ export function loadStoredState(): AppState {
   }
 }
 
+/**
+ * Save profile and transaction state to synchronous localStorage cache
+ * and asynchronously persist to IndexedDB.
+ */
 export function saveStoredState(state: Partial<AppState>): boolean {
   if (typeof window === 'undefined') return false;
   try {
@@ -113,9 +181,67 @@ export function saveStoredState(state: Partial<AppState>): boolean {
     if (state.model !== undefined) localStorage.setItem(STORAGE_KEYS.MODEL, state.model);
     if (state.currency !== undefined) localStorage.setItem(STORAGE_KEYS.CURRENCY, state.currency);
     if (state.transactions !== undefined) localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(state.transactions));
+
+    // Asynchronously synchronize into IndexedDB
+    if (isIndexedDBAvailable()) {
+      if (state.transactions !== undefined) {
+        saveAllTransactionsIDB(state.transactions).catch((err) => {
+          console.warn('[Storage] Asynchronous IDB transactions sync warning:', err);
+        });
+      }
+      if (state.income !== undefined || state.frequency !== undefined || state.model !== undefined || state.currency !== undefined) {
+        saveProfileIDB({
+          income: state.income,
+          frequency: state.frequency,
+          model: state.model,
+          currency: state.currency
+        }).catch((err) => {
+          console.warn('[Storage] Asynchronous IDB profile sync warning:', err);
+        });
+      }
+    }
+
     return true;
   } catch (e) {
     console.error('Failed to save state to localStorage:', e);
+    return false;
+  }
+}
+
+/**
+ * Persist debts to localStorage and IndexedDB
+ */
+export function saveDebtsStorage(debts: DebtItem[]): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.setItem(STORAGE_KEYS.DEBTS, JSON.stringify(debts));
+    if (isIndexedDBAvailable()) {
+      saveAllDebtsIDB(debts).catch((err) => {
+        console.warn('[Storage] Asynchronous IDB debts sync warning:', err);
+      });
+    }
+    return true;
+  } catch (e) {
+    console.error('Failed to save debts to storage:', e);
+    return false;
+  }
+}
+
+/**
+ * Persist goals to localStorage and IndexedDB
+ */
+export function saveGoalsStorage(goals: GoalItem[]): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
+    if (isIndexedDBAvailable()) {
+      saveAllGoalsIDB(goals).catch((err) => {
+        console.warn('[Storage] Asynchronous IDB goals sync warning:', err);
+      });
+    }
+    return true;
+  } catch (e) {
+    console.error('Failed to save goals to storage:', e);
     return false;
   }
 }
@@ -124,9 +250,30 @@ export function clearAllStoredData(): void {
   if (typeof window === 'undefined') return;
   try {
     Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+    clearAllIndexedDBAndStorage().catch((err) => {
+      console.warn('[Storage] Clear IDB warning:', err);
+    });
   } catch (e) {
-    console.error('Failed to clear localStorage:', e);
+    console.error('Failed to clear storage:', e);
   }
+}
+
+/**
+ * Trigger client-side download of complete financial backup (.json)
+ */
+export async function downloadBackupFile(): Promise<void> {
+  const payload = await exportFullBackupPayload();
+  const jsonStr = JSON.stringify(payload, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const dateStr = new Date().toISOString().split('T')[0];
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `freexpensetracker-backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 export function exportTransactionsToCSV(transactions: Transaction[], currencySymbol: string = '$'): void {
