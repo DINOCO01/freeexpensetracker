@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import { getXLSX } from './dynamicParsers';
 
 export interface TemplateItem {
   id: string;
@@ -217,7 +217,8 @@ export const TEMPLATES_DATA: TemplateItem[] = [
 /**
  * Generates genuine, fully formulated Microsoft Excel (.xlsx) files client-side.
  */
-export function generateExcelTemplate(templateId: string): void {
+export async function generateExcelTemplate(templateId: string): Promise<void> {
+  const XLSX = await getXLSX();
   const wb = XLSX.utils.book_new();
 
   if (templateId === 'excel-50-30-20') {

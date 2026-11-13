@@ -39,6 +39,7 @@ const { locale = 'en' } = Astro.props;
   title={t('meta.title', locale)}
   description={t('meta.description', locale)}
   keywords={t('meta.keywords', locale)}
+  isTrackerPage={true}
 >
   <Navbar currentLocale={locale} />
 
@@ -83,6 +84,7 @@ const { locale = 'en' } = Astro.props;
 
     <!-- TAB 3: Universal Statement & Receipt Importer (Multi-file & Multi-format) -->
     <section id="tab-view-import" class="tab-view space-y-6 hidden">
+      <div id="importer" class="scroll-mt-24"></div>
       <StatementImporterTab locale={locale} />
     </section>
 
@@ -3409,6 +3411,11 @@ const { locale = 'en' } = Astro.props;
     if (tabImporterError) tabImporterError.classList.add('hidden');
     if (tabImporterProgress) tabImporterProgress.classList.remove('hidden');
     if (tabImporterResults) tabImporterResults.classList.add('hidden');
+    if (tabImporterProgressText) {
+      tabImporterProgressText.textContent = t('importer.initParser', activeLocale) || 'Initializing document parser...';
+    }
+    if (tabImporterProgressPct) tabImporterProgressPct.textContent = '0%';
+    if (tabImporterProgressBar) (tabImporterProgressBar as HTMLElement).style.width = '0%';
 
     try {
       const result = await parseAndInterpretMultipleFiles(fileArray as (File | string)[], (current, total, name) => {
@@ -3550,12 +3557,28 @@ const { locale = 'en' } = Astro.props;
   }
 
   tabButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
       const tabId = btn.getAttribute('data-tab');
-      if (tabId) switchTab(tabId);
+      if (tabId) {
+        if (btn.tagName === 'A') e.preventDefault();
+        switchTab(tabId);
+        if (tabId === 'import') {
+          setTimeout(() => {
+            const target = document.getElementById('importer') || document.getElementById('tab-view-import');
+            target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        }
+      }
     });
   });
 
+  // --- Check URL Hash or Query Parameters for Tab & Preset Selection on Page Load ---
+  if (typeof window !== 'undefined' && window.location.hash === '#importer') {
+    switchTab('import');
+    setTimeout(() => {
+      (document.getElementById('importer') || document.getElementById('tab-view-import'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
   // --- Check URL Query Parameters for Tab & Preset Selection on Page Load ---
   (function handleQueryDeepLinks() {
     try {
@@ -3658,16 +3681,16 @@ const { locale = 'en' } = Astro.props;
   });
 
   // Universal handler: Switch and scroll to tabs when internal anchor links are clicked
-  document.querySelectorAll<HTMLAnchorElement>('a[href^="#tab-view-"]').forEach((link) => {
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#tab-view-"], a[href="#importer"]').forEach((link) => {
     link.addEventListener('click', (e) => {
       const hash = link.getAttribute('href');
       if (!hash) return;
-      const tabName = hash.replace('#tab-view-', '');
+      const tabName = hash === '#importer' ? 'import' : hash.replace('#tab-view-', '');
       if (tabName) {
         e.preventDefault();
         switchTab(tabName);
         setTimeout(() => {
-          const targetView = document.getElementById(`tab-view-${tabName}`);
+          const targetView = hash === '#importer' ? (document.getElementById('importer') || document.getElementById('tab-view-import')) : document.getElementById(`tab-view-${tabName}`);
           targetView?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 50);
       }

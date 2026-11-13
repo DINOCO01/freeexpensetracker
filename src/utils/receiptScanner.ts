@@ -1,16 +1,6 @@
-import Tesseract from 'tesseract.js';
-import * as pdfjsLib from 'pdfjs-dist';
 import { type ExpenseCategory } from './calculations';
 import { autoCategorizeExpense } from './fileImporter';
-
-// Ensure PDF.js worker is initialized
-if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-  } catch (e) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '6.3.289'}/build/pdf.worker.min.mjs`;
-  }
-}
+import { getTesseract, getPdfJs, getHeicConverter } from './dynamicParsers';
 
 export type PaymentMethodType =
   | 'UPI'
@@ -1861,14 +1851,33 @@ export async function scanReceiptImage(
   file: File,
   onProgress?: (progress: number, status: string) => void
 ): Promise<ScannedReceiptResult> {
-  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  let activeFile = file;
+  const isHeic = /\.(heic|heif)$/i.test(activeFile.name) || activeFile.type === 'image/heic' || activeFile.type === 'image/heif';
+  if (isHeic) {
+    try {
+      if (onProgress) onProgress(10, 'Converting HEIC image...');
+      const heic2any = await getHeicConverter();
+      const conversionResult = await heic2any({
+        blob: activeFile,
+        toType: 'image/jpeg',
+        quality: 0.85
+      });
+      const jpegBlob = Array.isArray(conversionResult) ? conversionResult[0] : conversionResult;
+      activeFile = new File([jpegBlob], activeFile.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+    } catch (heicErr: any) {
+      console.warn('HEIC conversion failed, attempting direct read:', heicErr);
+    }
+  }
+
+  const isPdf = activeFile.type === 'application/pdf' || activeFile.name.toLowerCase().endsWith('.pdf');
   let rawText = '';
   let confidence = 85;
   let imageUrl = '';
 
   if (isPdf) {
     try {
-      const arrayBuffer = await file.arrayBuffer();
+      const pdfjsLib = await getPdfJs();
+      const arrayBuffer = await activeFile.arrayBuffer();
       const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
       const pdfDoc = await loadingTask.promise;
       const numPages = Math.min(3, pdfDoc.numPages);
@@ -1904,8 +1913,9 @@ export async function scanReceiptImage(
           } catch {
             imageUrl = '';
           }
+          const Tesseract = await getTesseract();
           const { data } = await Tesseract.recognize(canvas as any, 'eng', {
-            logger: (m) => {
+            logger: (m: any) => {
               if (onProgress && m.status === 'recognizing text') {
                 onProgress(Math.round((m.progress || 0) * 100), m.status);
               }
@@ -1921,15 +1931,16 @@ export async function scanReceiptImage(
   } else {
     // Normal Image (PNG, JPG, WebP, etc.)
     try {
-      imageUrl = URL.createObjectURL(file);
+      imageUrl = URL.createObjectURL(activeFile);
     } catch {
       imageUrl = '';
     }
 
+    const Tesseract = await getTesseract();
     const hasNodeBuffer = typeof (globalThis as any).Buffer !== 'undefined';
-    const imageInput: any = hasNodeBuffer && (file as any).buffer ? (file as any).buffer : file;
+    const imageInput: any = hasNodeBuffer && (activeFile as any).buffer ? (activeFile as any).buffer : activeFile;
     const { data } = await Tesseract.recognize(imageInput, 'eng', {
-      logger: (m) => {
+      logger: (m: any) => {
         if (onProgress && m.status === 'recognizing text') {
           onProgress(Math.round((m.progress || 0) * 100), m.status);
         }

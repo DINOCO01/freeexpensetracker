@@ -3,16 +3,14 @@
  * ActivityPromotionPopup.astro
  * Smart Activity-Based Cross-Promotion Popup recommending My Real Budget (https://myrealbudget.com/).
  * 
+ * Group 5 Static DOM Cleanup:
+ * - Does NOT render any promotional text, dialogs or hidden containers into initial static HTML.
+ * - Entire modal DOM is generated on-demand via JavaScript only when trigger conditions are met.
+ * 
  * Display Conditions:
  * 1. Active browsing time >= 30 seconds (pauses on inactive background tabs, persists across navigation).
  * 2. Successful completion of a meaningful expense-tracking activity (adding expense, statement import, receipt save).
- * 
- * Behavior:
- * - Appears only once per browser session via sessionStorage.
- * - Smooth 5-second fade-in animation with subtle upward movement.
- * - Respects prefers-reduced-motion.
- * - Non-blocking floating dialog (does not interrupt active user operations).
- * - Full light & dark mode support.
+ * 3. No active workflow, modal, or input focus.
  */
 import { DEFAULT_LOCALE, type SupportedLocale } from '../locales';
 
@@ -23,77 +21,6 @@ interface Props {
 const { locale = DEFAULT_LOCALE } = Astro.props;
 const isFr = locale === 'fr';
 ---
-
-<div
-  id="mrb-activity-popup"
-  role="dialog"
-  aria-labelledby="mrb-popup-heading"
-  aria-describedby="mrb-popup-desc"
-  class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-md w-auto pointer-events-auto"
->
-  <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
-    <!-- Close Button (accessible, dismisses popup) -->
-    <button
-      type="button"
-      id="btn-mrb-popup-close"
-      aria-label="Close promotion dialog"
-      class="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-
-    <!-- Header Section: Micro Label + Heading -->
-    <div class="space-y-1.5 pr-8">
-      <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
-        <span>{isFr ? 'VOTRE PROCHAINE ÉTAPE' : 'YOUR NEXT STEP'}</span>
-      </div>
-      <h3 id="mrb-popup-heading" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
-        {isFr ? 'Vous avez terminé le suivi de vos dépenses ?' : 'Finished tracking your expenses?'}
-      </h3>
-    </div>
-
-    <!-- Description -->
-    <p id="mrb-popup-desc" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-      {isFr ? 'Vos dépenses sont bien enregistrées. Planifiez maintenant l\'utilisation de votre argent.' : "You've got your spending recorded. Now plan where your money should go next."}
-    </p>
-
-    <!-- Supporting Section -->
-    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-1">
-      <h4 class="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-        {isFr ? 'Planifiez votre budget avec My Real Budget.' : 'Plan your budget with My Real Budget.'}
-      </h4>
-      <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        {isFr ? 'Créez un budget mensuel, suivez la règle 50/30/20 et prenez le contrôle de vos finances.' : 'Create a monthly budget, follow the 50/30/20 rule and take control of your finances.'}
-      </p>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
-      <a
-        href="https://myrealbudget.com/"
-        target="_blank"
-        rel="noopener"
-        id="btn-mrb-popup-cta"
-        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
-      >
-        <span>{isFr ? 'Découvrir My Real Budget' : 'Explore My Real Budget'}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
-      </a>
-      <button
-        type="button"
-        id="btn-mrb-popup-later"
-        class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center"
-      >
-        {isFr ? 'Peut-être plus tard' : 'Maybe later'}
-      </button>
-    </div>
-  </div>
-</div>
 
 <style>
   @keyframes mrbFadeInSlow {
@@ -120,8 +47,9 @@ const isFr = locale === 'fr';
   }
 </style>
 
-<script is:inline>
+<script>
   (function () {
+    const isFr = document.documentElement.lang === 'fr' || document.documentElement.getAttribute('data-locale') === 'fr';
     const STORAGE_KEY_ACTIVE_SECS = 'fet_active_seconds';
     const STORAGE_KEY_ACTIVITY_DONE = 'fet_activity_completed';
     const STORAGE_KEY_POPUP_SHOWN = 'fet_popup_shown';
@@ -187,8 +115,14 @@ const isFr = locale === 'fr';
 
         const activityDone = sessionStorage.getItem(STORAGE_KEY_ACTIVITY_DONE) === 'true';
 
+        let curSecs = activeSeconds;
+        try {
+          const s = parseInt(sessionStorage.getItem(STORAGE_KEY_ACTIVE_SECS) || '0', 10);
+          if (!isNaN(s) && s > curSecs) curSecs = s;
+        } catch (_) {}
+
         // Both Condition A (>= 30 active seconds) and Condition B (activity completed) required
-        if (activeSeconds < REQUIRED_ACTIVE_SECONDS || !activityDone) {
+        if (curSecs < REQUIRED_ACTIVE_SECONDS || !activityDone) {
           return;
         }
 
@@ -206,13 +140,117 @@ const isFr = locale === 'fr';
         sessionStorage.setItem(STORAGE_KEY_POPUP_SHOWN, 'true');
       } catch (_) {}
 
-      const popup = document.getElementById('mrb-activity-popup');
-      if (!popup) return;
+      if (document.getElementById('mrb-activity-popup')) return;
 
-      if (!popup.classList.contains('hidden')) return;
+      const popup = document.createElement('div');
+      popup.id = 'mrb-activity-popup';
+      popup.setAttribute('role', 'dialog');
+      popup.setAttribute('aria-labelledby', 'mrb-popup-heading');
+      popup.setAttribute('aria-describedby', 'mrb-popup-desc');
+      popup.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-md w-auto pointer-events-auto mrb-popup-fadein';
 
-      popup.classList.remove('hidden');
-      popup.classList.add('mrb-popup-fadein');
+      const card = document.createElement('div');
+      card.className = 'relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4';
+
+      // Close button
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.id = 'btn-mrb-popup-close';
+      closeBtn.setAttribute('aria-label', 'Close promotion dialog');
+      closeBtn.className = 'absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer';
+      closeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
+      closeBtn.addEventListener('click', dismissPopup);
+      card.appendChild(closeBtn);
+
+      // Header section
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'space-y-1.5 pr-8';
+
+      const tagDiv = document.createElement('div');
+      tagDiv.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+      const dot = document.createElement('span');
+      dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0';
+      const tagText = document.createElement('span');
+      tagText.textContent = isFr ? 'VOTRE PROCHAINE ÉTAPE' : 'YOUR NEXT STEP';
+      tagDiv.appendChild(dot);
+      tagDiv.appendChild(tagText);
+      headerDiv.appendChild(tagDiv);
+
+      const heading = document.createElement('h3');
+      heading.id = 'mrb-popup-heading';
+      heading.className = "text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight";
+      heading.textContent = isFr ? 'Vous avez terminé le suivi de vos dépenses ?' : 'Finished tracking your expenses?';
+      headerDiv.appendChild(heading);
+      card.appendChild(headerDiv);
+
+      // Description
+      const desc = document.createElement('p');
+      desc.id = 'mrb-popup-desc';
+      desc.className = 'text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed';
+      desc.textContent = isFr
+        ? 'Vos dépenses sont bien enregistrées. Planifiez maintenant l\'utilisation de votre argent.'
+        : "You've got your spending recorded. Now plan where your money should go next.";
+      card.appendChild(desc);
+
+      // Supporting box
+      const box = document.createElement('div');
+      box.className = 'p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-1';
+      const boxHeading = document.createElement('h4');
+      boxHeading.className = "font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]";
+      boxHeading.textContent = isFr ? 'Planifiez votre budget avec My Real Budget.' : 'Plan your budget with My Real Budget.';
+      const boxText = document.createElement('p');
+      boxText.className = 'text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed';
+      boxText.textContent = isFr
+        ? 'Créez un budget mensuel, suivez la règle 50/30/20 et prenez le contrôle de vos finances.'
+        : 'Create a monthly budget, follow the 50/30/20 rule and take control of your finances.';
+      box.appendChild(boxHeading);
+      box.appendChild(boxText);
+      card.appendChild(box);
+
+      // Buttons container
+      const btnContainer = document.createElement('div');
+      btnContainer.className = 'flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1';
+
+      const ctaLink = document.createElement('a');
+      ctaLink.href = 'https://myrealbudget.com/';
+      ctaLink.target = '_blank';
+      ctaLink.rel = 'noopener';
+      ctaLink.id = 'btn-mrb-popup-cta';
+      ctaLink.className = 'flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-sm cursor-pointer';
+      const ctaSpan = document.createElement('span');
+      ctaSpan.textContent = isFr ? 'Découvrir My Real Budget' : 'Explore My Real Budget';
+      ctaLink.appendChild(ctaSpan);
+      const ctaSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      ctaSvg.setAttribute('class', 'w-4 h-4');
+      ctaSvg.setAttribute('fill', 'none');
+      ctaSvg.setAttribute('viewBox', '0 0 24 24');
+      ctaSvg.setAttribute('stroke-width', '2');
+      ctaSvg.setAttribute('stroke', 'currentColor');
+      ctaSvg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />';
+      ctaLink.appendChild(ctaSvg);
+      ctaLink.addEventListener('click', () => {
+        if (typeof gtag === 'function') {
+          gtag('event', 'cross_site_cta_click', {
+            destination: 'myrealbudget.com',
+            source_page: window.location.pathname,
+            cta_name: 'popup_my_real_budget'
+          });
+        }
+        dismissPopup();
+      });
+      btnContainer.appendChild(ctaLink);
+
+      const laterBtn = document.createElement('button');
+      laterBtn.type = 'button';
+      laterBtn.id = 'btn-mrb-popup-later';
+      laterBtn.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center';
+      laterBtn.textContent = isFr ? 'Peut-être plus tard' : 'Maybe later';
+      laterBtn.addEventListener('click', dismissPopup);
+      btnContainer.appendChild(laterBtn);
+
+      card.appendChild(btnContainer);
+      popup.appendChild(card);
+      document.body.appendChild(popup);
     }
 
     function dismissPopup() {
@@ -228,7 +266,9 @@ const isFr = locale === 'fr';
       popup.style.opacity = '0';
       popup.style.transform = 'translateY(12px)';
       setTimeout(() => {
-        popup.classList.add('hidden');
+        if (popup && popup.parentNode) {
+          popup.parentNode.removeChild(popup);
+        }
       }, 250);
     }
 
@@ -272,43 +312,5 @@ const isFr = locale === 'fr';
         evaluateDisplayConditions();
       }
     });
-
-    // Button event bindings
-    function initButtons() {
-      const btnClose = document.getElementById('btn-mrb-popup-close');
-      const btnLater = document.getElementById('btn-mrb-popup-later');
-      const btnCta = document.getElementById('btn-mrb-popup-cta');
-
-      if (btnClose && !btnClose.dataset.bound) {
-        btnClose.dataset.bound = 'true';
-        btnClose.addEventListener('click', dismissPopup);
-      }
-
-      if (btnLater && !btnLater.dataset.bound) {
-        btnLater.dataset.bound = 'true';
-        btnLater.addEventListener('click', dismissPopup);
-      }
-
-      if (btnCta && !btnCta.dataset.bound) {
-        btnCta.dataset.bound = 'true';
-        btnCta.addEventListener('click', () => {
-          if (typeof gtag === 'function') {
-            gtag('event', 'cross_site_cta_click', {
-              destination: 'myrealbudget.com',
-              source_page: window.location.pathname,
-              cta_name: 'popup_my_real_budget'
-            });
-          }
-          dismissPopup();
-        });
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initButtons);
-    } else {
-      initButtons();
-    }
   })();
 </script>
-

@@ -32,11 +32,11 @@ export const fr = {
     tracker: "1. Suivi en Direct",
     templates: "2. Modèles Gratuits",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. Importateur Universel",
+    import: "3. Importateur de Relevés",
     importBadge: "PDF • Images • CSV • Excel",
-    debt: "3. Gestion des Dettes",
+    debt: "4. Gestion des Dettes",
     debtBadge: "Boule de Neige • Avalanche",
-    budget: "4. Budget & Objectifs",
+    budget: "5. Budget & Objectifs",
     budgetBadge: "50/30/20",
     knowledge: "Guides & Savoir",
     knowledgeBadge: "Conseils"
@@ -175,6 +175,7 @@ export const fr = {
     surplusSolution: "Plutôt que de laisser dormir cet excédent sur un compte courant sans rendement, le placer sur un livret d'épargne ou placement liquide à ~6,5% génère ~{yield} de revenus passifs par mois."
   },
   importer: {
+    initParser: "Initialisation de l'analyseur de documents...",
     title: "Importateur Universel de Relevés et Factures",
     badge: "Lots & Multiformat",
     subtitle: "Téléversez plusieurs relevés de compte et tickets de caisse en même temps. Nous extrayons les opérations et classons vos dépenses directement dans votre navigateur.",
@@ -321,6 +322,7 @@ export const fr = {
     years: "ans",
     interestSaved: "Économie d'Intérêts vs Mensualités Seules",
     addDebtTitle: "Ajouter un Emprunt ou une Dette",
+    addDebtSubtitle: "Saisissez le solde de votre prêt, le taux d'intérêt (TAEG) et votre mensualité minimale pour l'intégrer à votre simulation de remboursement.",
     debtName: "Intitulé du Crédit / Prêteur",
     debtNamePlaceholder: "ex. Carte de Crédit, Prêt Personnel, Auto",
     originalPrincipal: "Montant Initial du Prêt",
@@ -329,6 +331,7 @@ export const fr = {
     minPayment: "Mensualité Obligatoire",
     btnAddDebt: "Ajouter la Dette",
     debtListTitle: "Tableau de Bord des Passifs",
+    debtListSubtitle: "Consultez vos soldes actifs, comparez le coût total des intérêts et suivez la date estimée de libération de vos dettes selon chaque stratégie.",
     btnLogPayment: "Enregistrer un Remboursement",
     emptyDebts: "Aucune dette enregistrée. Ajoutez vos emprunts pour calculer votre calendrier de libération.",
     accounts: "comptes",

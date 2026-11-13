@@ -32,11 +32,11 @@ export const ko = {
     tracker: "1. 실시간 가계부",
     templates: "2. 무료 템플릿",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. 내역서 통합 변환",
+    import: "3. 내역서 가져오기",
     importBadge: "PDF • 이미지 • CSV • Excel",
-    debt: "3. 부채 상환 계획",
+    debt: "4. 부채 상환 계획",
     debtBadge: "스노우볼 • 에벌랜치",
-    budget: "4. 예산 및 목표",
+    budget: "5. 예산 및 목표",
     budgetBadge: "50/30/20",
     knowledge: "금융 지식",
     knowledgeBadge: "가이드"
@@ -175,6 +175,7 @@ export const ko = {
     surplusSolution: "수익이 없는 입출금 통장에 방치하는 대신, 연 약 6.5%의 파킹통장이나 유동성 펀드에 예치하면 매월 약 ~{yield}의 부수입을 얻을 수 있습니다."
   },
   importer: {
+    initParser: "문서 분석기 초기화 중...",
     title: "통장 내역서 및 영수증 통합 인포터",
     badge: "일괄 변환 & 멀티 포맷",
     subtitle: "여러 개의 은행 거래내역서 PDF와 영수증 사진을 한 번에 업로드하세요. 브라우저 내에서 즉시 텍스트를 추출하고 카테고리를 분류합니다.",
@@ -315,6 +316,7 @@ export const ko = {
     years: "년",
     interestSaved: "최소 상환 대비 절감 이자",
     addDebtTitle: "대출 또는 부채 내역 추가",
+    addDebtSubtitle: "대출 잔액, 이자율(연이율) 및 최소 월 납입액을 입력하여 부채 상환 시뮬레이션에 포함하세요.",
     debtName: "대출명 / 금융기관",
     debtNamePlaceholder: "예: 마이너스통장, 전세자금대출, 학자금대출",
     originalPrincipal: "최초 대출 원금",
@@ -323,6 +325,7 @@ export const ko = {
     minPayment: "월 필수 상환액 (원리금)",
     btnAddDebt: "부채 등록하기",
     debtListTitle: "관리 중인 대출 목록",
+    debtListSubtitle: "현재 부채 잔액을 확인하고, 총이자 비용을 비교하며, 상환 전략별 예상 부채 청산일을 추적하세요.",
     btnLogPayment: "상환금 납부 기록",
     emptyDebts: "등록된 대출이 없습니다. 상환 일정을 계산하려면 위에서 부채를 등록하세요.",
     accounts: "건",

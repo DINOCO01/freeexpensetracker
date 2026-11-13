@@ -32,11 +32,11 @@ export const de = {
     tracker: "1. Live-Tracker",
     templates: "2. Gratis-Vorlagen",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. Universal-Import",
+    import: "3. Kontoauszug-Import",
     importBadge: "PDF • Bilder • CSV • Excel",
-    debt: "3. Schuldenplaner",
+    debt: "4. Schuldenplaner",
     debtBadge: "Schneeball • Lawine",
-    budget: "4. Budget & Ziele",
+    budget: "5. Budget & Ziele",
     budgetBadge: "50/30/20",
     knowledge: "Finanzwissen & Blog",
     knowledgeBadge: "Leitfäden"
@@ -175,6 +175,7 @@ export const de = {
     surplusSolution: "Statt Überschüsse zinslos auf dem Girokonto zu belassen, erwirtschaftet eine Anlage auf einem Tagesgeldkonto mit ~6,5% p.a. monatlich ca. ~{yield} passive Erträge."
   },
   importer: {
+    initParser: "Dokumenten-Parser wird initialisiert...",
     title: "Universal-Kontoauszug- und Beleg-Importeur",
     badge: "Batch & Multiformat",
     subtitle: "Laden Sie mehrere Bankauszüge und Belegfotos gleichzeitig hoch. Die Erkennung, Kategorisierung und Analyse erfolgt direkt im Browser.",
@@ -315,6 +316,7 @@ export const de = {
     years: "Jahre",
     interestSaved: "Zinsersparnis ggü. Mindestrate",
     addDebtTitle: "Verbindlichkeit oder Darlehen anlegen",
+    addDebtSubtitle: "Geben Sie Ihren Kreditsaldo, Zinssatz (eff. Jahreszins) und die monatliche Mindestrate ein, um ihn in Ihre Tilgungssimulation aufzunehmen.",
     debtName: "Kreditbezeichnung / Gläubiger",
     debtNamePlaceholder: "z.B. Dispokredit, Ratenkredit, Kfz-Finanzierung",
     originalPrincipal: "Ursprüngliche Darlehenssumme",
@@ -323,6 +325,7 @@ export const de = {
     minPayment: "Monatliche Mindestrate",
     btnAddDebt: "Verbindlichkeit hinzufügen",
     debtListTitle: "Aktives Schuldenverzeichnis",
+    debtListSubtitle: "Überprüfen Sie Ihre offenen Salden, vergleichen Sie die Gesamtzinskosten und verfolgen Sie Ihr voraussichtliches schuldenfreies Datum je Strategie.",
     btnLogPayment: "Tilgung erfassen",
     emptyDebts: "Noch keine Verbindlichkeiten erfasst. Fügen Sie Kredite hinzu, um Ihren Tilgungsplan zu berechnen.",
     accounts: "Konten",

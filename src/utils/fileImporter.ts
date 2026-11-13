@@ -1,15 +1,5 @@
-import * as XLSX from 'xlsx';
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { formatCurrency, type ExpenseCategory, type StandardExpenseCategory, type Transaction } from './calculations';
-
-// Initialize PDF.js worker
-if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-  try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-  } catch (e) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '6.3.289'}/build/pdf.worker.min.mjs`;
-  }
-}
+import { getXLSX, getPdfJs } from './dynamicParsers';
 
 export type SupportedSourceType = 'pdf' | 'excel' | 'csv' | 'image' | 'sheets';
 
@@ -879,6 +869,7 @@ export async function parsePdfStatement(
   file: File,
   currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
+  const pdfjsLib = await getPdfJs();
   const buffer = await file.arrayBuffer();
   const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
   const pdfDoc = await loadingTask.promise;
@@ -2023,6 +2014,7 @@ export async function parseExcelFile(
   file: File,
   currencyCode: string = 'USD'
 ): Promise<FileInterpretationResult> {
+  const XLSX = await getXLSX();
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
 

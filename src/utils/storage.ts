@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import { getXLSX } from './dynamicParsers';
 import { SUPPORTED_CURRENCIES, type Frequency, type BudgetModel, type Transaction } from './calculations';
 import { getLocaleDefaultCurrency } from '../locales';
 import {
@@ -317,13 +317,14 @@ export function exportTransactionsToCSV(transactions: Transaction[], currencySym
   URL.revokeObjectURL(url);
 }
 
-export function exportBudgetToExcel(
+export async function exportBudgetToExcel(
   monthlyIncome: number,
   currencyCode: string,
   transactions: Transaction[],
   model: string = '50-30-20'
-): void {
+): Promise<void> {
   try {
+    const XLSX = await getXLSX();
     const wb = XLSX.utils.book_new();
 
     // Sheet 1: Executive Monthly Summary

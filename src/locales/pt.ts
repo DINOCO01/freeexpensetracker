@@ -32,11 +32,11 @@ export const pt = {
     tracker: "1. Painel ao Vivo",
     templates: "2. Planilhas Grátis",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. Importador Universal",
+    import: "3. Importador de Extratos",
     importBadge: "PDF • Imagens • CSV • Excel",
-    debt: "3. Gestão de Dívidas",
+    debt: "4. Gestão de Dívidas",
     debtBadge: "Bola de Neve • Avalanche",
-    budget: "4. Orçamento & Metas",
+    budget: "5. Orçamento & Metas",
     budgetBadge: "50/30/20",
     knowledge: "Guias & Conteúdo",
     knowledgeBadge: "Artigos"
@@ -175,6 +175,7 @@ export const pt = {
     surplusSolution: "Em vez de deixar o dinheiro parado na conta corrente, aplicá-lo em uma reserva de liquidez rendendo ~6,5% a.a. gera ~{yield} de renda passiva mensal."
   },
   importer: {
+    initParser: "Inicializando o analisador de documentos...",
     title: "Importador Universal de Extratos e Cupons Fiscais",
     badge: "Lote & Multiformato",
     subtitle: "Envie vários extratos e fotos de recibos simultaneamente. Nós extraímos lançamentos, categorizamos gastos e geramos diagnósticos no seu navegador.",
@@ -315,6 +316,7 @@ export const pt = {
     years: "anos",
     interestSaved: "Economia de Juros vs Parcelas Normais",
     addDebtTitle: "Cadastrar Financiamento ou Dívida",
+    addDebtSubtitle: "Insira o saldo do seu empréstimo, taxa de juros (APR) e pagamento mínimo mensal para incluí-lo na simulação de quitação.",
     debtName: "Identificação da Dívida / Credor",
     debtNamePlaceholder: "ex. Cartão de Crédito, Empréstimo Pessoal, Financiamento",
     originalPrincipal: "Valor Original Contratado",
@@ -323,6 +325,7 @@ export const pt = {
     minPayment: "Parcela Mensal Mínima",
     btnAddDebt: "Salvar Dívida",
     debtListTitle: "Relação de Passivos Cadastrados",
+    debtListSubtitle: "Revise seus saldos ativos, compare os custos totais com juros e acompanhe a data estimada de quitação total em cada estratégia.",
     btnLogPayment: "Registrar Pagamento",
     emptyDebts: "Nenhuma dívida cadastrada. Insira suas pendências para simular o cronograma de liquidação.",
     accounts: "contas",

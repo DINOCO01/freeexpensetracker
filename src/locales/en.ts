@@ -32,11 +32,11 @@ export const en = {
     tracker: "1. Live Tracker",
     templates: "2. Free Templates",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. Universal Importer",
+    import: "3. Statement Importer",
     importBadge: "PDF • Images • CSV • Excel",
-    debt: "3. Debt Planner",
+    debt: "4. Debt Planner",
     debtBadge: "Snowball • Avalanche",
-    budget: "4. Budget & Goals",
+    budget: "5. Budget & Goals",
     budgetBadge: "50/30/20",
     knowledge: "Knowledge & Blogs",
     knowledgeBadge: "Guides"
@@ -175,6 +175,7 @@ export const en = {
     surplusSolution: "Instead of letting surplus cash sit idle in low-yield checking accounts, parking it in an auto-sweep term deposit or liquid mutual fund yielding ~6.5% p.a. generates ~{yield} in passive monthly earnings."
   },
   importer: {
+    initParser: "Initializing document parser...",
     title: "Universal Statement & Receipt Importer",
     badge: "Batch & Multi-Format",
     subtitle: "Upload multiple bank statements and receipt photos simultaneously. We automatically extract transactions, classify spending categories, and generate financial insights in your browser.",
@@ -321,6 +322,7 @@ export const en = {
     years: "years",
     interestSaved: "Interest Savings vs Minimums",
     addDebtTitle: "Add Loan or Debt Obligation",
+    addDebtSubtitle: "Enter your loan balance, interest rate (APR), and minimum monthly EMI to include it in your payoff simulation.",
     debtName: "Debt Name / Account",
     debtNamePlaceholder: "e.g. Credit Card, Student Loan, Car Note",
     originalPrincipal: "Original Loan Amount",
@@ -329,6 +331,7 @@ export const en = {
     minPayment: "Mandatory Monthly Payment (EMI)",
     btnAddDebt: "Add Debt Obligation",
     debtListTitle: "Active Liabilities Ledger",
+    debtListSubtitle: "Review your active balances, compare total interest costs, and track your projected debt-free date across each payoff strategy.",
     btnLogPayment: "Log Payment",
     emptyDebts: "No debts logged yet. Add liabilities above to calculate your payoff timeline.",
     accounts: "accounts",

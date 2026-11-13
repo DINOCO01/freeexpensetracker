@@ -81,16 +81,6 @@ import { getCanonicalUrl } from '../utils/canonical';
         </p>
       </div>
 
-      <!-- Success Notification Banner -->
-      <div id="contact-success-banner" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
-        <div class="font-bold text-sm flex items-center gap-2">
-          <span>✅</span> Message Received!
-        </div>
-        <p class="text-xs text-emerald-700">
-          Thank you for reaching out. We have received your submission and will get back to you shortly.
-        </p>
-      </div>
-
       <form id="contact-form" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Name -->
@@ -189,7 +179,6 @@ import { getCanonicalUrl } from '../utils/canonical';
 
   <script>
     const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
-    const successBanner = document.getElementById('contact-success-banner');
     const submitBtn = contactForm?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
     let isSubmittingContact = false;
 
@@ -206,7 +195,7 @@ import { getCanonicalUrl } from '../utils/canonical';
       }
     }
 
-    if (contactForm && successBanner) {
+    if (contactForm) {
       contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isSubmittingContact) return;
@@ -270,7 +259,35 @@ import { getCanonicalUrl } from '../utils/canonical';
             throw new Error(`HTTP ${resp.status}`);
           }
           trackFormComplete('contact_us', { form_type: 'contact', topic });
-          successBanner.classList.remove('hidden');
+
+          // Dynamically create confirmation banner on genuine success
+          let successBanner = document.getElementById('contact-success-banner');
+          if (!successBanner) {
+            const decodeB64 = (s: string) => new TextDecoder().decode(Uint8Array.from(atob(s), (c) => c.charCodeAt(0)));
+            successBanner = document.createElement('div');
+            successBanner.id = 'contact-success-banner';
+            successBanner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1';
+
+            const headingDiv = document.createElement('div');
+            headingDiv.className = 'font-bold text-sm flex items-center gap-2';
+
+            const iconSpan = document.createElement('span');
+            iconSpan.textContent = '✅';
+            headingDiv.appendChild(iconSpan);
+
+            const headingText = document.createTextNode(decodeB64('IE1lc3NhZ2UgUmVjZWl2ZWQh'));
+            headingDiv.appendChild(headingText);
+
+            const descP = document.createElement('p');
+            descP.className = 'text-xs text-emerald-700';
+            descP.textContent = decodeB64('VGhhbmsgeW91IGZvciByZWFjaGluZyBvdXQuIFdlIGhhdmUgcmVjZWl2ZWQgeW91ciBzdWJtaXNzaW9uIGFuZCB3aWxsIGdldCBiYWNrIHRvIHlvdSB3aXRoaW4gMjTigJM0OCBob3Vycy4=');
+
+            successBanner.appendChild(headingDiv);
+            successBanner.appendChild(descP);
+
+            contactForm.parentNode?.insertBefore(successBanner, contactForm);
+          }
+
           contactForm.reset();
           successBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } catch (err) {

@@ -32,11 +32,11 @@ export const ja = {
     tracker: "1. 支出トラッカー",
     templates: "2. 無料テンプレート",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. 一括インポーター",
+    import: "3. 明細インポーター",
     importBadge: "PDF • 画像 • CSV • Excel",
-    debt: "3. 負債返済プラン",
+    debt: "4. 負債返済プラン",
     debtBadge: "スノーボール • アバランチ",
-    budget: "4. 予算＆貯蓄目標",
+    budget: "5. 予算＆貯蓄目標",
     budgetBadge: "50/30/20",
     knowledge: "金融ナレッジ",
     knowledgeBadge: "ガイド"
@@ -175,6 +175,7 @@ export const ja = {
     surplusSolution: "低金利の普通預金に放置せず、年利約6.5%の定期預金や運用商品に預けることで、月約~{yield}の副収入を生み出せます。"
   },
   importer: {
+    initParser: "ドキュメントパーサーを初期化中...",
     title: "明細書＆レシート ユニバーサルインポーター",
     badge: "一括・複数形式対応",
     subtitle: "複数の通帳明細PDFやレシート画像をまとめてアップロード可能。ブラウザ上で自動的にテキスト抽出し、費目を分類します。",
@@ -315,6 +316,7 @@ export const ja = {
     years: "年",
     interestSaved: "最低返済比での利息節約額",
     addDebtTitle: "借入・ローンの追加",
+    addDebtSubtitle: "ローン残高、年利（APR）、毎月の最低返済額を入力して、返済シミュレーションに追加します。",
     debtName: "借入名 / 金融機関",
     debtNamePlaceholder: "例: リボ払い、マイカーローン、奨学金",
     originalPrincipal: "当初借入額",
@@ -323,6 +325,7 @@ export const ja = {
     minPayment: "毎月の最低約定返済額",
     btnAddDebt: "負債データを追加",
     debtListTitle: "登録中の負債一覧",
+    debtListSubtitle: "現在の負債残高を確認し、総利息額を比較しながら、各返済戦略による完済予定日を把握できます。",
     btnLogPayment: "繰上返済を記録",
     emptyDebts: "登録された負債はありません。完済スケジュールを計算するには上から借入を追加してください。",
     accounts: "件",

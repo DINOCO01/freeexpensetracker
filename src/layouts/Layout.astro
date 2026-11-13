@@ -21,6 +21,7 @@ interface Props {
   noindex?: boolean;
   faqSchema?: { question: string; answer: string }[];
   breadcrumbs?: { name: string; url: string }[];
+  isTrackerPage?: boolean;
 }
 
 const {
@@ -32,6 +33,7 @@ const {
   noindex = false,
   faqSchema,
   breadcrumbs,
+  isTrackerPage = false,
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -352,7 +354,7 @@ if (faqEntities.length > 0) {
       data-x_margin="18"
       data-y_margin="18"
     ></script>
-    <!-- Activity-Based Promotional Popup: My Real Budget -->
-    <ActivityPromotionPopup locale={locale} />
+    <!-- Activity-Based Promotional Popup: My Real Budget (rendered only on active tracker pages) -->
+    {isTrackerPage && <ActivityPromotionPopup locale={locale} />}
   </body>
 </html>

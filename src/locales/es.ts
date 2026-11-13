@@ -32,11 +32,11 @@ export const es = {
     tracker: "1. Rastreador en Vivo",
     templates: "2. Plantillas Gratis",
     templatesBadge: "Sheets • Excel • PDF",
-    import: "3. Importador Universal",
+    import: "3. Importador de Extractos",
     importBadge: "PDF • Imágenes • CSV • Excel",
-    debt: "3. Planificador de Deudas",
+    debt: "4. Planificador de Deudas",
     debtBadge: "Bola de Nieve • Avalancha",
-    budget: "4. Presupuesto y Metas",
+    budget: "5. Presupuesto y Metas",
     budgetBadge: "50/30/20",
     knowledge: "Guías y Blogs",
     knowledgeBadge: "Artículos"
@@ -175,6 +175,7 @@ export const es = {
     surplusSolution: "En lugar de dejar el dinero inactivo en cuentas corrientes sin rendimiento, colocarlo en un depósito o fondo líquido al ~6,5% genera ~{yield} de ingresos pasivos al mes."
   },
   importer: {
+    initParser: "Inicializando analizador de documentos...",
     title: "Importador Universal de Extractos y Recibos",
     badge: "Lote y Multiformato",
     subtitle: "Cargue varios extractos bancarios y fotos de facturas al mismo tiempo. Extraemos transacciones, clasificamos categorías y generamos diagnósticos en su navegador.",
@@ -315,6 +316,7 @@ export const es = {
     years: "años",
     interestSaved: "Ahorro de Intereses vs Mínimos",
     addDebtTitle: "Añadir Préstamo o Pasivo",
+    addDebtSubtitle: "Ingrese el saldo de su préstamo, tasa de interés (TAE) y pago mínimo mensual para incluirlo en la simulación de amortización.",
     debtName: "Nombre de la Deuda / Entidad",
     debtNamePlaceholder: "ej. Tarjeta de Crédito, Préstamo Personal, Coche",
     originalPrincipal: "Importe Original",
@@ -323,6 +325,7 @@ export const es = {
     minPayment: "Pago Mínimo Mensual Obligatorio",
     btnAddDebt: "Añadir Pasivo",
     debtListTitle: "Cartera Activa de Pasivos",
+    debtListSubtitle: "Revise sus saldos activos, compare los costos totales por intereses y consulte su fecha estimada libre de deudas en cada estrategia.",
     btnLogPayment: "Registrar Pago",
     emptyDebts: "No hay deudas registradas. Añada compromisos arriba para proyectar su calendario de liquidación.",
     accounts: "cuentas",
