@@ -1,0 +1,65 @@
+---
+// src/pages/bill-splitter/index.astro
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
+import BillSplitterGuide from '../../components/bill-splitter/BillSplitterGuide.astro';
+import BillSplitterFAQ, { BILL_SPLITTER_FAQS } from '../../components/bill-splitter/BillSplitterFAQ.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+
+const pageTitle = "Free Bill Splitter Calculator (No Sign-Up)";
+const pageDescription = "Split restaurant bills, itemized group meals, and multi-day trip expenses fairly. Proportional tax & tip calculation, debt simplification, and instant WhatsApp sharing. 100% free, private, and local.";
+const canonical = getCanonicalUrl('/bill-splitter/');
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Bill Splitter', url: '/bill-splitter/' }
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonical}
+  breadcrumbs={breadcrumbs}
+  faqSchema={BILL_SPLITTER_FAQS}
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-900 dark:text-slate-100 font-semibold" aria-current="page">Bill Splitter</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-3 text-center max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>100% Free · No Sign-Up · 10 Currencies · Client-Side Private</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+        Free Bill Splitter Calculator
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+        Split dining bills evenly, allocate itemized restaurant orders with proportional tax and tips, or settle complex group trip expenses with minimum transfers. Zero math headache, instant WhatsApp sharing, and 100% private local storage.
+      </p>
+    </header>
+
+    <!-- Interactive Bill Splitter Tool -->
+    <BillSplitterApp />
+
+    <!-- Educational Financial & Math Guide -->
+    <BillSplitterGuide />
+
+    <!-- Frequently Asked Questions -->
+    <BillSplitterFAQ />
+  </main>
+
+  <Footer />
+</Layout>

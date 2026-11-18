@@ -15,6 +15,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.4",
+    "heic2any": "^0.0.4",
     "pdfjs-dist": "^6.3.289",
     "tailwindcss": "^4.3.3",
     "tesseract.js": "^7.0.0",

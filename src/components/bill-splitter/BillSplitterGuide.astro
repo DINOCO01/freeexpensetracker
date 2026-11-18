@@ -1,0 +1,235 @@
+---
+// src/components/bill-splitter/BillSplitterGuide.astro
+---
+
+<section id="section-bill-splitter-guide" class="space-y-12 text-slate-700 dark:text-slate-300">
+  <div class="border-t border-slate-200 dark:border-slate-800 pt-12">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-4">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <span>Complete Financial Guide</span>
+    </div>
+
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+      The Definitive Guide to Fair Bill Splitting, Tax Allocation & Group Debt Settlement
+    </h2>
+    <p class="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+      Whether dining out with colleagues, sharing an apartment with roommates, or traveling on a multi-day road trip with friends, splitting shared expenses accurately preserves both budgets and personal relationships. Learn the mathematical models and real-world conventions behind fair cost sharing.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Section 1: Why Splitting Bills Accurately Matters -->
+    <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
+      <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold text-lg font-mono">
+        01
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Why Splitting Bills Accurately Matters
+      </h3>
+      <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+        Money is historically cited as one of the most common causes of interpersonal friction. When a group dines out or embarks on a vacation, the awkward moment at the end of the meal or trip often leads to a rushed "let's just divide the total equally."
+      </p>
+      <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+        While convenient, flat equal splits create hidden resentments when spending disparities exist. A teetotaler who ordered tap water and an entree should not be subsidizing a tablemate's three craft cocktails and prime ribeye. Over time, recurring subsidization leads people to decline invitations or feel taken advantage of. Accurate bill splitting eliminates awkward guesswork, fosters financial transparency, and ensures everyone leaves the table feeling respected.
+      </p>
+    </article>
+
+    <!-- Section 2: Even Split vs. Itemized Split vs. Group Trip Settlement -->
+    <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
+      <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-bold text-lg font-mono">
+        02
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Even Split vs. Itemized Split vs. Group Trip Settlement
+      </h3>
+      <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+        Different social gatherings call for different calculation strategies:
+      </p>
+      <ul class="text-sm space-y-2 text-slate-600 dark:text-slate-400 list-disc list-inside">
+        <li><strong class="text-slate-900 dark:text-slate-200">Even Split:</strong> Best for casual meals, buffets, pizza nights, or coffee runs where orders are roughly uniform in value and speed is paramount.</li>
+        <li><strong class="text-slate-900 dark:text-slate-200">Itemized Split:</strong> Ideal for sit-down restaurants with mixed diets, shared appetizers, desserts, and alcohol, ensuring each diner pays only for what they consumed.</li>
+        <li><strong class="text-slate-900 dark:text-slate-200">Trip / Group Split:</strong> Essential for multi-day vacations, road trips, or roommate households where multiple individuals pay upfront for various common expenses (lodging, gas, groceries).</li>
+      </ul>
+    </article>
+  </div>
+
+  <!-- Section 3: How Proportional Tax and Tip Distribution Works (The Math) -->
+  <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-5">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold text-lg font-mono">
+        03
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        How Proportional Tax and Tip Distribution Works (The Math)
+      </h3>
+    </div>
+    
+    <p class="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+      A common flaw in rudimentary bill splitting apps is dividing taxes and tips equally across all diners. Consider a two-person dinner where Person A orders a $80 steak and Person B orders a $20 soup. If the state tax is 10% ($10.00 total) and split equally at $5.00 each:
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-3 text-xs sm:text-sm">
+      <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50">
+        <span class="font-bold text-rose-700 dark:text-rose-400 block mb-1">❌ Flawed Equal Tax Split</span>
+        Person B pays $20 + $5 tax = <strong>25% effective tax rate</strong>.<br/>
+        Person A pays $80 + $5 tax = <strong>6.25% effective tax rate</strong>.
+      </div>
+      <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
+        <span class="font-bold text-emerald-700 dark:text-emerald-400 block mb-1">✅ Fair Proportional Tax Split</span>
+        Person B pays 20% of the food subtotal, so they pay 20% of tax ($2.00).<br/>
+        Person A pays 80% of the food subtotal, so they pay 80% of tax ($8.00).
+      </div>
+    </div>
+
+    <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+      Our calculator uses the <strong class="text-slate-900 dark:text-slate-200">Largest Remainder Method (Hare-Niemeyer Method)</strong> to distribute minor currency units (cents or paise). This guarantees that every individual's tax and tip matches their exact consumption ratio and that the sum of all individual contributions strictly equals the grand total without losing or generating floating-point pennies.
+    </p>
+  </article>
+
+  <!-- Section 4: Minimizing Group Debt: How The Debt Simplification Algorithm Works -->
+  <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-5">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold text-lg font-mono">
+        04
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Minimizing Group Debt: How The Debt Simplification Algorithm Works
+      </h3>
+    </div>
+
+    <p class="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+      When five friends take a weekend road trip, the payment web quickly becomes chaotic: Alice pays for the rental car, Bob pays for gas, Charlie covers the cabin rental, and David pays for Saturday dinner. In an unsimplified system, each pair of people would have to settle individually, resulting in up to <strong>N(N-1)/2 = 10 separate bank transfers</strong>.
+    </p>
+
+    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm space-y-2">
+      <div class="font-bold text-slate-900 dark:text-slate-100 font-mono">Greedy Debt Simplification (Min-Cash-Flow):</div>
+      <ol class="list-decimal list-inside space-y-1.5 text-slate-600 dark:text-slate-300">
+        <li>Calculate each participant's <strong>Net Balance</strong>: <code class="font-mono bg-slate-200/60 dark:bg-slate-700/60 px-1 py-0.5 rounded">Net Balance = Total Money Paid − Total Fair Share Owed</code>.</li>
+        <li>Separate participants into <em>Debtors</em> (net balance &lt; 0) and <em>Creditors</em> (net balance &gt; 0). Note that the sum of all net balances always equals zero.</li>
+        <li>Iteratively pair the <strong>largest debtor</strong> (who owes the most) with the <strong>largest creditor</strong> (who is owed the most).</li>
+        <li>Execute a transfer equal to <code class="font-mono bg-slate-200/60 dark:bg-slate-700/60 px-1 py-0.5 rounded">min(|Debtor Balance|, Creditor Balance)</code>, update balances, and repeat until all balances reach zero.</li>
+      </ol>
+    </div>
+
+    <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+      This mathematical reduction guarantees that an N-person trip requires at most <strong>N − 1 peer-to-peer transfers</strong>, cutting administrative hassle by over 60%.
+    </p>
+  </article>
+
+  <!-- Section 5: Real-World Split Scenarios: Dining, Road Trips, and Shared Apartments -->
+  <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 flex items-center justify-center font-bold text-lg font-mono">
+        05
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Real-World Split Scenarios: Dining, Road Trips, and Shared Apartments
+      </h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+      <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-2">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>🍕</span> Scenario A: Group Dining
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+          Four colleagues order 2 shared appetizers (₹600 total) and 4 individual entrees ranging from ₹350 to ₹900. By assigning appetizers to "Everyone" and entrees individually, the tool divides shared food 4 ways (₹150 each) and applies proportional GST and service tip seamlessly.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-2">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>🚗</span> Scenario B: Weekend Getaway
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+          Sarah pays $450 for the Airbnb villa, Michael pays $120 for fuel, and Emma pays $180 for grocery supplies. In Trip Split mode, the total group spend is $750 ($250/person). The tool generates just two payments: Michael pays $130 to Sarah, and Emma pays $70 to Sarah.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-2">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>🏠</span> Scenario C: Flatmate Utilities
+        </div>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+          Three roommates share high-speed fiber internet (€45), electricity (€110), and communal laundry detergent (€15). One roommate pays the monthly electricity bill while another covers internet. Trip mode balances the ledger instantly at the end of each month.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Section 6: Tipping Etiquette and Best Practices Across Countries -->
+  <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold text-lg font-mono">
+        06
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Tipping Etiquette and Best Practices Across Countries
+      </h3>
+    </div>
+
+    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+      Tipping norms vary dramatically across cultures and economic regions. When calculating group splits abroad, keep these global benchmarks in mind:
+    </p>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs sm:text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/40">
+            <th class="py-2.5 px-3 font-bold">Country / Region</th>
+            <th class="py-2.5 px-3 font-bold">Standard Tip</th>
+            <th class="py-2.5 px-3 font-bold">Tipping Norms & Advice</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-600 dark:text-slate-400">
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-200">United States & Canada</td>
+            <td class="py-2.5 px-3 font-mono font-bold text-emerald-700 dark:text-emerald-400">15% – 22%</td>
+            <td class="py-2.5 px-3">Standard expectation for table service. Customary to calculate tip on pre-tax subtotal. Large groups (6+) often have auto-gratuity (18%) added directly.</td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-200">United Kingdom & Europe</td>
+            <td class="py-2.5 px-3 font-mono font-bold text-slate-700 dark:text-slate-300">10% – 12.5%</td>
+            <td class="py-2.5 px-3">Often included as an optional "service charge" on the bill. If not included, rounding up to the nearest €5 or leaving 10% for attentive table service is standard.</td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-200">India</td>
+            <td class="py-2.5 px-3 font-mono font-bold text-slate-700 dark:text-slate-300">5% – 10%</td>
+            <td class="py-2.5 px-3">Customary at sit-down dining. Always inspect the receipt: if a mandatory "Service Charge" (5-10%) is already levied, additional tipping is voluntary.</td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-200">Japan & South Korea</td>
+            <td class="py-2.5 px-3 font-mono font-bold text-rose-600 dark:text-rose-400">0% (No tip)</td>
+            <td class="py-2.5 px-3">Tipping is not customary and can even be considered rude or confusing. Exemplary service is considered standard and built into the prices.</td>
+          </tr>
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-200">Australia & New Zealand</td>
+            <td class="py-2.5 px-3 font-mono font-bold text-slate-700 dark:text-slate-300">0% – 10%</td>
+            <td class="py-2.5 px-3">Hospitality workers receive fair minimum wages without relying on tips. Leaving loose change or 10% for exceptional fine dining is appreciated but not mandatory.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- Section 7: Privacy First: Why No Sign-Up and Local Calculation Matters -->
+  <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs space-y-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-teal-100 dark:teal-900/40 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold text-lg font-mono">
+        07
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Privacy First: Why No Sign-Up and Local Calculation Matters
+      </h3>
+    </div>
+
+    <p class="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+      Most traditional bill splitting applications demand user registrations, access to mobile contacts, email harvesting, and persistent background notifications. Over time, these platforms have introduced subscription fees, invasive advertisements, and third-party data tracking.
+    </p>
+    <p class="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+      FreeExpenseTracker was built on the core principle that basic mathematical utility belongs to the user. Every calculation, item breakdown, and debt settlement in this tool executes locally in your browser memory using pure JavaScript. Your financial entries and participant names are never uploaded to a remote database, never tracked, and never monetized. When you close the browser or click Reset, your data stays entirely under your control.
+    </p>
+  </article>
+</section>

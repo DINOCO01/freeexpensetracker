@@ -56,6 +56,14 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- Free Online Bill Splitter Tool -->
+  <url>
+    <loc>https://freexpensetracker.com/bill-splitter/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- Templates Hub Page -->
   <url>
     <loc>https://freexpensetracker.com/templates/</loc>
