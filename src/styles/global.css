@@ -242,3 +242,22 @@ html.dark footer {
   border-color: #1e293b !important;
 }
 
+/* Buy Me a Coffee Floating Widget: mobile clearance above sticky bottom bar */
+@media (max-width: 639px) {
+  #bmc-wbtn {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 14px !important;
+    width: 48px !important;
+    height: 48px !important;
+    transform: scale(0.9);
+    transform-origin: bottom right;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  }
+  #bmc-iframe {
+    bottom: calc(134px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 12px !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+
+

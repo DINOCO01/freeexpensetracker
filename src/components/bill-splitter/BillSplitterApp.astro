@@ -3,24 +3,24 @@
 import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
 ---
 
-<div id="bill-splitter-container" class="max-w-xl mx-auto space-y-6">
+<div id="bill-splitter-container" class="max-w-xl mx-auto space-y-6 pb-24 sm:pb-8">
   <!-- Main Calculator Card (Splitkaro-inspired single focused container) -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-7 shadow-sm space-y-6">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-4 sm:p-7 shadow-sm space-y-6">
     
     <!-- Top Utility Bar: Currency Selector & Reset -->
-    <div class="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800/80">
-      <div class="flex items-center gap-2">
-        <label for="select-currency" class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+    <div class="flex items-center justify-between gap-2 pb-3.5 border-b border-slate-100 dark:border-slate-800/80 min-w-0">
+      <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+        <label for="select-currency" class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider shrink-0">
           Currency:
         </label>
         <select
           id="select-currency"
-          class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-semibold rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer transition-colors"
+          class="min-w-0 flex-1 w-full max-w-[150px] min-[390px]:max-w-[185px] sm:max-w-xs truncate bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-semibold rounded-xl px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer transition-colors"
           aria-label="Select currency"
         >
           {Object.values(BILL_SPLITTER_CURRENCIES).map((c) => (
             <option value={c.code} selected={c.code === 'INR'}>
-              {c.symbol} {c.code} - {c.name}
+              {c.symbol} {c.code} - {c.name.replace(/\s*\([^)]*\)/, '')}
             </option>
           ))}
         </select>
@@ -29,7 +29,7 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
       <button
         type="button"
         id="btn-open-reset-modal"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+        class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50"
         title="Reset all inputs to defaults"
       >
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -735,7 +735,7 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
   <!-- ========================================================================= -->
   <!-- STICKY MOBILE SUMMARY BAR -->
   <!-- ========================================================================= -->
-  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between shadow-lg">
+  <div class="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between shadow-lg" style="padding-bottom: max(0.625rem, calc(env(safe-area-inset-bottom, 0px) + 0.625rem));">
     <div class="space-y-0.5">
       <span class="text-[10px] uppercase font-bold text-slate-400 block" id="mobile-summary-label">
         Per Person (Even)
@@ -744,18 +744,18 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
         ₹0.00
       </span>
     </div>
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-2">
       <button
         type="button"
         id="btn-mobile-copy"
-        class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold cursor-pointer"
+        class="px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold cursor-pointer min-h-[36px] flex items-center justify-center transition-colors active:scale-95"
       >
         Copy
       </button>
       <button
         type="button"
         id="btn-mobile-whatsapp"
-        class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer"
+        class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold cursor-pointer min-h-[36px] flex items-center justify-center transition-colors active:scale-95"
       >
         Share
       </button>
@@ -896,22 +896,42 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
     });
 
     const taxInd = document.getElementById('tax-symbol-indicator');
+    const inputTax = document.getElementById('input-itemized-tax') as HTMLInputElement | null;
     if (taxInd) {
       taxInd.textContent = meta.symbol;
       if (state.itemizedSplit.taxType === 'fixed') {
         taxInd.classList.remove('hidden');
+        if (inputTax) {
+          inputTax.classList.add('pl-7');
+          inputTax.classList.remove('px-3');
+          inputTax.classList.add('pr-3');
+        }
       } else {
         taxInd.classList.add('hidden');
+        if (inputTax) {
+          inputTax.classList.remove('pl-7');
+          inputTax.classList.add('px-3');
+        }
       }
     }
 
     const tipInd = document.getElementById('tip-symbol-indicator');
+    const inputTip = document.getElementById('input-itemized-tip') as HTMLInputElement | null;
     if (tipInd) {
       tipInd.textContent = meta.symbol;
       if (state.itemizedSplit.tipType === 'fixed') {
         tipInd.classList.remove('hidden');
+        if (inputTip) {
+          inputTip.classList.add('pl-7');
+          inputTip.classList.remove('px-3');
+          inputTip.classList.add('pr-3');
+        }
       } else {
         tipInd.classList.add('hidden');
+        if (inputTip) {
+          inputTip.classList.remove('pl-7');
+          inputTip.classList.add('px-3');
+        }
       }
     }
   }
@@ -1083,6 +1103,8 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
   // RENDER MODE 2: ITEMIZED SPLIT
   // =========================================================================
   function renderItemizedSplit() {
+    updateCurrencySymbols();
+
     // 1. Render Participants List with Editable Names
     const pList = document.getElementById('itemized-participants-list');
     if (pList) {
@@ -1163,10 +1185,10 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
                   data-item-name-id="${item.id}"
                   value="${escapeHtml(item.name)}"
                   placeholder="Item ${idx + 1}"
-                  class="item-name-input flex-1 px-3 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-semibold focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                  class="item-name-input min-w-0 flex-1 px-3 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-semibold focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 />
 
-                <div class="relative w-24 sm:w-28">
+                <div class="relative w-[115px] sm:w-36 shrink-0">
                   <span class="currency-symbol-display absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 font-mono text-xs">
                     ${getCurrencyMeta(state.currency).symbol}
                   </span>
@@ -1176,14 +1198,14 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
                     data-item-price-id="${item.id}"
                     value="${item.price || ''}"
                     placeholder="0.00"
-                    class="item-price-input w-full pl-6 pr-2.5 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-mono font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    class="item-price-input w-full pl-6 pr-2 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 font-mono font-bold focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="button"
                   data-delete-item-id="${item.id}"
-                  class="btn-delete-item w-7 h-7 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                  class="btn-delete-item w-7 h-7 shrink-0 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                   title="Delete item"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

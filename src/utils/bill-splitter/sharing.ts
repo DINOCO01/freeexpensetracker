@@ -90,7 +90,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(text);
       return true;
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // Fallback for older browsers or insecure contexts

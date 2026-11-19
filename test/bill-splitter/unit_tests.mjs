@@ -449,8 +449,8 @@ it('resolves payer and shared member names to stable IDs on reload (Critical A)'
   globalThis.window = {
     localStorage: {
       getItem: (key) => mockStorage[key] || null,
-      setItem: () => {},
-      removeItem: () => {}
+      setItem: () => { },
+      removeItem: () => { }
     }
   };
 
