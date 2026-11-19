@@ -70,9 +70,14 @@ export interface ItemizedSplitResult {
   taxAmountMinor: number;
   tipAmountMinor: number;
   grandTotalMinor: number;
+  assignedItemsTotalMinor: number;
+  assignedTaxAmountMinor: number;
+  assignedTipAmountMinor: number;
+  assignedGrandTotalMinor: number;
   participantBreakdowns: ParticipantItemBreakdown[];
   unassignedItemsCount: number;
   unassignedItemsTotalMinor: number;
+  unassignedGrandTotalMinor: number;
 }
 
 // --- Mode 3: Trip Split Types ---

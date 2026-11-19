@@ -71,9 +71,7 @@ export function getDefaultState(): StoredBillSplitterState {
       tipOnTax: false
     },
     tripSplit: {
-      expenses: [
-        { id: 'e1', description: 'Airbnb / Hotel', amount: '', payerId: 'p1', sharedWithIds: ['p1', 'p2', 'p3'], date: '' }
-      ]
+      expenses: []
     }
   };
 }
@@ -108,6 +106,35 @@ export function loadStoredState(): StoredBillSplitterState {
         }))
       : defaultState.participants;
 
+    const idSet = new Set(participants.map((p) => p.id));
+    const nameToIdMap = new Map(participants.map((p) => [p.name.toLowerCase().trim(), p.id]));
+    const firstId = participants[0]?.id || 'p1';
+
+    const resolveParticipantId = (rawId: any): string => {
+      if (typeof rawId !== 'string') return firstId;
+      if (idSet.has(rawId)) return rawId;
+      const byName = nameToIdMap.get(rawId.toLowerCase().trim());
+      if (byName) return byName;
+      return firstId;
+    };
+
+    const resolveParticipantIds = (rawIds: any): string[] => {
+      if (!Array.isArray(rawIds)) return [];
+      const resolved: string[] = [];
+      for (const id of rawIds) {
+        if (typeof id !== 'string') continue;
+        if (idSet.has(id)) {
+          if (!resolved.includes(id)) resolved.push(id);
+        } else {
+          const byName = nameToIdMap.get(id.toLowerCase().trim());
+          if (byName && !resolved.includes(byName)) {
+            resolved.push(byName);
+          }
+        }
+      }
+      return resolved;
+    };
+
     const evenSplit = {
       billAmount: typeof parsed.evenSplit?.billAmount === 'string' ? parsed.evenSplit.billAmount : '',
       taxRate: typeof parsed.evenSplit?.taxRate === 'string' ? parsed.evenSplit.taxRate : '',
@@ -121,7 +148,7 @@ export function loadStoredState(): StoredBillSplitterState {
             id: typeof it.id === 'string' && it.id ? it.id : `i${idx + 1}`,
             name: typeof it.name === 'string' ? it.name : `Item ${idx + 1}`,
             price: typeof it.price === 'string' ? it.price : '',
-            participantIds: Array.isArray(it.participantIds) ? it.participantIds : []
+            participantIds: resolveParticipantIds(it.participantIds)
           }))
         : defaultState.itemizedSplit.items,
       taxType: parsed.itemizedSplit?.taxType === 'fixed' ? 'fixed' : 'percentage',
@@ -133,14 +160,22 @@ export function loadStoredState(): StoredBillSplitterState {
 
     const tripSplit = {
       expenses: Array.isArray(parsed.tripSplit?.expenses)
-        ? parsed.tripSplit.expenses.map((e: any, idx: number) => ({
-            id: typeof e.id === 'string' && e.id ? e.id : `e${idx + 1}`,
-            description: typeof e.description === 'string' ? e.description : `Expense ${idx + 1}`,
-            amount: typeof e.amount === 'string' ? e.amount : '',
-            payerId: typeof e.payerId === 'string' ? e.payerId : (participants[0]?.id || 'p1'),
-            sharedWithIds: Array.isArray(e.sharedWithIds) ? e.sharedWithIds : participants.map(p => p.id),
-            date: typeof e.date === 'string' ? e.date : ''
-          }))
+        ? parsed.tripSplit.expenses.map((e: any, idx: number) => {
+            const rawPayer = typeof e.payerId === 'string' ? e.payerId : firstId;
+            const payerId = resolveParticipantId(rawPayer);
+            let sharedWithIds = resolveParticipantIds(e.sharedWithIds);
+            if (sharedWithIds.length === 0) {
+              sharedWithIds = participants.map((p) => p.id);
+            }
+            return {
+              id: typeof e.id === 'string' && e.id ? e.id : `e${idx + 1}`,
+              description: typeof e.description === 'string' ? e.description : `Expense ${idx + 1}`,
+              amount: typeof e.amount === 'string' ? e.amount : '',
+              payerId,
+              sharedWithIds,
+              date: typeof e.date === 'string' ? e.date : ''
+            };
+          })
         : defaultState.tripSplit.expenses
     };
 

@@ -286,6 +286,47 @@ it('detects and flags unassigned items without crashing', () => {
   assert.strictEqual(result.unassignedItemsTotalMinor, 15000);
 });
 
+it('excludes unassigned items and allocates tax/tip only to assigned items (Critical C)', () => {
+  const result = calculateItemizedSplit({
+    items: [
+      { id: 'i1', name: 'Burger', priceMinor: 30000, participantIds: ['p1'] },
+      { id: 'i2', name: 'Unassigned Champagne', priceMinor: 70000, participantIds: [] }
+    ],
+    participants: [{ id: 'p1', name: 'Person A' }],
+    taxType: 'percentage',
+    taxValue: 10, // 10%
+    tipType: 'percentage',
+    tipValue: 10, // 10% on bill + tax
+    tipOnTax: true,
+    currencyCode: 'INR'
+  });
+
+  // Total bill before exclusions: 1000 + 100 tax + 110 tip = 1210
+  assert.strictEqual(result.itemsTotalMinor, 100000);
+  assert.strictEqual(result.taxAmountMinor, 10000);
+  assert.strictEqual(result.tipAmountMinor, 11000);
+  assert.strictEqual(result.grandTotalMinor, 121000);
+
+  // Assigned portion (Burger ₹300 only): 300 + 30 tax + 33 tip = 363
+  assert.strictEqual(result.assignedItemsTotalMinor, 30000);
+  assert.strictEqual(result.assignedTaxAmountMinor, 3000);
+  assert.strictEqual(result.assignedTipAmountMinor, 3300);
+  assert.strictEqual(result.assignedGrandTotalMinor, 36300);
+
+  // Unassigned portion (Champagne ₹700 + tax & tip): 700 + 70 tax + 77 tip = 847
+  assert.strictEqual(result.unassignedGrandTotalMinor, 84700);
+
+  // Person A only pays for assigned items + assigned tax/tip
+  const pA = result.participantBreakdowns[0];
+  assert.strictEqual(pA.itemsSubtotalMinor, 30000);
+  assert.strictEqual(pA.allocatedTaxMinor, 3000);
+  assert.strictEqual(pA.allocatedTipMinor, 3300);
+  assert.strictEqual(pA.totalMinor, 36300);
+
+  // Exact reconciliation: Assigned + Unassigned = Grand Total
+  assert.strictEqual(pA.totalMinor + result.unassignedGrandTotalMinor, result.grandTotalMinor);
+});
+
 // -----------------------------------------------------------------------------
 // 4. MODE 3: TRIP EXPENSE SPLIT & SETTLEMENTS
 // -----------------------------------------------------------------------------
@@ -371,11 +412,58 @@ it('reconciles multi-payer complex group trip with multiple creditors and debtor
 // -----------------------------------------------------------------------------
 console.log('\n--- 5. Storage & Sharing Engine ---');
 
-it('generates valid default state', () => {
+it('generates valid default state with empty trip expenses (Minor 2.3)', () => {
   const def = getDefaultState();
   assert.strictEqual(def.version, 1);
   assert.strictEqual(def.mode, 'even');
   assert.strictEqual(def.participants.length, 3);
+  assert.deepStrictEqual(def.tripSplit.expenses, []);
+});
+
+it('resolves payer and shared member names to stable IDs on reload (Critical A)', () => {
+  // Simulate mock localStorage
+  const mockStorage = {
+    bs_v1: JSON.stringify({
+      version: 1,
+      mode: 'trip',
+      currency: 'INR',
+      participants: [
+        { id: 'p1', name: 'Alice' },
+        { id: 'p2', name: 'Bob' }
+      ],
+      tripSplit: {
+        expenses: [
+          {
+            id: 'e1',
+            description: 'Lunch',
+            amount: '500',
+            payerId: 'Alice', // legacy name instead of ID
+            sharedWithIds: ['Alice', 'Bob'] // legacy names instead of IDs
+          }
+        ]
+      }
+    })
+  };
+
+  const originalWindow = globalThis.window;
+  globalThis.window = {
+    localStorage: {
+      getItem: (key) => mockStorage[key] || null,
+      setItem: () => {},
+      removeItem: () => {}
+    }
+  };
+
+  try {
+    const loaded = loadStoredState();
+    assert.strictEqual(loaded.tripSplit.expenses.length, 1);
+    // Payer 'Alice' must be resolved to stable ID 'p1'
+    assert.strictEqual(loaded.tripSplit.expenses[0].payerId, 'p1');
+    // Shared with names ['Alice', 'Bob'] must be resolved to ['p1', 'p2']
+    assert.deepStrictEqual(loaded.tripSplit.expenses[0].sharedWithIds, ['p1', 'p2']);
+  } finally {
+    globalThis.window = originalWindow;
+  }
 });
 
 it('formats Even Split share text properly', () => {

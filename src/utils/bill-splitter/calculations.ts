@@ -113,32 +113,56 @@ export function calculateItemizedSplit(input: ItemizedSplitInput): ItemizedSplit
     });
   }
 
-  // 2. Calculate Total Tax
+  // 2. Calculate Total Tax & Assigned Tax
+  const assignedItemsTotalMinor = Math.max(0, itemsTotalMinor - unassignedItemsTotalMinor);
+
   let taxAmountMinor = 0;
+  let assignedTaxAmountMinor = 0;
   if (taxType === 'percentage') {
-    taxAmountMinor = calculatePercentage(itemsTotalMinor, Math.max(0, taxValue || 0));
+    const validTaxPct = Math.max(0, taxValue || 0);
+    taxAmountMinor = calculatePercentage(itemsTotalMinor, validTaxPct);
+    assignedTaxAmountMinor = calculatePercentage(assignedItemsTotalMinor, validTaxPct);
   } else {
     taxAmountMinor = Math.max(0, Math.round(taxValue || 0));
+    if (itemsTotalMinor > 0 && assignedItemsTotalMinor > 0) {
+      const taxShares = distributeProportionally(taxAmountMinor, [assignedItemsTotalMinor, unassignedItemsTotalMinor]);
+      assignedTaxAmountMinor = taxShares[0] || 0;
+    } else {
+      assignedTaxAmountMinor = 0;
+    }
   }
 
-  // 3. Calculate Total Tip
+  // 3. Calculate Total Tip & Assigned Tip
   let tipAmountMinor = 0;
+  let assignedTipAmountMinor = 0;
   const tipBaseMinor = tipOnTax ? (itemsTotalMinor + taxAmountMinor) : itemsTotalMinor;
+  const assignedTipBaseMinor = tipOnTax ? (assignedItemsTotalMinor + assignedTaxAmountMinor) : assignedItemsTotalMinor;
+
   if (tipType === 'percentage') {
-    tipAmountMinor = calculatePercentage(tipBaseMinor, Math.max(0, tipValue || 0));
+    const validTipPct = Math.max(0, tipValue || 0);
+    tipAmountMinor = calculatePercentage(tipBaseMinor, validTipPct);
+    assignedTipAmountMinor = calculatePercentage(assignedTipBaseMinor, validTipPct);
   } else {
     tipAmountMinor = Math.max(0, Math.round(tipValue || 0));
+    if (itemsTotalMinor > 0 && assignedItemsTotalMinor > 0) {
+      const tipShares = distributeProportionally(tipAmountMinor, [assignedItemsTotalMinor, unassignedItemsTotalMinor]);
+      assignedTipAmountMinor = tipShares[0] || 0;
+    } else {
+      assignedTipAmountMinor = 0;
+    }
   }
 
   // 4. Grand Total
   const grandTotalMinor = itemsTotalMinor + taxAmountMinor + tipAmountMinor;
+  const assignedGrandTotalMinor = assignedItemsTotalMinor + assignedTaxAmountMinor + assignedTipAmountMinor;
+  const unassignedGrandTotalMinor = Math.max(0, grandTotalMinor - assignedGrandTotalMinor);
 
   // 5. Allocate Tax and Tip proportionally according to each participant's subtotal
   const participantList = participants.map(p => participantMap.get(p.id)!);
   const subtotals = participantList.map(p => p.itemsSubtotalMinor);
 
-  const allocatedTaxes = distributeProportionally(taxAmountMinor, subtotals);
-  const allocatedTips = distributeProportionally(tipAmountMinor, subtotals);
+  const allocatedTaxes = distributeProportionally(assignedTaxAmountMinor, subtotals);
+  const allocatedTips = distributeProportionally(assignedTipAmountMinor, subtotals);
 
   participantList.forEach((breakdown, idx) => {
     breakdown.allocatedTaxMinor = allocatedTaxes[idx] || 0;
@@ -151,8 +175,13 @@ export function calculateItemizedSplit(input: ItemizedSplitInput): ItemizedSplit
     taxAmountMinor,
     tipAmountMinor,
     grandTotalMinor,
+    assignedItemsTotalMinor,
+    assignedTaxAmountMinor,
+    assignedTipAmountMinor,
+    assignedGrandTotalMinor,
     participantBreakdowns: participantList,
     unassignedItemsCount,
-    unassignedItemsTotalMinor
+    unassignedItemsTotalMinor,
+    unassignedGrandTotalMinor
   };
 }
