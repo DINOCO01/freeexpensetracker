@@ -8,6 +8,7 @@ export type StandardExpenseCategory =
   | "Entertainment"
   | "Savings"
   | "Miscellany"
+  | "Travel"
   | "Income";
 
 export type ExpenseCategory = StandardExpenseCategory | (string & {});
@@ -105,6 +106,7 @@ export const CATEGORY_TYPES: Record<string, CategoryType> = {
   Utilities: "need",
   Entertainment: "want",
   Miscellany: "want",
+  Travel: "want",
   Savings: "savings",
   Income: "savings",
   "Health & Fitness": "want"
@@ -118,6 +120,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
   Entertainment: "\ud83c\udf9f\ufe0f",
   Savings: "\ud83c\udfe6",
   Miscellany: "\ud83d\udce6",
+  Travel: "\u2708\ufe0f",
   Income: "\ud83d\udcb5",
   "Health & Fitness": "\ud83c\udfcb\ufe0f"
 };

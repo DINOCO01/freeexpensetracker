@@ -3,14 +3,16 @@ import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
 
 interface Props {
   locale?: SupportedLocale;
+  variant?: 'all' | 'desktop' | 'mobile';
 }
 
-const { locale = DEFAULT_LOCALE } = Astro.props;
+const { locale = DEFAULT_LOCALE, variant = 'all' } = Astro.props;
 ---
 
 <!-- ========================================================================= -->
 <!-- 1. MOBILE FINANCIAL HEALTH INDICATOR (Exact Mobile UI Reference Layout < 640px) -->
 <!-- ========================================================================= -->
+{ (variant === 'all' || variant === 'mobile') && (
 <div id="financial-health-mobile-card" class="sm:hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs flex flex-col space-y-2.5">
   <!-- Card Header: Title and Status Badge (No explanatory scoring text) -->
   <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
@@ -204,11 +206,13 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 </div>
+)}
 
 <!-- ========================================================================= -->
 <!-- 2. DESKTOP FINANCIAL HEALTH INDICATOR (Original Pre-Redesign Layout >= 640px) -->
 <!-- ========================================================================= -->
-<div class="hidden sm:flex bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs flex-col justify-between space-y-4 h-full">
+{ (variant === 'all' || variant === 'desktop') && (
+<div id="financial-health-desktop-card" class="hidden sm:flex bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs flex-col justify-between space-y-4 h-full">
   <!-- Card Header -->
   <div class="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
     <div>
@@ -339,6 +343,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 </div>
+)}
 
 <script is:inline>
   (function initHealthAccordion() {

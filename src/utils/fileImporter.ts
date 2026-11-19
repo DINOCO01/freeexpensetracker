@@ -170,6 +170,7 @@ const CATEGORY_KEYWORDS: Partial<Record<ExpenseCategory, RegExp>> = {
   Transport: /(uber|lyft|taxi|transit|subway|metro|bus|train|amtrak|gas|fuel|chevron|shell|exxon|mobil|bp|parking|toll|tollway|auto|car\s*wash|mechanic|oil\s*change|petrol|diesel|irctc|fastag|flight|airline|ola)/i,
   Utilities: /(electric|electricity|power|gas\s*bill|water|sewer|trash|internet|wifi|cable|comcast|verizon|at&t|t-mobile|phone\s*bill|utility|utilities|recharge|broadband|dth|cylinder)/i,
   Entertainment: /(netflix|spotify|hulu|disney|apple|prime|cinema|theatre|theater|concert|ticket|game|steam|playstation|xbox|nintendo|pub|bar|nightclub|hobby|gym|fitness|movie|youtube|bookmyshow)/i,
+  Travel: /(flight|airline|hotel|airbnb|booking\.com|expedia|travel|vacation|trip|resort|hostel|tour|cruise|luggage|makemytrip|cleartrip|yatra|agoda)/i,
   Savings: /(savings|deposit|transfer|investment|vanguard|fidelity|schwab|robinhood|crypto|401k|ira|emergency\s*fund|salary|payroll|paycheck|direct\s*deposit|dividend|interest\s*credit|fixed\s*deposit|sip|mutual\s*fund|zerodha|groww)/i,
   Miscellany: /(amazon|target|shopping|clothing|zara|h&m|pharmacy|cvs|walgreens|doctor|dental|vet|pet|subscription|fee|miscellaneous|misc|general|cash|other)/i
 };
@@ -202,7 +203,8 @@ export function normalizeCategory(
     const raw = trimmed.toLowerCase();
     if (/^(food|groceries|grocery|dining|restaurant|supermarket)$/i.test(raw)) return 'Food';
     if (/^(housing|rent|mortgage|apartment|lease|hoa)$/i.test(raw)) return 'Housing';
-    if (/^(transport|transit|travel|fuel|gas|petrol|cab|taxi)$/i.test(raw)) return 'Transport';
+    if (/^(transport|transit|fuel|gas|petrol|cab|taxi)$/i.test(raw)) return 'Transport';
+    if (/^(travel|flight|flights|airline|airlines|hotel|hotels|vacation|trip|lodging|tourism)$/i.test(raw)) return 'Travel';
     if (/^(utilities|utility|electric|electricity|power|water|phone|internet|mobile|bills?)$/i.test(raw)) return 'Utilities';
     if (/^(entertainment|fun|movies?|games?|streaming|subscriptions?)$/i.test(raw)) return 'Entertainment';
     if (/^(savings?|investments?|invest)$/i.test(raw)) return 'Savings';

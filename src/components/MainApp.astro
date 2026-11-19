@@ -26,6 +26,7 @@ import FileImportModal from '../components/FileImportModal.astro';
 import ResetModal from '../components/ResetModal.astro';
 import GoalContributionModal from '../components/GoalContributionModal.astro';
 import DebtPaymentModal from '../components/DebtPaymentModal.astro';
+import TransactionHistoryModal from '../components/TransactionHistoryModal.astro';
 import MobileBottomNav from '../components/MobileBottomNav.astro';
 import { t, type SupportedLocale, getLocaleDefaultCurrency } from '../locales';
 
@@ -125,10 +126,10 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         </button>
       </div>
 
-      <!-- Parallel Top: Income Tracker & Financial Health Indicator Side-by-Side -->
+      <!-- Parallel Top: Income Tracker & Financial Health Indicator Side-by-Side (Desktop/Tablet) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         <HeroSummary locale={locale} />
-        <FinancialHealthCard locale={locale} />
+        <FinancialHealthCard locale={locale} variant="desktop" />
       </div>
 
       <!-- Quick Expense Logger & Transaction Ledger Below Tracker -->
@@ -140,6 +141,9 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
           <TransactionLedger locale={locale} />
         </div>
       </div>
+
+      <!-- Mobile Financial Health Indicator: Appears below Transaction Ledger on mobile -->
+      <FinancialHealthCard locale={locale} variant="mobile" />
 
       <!-- Smart Spending Suggestions & Alternatives in Last -->
       <SmartSuggestions locale={locale} />
@@ -229,6 +233,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   <ResetModal locale={locale} />
   <GoalContributionModal locale={locale} />
   <DebtPaymentModal locale={locale} />
+  <TransactionHistoryModal locale={locale} />
 
   <!-- Mobile Bottom Liquid Glass Navigation -->
   <MobileBottomNav locale={locale} />
@@ -563,6 +568,22 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const mobileBarFixed = document.getElementById('mobile-bar-fixed');
   const mobileBarBuffer = document.getElementById('mobile-bar-buffer');
 
+  // Mobile Unified Financial Overview Elements
+  const mobileFoIncomeVal = document.getElementById('mobile-fo-income-val');
+  const mobileFoDonutOutflows = document.getElementById('mobile-fo-donut-outflows');
+  const mobileFoDonutSavings = document.getElementById('mobile-fo-donut-savings');
+  const mobileFoDonutDeficit = document.getElementById('mobile-fo-donut-deficit');
+  const mobileFoOutflowsVal = document.getElementById('mobile-fo-outflows-val');
+  const mobileFoOutflowsSub = document.getElementById('mobile-fo-outflows-sub');
+  const mobileFoSavingsVal = document.getElementById('mobile-fo-savings-val');
+  const mobileFoSavingsSub = document.getElementById('mobile-fo-savings-sub');
+  const mobileFoNetVal = document.getElementById('mobile-fo-net-val');
+  const mobileFoNetSub = document.getElementById('mobile-fo-net-sub');
+  const mobileFoNetDot = document.getElementById('mobile-fo-net-dot');
+  const mobileFoNotification = document.getElementById('mobile-fo-notification');
+  const mobileFoNotificationIcon = document.getElementById('mobile-fo-notification-icon');
+  const mobileFoNotificationText = document.getElementById('mobile-fo-notification-text');
+
   // Smart Suggestions
   const smartSuggestionsContainer = document.getElementById('smart-suggestions-container');
   const potentialSavingsTotal = document.getElementById('potential-savings-total');
@@ -586,6 +607,22 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const txCountDisplay = document.getElementById('tx-count-display');
   const searchTransactionsInput = document.getElementById('search-transactions') as HTMLInputElement;
   const btnExportCsv = document.getElementById('btn-export-csv');
+
+  // Mobile Compact Ledger Elements
+  const mobileRecentTransactions = document.getElementById('mobile-recent-transactions');
+  const emptyMobileRecentTransactions = document.getElementById('empty-mobile-recent-transactions');
+
+  // Complete Transaction History Modal Elements
+  const modalTransactionHistory = document.getElementById('modal-transaction-history');
+  const btnCloseLedgerModal = document.getElementById('btn-close-ledger-modal');
+  const searchTransactionsModalInput = document.getElementById('search-transactions-modal') as HTMLInputElement;
+  const modalTransactionsTbody = document.getElementById('modal-transactions-tbody');
+  const txCountDisplayModal = document.getElementById('tx-count-display-modal');
+  const emptyLedgerModalState = document.getElementById('empty-ledger-modal-state');
+  const btnModalExportCsv = document.getElementById('btn-modal-export-csv');
+  const btnModalExportExcel = document.getElementById('btn-modal-export-excel');
+  const btnModalBackupJson = document.getElementById('btn-modal-backup-json');
+  const btnModalRestoreJson = document.getElementById('btn-modal-restore-json');
 
   // Debt Management Elements
   const statTotalDebt = document.getElementById('stat-total-debt');
@@ -843,6 +880,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       Transport: 0,
       Utilities: 0,
       Entertainment: 0,
+      Travel: 0,
       Savings: 0,
       Miscellany: 0,
       Income: 0
@@ -899,6 +937,95 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     // from consumption, so they are NOT double-counted here.
     if (statSavingsRate) {
       statSavingsRate.textContent = `${health.savingsRatePct}%`;
+    }
+
+    // Render Mobile Unified Financial Overview
+    if (mobileFoIncomeVal) mobileFoIncomeVal.textContent = formatMoney(effectiveTotalIncome);
+    if (mobileFoOutflowsVal) mobileFoOutflowsVal.textContent = formatMoney(totalSpent);
+    if (mobileFoOutflowsSub) mobileFoOutflowsSub.textContent = `${expensesPct}% ${t('dashboard.ofIncome', activeLocale)}`;
+
+    const foSavingsAmount = Math.max(0, effectiveTotalIncome - totalSpent);
+    const foSavingsRate = Math.round(health.savingsRatePct);
+    if (mobileFoSavingsVal) mobileFoSavingsVal.textContent = `${foSavingsRate}%`;
+    if (mobileFoSavingsSub) {
+      mobileFoSavingsSub.textContent = activeLocale === 'fr'
+        ? `${formatMoney(foSavingsAmount)} épargnés`
+        : `${formatMoney(foSavingsAmount)} saved`;
+    }
+
+    if (mobileFoNetVal) {
+      mobileFoNetVal.textContent = (netCashflow >= 0 ? '+' : '-') + formatMoney(Math.abs(netCashflow));
+      if (netCashflow < 0) {
+        mobileFoNetVal.className = 'font-mono text-xs font-bold text-rose-600 dark:text-rose-400 leading-tight';
+        if (mobileFoNetDot) mobileFoNetDot.className = 'w-2 h-2 rounded-full bg-[#FB7185] shrink-0';
+        if (mobileFoNetSub) {
+          mobileFoNetSub.textContent = activeLocale === 'fr' ? 'Déficit' : 'Deficit';
+          mobileFoNetSub.className = 'text-[9px] font-semibold text-rose-600 dark:text-rose-400 leading-none mt-0.5';
+        }
+      } else {
+        mobileFoNetVal.className = 'font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 leading-tight';
+        if (mobileFoNetDot) mobileFoNetDot.className = 'w-2 h-2 rounded-full bg-[#34D399] shrink-0';
+        if (mobileFoNetSub) {
+          mobileFoNetSub.textContent = activeLocale === 'fr' ? 'Excédent positif' : 'Positive surplus';
+          mobileFoNetSub.className = 'text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 leading-none mt-0.5';
+        }
+      }
+    }
+
+    // Dynamic Deficit / Surplus Notification (Compact, natural wrapping)
+    if (mobileFoNotification && mobileFoNotificationText && mobileFoNotificationIcon) {
+      if (netCashflow < 0) {
+        const defAmt = formatMoney(Math.abs(netCashflow));
+        mobileFoNotification.className = 'min-h-[34px] py-1.5 px-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/60 text-rose-800 dark:text-rose-200 text-[11px] flex items-start gap-2 transition-colors';
+        mobileFoNotificationIcon.textContent = '⚠️';
+        mobileFoNotificationText.textContent = activeLocale === 'fr'
+          ? `Vous êtes en déficit de ${defAmt}. Vos dépenses dépassent vos revenus.`
+          : `You're in a deficit by ${defAmt}. Your expenses exceed your income.`;
+      } else if (netCashflow > 0) {
+        const surpAmt = formatMoney(netCashflow);
+        mobileFoNotification.className = 'min-h-[34px] py-1.5 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[11px] flex items-start gap-2 transition-colors';
+        mobileFoNotificationIcon.textContent = '✨';
+        mobileFoNotificationText.textContent = activeLocale === 'fr'
+          ? `Vous dégagez un excédent de ${surpAmt}. Continuez à épargner.`
+          : `You're maintaining a surplus of ${surpAmt}. Keep up your savings.`;
+      } else {
+        mobileFoNotification.className = 'min-h-[34px] py-1.5 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] flex items-start gap-2 transition-colors';
+        mobileFoNotificationIcon.textContent = '⚖️';
+        mobileFoNotificationText.textContent = activeLocale === 'fr'
+          ? 'Vos revenus et vos dépenses sont équilibrés.'
+          : 'Your income and expenses are perfectly balanced.';
+      }
+    }
+
+    // Dynamic Doughnut Chart Segments
+    const foCircumference = 238.76;
+    if (mobileFoDonutOutflows && mobileFoDonutSavings && mobileFoDonutDeficit) {
+      if (effectiveTotalIncome <= 0) {
+        mobileFoDonutOutflows.setAttribute('stroke-dasharray', `0 ${foCircumference}`);
+        mobileFoDonutSavings.setAttribute('stroke-dasharray', `0 ${foCircumference}`);
+        mobileFoDonutDeficit.setAttribute('stroke-dasharray', `0 ${foCircumference}`);
+      } else if (netCashflow >= 0) {
+        const outflowRatio = Math.min(1, Math.max(0, totalSpent / effectiveTotalIncome));
+        const savingsRatio = Math.max(0, 1 - outflowRatio);
+        const outflowLen = outflowRatio * foCircumference;
+        const savingsLen = savingsRatio * foCircumference;
+        mobileFoDonutOutflows.setAttribute('stroke-dasharray', `${outflowLen.toFixed(1)} ${foCircumference}`);
+        mobileFoDonutOutflows.setAttribute('stroke-dashoffset', '0');
+        mobileFoDonutSavings.setAttribute('stroke-dasharray', `${savingsLen.toFixed(1)} ${foCircumference}`);
+        mobileFoDonutSavings.setAttribute('stroke-dashoffset', `${(-outflowLen).toFixed(1)}`);
+        mobileFoDonutDeficit.setAttribute('stroke-dasharray', `0 ${foCircumference}`);
+      } else {
+        const totalOutflowAndDeficit = totalSpent;
+        const incomePartRatio = Math.min(1, effectiveTotalIncome / totalOutflowAndDeficit);
+        const deficitPartRatio = 1 - incomePartRatio;
+        const incomePartLen = incomePartRatio * foCircumference;
+        const deficitPartLen = deficitPartRatio * foCircumference;
+        mobileFoDonutOutflows.setAttribute('stroke-dasharray', `${incomePartLen.toFixed(1)} ${foCircumference}`);
+        mobileFoDonutOutflows.setAttribute('stroke-dashoffset', '0');
+        mobileFoDonutSavings.setAttribute('stroke-dasharray', `0 ${foCircumference}`);
+        mobileFoDonutDeficit.setAttribute('stroke-dasharray', `${deficitPartLen.toFixed(1)} ${foCircumference}`);
+        mobileFoDonutDeficit.setAttribute('stroke-dashoffset', `${(-incomePartLen).toFixed(1)}`);
+      }
     }
 
     // Financial Health Indicator — already computed above before the KPI cards (updates both Desktop and Mobile elements)
@@ -1114,8 +1241,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       });
     }
 
-    // Entertainment & Discretionary (Only if Entertainment or Miscellany are recorded in tracker)
-    const discretionarySpend = (catTotals.Entertainment || 0) + (catTotals.Miscellany || 0);
+    // Entertainment & Discretionary (Only if Entertainment, Miscellany, or Travel are recorded in tracker)
+    const discretionarySpend = (catTotals.Entertainment || 0) + (catTotals.Miscellany || 0) + (catTotals.Travel || 0);
     if (discretionarySpend > 0) {
       const discSavings = Math.round(discretionarySpend * 0.30);
       suggestions.push({
@@ -1986,107 +2113,140 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     });
   }
 
+  const CATEGORY_BG_STYLES: Record<string, string> = {
+    Housing: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50',
+    Food: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/50',
+    Transport: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50',
+    Travel: 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-100 dark:border-sky-900/50',
+    Utilities: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-900/50',
+    Entertainment: 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-100 dark:border-purple-900/50',
+    Savings: 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-teal-900/50',
+    Income: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/50',
+    Miscellany: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
+    'Health & Fitness': 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-100 dark:border-rose-900/50'
+  };
+
   // --- 9. Ledger Table & Mobile Cards Renderer ---
   function renderLedger() {
-    if (!transactionsTbody && !transactionsMobileContainer) return;
-
-    const searchTerm = (searchTransactionsInput?.value || '').toLowerCase().trim();
-    const filtered = state.transactions.filter(
-      (t) =>
-        t.name.toLowerCase().includes(searchTerm) ||
-        t.category.toLowerCase().includes(searchTerm) ||
-        t.date.includes(searchTerm)
-    );
+    if (!transactionsTbody && !mobileRecentTransactions && !modalTransactionsTbody) return;
 
     if (txCountDisplay) {
       txCountDisplay.textContent = t('ledger.entriesCount', activeLocale, { count: state.transactions.length });
     }
-
-    if (filtered.length === 0) {
-      if (transactionsTbody) transactionsTbody.innerHTML = '';
-      if (transactionsMobileContainer) transactionsMobileContainer.innerHTML = '';
-      emptyLedgerState?.classList.remove('hidden');
-      return;
+    if (txCountDisplayModal) {
+      txCountDisplayModal.textContent = t('ledger.entriesCount', activeLocale, { count: state.transactions.length });
     }
 
-    emptyLedgerState?.classList.add('hidden');
+    // --- 9A. Render Mobile Compact Ledger (3 Most Recent Transactions) ---
+    if (mobileRecentTransactions) {
+      const sortedByDate = state.transactions
+        .map((tx, idx) => ({ tx, idx }))
+        .sort((a, b) => {
+          const cmp = (b.tx.date || '').localeCompare(a.tx.date || '');
+          if (cmp !== 0) return cmp;
+          return a.idx - b.idx;
+        })
+        .map((item) => item.tx);
+      const recent3 = sortedByDate.slice(0, 3);
 
-    // Desktop table rows
-    if (transactionsTbody) {
-      transactionsTbody.innerHTML = filtered
-        .map(
-          (tx) => `
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
-          <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
-            ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
-          </td>
-          <td class="py-2 px-3 whitespace-nowrap">
-            ${tx.type === 'income'
-              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  💵 ${t('categories.Income', activeLocale)}
-                </span>`
-              : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
-                </span>`
-            }
-          </td>
-          <td class="py-2 px-3 whitespace-nowrap">
-            ${
-              tx.source === 'imported'
-                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${t('ledger.sourceImported', activeLocale)}</span>`
-                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${t('ledger.sourceManual', activeLocale)}</span>`
-            }
-          </td>
-          <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
-            ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
-          </td>
-          <td class="py-2 px-3 text-center">
-            <button
-              type="button"
-              data-delete-id="${tx.id}"
-              class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-              title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
-              aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
-            >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </button>
-          </td>
-        </tr>
-      `
-        )
-        .join('');
+      if (recent3.length === 0) {
+        mobileRecentTransactions.innerHTML = '';
+        emptyMobileRecentTransactions?.classList.remove('hidden');
+      } else {
+        emptyMobileRecentTransactions?.classList.add('hidden');
+        mobileRecentTransactions.innerHTML = recent3
+          .map((tx) => {
+            const isIncome = tx.type === 'income';
+            const icon = isIncome ? '💵' : (CATEGORY_ICONS[tx.category] || '📦');
+            const categoryName = isIncome ? t('categories.Income', activeLocale) : getLocalizedCategory(tx.category, activeLocale);
+            const merchant = escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale));
+            const formattedAmount = formatMoney(tx.amount);
+            const bgClass = isIncome
+              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40'
+              : (CATEGORY_BG_STYLES[tx.category] || 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700');
+
+            return `
+              <div class="py-3 px-1 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${bgClass}">
+                    ${icon}
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-semibold text-xs sm:text-sm text-slate-900 dark:text-slate-100 truncate" title="${merchant}">
+                      ${merchant}
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      <span>${tx.date}</span>
+                      <span class="text-slate-300 dark:text-slate-600">•</span>
+                      <span>${categoryName}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="font-mono text-xs sm:text-sm font-bold ${isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                    ${isIncome ? '+' : '-'}${formattedAmount}
+                  </span>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
     }
 
-    // Mobile responsive transaction cards
-    if (transactionsMobileContainer) {
-      transactionsMobileContainer.innerHTML = filtered
-        .map(
-          (tx) => `
-        <div class="p-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0 flex-1">
-              <div class="font-semibold text-xs text-slate-900 dark:text-slate-100 truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
-                ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
-              </div>
-              <div class="flex items-center gap-1.5 mt-1">
-                ${tx.type === 'income'
-                  ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                      💵 ${t('categories.Income', activeLocale)}
-                    </span>`
-                  : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                      ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
-                    </span>`
-                }
-              </div>
-            </div>
-            
-            <div class="flex items-center gap-2 shrink-0">
-              <div class="text-right">
-                <span class="font-mono text-sm font-bold ${tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'}">
-                  ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
-                </span>
-              </div>
+    // --- 9B. Render Complete Transaction History Modal Table ---
+    if (modalTransactionsTbody) {
+      const modalSearchTerm = (searchTransactionsModalInput?.value || '').toLowerCase().trim();
+      const modalFiltered = state.transactions.filter(
+        (t) =>
+          t.name.toLowerCase().includes(modalSearchTerm) ||
+          t.category.toLowerCase().includes(modalSearchTerm) ||
+          t.date.includes(modalSearchTerm)
+      );
+
+      const modalSorted = modalFiltered
+        .map((tx, idx) => ({ tx, idx }))
+        .sort((a, b) => {
+          const cmp = (b.tx.date || '').localeCompare(a.tx.date || '');
+          if (cmp !== 0) return cmp;
+          return a.idx - b.idx;
+        })
+        .map((item) => item.tx);
+
+      if (modalSorted.length === 0) {
+        modalTransactionsTbody.innerHTML = '';
+        emptyLedgerModalState?.classList.remove('hidden');
+      } else {
+        emptyLedgerModalState?.classList.add('hidden');
+        modalTransactionsTbody.innerHTML = modalSorted
+          .map(
+            (tx) => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+            <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">${tx.date}</td>
+            <td class="py-2.5 px-3 font-medium text-slate-900 dark:text-slate-100 max-w-[200px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+              ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
+            </td>
+            <td class="py-2.5 px-3 whitespace-nowrap">
+              ${tx.type === 'income'
+                ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                    💵 ${t('categories.Income', activeLocale)}
+                  </span>`
+                : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
+                  </span>`
+              }
+            </td>
+            <td class="py-2.5 px-3 whitespace-nowrap">
+              ${
+                tx.source === 'imported'
+                  ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">${t('ledger.sourceImported', activeLocale)}</span>`
+                  : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">${t('ledger.sourceManual', activeLocale)}</span>`
+              }
+            </td>
+            <td class="py-2.5 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'} whitespace-nowrap">
+              ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
+            </td>
+            <td class="py-2.5 px-3 text-center">
               <button
                 type="button"
                 data-delete-id="${tx.id}"
@@ -2096,22 +2256,132 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
               </button>
+            </td>
+          </tr>
+        `
+          )
+          .join('');
+      }
+    }
+
+    // --- 9C. Render Existing Tablet Table & Mobile Cards ---
+    const searchTerm = (searchTransactionsInput?.value || '').toLowerCase().trim();
+    const filtered = state.transactions.filter(
+      (t) =>
+        t.name.toLowerCase().includes(searchTerm) ||
+        t.category.toLowerCase().includes(searchTerm) ||
+        t.date.includes(searchTerm)
+    );
+
+    if (filtered.length === 0) {
+      if (transactionsTbody) transactionsTbody.innerHTML = '';
+      if (transactionsMobileContainer) transactionsMobileContainer.innerHTML = '';
+      emptyLedgerState?.classList.remove('hidden');
+    } else {
+      emptyLedgerState?.classList.add('hidden');
+
+      // Desktop/Tablet table rows (for lg:hidden tablet view)
+      if (transactionsTbody) {
+        transactionsTbody.innerHTML = filtered
+          .map(
+            (tx) => `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
+            <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+              ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
+            </td>
+            <td class="py-2 px-3 whitespace-nowrap">
+              ${tx.type === 'income'
+                ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                    💵 ${t('categories.Income', activeLocale)}
+                  </span>`
+                : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                    ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
+                  </span>`
+              }
+            </td>
+            <td class="py-2 px-3 whitespace-nowrap">
+              ${
+                tx.source === 'imported'
+                  ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${t('ledger.sourceImported', activeLocale)}</span>`
+                  : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${t('ledger.sourceManual', activeLocale)}</span>`
+              }
+            </td>
+            <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
+              ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
+            </td>
+            <td class="py-2 px-3 text-center">
+              <button
+                type="button"
+                data-delete-id="${tx.id}"
+                class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+                title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+                aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </td>
+          </tr>
+        `
+          )
+          .join('');
+      }
+
+      // Mobile responsive transaction cards (for lg:hidden mobile view)
+      if (transactionsMobileContainer) {
+        transactionsMobileContainer.innerHTML = filtered
+          .map(
+            (tx) => `
+          <div class="p-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="font-semibold text-xs text-slate-900 dark:text-slate-100 truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+                  ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
+                </div>
+                <div class="flex items-center gap-1.5 mt-1">
+                  ${tx.type === 'income'
+                    ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        💵 ${t('categories.Income', activeLocale)}
+                      </span>`
+                    : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
+                      </span>`
+                  }
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-2 shrink-0">
+                <div class="text-right">
+                  <span class="font-mono text-sm font-bold ${tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'}">
+                    ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  data-delete-id="${tx.id}"
+                  class="btn-delete-tx text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-md transition-colors cursor-pointer"
+                  title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+                  aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-100 dark:border-slate-800/60 font-mono">
+              <span>📅 ${tx.date}</span>
+              <span>
+                ${tx.source === 'imported'
+                  ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">${t('ledger.sourceImported', activeLocale)}</span>`
+                  : `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">${t('ledger.sourceManual', activeLocale)}</span>`
+                }
+              </span>
             </div>
           </div>
-
-          <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-100 dark:border-slate-800/60 font-mono">
-            <span>📅 ${tx.date}</span>
-            <span>
-              ${tx.source === 'imported'
-                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">${t('ledger.sourceImported', activeLocale)}</span>`
-                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">${t('ledger.sourceManual', activeLocale)}</span>`
-              }
-            </span>
-          </div>
-        </div>
-      `
-        )
-        .join('');
+        `
+          )
+          .join('');
+      }
     }
 
     document.querySelectorAll('.btn-delete-tx').forEach((btn) => {
@@ -2337,12 +2607,48 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
 
     expenseLoggerMethod = 'manual';
     pendingReceiptMeta = null;
+    isAmountUserControlled = false;
+    presetSuggestedAmount = null;
+    isDescriptionUserControlled = false;
+    presetSuggestedName = null;
     inputItemName.value = '';
     inputItemAmount.value = '';
     renderAll();
     const ledgerContainer = document.getElementById('transactions-tbody')?.closest('div') as HTMLElement | null;
     showContextualFeedback(ledgerContainer || document.getElementById('tab-view-tracker'));
   });
+
+  // State tracking for user-controlled vs preset-suggested inputs
+  let isAmountUserControlled = false;
+  let presetSuggestedAmount: string | null = null;
+  let isDescriptionUserControlled = false;
+  let presetSuggestedName: string | null = null;
+
+  // Track direct user input on Amount field
+  const handleAmountInput = () => {
+    expenseLoggerMethod = 'manual';
+    if (inputItemAmount && inputItemAmount.value.trim() !== '') {
+      isAmountUserControlled = true;
+    } else {
+      isAmountUserControlled = false;
+      presetSuggestedAmount = null;
+    }
+  };
+  inputItemAmount?.addEventListener('input', handleAmountInput);
+  inputItemAmount?.addEventListener('change', handleAmountInput);
+
+  // Track direct user input on Description field
+  const handleDescriptionInput = () => {
+    expenseLoggerMethod = 'manual';
+    if (inputItemName && inputItemName.value.trim() !== '') {
+      isDescriptionUserControlled = true;
+    } else {
+      isDescriptionUserControlled = false;
+      presetSuggestedName = null;
+    }
+  };
+  inputItemName?.addEventListener('input', handleDescriptionInput);
+  inputItemName?.addEventListener('change', handleDescriptionInput);
 
   // Preset Chips
   presetChips.forEach((chip) => {
@@ -2353,21 +2659,58 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       const amount = chip.getAttribute('data-preset-amount');
       const cat = chip.getAttribute('data-preset-category');
 
-      if (name && inputItemName) inputItemName.value = name;
-      if (amount && inputItemAmount) inputItemAmount.value = amount;
+      // 1. Preset always updates the Category field
       if (cat && selectItemCategory) selectItemCategory.value = cat;
 
-      inputItemAmount?.focus();
+      // 2. Amount handling:
+      // If the user has manually entered an amount, selecting any preset must preserve that exact amount.
+      // If the Amount field is empty, a preset may populate its default suggested amount.
+      // If a previous preset populated the amount automatically and the user has not edited it, another preset may update its suggested amount.
+      const currentAmount = inputItemAmount ? inputItemAmount.value.trim() : '';
+      const isManualAmount = isAmountUserControlled || (currentAmount !== '' && currentAmount !== presetSuggestedAmount);
+
+      if (!isManualAmount) {
+        // Field is either empty or holds an unedited preset suggested amount
+        if (amount && inputItemAmount) {
+          inputItemAmount.value = amount;
+          presetSuggestedAmount = amount;
+          isAmountUserControlled = false;
+        }
+      } else {
+        // Amount was manually entered by the user -> preserve exact amount!
+        isAmountUserControlled = true;
+      }
+
+      // 3. Description handling:
+      // If user has not manually edited description, preset updates description.
+      // If user typed a custom description, preserve it.
+      const currentName = inputItemName ? inputItemName.value.trim() : '';
+      const isManualName = isDescriptionUserControlled || (currentName !== '' && currentName !== presetSuggestedName);
+
+      if (!isManualName) {
+        if (name && inputItemName) {
+          inputItemName.value = name;
+          presetSuggestedName = name;
+          isDescriptionUserControlled = false;
+        }
+      } else {
+        isDescriptionUserControlled = true;
+      }
+
+      if (!isAmountUserControlled) {
+        inputItemAmount?.focus();
+      }
     });
   });
-
-  inputItemName?.addEventListener('input', () => { expenseLoggerMethod = 'manual'; });
-  inputItemAmount?.addEventListener('input', () => { expenseLoggerMethod = 'manual'; });
 
   // Clear Quick Expense Logger entry
   btnClearLogger?.addEventListener('click', () => {
     expenseLoggerMethod = 'manual';
     pendingReceiptMeta = null;
+    isAmountUserControlled = false;
+    presetSuggestedAmount = null;
+    isDescriptionUserControlled = false;
+    presetSuggestedName = null;
     if (inputItemName) inputItemName.value = '';
     if (inputItemAmount) inputItemAmount.value = '';
     if (selectItemCategory) selectItemCategory.value = 'Food';
@@ -2394,8 +2737,16 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         if (receiptOcrProgress) receiptOcrProgress.textContent = `${progress}%`;
       });
 
-      if (inputItemName) inputItemName.value = result.merchantName;
-      if (inputItemAmount) inputItemAmount.value = result.amount > 0 ? result.amount.toString() : '';
+      if (inputItemName) {
+        inputItemName.value = result.merchantName;
+        isDescriptionUserControlled = !!result.merchantName;
+        presetSuggestedName = null;
+      }
+      if (inputItemAmount) {
+        inputItemAmount.value = result.amount > 0 ? result.amount.toString() : '';
+        isAmountUserControlled = result.amount > 0;
+        presetSuggestedAmount = null;
+      }
       if (selectItemCategory) selectItemCategory.value = result.category;
 
       pendingReceiptMeta = {
@@ -2423,22 +2774,52 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     renderLedger();
   });
 
+  // Modal Search Transactions
+  searchTransactionsModalInput?.addEventListener('input', () => {
+    renderLedger();
+  });
+
+  // Open / Close Complete Transaction History Modal
+  document.querySelectorAll('.btn-open-tx-history').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      modalTransactionHistory?.classList.remove('hidden');
+      renderLedger();
+    });
+  });
+
+  const closeLedgerModal = () => {
+    modalTransactionHistory?.classList.add('hidden');
+  };
+  btnCloseLedgerModal?.addEventListener('click', closeLedgerModal);
+  modalTransactionHistory?.addEventListener('click', (e) => {
+    if (e.target === modalTransactionHistory) closeLedgerModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalTransactionHistory && !modalTransactionHistory.classList.contains('hidden')) {
+      closeLedgerModal();
+    }
+  });
+
   // CSV Export
-  btnExportCsv?.addEventListener('click', () => {
+  const handleExportCsv = () => {
     exportTransactionsToCSV(state.transactions, getCurrencySymbol());
     track('ledger_exported', { format: 'csv' });
-  });
+  };
+  btnExportCsv?.addEventListener('click', handleExportCsv);
+  btnModalExportCsv?.addEventListener('click', handleExportCsv);
 
   // Excel / XLSX Export
   const btnExportExcelQuick = document.getElementById('btn-export-excel-quick');
-  btnExportExcelQuick?.addEventListener('click', () => {
+  const handleExportExcel = () => {
     exportBudgetToExcel(getMonthlyIncome(), state.currency, state.transactions);
     track('ledger_exported', { format: 'xlsx' });
-  });
+  };
+  btnExportExcelQuick?.addEventListener('click', handleExportExcel);
+  btnModalExportExcel?.addEventListener('click', handleExportExcel);
 
   // JSON Complete Backup
   const btnBackupJson = document.getElementById('btn-backup-json');
-  btnBackupJson?.addEventListener('click', async () => {
+  const handleBackupJson = async () => {
     try {
       await downloadBackupFile();
       track('ledger_exported', { format: 'json' });
@@ -2446,12 +2827,17 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       console.error('[Backup Error]:', err);
       alert('Failed to generate backup file.');
     }
-  });
+  };
+  btnBackupJson?.addEventListener('click', handleBackupJson);
+  btnModalBackupJson?.addEventListener('click', handleBackupJson);
 
   // JSON Complete Restore
   const btnRestoreJson = document.getElementById('btn-restore-json');
   const inputRestoreJson = document.getElementById('input-restore-json') as HTMLInputElement;
   btnRestoreJson?.addEventListener('click', () => {
+    inputRestoreJson?.click();
+  });
+  btnModalRestoreJson?.addEventListener('click', () => {
     inputRestoreJson?.click();
   });
 

@@ -104,6 +104,9 @@ export const es = {
   ledger: {
     title: "Libro de Transacciones",
     subtitle: "Historial de registros manuales y movimientos de extractos importados.",
+    recentSubtitle: "Tus ingresos y gastos recientes",
+    viewAll: "Ver todo",
+    viewAllTransactions: "Ver todas las transacciones",
     entriesCount: "{count} movimientos",
     searchPlaceholder: "Filtrar libro...",
     exportCsv: "CSV",
@@ -662,6 +665,7 @@ export const es = {
     Savings: "Ahorro e Inversión",
     Miscellany: "Varios (Miscellany)",
     Income: "Ingresos (Income)",
+    Travel: "Viajes (Travel)",
     "Health & Fitness": "Salud y Cuidado"
   },
   buttons: {

@@ -104,6 +104,9 @@ export const en = {
   ledger: {
     title: "Transaction Ledger",
     subtitle: "Live log of all manual entries and imported file transactions.",
+    recentSubtitle: "Your recent income and expenses",
+    viewAll: "View All",
+    viewAllTransactions: "View All Transactions",
     entriesCount: "{count} entries",
     searchPlaceholder: "Filter ledger...",
     exportCsv: "CSV",
@@ -667,6 +670,7 @@ export const en = {
     Savings: "Savings",
     Miscellany: "Miscellany",
     Income: "Income",
+    Travel: "Travel",
     "Health & Fitness": "Health & Fitness"
   },
   buttons: {

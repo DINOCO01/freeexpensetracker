@@ -104,6 +104,9 @@ export const pt = {
   ledger: {
     title: "Livro de Transações",
     subtitle: "Histórico completo de entradas manuais e extratos bancários importados.",
+    recentSubtitle: "Suas receitas e despesas recentes",
+    viewAll: "Ver tudo",
+    viewAllTransactions: "Ver todas as transações",
     entriesCount: "{count} lançamentos",
     searchPlaceholder: "Pesquisar transações...",
     exportCsv: "CSV",
@@ -661,6 +664,7 @@ export const pt = {
     Savings: "Poupança & Investimento",
     Miscellany: "Outros (Miscellany)",
     Income: "Renda (Income)",
+    Travel: "Viagens & Turismo",
     "Health & Fitness": "Saúde & Cuidados"
   },
   buttons: {

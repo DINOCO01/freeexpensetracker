@@ -104,6 +104,9 @@ export const ko = {
   ledger: {
     title: "거래 내역 원장",
     subtitle: "직접 입력한 내역과 파일로 가져온 금융 거래의 실시간 통합 장부.",
+    recentSubtitle: "최근 수입 및 지출",
+    viewAll: "모두 보기",
+    viewAllTransactions: "모든 거래 보기",
     entriesCount: "{count}건의 거래",
     searchPlaceholder: "내역 검색 및 필터링...",
     exportCsv: "CSV",
@@ -661,6 +664,7 @@ export const ko = {
     Savings: "저축 및 투자 (Savings)",
     Miscellany: "생활용품 및 기타",
     Income: "급여 및 수입 (Income)",
+    Travel: "여행 및 휴가 (Travel)",
     "Health & Fitness": "의료 및 건강"
   },
   buttons: {

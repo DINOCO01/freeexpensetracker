@@ -104,6 +104,9 @@ export const de = {
   ledger: {
     title: "Buchungsjournal",
     subtitle: "Übersicht aller manuellen Buchungen und importierten Kontoauszüge.",
+    recentSubtitle: "Ihre letzten Einnahmen und Ausgaben",
+    viewAll: "Alle anzeigen",
+    viewAllTransactions: "Alle Transaktionen anzeigen",
     entriesCount: "{count} Buchungen",
     searchPlaceholder: "Journal durchsuchen...",
     exportCsv: "CSV",
@@ -661,6 +664,7 @@ export const de = {
     Savings: "Sparen & Rücklagen",
     Miscellany: "Sonstiges (Miscellany)",
     Income: "Einnahmen (Income)",
+    Travel: "Reisen & Urlaub",
     "Health & Fitness": "Gesundheit & Sport"
   },
   buttons: {

@@ -8,8 +8,12 @@ interface Props {
 const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
-<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-  <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+<!-- =========================================================================
+     DESKTOP & TABLET: ORIGINAL FULL TRANSACTION LEDGER (sm:block, 640px+)
+     Restored exactly as original: full ledger, search, exports, full table.
+     ========================================================================= -->
+<div id="desktop-tablet-ledger" class="hidden sm:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
     <div>
       <div class="flex items-center gap-2">
         <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
@@ -28,7 +32,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
 
     <!-- Search & Export Actions -->
-    <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 w-full xl:w-auto">
+    <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto flex-wrap">
       <!-- Search -->
       <div class="relative flex-1 sm:w-44 sm:flex-initial">
         <input
@@ -83,8 +87,8 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 
-  <!-- Desktop Table Container -->
-  <div class="hidden sm:block overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 dark:border-slate-800 rounded-xl">
+  <!-- Original Full Table Container -->
+  <div class="overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 dark:border-slate-800 rounded-xl">
     <table class="w-full min-w-[500px] text-left border-collapse text-xs">
       <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider z-10">
         <tr>
@@ -102,17 +106,66 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </table>
   </div>
 
-  <!-- Mobile Transaction Cards Container -->
-  <div id="transactions-mobile-container" class="sm:hidden space-y-2.5">
-    <!-- Rendered via JS -->
-  </div>
-
-  <!-- Empty State -->
+  <!-- Empty State for Desktop & Tablet -->
   <div id="empty-ledger-state" class="hidden p-8 text-center space-y-2">
     <div class="text-3xl">📝</div>
     <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
     <p class="text-[11px] text-slate-500 dark:text-slate-400">
       {t('ledger.emptySubtitle', locale)}
     </p>
+  </div>
+</div>
+
+<!-- =========================================================================
+     MOBILE ONLY: COMPACT TRANSACTION LEDGER (<640px)
+     Scope: MOBILE ONLY. Displays exactly 3 recent transactions, category icons,
+     amount right aligned, View All in header, View All Transactions at bottom.
+     ========================================================================= -->
+<div id="mobile-compact-ledger" class="sm:hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+  <!-- Mobile Header -->
+  <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+    <div>
+      <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        {t('ledger.title', locale)}
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+        {t('ledger.recentSubtitle', locale)}
+      </p>
+    </div>
+
+    <!-- Top-Right View All Link -->
+    <button
+      type="button"
+      class="btn-open-tx-history text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors flex items-center gap-1 cursor-pointer group"
+      title={t('ledger.viewAll', locale)}
+    >
+      <span>{t('ledger.viewAll', locale)}</span>
+      <svg class="w-3.5 h-3.5 text-emerald-500 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+    </button>
+  </div>
+
+  <!-- Mobile Recent 3 Transactions Rows Container -->
+  <div id="mobile-recent-transactions" class="divide-y divide-slate-100 dark:divide-slate-800">
+    <!-- Rendered via JS: exactly 3 newest transactions -->
+  </div>
+
+  <!-- Empty State for Mobile Recent Transactions -->
+  <div id="empty-mobile-recent-transactions" class="hidden py-6 text-center space-y-2">
+    <div class="text-2xl">📝</div>
+    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
+    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+      {t('ledger.emptySubtitle', locale)}
+    </p>
+  </div>
+
+  <!-- Bottom Prominent View All Transactions Button -->
+  <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+    <button
+      type="button"
+      class="btn-open-tx-history w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
+    >
+      <span>{t('ledger.viewAllTransactions', locale)}</span>
+      <svg class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+    </button>
   </div>
 </div>

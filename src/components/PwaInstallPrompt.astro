@@ -1,0 +1,847 @@
+---
+/**
+ * PwaInstallPrompt.astro
+ * Smart, Non-Intrusive Progressive Web App (PWA) Installation Prompt.
+ * 
+ * Features:
+ * - Desktop Web: Floating compact card in bottom-right corner, non-blocking, above BMC widget.
+ * - Mobile Web: Native-feeling bottom sheet with drag handle, safe-area padding, no full-screen overlay.
+ * - Smart Engagement Trigger: Only displays after meaningful actions (tab exploration, template downloads, calculators, expense logging).
+ * - Real PWA Installation: Uses beforeinstallprompt when supported, fallback instructions for iOS/Safari/desktop.
+ * - Frequency & Dismissal Management: 7-day cooldown on dismissal, permanent suppression when installed.
+ * - Zero Dependencies: Vanilla JS + Tailwind CSS, lightweight CSS transitions, respects prefers-reduced-motion.
+ */
+import { DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
+
+interface PwaTranslations {
+  heading: string;
+  desktopDesc: string;
+  mobileDesc: string;
+  benefitFaster: string;
+  benefitOffline: string;
+  benefitAppLike: string;
+  btnNotNow: string;
+  btnInstall: string;
+  btnClose: string;
+  instructionsTitle: string;
+  instructionsIos: string;
+  instructionsDesktop: string;
+  instructionsAndroid: string;
+  btnGotIt: string;
+}
+
+const translations: Record<string, PwaTranslations> = {
+  en: {
+    heading: 'Install FreeExpenseTracker',
+    desktopDesc: 'Add to your desktop or apps for a faster, app-like experience.',
+    mobileDesc: 'Add to your home screen for a faster, app-like experience.',
+    benefitFaster: 'Faster access',
+    benefitOffline: 'Works offline',
+    benefitAppLike: 'App-like experience',
+    btnNotNow: 'Not now',
+    btnInstall: 'Install App',
+    btnClose: 'Close installation prompt',
+    instructionsTitle: 'How to Install',
+    instructionsIos: 'Tap the Share button at the bottom of Safari, then select "Add to Home Screen".',
+    instructionsDesktop: 'Click the Install icon (⊕) in your browser address bar, or use Menu → Install.',
+    instructionsAndroid: 'Tap Menu (⋮) at top-right of Chrome, then select "Add to Home Screen" or "Install App".',
+    btnGotIt: 'Got it'
+  },
+  es: {
+    heading: 'Instalar FreeExpenseTracker',
+    desktopDesc: 'Añádelo a tu escritorio o aplicaciones para una experiencia más rápida.',
+    mobileDesc: 'Añádelo a tu pantalla de inicio para una experiencia más rápida.',
+    benefitFaster: 'Acceso rápido',
+    benefitOffline: 'Funciona sin conexión',
+    benefitAppLike: 'Como una app',
+    btnNotNow: 'Ahora no',
+    btnInstall: 'Instalar App',
+    btnClose: 'Cerrar',
+    instructionsTitle: 'Cómo instalar',
+    instructionsIos: 'Toca el botón Compartir en Safari, luego selecciona "Añadir a la pantalla de inicio".',
+    instructionsDesktop: 'Haz clic en el icono de instalación en la barra de direcciones o Menú → Instalar.',
+    instructionsAndroid: 'Toca el menú (⋮) en Chrome y elige "Añadir a pantalla de inicio" o "Instalar".',
+    btnGotIt: 'Entendido'
+  },
+  fr: {
+    heading: 'Installer FreeExpenseTracker',
+    desktopDesc: 'Ajoutez à votre bureau ou applications pour une expérience rapide et fluide.',
+    mobileDesc: 'Ajoutez à votre écran d\'accueil pour une expérience rapide et fluide.',
+    benefitFaster: 'Accès plus rapide',
+    benefitOffline: 'Fonctionne hors ligne',
+    benefitAppLike: 'Comme une app',
+    btnNotNow: 'Pas maintenant',
+    btnInstall: 'Installer l\'app',
+    btnClose: 'Fermer',
+    instructionsTitle: 'Comment installer',
+    instructionsIos: 'Appuyez sur le bouton Partager dans Safari, puis sélectionnez "Sur l\'écran d\'accueil".',
+    instructionsDesktop: 'Cliquez sur l\'icône Installer dans la barre d\'adresse ou Menu → Installer.',
+    instructionsAndroid: 'Appuyez sur le menu (⋮) dans Chrome et sélectionnez "Ajouter à l\'écran d\'accueil".',
+    btnGotIt: 'Compris'
+  },
+  de: {
+    heading: 'FreeExpenseTracker installieren',
+    desktopDesc: 'Fügen Sie es für schnellen, app-ähnlichen Zugriff zu Ihren Programmen hinzu.',
+    mobileDesc: 'Zum Startbildschirm hinzufügen für ein schnelles App-Erlebnis.',
+    benefitFaster: 'Schneller Zugriff',
+    benefitOffline: 'Funktioniert offline',
+    benefitAppLike: 'App-Erlebnis',
+    btnNotNow: 'Nicht jetzt',
+    btnInstall: 'App installieren',
+    btnClose: 'Schließen',
+    instructionsTitle: 'So installieren Sie die App',
+    instructionsIos: 'Tippen Sie in Safari auf Teilen und wählen Sie "Zum Home-Bildschirm".',
+    instructionsDesktop: 'Klicken Sie in der Adressleiste oder im Menü auf "Installieren".',
+    instructionsAndroid: 'Tippen Sie in Chrome auf das Menü (⋮) und wählen Sie "Zum Startbildschirm".',
+    btnGotIt: 'Verstanden'
+  },
+  pt: {
+    heading: 'Instalar FreeExpenseTracker',
+    desktopDesc: 'Adicione aos seus aplicativos para uma experiência mais rápida.',
+    mobileDesc: 'Adicione à tela inicial para uma experiência rápida de app.',
+    benefitFaster: 'Acesso rápido',
+    benefitOffline: 'Funciona offline',
+    benefitAppLike: 'Experiência de app',
+    btnNotNow: 'Agora não',
+    btnInstall: 'Instalar App',
+    btnClose: 'Fechar',
+    instructionsTitle: 'Como instalar',
+    instructionsIos: 'Toque em Compartilhar no Safari e selecione "Adicionar à Tela de Início".',
+    instructionsDesktop: 'Clique no ícone de instalação na barra de endereço ou Menu → Instalar.',
+    instructionsAndroid: 'Toque no menu (⋮) do Chrome e selecione "Adicionar à tela inicial".',
+    btnGotIt: 'Entendi'
+  },
+  it: {
+    heading: 'Installa FreeExpenseTracker',
+    desktopDesc: 'Aggiungi al desktop o alle app per un\'esperienza più veloce.',
+    mobileDesc: 'Aggiungi alla schermata iniziale per un\'esperienza veloce come un\'app.',
+    benefitFaster: 'Accesso rapido',
+    benefitOffline: 'Funziona offline',
+    benefitAppLike: 'Esperienza da app',
+    btnNotNow: 'Non ora',
+    btnInstall: 'Installa App',
+    btnClose: 'Chiudi',
+    instructionsTitle: 'Come installare',
+    instructionsIos: 'Tocca Condividi in Safari e seleziona "Aggiungi alla schermata Home".',
+    instructionsDesktop: 'Fai clic sull\'icona Installa nella barra degli indirizzi o Menu → Installa.',
+    instructionsAndroid: 'Tocca il menu (⋮) in Chrome e seleziona "Aggiungi a schermata Home".',
+    btnGotIt: 'Ho capito'
+  },
+  ja: {
+    heading: 'FreeExpenseTrackerをインストール',
+    desktopDesc: 'デスクトップに追加して、より高速でアプリのような体験を。',
+    mobileDesc: 'ホーム画面に追加して、より高速で快適なアプリ体験を。',
+    benefitFaster: '高速アクセス',
+    benefitOffline: 'オフライン対応',
+    benefitAppLike: 'アプリ体験',
+    btnNotNow: '今はしない',
+    btnInstall: 'アプリをインストール',
+    btnClose: '閉じる',
+    instructionsTitle: 'インストール方法',
+    instructionsIos: 'Safariの共有ボタンをタップし、「ホーム画面に追加」を選択してください。',
+    instructionsDesktop: 'アドレスバーのインストールアイコン、またはブラウザメニューからインストールしてください。',
+    instructionsAndroid: 'Chromeのメニュー（⋮）をタップし、「ホーム画面に追加」を選択してください。',
+    btnGotIt: '了解'
+  },
+  hi: {
+    heading: 'FreeExpenseTracker इंस्टॉल करें',
+    desktopDesc: 'तेज़ और ऐप जैसे अनुभव के लिए अपने डेस्कटॉप पर जोड़ें।',
+    mobileDesc: 'तेज़ और सुविधाजनक ऐप अनुभव के लिए होम स्क्रीन पर जोड़ें।',
+    benefitFaster: 'तेज़ एक्सेस',
+    benefitOffline: 'ऑफ़लाइन काम करता है',
+    benefitAppLike: 'ऐप जैसा अनुभव',
+    btnNotNow: 'अभी नहीं',
+    btnInstall: 'ऐप इंस्टॉल करें',
+    btnClose: 'बंद करें',
+    instructionsTitle: 'इंस्टॉल कैसे करें',
+    instructionsIos: 'Safari में शेयर बटन दबाएं, फिर "होम स्क्रीन में जोड़ें" चुनें।',
+    instructionsDesktop: 'ब्राउज़र एड्रेस बार में इंस्टॉल आइकन दबाएं या मेनू से इंस्टॉल करें।',
+    instructionsAndroid: 'Chrome में मेनू (⋮) दबाएं और "होम स्क्रीन पर जोड़ें" चुनें।',
+    btnGotIt: 'समझ गया'
+  },
+  ko: {
+    heading: 'FreeExpenseTracker 설치',
+    desktopDesc: '더 빠르고 앱과 같은 환경을 위해 데스크톱에 추가하세요.',
+    mobileDesc: '홈 화면에 추가하여 더 빠르고 편리한 앱 경험을 누려보세요.',
+    benefitFaster: '빠른 접속',
+    benefitOffline: '오프라인 지원',
+    benefitAppLike: '앱과 같은 경험',
+    btnNotNow: '나중에',
+    btnInstall: '앱 설치',
+    btnClose: '닫기',
+    instructionsTitle: '설치 방법',
+    instructionsIos: 'Safari에서 공유 버튼을 탭한 후 "홈 화면에 추가"를 선택하세요.',
+    instructionsDesktop: '주소창의 설치 아이콘을 클릭하거나 브라우저 메뉴에서 "설치"를 선택하세요.',
+    instructionsAndroid: 'Chrome 메뉴(⋮)에서 "홈 화면에 추가" 또는 "앱 설치"를 선택하세요.',
+    btnGotIt: '확인'
+  }
+};
+
+const t = translations[locale] || translations.en;
+---
+
+<div id="pwa-install-prompt-root" class="no-print" data-locale={locale}>
+  <!-- ========================================== -->
+  <!-- 1. DESKTOP FLOATING CARD (sm:block, >=640px) -->
+  <!-- ========================================== -->
+  <div
+    id="pwa-install-desktop-card"
+    role="dialog"
+    aria-labelledby="pwa-desktop-heading"
+    aria-describedby="pwa-desktop-desc"
+    class="hidden sm:hidden fixed bottom-[86px] right-6 z-50 w-full max-w-[385px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-emerald-500/25 dark:border-emerald-500/20 shadow-xl dark:shadow-slate-950/60 rounded-2xl p-4 transition-all duration-300 ease-out opacity-0 translate-y-3 pointer-events-none"
+  >
+    <!-- Close Button -->
+    <button
+      type="button"
+      id="btn-pwa-close-desktop"
+      aria-label={t.btnClose}
+      class="absolute top-3.5 right-3.5 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Normal Promotion State -->
+    <div id="pwa-desktop-promo-state" class="space-y-3">
+      <div class="flex items-start gap-3 pr-6">
+        <div class="w-11 h-11 rounded-xl p-1 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/80 flex items-center justify-center shrink-0 shadow-2xs">
+          <img
+            src="/web-app-manifest-192x192.png"
+            alt="FreeExpenseTracker Logo"
+            class="w-8 h-8 rounded-lg object-contain"
+            width="32"
+            height="32"
+            loading="lazy"
+          />
+        </div>
+        <div class="space-y-0.5 min-w-0">
+          <h3
+            id="pwa-desktop-heading"
+            class="text-sm font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight truncate"
+          >
+            {t.heading}
+          </h3>
+          <p
+            id="pwa-desktop-desc"
+            class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed"
+          >
+            {t.desktopDesc}
+          </p>
+        </div>
+      </div>
+
+      <!-- Small Benefit Indicators -->
+      <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitFaster}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitOffline}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitAppLike}</span>
+        </span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+        <button
+          type="button"
+          id="btn-pwa-dismiss-desktop"
+          class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          {t.btnNotNow}
+        </button>
+        <button
+          type="button"
+          id="btn-pwa-install-desktop"
+          class="px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-all shadow-xs hover:shadow-sm cursor-pointer inline-flex items-center gap-1.5"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          <span>{t.btnInstall}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Instruction Fallback State (when native prompt is unavailable) -->
+    <div id="pwa-desktop-fallback-state" class="hidden space-y-3">
+      <div class="pr-6">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
+          {t.instructionsTitle}
+        </h4>
+        <p id="pwa-desktop-fallback-text" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+          {t.instructionsDesktop}
+        </p>
+      </div>
+      <div class="flex items-center justify-end pt-1">
+        <button
+          type="button"
+          id="btn-pwa-gotit-desktop"
+          class="px-4 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer"
+        >
+          {t.btnGotIt}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. MOBILE BOTTOM SHEET (<640px, sm:hidden) -->
+  <!-- ========================================== -->
+  <div
+    id="pwa-install-mobile-sheet"
+    role="dialog"
+    aria-labelledby="pwa-mobile-heading"
+    aria-describedby="pwa-mobile-desc"
+    class="sm:hidden fixed inset-x-0 bottom-0 z-50 w-full max-w-lg mx-auto bg-white/98 dark:bg-slate-900/98 backdrop-blur-md border-t border-emerald-500/25 dark:border-emerald-500/20 shadow-[0_-10px_35px_rgba(0,0,0,0.18)] rounded-t-3xl p-4 pt-2.5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] transition-transform duration-300 ease-out transform translate-y-full pointer-events-none"
+  >
+    <!-- Visual Drag Handle -->
+    <div
+      id="pwa-mobile-drag-handle"
+      class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-2.5 cursor-grab touch-none"
+      title="Swipe down to dismiss"
+    ></div>
+
+    <!-- Close Button -->
+    <button
+      type="button"
+      id="btn-pwa-close-mobile"
+      aria-label={t.btnClose}
+      class="absolute top-3.5 right-3.5 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Normal Promotion State -->
+    <div id="pwa-mobile-promo-state" class="space-y-2.5">
+      <div class="flex items-start gap-3 pr-6">
+        <div class="w-11 h-11 rounded-xl p-1 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/80 flex items-center justify-center shrink-0 shadow-2xs">
+          <img
+            src="/web-app-manifest-192x192.png"
+            alt="FreeExpenseTracker Logo"
+            class="w-8 h-8 rounded-lg object-contain"
+            width="32"
+            height="32"
+            loading="lazy"
+          />
+        </div>
+        <div class="space-y-0.5 min-w-0">
+          <h3
+            id="pwa-mobile-heading"
+            class="text-sm font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight leading-snug"
+          >
+            {t.heading}
+          </h3>
+          <p
+            id="pwa-mobile-desc"
+            class="text-xs text-slate-600 dark:text-slate-300 leading-snug"
+          >
+            {t.mobileDesc}
+          </p>
+        </div>
+      </div>
+
+      <!-- Small Benefit Indicators -->
+      <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitFaster}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitOffline}</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+          <svg class="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>{t.benefitAppLike}</span>
+        </span>
+      </div>
+
+      <!-- Action Buttons Side-by-Side -->
+      <div class="grid grid-cols-2 gap-2.5 pt-2">
+        <button
+          type="button"
+          id="btn-pwa-dismiss-mobile"
+          class="w-full py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 transition-colors text-center cursor-pointer min-h-[44px] flex items-center justify-center"
+        >
+          {t.btnNotNow}
+        </button>
+        <button
+          type="button"
+          id="btn-pwa-install-mobile"
+          class="w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 transition-colors shadow-xs text-center cursor-pointer min-h-[44px] flex items-center justify-center gap-1.5"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          <span>{t.btnInstall}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Instruction Fallback State (when native prompt is unavailable) -->
+    <div id="pwa-mobile-fallback-state" class="hidden space-y-3 pt-1">
+      <div class="pr-6">
+        <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight">
+          {t.instructionsTitle}
+        </h4>
+        <p id="pwa-mobile-fallback-text" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1">
+          {t.instructionsIos}
+        </p>
+      </div>
+      <div class="pt-1">
+        <button
+          type="button"
+          id="btn-pwa-gotit-mobile"
+          class="w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors text-center cursor-pointer min-h-[44px] flex items-center justify-center"
+        >
+          {t.btnGotIt}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    #pwa-install-desktop-card,
+    #pwa-install-mobile-sheet {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const STORAGE_KEY_INSTALLED = 'fxt_pwa_installed';
+    const STORAGE_KEY_DISMISSED_UNTIL = 'fxt_pwa_dismissed_until';
+    const COOLDOWN_DAYS = 7;
+    const COOLDOWN_MS = COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+
+    let deferredPrompt = null;
+    let isPromptVisible = false;
+    let scheduledTimer = null;
+    let engagementCount = 0;
+
+    // Listen for native beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      window.fxtDeferredPwaPrompt = e;
+    });
+
+    // Detect app installation event
+    window.addEventListener('appinstalled', () => {
+      try {
+        localStorage.setItem(STORAGE_KEY_INSTALLED, 'true');
+      } catch (_) {}
+      deferredPrompt = null;
+      hidePrompt();
+    });
+
+    // Check if running in standalone mode
+    function isRunningStandalone() {
+      try {
+        return (
+          window.matchMedia('(display-mode: standalone)').matches ||
+          window.matchMedia('(display-mode: fullscreen)').matches ||
+          window.navigator.standalone === true ||
+          localStorage.getItem(STORAGE_KEY_INSTALLED) === 'true'
+        );
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // Check if dismissed and within cooldown
+    function isWithinCooldown() {
+      try {
+        const dismissedUntil = parseInt(localStorage.getItem(STORAGE_KEY_DISMISSED_UNTIL) || '0', 10);
+        return !isNaN(dismissedUntil) && dismissedUntil > Date.now();
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // Check if user is actively entering transactions or filling forms
+    function isUserInputActive() {
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+        return true;
+      }
+      return false;
+    }
+
+    // Check if any modal or dialogue is currently open
+    function isModalOrWorkflowActive() {
+      // Check standard modal IDs
+      const modalIds = [
+        'file-import-modal',
+        'reset-confirm-modal',
+        'debt-payment-modal',
+        'goal-contribution-modal',
+        'transaction-history-modal',
+        'mrb-activity-popup'
+      ];
+      for (let i = 0; i < modalIds.length; i++) {
+        const el = document.getElementById(modalIds[i]);
+        if (el && !el.classList.contains('hidden') && el.style.display !== 'none') {
+          return true;
+        }
+      }
+
+      // Check generic dialog or modal containers
+      const anyModal = document.querySelector('.modal:not(.hidden), [role="dialog"]:not(.hidden):not(#pwa-install-desktop-card):not(#pwa-install-mobile-sheet)');
+      if (anyModal && anyModal.offsetParent !== null) {
+        return true;
+      }
+
+      return false;
+    }
+
+    // Dismiss prompt and record cooldown
+    function dismissPrompt() {
+      try {
+        localStorage.setItem(STORAGE_KEY_DISMISSED_UNTIL, (Date.now() + COOLDOWN_MS).toString());
+      } catch (_) {}
+      hidePrompt();
+    }
+
+    // Hide prompt with smooth animation
+    function hidePrompt() {
+      isPromptVisible = false;
+
+      const desktopCard = document.getElementById('pwa-install-desktop-card');
+      const mobileSheet = document.getElementById('pwa-install-mobile-sheet');
+
+      if (desktopCard) {
+        desktopCard.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        desktopCard.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+        setTimeout(() => {
+          if (!isPromptVisible) {
+            desktopCard.classList.add('hidden', 'sm:hidden');
+          }
+        }, 300);
+      }
+
+      if (mobileSheet) {
+        mobileSheet.classList.remove('translate-y-0', 'pointer-events-auto');
+        mobileSheet.classList.add('translate-y-full', 'pointer-events-none');
+        setTimeout(() => {
+          if (!isPromptVisible) {
+            mobileSheet.classList.add('hidden');
+          }
+        }, 300);
+      }
+    }
+
+    // Detect client platform for fallback installation instructions
+    function detectPlatform() {
+      const ua = navigator.userAgent || '';
+      const isIos = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/.test(ua);
+      const isChromeOrEdgeDesktop = /Chrome|Edg/.test(ua) && !isIos && !isAndroid;
+      return { isIos, isAndroid, isChromeOrEdgeDesktop };
+    }
+
+    // Trigger installation flow
+    async function handleInstallClick() {
+      if (deferredPrompt) {
+        try {
+          deferredPrompt.prompt();
+          const choiceResult = await deferredPrompt.userChoice;
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            try {
+              localStorage.setItem(STORAGE_KEY_INSTALLED, 'true');
+            } catch (_) {}
+            hidePrompt();
+          }
+        } catch (err) {
+          console.warn('[PWA] Prompt error:', err);
+        }
+        deferredPrompt = null;
+        window.fxtDeferredPwaPrompt = null;
+        return;
+      }
+
+      // Fallback instructions when native prompt is not available
+      const platform = detectPlatform();
+      const root = document.getElementById('pwa-install-prompt-root');
+      const locale = (root && root.getAttribute('data-locale')) || 'en';
+
+      const isMobile = window.innerWidth < 640;
+      if (isMobile) {
+        const promoState = document.getElementById('pwa-mobile-promo-state');
+        const fallbackState = document.getElementById('pwa-mobile-fallback-state');
+        const fallbackText = document.getElementById('pwa-mobile-fallback-text');
+        if (promoState && fallbackState && fallbackText) {
+          if (platform.isIos) {
+            fallbackText.textContent = locale === 'fr'
+              ? 'Appuyez sur le bouton Partager dans Safari, puis sélectionnez "Sur l\'écran d\'accueil".'
+              : 'Tap the Share button at the bottom of Safari, then select "Add to Home Screen".';
+          } else if (platform.isAndroid) {
+            fallbackText.textContent = locale === 'fr'
+              ? 'Appuyez sur le menu (⋮) dans Chrome et sélectionnez "Ajouter à l\'écran d\'accueil".'
+              : 'Tap Menu (⋮) at top-right of Chrome, then select "Add to Home Screen" or "Install App".';
+          } else {
+            fallbackText.textContent = locale === 'fr'
+              ? 'Cliquez sur l\'icône Installer dans la barre d\'adresse ou le menu du navigateur.'
+              : 'Click the Install icon in the browser address bar or menu.';
+          }
+          promoState.classList.add('hidden');
+          fallbackState.classList.remove('hidden');
+        }
+      } else {
+        const promoState = document.getElementById('pwa-desktop-promo-state');
+        const fallbackState = document.getElementById('pwa-desktop-fallback-state');
+        const fallbackText = document.getElementById('pwa-desktop-fallback-text');
+        if (promoState && fallbackState && fallbackText) {
+          fallbackText.textContent = locale === 'fr'
+            ? 'Cliquez sur l\'icône Installer (⊕) dans la barre d\'adresse de votre navigateur ou utilisez Menu → Installer.'
+            : 'Click the Install icon (⊕) in your browser address bar, or use Menu → Install FreeExpenseTracker.';
+          promoState.classList.add('hidden');
+          fallbackState.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Display the prompt
+    function showPrompt() {
+      if (isRunningStandalone() || isWithinCooldown() || isPromptVisible) return;
+      if (isUserInputActive() || isModalOrWorkflowActive()) return;
+
+      isPromptVisible = true;
+      window.fxtPwaPromptShown = true;
+
+      const isDesktop = window.innerWidth >= 640;
+      const desktopCard = document.getElementById('pwa-install-desktop-card');
+      const mobileSheet = document.getElementById('pwa-install-mobile-sheet');
+
+      if (isDesktop && desktopCard) {
+        // Adjust position dynamically if Buy Me a Coffee widget is present
+        const bmcBtn = document.getElementById('bmc-wbtn');
+        if (bmcBtn && bmcBtn.offsetHeight > 0) {
+          desktopCard.style.bottom = '86px';
+        } else {
+          desktopCard.style.bottom = '24px';
+        }
+
+        desktopCard.classList.remove('hidden', 'sm:hidden');
+        // Force reflow
+        void desktopCard.offsetWidth;
+        desktopCard.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+        desktopCard.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      } else if (!isDesktop && mobileSheet) {
+        mobileSheet.classList.remove('hidden');
+        // Force reflow
+        void mobileSheet.offsetWidth;
+        mobileSheet.classList.remove('translate-y-full', 'pointer-events-none');
+        mobileSheet.classList.add('translate-y-0', 'pointer-events-auto');
+      }
+    }
+
+    // Centralized trigger evaluation with delay
+    function schedulePrompt(delayMs, reason) {
+      if (isRunningStandalone() || isWithinCooldown() || isPromptVisible) return;
+
+      if (scheduledTimer) clearTimeout(scheduledTimer);
+
+      scheduledTimer = setTimeout(() => {
+        scheduledTimer = null;
+        if (isRunningStandalone() || isWithinCooldown() || isPromptVisible) return;
+
+        // If user is currently typing in an input, wait until blur
+        if (isUserInputActive()) {
+          const active = document.activeElement;
+          if (active) {
+            active.addEventListener('blur', () => schedulePrompt(1500, 'input_blur'), { once: true });
+          }
+          return;
+        }
+
+        // If a modal is open, wait until modal closes
+        if (isModalOrWorkflowActive()) {
+          setTimeout(() => schedulePrompt(2000, 'modal_close_retry'), 3500);
+          return;
+        }
+
+        showPrompt();
+      }, delayMs || 3000);
+    }
+
+    // Expose Global Trigger Helper
+    window.triggerPwaPromptEligibility = function (reason, forceImmediate) {
+      engagementCount++;
+      if (forceImmediate) {
+        showPrompt();
+        return;
+      }
+      // For general tab exploration, require at least 2 navigation switches
+      if (reason === 'tab_exploration' && engagementCount < 2) {
+        return;
+      }
+      schedulePrompt(3000, reason);
+    };
+
+    // Expose State Reset Helper for Testing
+    window.resetPwaPromptState = function () {
+      try {
+        localStorage.removeItem(STORAGE_KEY_DISMISSED_UNTIL);
+        localStorage.removeItem(STORAGE_KEY_INSTALLED);
+      } catch (_) {}
+      isPromptVisible = false;
+      window.fxtPwaPromptShown = false;
+      engagementCount = 0;
+      if (scheduledTimer) {
+        clearTimeout(scheduledTimer);
+        scheduledTimer = null;
+      }
+      hidePrompt();
+    };
+
+    // Attach User Event Listeners
+    function attachListeners() {
+      // Desktop action buttons
+      const btnDismissDesktop = document.getElementById('btn-pwa-dismiss-desktop');
+      const btnCloseDesktop = document.getElementById('btn-pwa-close-desktop');
+      const btnInstallDesktop = document.getElementById('btn-pwa-install-desktop');
+      const btnGotitDesktop = document.getElementById('btn-pwa-gotit-desktop');
+
+      btnDismissDesktop?.addEventListener('click', dismissPrompt);
+      btnCloseDesktop?.addEventListener('click', dismissPrompt);
+      btnGotitDesktop?.addEventListener('click', dismissPrompt);
+      btnInstallDesktop?.addEventListener('click', handleInstallClick);
+
+      // Mobile action buttons
+      const btnDismissMobile = document.getElementById('btn-pwa-dismiss-mobile');
+      const btnCloseMobile = document.getElementById('btn-pwa-close-mobile');
+      const btnInstallMobile = document.getElementById('btn-pwa-install-mobile');
+      const btnGotitMobile = document.getElementById('btn-pwa-gotit-mobile');
+
+      btnDismissMobile?.addEventListener('click', dismissPrompt);
+      btnCloseMobile?.addEventListener('click', dismissPrompt);
+      btnGotitMobile?.addEventListener('click', dismissPrompt);
+      btnInstallMobile?.addEventListener('click', handleInstallClick);
+
+      // Support Escape key on Desktop
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isPromptVisible) {
+          dismissPrompt();
+        }
+      });
+
+      // Mobile drag-to-dismiss gesture
+      const dragHandle = document.getElementById('pwa-mobile-drag-handle');
+      const mobileSheet = document.getElementById('pwa-install-mobile-sheet');
+      if (dragHandle && mobileSheet) {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
+        dragHandle.addEventListener('touchstart', (e) => {
+          startY = e.touches[0].clientY;
+          isDragging = true;
+          mobileSheet.style.transition = 'none';
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          currentY = e.touches[0].clientY;
+          const deltaY = currentY - startY;
+          if (deltaY > 0) {
+            mobileSheet.style.transform = `translateY(${deltaY}px)`;
+          }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+          if (!isDragging) return;
+          isDragging = false;
+          mobileSheet.style.transition = '';
+          const deltaY = currentY - startY;
+          if (deltaY > 60) {
+            dismissPrompt();
+          } else {
+            mobileSheet.style.transform = 'translateY(0)';
+          }
+        });
+      }
+
+      // Meaningful Engagement Triggers:
+      // 1. Tab switches
+      const tabButtons = document.querySelectorAll('[data-tab], [data-bottom-tab], [role="tab"], .format-tab-btn');
+      tabButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          window.triggerPwaPromptEligibility('tab_exploration');
+        });
+      });
+
+      // 2. Template XLSX downloads
+      const downloadLinks = document.querySelectorAll('a[download], a[href$=".xlsx"], #btn-export-csv, #btn-modal-export-excel, #btn-export-excel-quick');
+      downloadLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          window.triggerPwaPromptEligibility('template_download');
+        });
+      });
+
+      // 3. Google Sheets template openings
+      const sheetLinks = document.querySelectorAll('.btn-open-google-sheets, a[href*="docs.google.com/spreadsheets"]');
+      sheetLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          window.triggerPwaPromptEligibility('google_sheets_open');
+        });
+      });
+
+      // 4. Calculator completions
+      const calcButtons = document.querySelectorAll('#btn-strat-avalanche, #btn-strat-snowball, #btn-strat-foir, #btn-calc-split');
+      calcButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          window.triggerPwaPromptEligibility('calculator_completed');
+        });
+      });
+
+      // 5. Global Activity Hook & Custom Events
+      window.addEventListener('fet:activity-completed', () => {
+        window.triggerPwaPromptEligibility('expense_logged');
+      });
+
+      window.addEventListener('pwa:trigger-eligible', (e) => {
+        const reason = (e && e.detail && e.detail.reason) || 'custom_event';
+        window.triggerPwaPromptEligibility(reason);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', attachListeners);
+    } else {
+      attachListeners();
+    }
+  })();
+</script>

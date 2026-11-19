@@ -11,6 +11,7 @@ import {
 } from '../locales';
 import { getCanonicalUrl, SITE_URL } from '../utils/canonical';
 import ActivityPromotionPopup from '../components/ActivityPromotionPopup.astro';
+import PwaInstallPrompt from '../components/PwaInstallPrompt.astro';
 
 interface Props {
   title?: string;
@@ -354,40 +355,65 @@ if (faqEntities.length > 0) {
       data-x_margin="18"
       data-y_margin="18"
     ></script>
-    <!-- Buy Me a Coffee Floating Widget Frequency & Dismissal Controller -->
+    <!-- Buy Me a Coffee Floating Widget Frequency & Dismissal Controller (Once Per Session) -->
     <script is:inline>
       (function() {
-        var STORAGE_KEY = 'bmc_message_seen';
-        var isSeen = false;
+        var SESSION_KEY = 'freeExpenseTracker_coffeePopupShown';
+        var hasShown = false;
+
+        // Clean up legacy localStorage key if present
         try {
-          isSeen = localStorage.getItem(STORAGE_KEY) === 'true';
+          localStorage.removeItem('bmc_message_seen');
+        } catch (e) {}
+
+        // 1. Check the session flag before displaying the automatic popup
+        try {
+          hasShown = sessionStorage.getItem(SESSION_KEY) === 'true';
         } catch (e) {}
 
         var bmcScript = document.querySelector('script[data-name="BMC-Widget"]');
-        if (isSeen) {
+
+        if (hasShown) {
+          // Popup already shown in this session: suppress automatic popup immediately
           document.documentElement.classList.add('bmc-seen');
           if (bmcScript) {
             bmcScript.removeAttribute('data-message');
             delete bmcScript.dataset.message;
           }
+        } else {
+          // 2. First visit in session: record session flag IMMEDIATELY so no other page, tab or refresh can show it
+          try {
+            sessionStorage.setItem(SESSION_KEY, 'true');
+          } catch (e) {}
         }
 
         function markSeen() {
           try {
-            localStorage.setItem(STORAGE_KEY, 'true');
+            sessionStorage.setItem(SESSION_KEY, 'true');
           } catch (e) {}
+          document.documentElement.classList.add('bmc-seen');
         }
 
-        window.addEventListener('DOMContentLoaded', function() {
+        var setupWidget = function() {
           var wbtn = document.getElementById('bmc-wbtn');
           if (wbtn) {
+            // Manual click on floating icon opens donation widget; does not reset session flag
             wbtn.addEventListener('click', function() {
               markSeen();
-              document.documentElement.classList.add('bmc-seen');
             });
           }
 
-          if (!isSeen) {
+          if (hasShown) {
+            // Ensure any tooltip element is suppressed immediately
+            var tooltip = document.querySelector('#bmc-wbtn + div, #bmc-tooltip');
+            if (tooltip) {
+              tooltip.style.display = 'none';
+              tooltip.style.opacity = '0';
+              tooltip.style.visibility = 'hidden';
+              tooltip.style.pointerEvents = 'none';
+            }
+          } else {
+            // First visit in session: allow popup to show once, dismiss on click or after 5.5s
             var observer = new MutationObserver(function() {
               var tooltip = document.querySelector('#bmc-wbtn + div');
               if (tooltip) {
@@ -401,12 +427,10 @@ if (faqEntities.length > 0) {
                   tooltip.style.transform = 'scale(0.7)';
                   tooltip.style.pointerEvents = 'none';
                   markSeen();
-                  document.documentElement.classList.add('bmc-seen');
                 });
-                // After the promotional display concludes (5s), mark as seen
+                // After the promotional display concludes (5.5s), mark as seen
                 setTimeout(function() {
                   markSeen();
-                  document.documentElement.classList.add('bmc-seen');
                 }, 5500);
               }
             });
@@ -417,10 +441,18 @@ if (faqEntities.length > 0) {
               markSeen();
             }, 6000);
           }
-        });
+        };
+
+        if (document.readyState === 'loading') {
+          window.addEventListener('DOMContentLoaded', setupWidget);
+        } else {
+          setupWidget();
+        }
       })();
     </script>
     <!-- Activity-Based Promotional Popup: My Real Budget (rendered only on active tracker pages) -->
     {isTrackerPage && <ActivityPromotionPopup locale={locale} />}
+    <!-- Smart PWA Installation Promotion (Desktop floating card & Mobile bottom sheet) -->
+    <PwaInstallPrompt locale={locale} />
   </body>
 </html>

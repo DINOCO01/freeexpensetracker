@@ -104,6 +104,9 @@ export const fr = {
   ledger: {
     title: "Journal des Opérations",
     subtitle: "Historique en direct des saisies manuelles et relevés bancaires importés.",
+    recentSubtitle: "Vos revenus et dépenses récents",
+    viewAll: "Voir tout",
+    viewAllTransactions: "Voir toutes les opérations",
     entriesCount: "{count} opérations",
     searchPlaceholder: "Filtrer le journal...",
     exportCsv: "CSV",
@@ -667,6 +670,7 @@ export const fr = {
     Savings: "Épargne & Investissement",
     Miscellany: "Divers (Miscellany)",
     Income: "Revenus (Income)",
+    Travel: "Voyages & Vacances",
     "Health & Fitness": "Santé & Bien-être"
   },
   buttons: {

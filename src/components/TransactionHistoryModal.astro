@@ -1,0 +1,135 @@
+---
+import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+}
+
+const { locale = DEFAULT_LOCALE } = Astro.props;
+---
+
+<!-- Complete Transaction History Modal -->
+<div
+  id="modal-transaction-history"
+  class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs hidden overflow-y-auto"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-history-title"
+>
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 my-6 flex flex-col max-h-[85vh]">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-sm border border-emerald-200 dark:border-emerald-800/60 shrink-0">
+          📋
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="modal-history-title" class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+              {t('ledger.title', locale)}
+            </h3>
+            <span
+              id="tx-count-display-modal"
+              class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+            >
+              {t('ledger.entriesCount', locale, { count: 0 })}
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {t('ledger.subtitle', locale)}
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        id="btn-close-ledger-modal"
+        class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
+        aria-label="Close modal"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Search & Export Actions -->
+    <div class="flex items-center flex-wrap gap-2 justify-between shrink-0">
+      <!-- Search Input -->
+      <div class="relative flex-1 sm:max-w-xs">
+        <input
+          type="text"
+          id="search-transactions-modal"
+          placeholder={t('ledger.searchPlaceholder', locale)}
+          class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pl-7 pr-2.5 py-1.5 focus:border-emerald-600 focus:outline-none placeholder:text-slate-400"
+        />
+        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+
+      <!-- Export Buttons -->
+      <div class="flex items-center gap-1.5 shrink-0 flex-wrap">
+        <button
+          type="button"
+          id="btn-modal-export-csv"
+          class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
+          title={t('ledger.exportCsv', locale)}
+        >
+          <span>CSV</span>
+        </button>
+
+        <button
+          type="button"
+          id="btn-modal-export-excel"
+          class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
+          title={t('ledger.exportExcel', locale)}
+        >
+          <span>XLSX</span>
+        </button>
+
+        <button
+          type="button"
+          id="btn-modal-backup-json"
+          class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
+          title="Download complete JSON backup"
+        >
+          <span>Backup</span>
+        </button>
+
+        <button
+          type="button"
+          id="btn-modal-restore-json"
+          class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
+          title="Restore data from JSON backup"
+        >
+          <span>Restore</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Container (Scrollable) -->
+    <div class="overflow-x-auto overflow-y-auto flex-1 border border-slate-200/80 dark:border-slate-800 rounded-xl min-h-[220px]">
+      <table class="w-full min-w-[500px] text-left border-collapse text-xs">
+        <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider z-10">
+          <tr>
+            <th class="py-2.5 px-3">{t('ledger.thDate', locale)}</th>
+            <th class="py-2.5 px-3">{t('ledger.thDescription', locale)}</th>
+            <th class="py-2.5 px-3">{t('ledger.thCategory', locale)}</th>
+            <th class="py-2.5 px-3">{t('ledger.thSource', locale)}</th>
+            <th class="py-2.5 px-3 text-right">{t('ledger.thAmount', locale)}</th>
+            <th class="py-2.5 px-3 text-center w-12">{t('ledger.thAction', locale)}</th>
+          </tr>
+        </thead>
+        <tbody id="modal-transactions-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+          <!-- Rendered via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-ledger-modal-state" class="hidden p-8 text-center space-y-2">
+      <div class="text-3xl">📝</div>
+      <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
+      <p class="text-[11px] text-slate-500 dark:text-slate-400">
+        {t('ledger.emptySubtitle', locale)}
+      </p>
+    </div>
+  </div>
+</div>

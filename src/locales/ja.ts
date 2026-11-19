@@ -104,6 +104,9 @@ export const ja = {
   ledger: {
     title: "取引明細台帳",
     subtitle: "手動入力およびインポートした明細データのリアルタイム台帳。",
+    recentSubtitle: "最近の収入と支出",
+    viewAll: "すべて表示",
+    viewAllTransactions: "すべての取引を表示",
     entriesCount: "{count} 件の明細",
     searchPlaceholder: "明細を絞り込み検索...",
     exportCsv: "CSV出力",
@@ -661,6 +664,7 @@ export const ja = {
     Savings: "貯蓄・投資 (Savings)",
     Miscellany: "日用品・その他 (Miscellany)",
     Income: "給与・収入 (Income)",
+    Travel: "旅行・交通 (Travel)",
     "Health & Fitness": "医療・健康・美容"
   },
   buttons: {

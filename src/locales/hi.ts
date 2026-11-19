@@ -104,6 +104,9 @@ export const hi = {
   ledger: {
     title: "लेन-देन खाता बही",
     subtitle: "हाथ से दर्ज और आयातित बैंक स्टेटमेंट का लाइव रिकॉर्ड।",
+    recentSubtitle: "आपकी हाल की आय और खर्च",
+    viewAll: "सभी देखें",
+    viewAllTransactions: "सभी लेन-देन देखें",
     entriesCount: "{count} प्रविष्टियां",
     searchPlaceholder: "खाता बही में खोजें...",
     exportCsv: "CSV",
@@ -667,6 +670,7 @@ export const hi = {
     Savings: "बचत व निवेश",
     Miscellany: "अन्य (Miscellany)",
     Income: "आय (Income)",
+    Travel: "यात्रा व भ्रमण (Travel)",
     "Health & Fitness": "स्वास्थ्य व फिटनेस"
   },
   buttons: {

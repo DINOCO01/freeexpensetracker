@@ -100,8 +100,8 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 
-  <!-- 4 KPI Summary Cards (2x2 Grid) -->
-  <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+  <!-- 4 KPI Summary Cards (2x2 Grid) - DESKTOP & TABLET ONLY (>= 640px) -->
+  <div class="hidden sm:grid grid-cols-2 gap-2.5 sm:gap-3">
     <!-- Card 1: Monthly Income -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xs space-y-1 overflow-hidden">
       <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[10px] sm:text-[11px]">
@@ -156,6 +156,164 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       <div class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
         {t('dashboard.savingsRateSub', locale)}
       </div>
+    </div>
+  </div>
+
+  <!-- Unified Mobile Financial Overview Card (< 640px) -->
+  <div id="mobile-financial-overview-card" class="sm:hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-xs flex flex-col justify-between space-y-2">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
+      <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] tracking-tight flex items-center gap-1.5">
+        <span>📊</span> {locale === 'fr' ? 'Aperçu Financier' : 'Financial Overview'}
+      </h3>
+      <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">
+        {t('dashboard.monthly', locale)}
+      </span>
+    </div>
+
+    <!-- Main Content: Left Doughnut + Right 3 Breakdown Rows -->
+    <div class="flex items-center gap-2.5 sm:gap-3 w-full min-w-0">
+      <!-- Left Section: Doughnut Chart with Income in center (105-115px diameter) -->
+      <div class="shrink-0 flex items-center justify-center">
+        <div class="relative w-[108px] h-[108px] flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <!-- Background track -->
+            <circle
+              cx="50"
+              cy="50"
+              r="38"
+              stroke="currentColor"
+              stroke-width="8.5"
+              fill="transparent"
+              class="text-slate-100 dark:text-slate-800"
+            />
+            <!-- Outflows segment (muted sky blue #38BDF8) -->
+            <circle
+              id="mobile-fo-donut-outflows"
+              cx="50"
+              cy="50"
+              r="38"
+              stroke="#38BDF8"
+              stroke-width="8.5"
+              fill="transparent"
+              stroke-dasharray="148 238.76"
+              stroke-dashoffset="0"
+              stroke-linecap="round"
+              class="transition-all duration-700 ease-out"
+            />
+            <!-- Savings segment (soft mint green #34D399) -->
+            <circle
+              id="mobile-fo-donut-savings"
+              cx="50"
+              cy="50"
+              r="38"
+              stroke="#34D399"
+              stroke-width="8.5"
+              fill="transparent"
+              stroke-dasharray="90 238.76"
+              stroke-dashoffset="-148"
+              stroke-linecap="round"
+              class="transition-all duration-700 ease-out"
+            />
+            <!-- Deficit segment (muted coral #FB7185) -->
+            <circle
+              id="mobile-fo-donut-deficit"
+              cx="50"
+              cy="50"
+              r="38"
+              stroke="#FB7185"
+              stroke-width="8.5"
+              fill="transparent"
+              stroke-dasharray="0 238.76"
+              stroke-dashoffset="0"
+              stroke-linecap="round"
+              class="transition-all duration-700 ease-out"
+            />
+          </svg>
+
+          <!-- Center: Total Income -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center select-none px-1 pointer-events-none">
+            <span class="text-[8.5px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 leading-none mb-0.5">
+              {locale === 'fr' ? 'Revenu' : 'Income'}
+            </span>
+            <span id="mobile-fo-income-val" class="font-mono text-[13px] font-black text-slate-900 dark:text-slate-100 tracking-tight leading-none truncate max-w-[76px]">
+              $4,200
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: 3 Information Rows with Guaranteed Label & Value Visibility -->
+      <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5 space-y-1">
+        <!-- Row 1: Outflows -->
+        <div class="min-w-0 space-y-0.5">
+          <div class="flex items-center justify-between gap-1.5 min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-[#38BDF8] shrink-0"></span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                {locale === 'fr' ? 'Dépenses' : 'Outflows'}
+              </span>
+            </div>
+            <span id="mobile-fo-outflows-val" class="font-mono text-xs font-bold text-slate-900 dark:text-slate-100 shrink-0 whitespace-nowrap text-right">
+              $2,605
+            </span>
+          </div>
+          <div id="mobile-fo-outflows-sub" class="text-[9.5px] text-slate-400 dark:text-slate-500 font-medium text-right leading-tight break-words pl-3.5">
+            62% {t('dashboard.ofIncome', locale)}
+          </div>
+        </div>
+
+        <div class="border-b border-slate-100 dark:border-slate-800/80"></div>
+
+        <!-- Row 2: Savings -->
+        <div class="min-w-0 space-y-0.5">
+          <div class="flex items-center justify-between gap-1.5 min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-[#34D399] shrink-0"></span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                {t('categories.Savings', locale)}
+              </span>
+            </div>
+            <span id="mobile-fo-savings-val" class="font-mono text-xs font-bold text-slate-900 dark:text-slate-100 shrink-0 whitespace-nowrap text-right">
+              38%
+            </span>
+          </div>
+          <div id="mobile-fo-savings-sub" class="text-[9.5px] text-slate-400 dark:text-slate-500 font-medium text-right leading-tight break-words pl-3.5">
+            $1,595 saved
+          </div>
+        </div>
+
+        <div class="border-b border-slate-100 dark:border-slate-800/80"></div>
+
+        <!-- Row 3: Net Cash Flow -->
+        <div class="min-w-0 space-y-0.5">
+          <div class="flex items-center justify-between gap-1.5 min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span id="mobile-fo-net-dot" class="w-2 h-2 rounded-full bg-[#34D399] shrink-0"></span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                {t('dashboard.netCashflow', locale)}
+              </span>
+            </div>
+            <span id="mobile-fo-net-val" class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 shrink-0 whitespace-nowrap text-right">
+              +$1,595
+            </span>
+          </div>
+          <div id="mobile-fo-net-sub" class="text-[9.5px] font-semibold text-emerald-600 dark:text-emerald-400 text-right leading-tight break-words pl-3.5">
+            {t('dashboard.positiveSurplus', locale)}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deficit / Surplus Notification (Compact, natural wrapping) -->
+    <div
+      id="mobile-fo-notification"
+      class="min-h-[32px] py-1 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[10.5px] flex items-start gap-2 transition-colors"
+    >
+      <span id="mobile-fo-notification-icon" class="text-xs shrink-0 mt-0.5">✨</span>
+      <span id="mobile-fo-notification-text" class="flex-1 font-medium leading-snug break-words">
+        You're maintaining a surplus of $1,595. Keep up your savings.
+      </span>
     </div>
   </div>
 </div>
