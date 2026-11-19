@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
 import BillSplitterGuide from '../../components/bill-splitter/BillSplitterGuide.astro';
 import BillSplitterFAQ, { BILL_SPLITTER_FAQS } from '../../components/bill-splitter/BillSplitterFAQ.astro';
+import MobileBottomNav from '../../components/MobileBottomNav.astro';
 import { getCanonicalUrl } from '../../utils/canonical';
 
 const pageTitle = "Free Bill Splitter Calculator (No Sign-Up)";
@@ -27,7 +28,7 @@ const breadcrumbs = [
 >
   <Navbar />
 
-  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12">
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 pb-28 sm:pb-12">
     <!-- Breadcrumb Navigation -->
     <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
       <a href="/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Home</a>
@@ -62,4 +63,7 @@ const breadcrumbs = [
   </main>
 
   <Footer />
+
+  <!-- Mobile Bottom Liquid Glass Navigation Bar -->
+  <MobileBottomNav isStandalone={true} initialActiveTab="split" />
 </Layout>

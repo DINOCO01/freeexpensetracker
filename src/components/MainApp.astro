@@ -17,6 +17,7 @@ import BlogHub from '../components/BlogHub.astro';
 import CompetitiveEdge from '../components/CompetitiveEdge.astro';
 import StatementImporterTab from '../components/StatementImporterTab.astro';
 import SpreadsheetsAndPrintable from '../components/SpreadsheetsAndPrintable.astro';
+import BillSplitterApp from '../components/bill-splitter/BillSplitterApp.astro';
 import SEOContentSection from '../components/SEOContentSection.astro';
 import FAQSection from '../components/FAQSection.astro';
 import MyRealBudgetCTA from '../components/MyRealBudgetCTA.astro';
@@ -25,13 +26,26 @@ import FileImportModal from '../components/FileImportModal.astro';
 import ResetModal from '../components/ResetModal.astro';
 import GoalContributionModal from '../components/GoalContributionModal.astro';
 import DebtPaymentModal from '../components/DebtPaymentModal.astro';
-import { t, type SupportedLocale } from '../locales';
+import MobileBottomNav from '../components/MobileBottomNav.astro';
+import { t, type SupportedLocale, getLocaleDefaultCurrency } from '../locales';
 
 interface Props {
   locale?: SupportedLocale;
 }
 
 const { locale = 'en' } = Astro.props;
+const defaultCurrency = getLocaleDefaultCurrency(locale);
+const currencyLabels: Record<SupportedLocale, string> = {
+  en: 'Change Currency',
+  de: 'Währung ändern',
+  fr: 'Changer de devise',
+  es: 'Cambiar moneda',
+  pt: 'Mudar moeda',
+  ja: '通貨を変更',
+  ko: '통화 변경',
+  hi: 'मुद्रा बदलें'
+};
+const currencyLabel = currencyLabels[locale] || 'Change Currency';
 ---
 
 <Layout
@@ -43,7 +57,7 @@ const { locale = 'en' } = Astro.props;
 >
   <Navbar currentLocale={locale} />
 
-  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-8">
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-5 sm:space-y-8 pb-28 sm:pb-8">
     <!-- Hero Header & Value Proposition -->
     <TrackingChoiceHero locale={locale} />
 
@@ -54,8 +68,62 @@ const { locale = 'en' } = Astro.props;
     <TabNav locale={locale} />
 
     <!-- TAB 1: Live Expense Tracker & Smart Suggestions -->
-    <section id="tab-view-tracker" class="tab-view space-y-6">
+    <section id="tab-view-tracker" class="tab-view space-y-4 sm:space-y-6">
       <div id="live-tool-anchor" class="scroll-mt-24"></div>
+
+      <!-- Mobile Currency & Reset Controls (Dedicated compact row immediately above main tracker) -->
+      <div class="sm:hidden flex items-center justify-between gap-2.5 px-0.5 pt-0.5 pb-1">
+        <!-- Currency Selector Dropdown (Left) -->
+        <div class="relative flex-1 max-w-[190px]">
+          <label for="currency-selector-mobile" class="sr-only">{currencyLabel}</label>
+          <div class="relative flex items-center">
+            <select
+              id="currency-selector-mobile"
+              class="currency-selector w-full min-h-[38px] text-xs font-semibold bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 rounded-xl pl-2.5 pr-7 py-2 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs transition-colors appearance-none"
+              title={currencyLabel}
+            >
+              <option value="USD" selected={defaultCurrency === 'USD'}>USD ($)</option>
+              <option value="INR" selected={defaultCurrency === 'INR'}>INR (₹)</option>
+              <option value="EUR" selected={defaultCurrency === 'EUR'}>EUR (€)</option>
+              <option value="GBP" selected={defaultCurrency === 'GBP'}>GBP (£)</option>
+              <option value="CAD" selected={defaultCurrency === 'CAD'}>CAD (CA$)</option>
+              <option value="AUD" selected={defaultCurrency === 'AUD'}>AUD (AU$)</option>
+              <option value="JPY" selected={defaultCurrency === 'JPY'}>JPY (¥)</option>
+              <option value="CHF" selected={defaultCurrency === 'CHF'}>CHF (CHF)</option>
+              <option value="CNY" selected={defaultCurrency === 'CNY'}>CNY (¥)</option>
+              <option value="SGD" selected={defaultCurrency === 'SGD'}>SGD (S$)</option>
+              <option value="NZD" selected={defaultCurrency === 'NZD'}>NZD (NZ$)</option>
+              <option value="AED" selected={defaultCurrency === 'AED'}>AED (AED)</option>
+              <option value="SAR" selected={defaultCurrency === 'SAR'}>SAR (SAR)</option>
+              <option value="BRL" selected={defaultCurrency === 'BRL'}>BRL (R$)</option>
+              <option value="MXN" selected={defaultCurrency === 'MXN'}>MXN (Mex$)</option>
+              <option value="ZAR" selected={defaultCurrency === 'ZAR'}>ZAR (R)</option>
+              <option value="SEK" selected={defaultCurrency === 'SEK'}>SEK (kr)</option>
+              <option value="KRW" selected={defaultCurrency === 'KRW'}>KRW (₩)</option>
+              <option value="PHP" selected={defaultCurrency === 'PHP'}>PHP (₱)</option>
+              <option value="MYR" selected={defaultCurrency === 'MYR'}>MYR (RM)</option>
+              <option value="IDR" selected={defaultCurrency === 'IDR'}>IDR (Rp)</option>
+              <option value="TRY" selected={defaultCurrency === 'TRY'}>TRY (₺)</option>
+              <option value="PKR" selected={defaultCurrency === 'PKR'}>PKR (Rs)</option>
+              <option value="BDT" selected={defaultCurrency === 'BDT'}>BDT (৳)</option>
+              <option value="NGN" selected={defaultCurrency === 'NGN'}>NGN (₦)</option>
+            </select>
+            <div class="pointer-events-none absolute right-2 flex items-center text-slate-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset Button (Right) -->
+        <button
+          type="button"
+          class="btn-open-reset-modal min-h-[38px] text-xs font-semibold px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-white hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 transition-colors shadow-2xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+          title={t('footer.resetData', locale)}
+        >
+          <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          <span>{t('buttons.resetAll', locale)}</span>
+        </button>
+      </div>
 
       <!-- Parallel Top: Income Tracker & Financial Health Indicator Side-by-Side -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
@@ -80,6 +148,12 @@ const { locale = 'en' } = Astro.props;
     <!-- TAB 2: Free Templates (Google Sheets, Excel & Printables) -->
     <section id="tab-view-templates" class="tab-view space-y-6 hidden">
       <SpreadsheetsAndPrintable locale={locale} />
+    </section>
+
+    <!-- TAB: Bill Splitter -->
+    <section id="tab-view-split" class="tab-view space-y-6 hidden">
+      <div id="split-tool-anchor" class="scroll-mt-24"></div>
+      <BillSplitterApp />
     </section>
 
     <!-- TAB 3: Universal Statement & Receipt Importer (Multi-file & Multi-format) -->
@@ -155,6 +229,9 @@ const { locale = 'en' } = Astro.props;
   <ResetModal locale={locale} />
   <GoalContributionModal locale={locale} />
   <DebtPaymentModal locale={locale} />
+
+  <!-- Mobile Bottom Liquid Glass Navigation -->
+  <MobileBottomNav locale={locale} />
 </Layout>
 
 <script>
@@ -445,6 +522,7 @@ const { locale = 'en' } = Astro.props;
 
   // --- 3. DOM Elements ---
   const currencySelector = document.getElementById('currency-selector') as HTMLSelectElement;
+  const currencySelectorMobile = document.getElementById('currency-selector-mobile') as HTMLSelectElement;
   const inputIncome = document.getElementById('input-income-amount') as HTMLInputElement;
   const incomeSlider = document.getElementById('income-range-slider') as HTMLInputElement;
   const incomeNormalizedAmount = document.getElementById('income-normalized-amount');
@@ -457,7 +535,7 @@ const { locale = 'en' } = Astro.props;
   const statCashflowLabel = document.getElementById('stat-cashflow-label');
   const statSavingsRate = document.getElementById('stat-savings-rate');
 
-  // Health Card
+  // Health Card — Desktop Elements
   const healthTierBadge = document.getElementById('health-tier-badge');
   const healthTierText = document.getElementById('health-tier-text');
   const healthScoreNumber = document.getElementById('health-score-number');
@@ -469,6 +547,21 @@ const { locale = 'en' } = Astro.props;
   const scoreBufferLabel = document.getElementById('score-buffer-label');
   const barBufferScore = document.getElementById('bar-buffer-score');
   const healthRecommendationsList = document.getElementById('health-recommendations-list');
+
+  // Health Card — Mobile Elements
+  const healthTierBadgeMobile = document.getElementById('health-tier-badge-mobile');
+  const healthTierTextMobile = document.getElementById('health-tier-text-mobile');
+  const healthScoreNumberMobile = document.getElementById('health-score-number-mobile');
+  const healthRecommendationsListMobile = document.getElementById('health-recommendations-list-mobile');
+  const donutSegmentSavings = document.getElementById('donut-segment-savings');
+  const donutSegmentFixed = document.getElementById('donut-segment-fixed');
+  const donutSegmentBuffer = document.getElementById('donut-segment-buffer');
+  const mobileLegendSavingsVal = document.getElementById('mobile-legend-savings-val');
+  const mobileLegendFixedVal = document.getElementById('mobile-legend-fixed-val');
+  const mobileLegendBufferVal = document.getElementById('mobile-legend-buffer-val');
+  const mobileBarSavings = document.getElementById('mobile-bar-savings');
+  const mobileBarFixed = document.getElementById('mobile-bar-fixed');
+  const mobileBarBuffer = document.getElementById('mobile-bar-buffer');
 
   // Smart Suggestions
   const smartSuggestionsContainer = document.getElementById('smart-suggestions-container');
@@ -488,6 +581,7 @@ const { locale = 'en' } = Astro.props;
 
   // Ledger Elements
   const transactionsTbody = document.getElementById('transactions-tbody');
+  const transactionsMobileContainer = document.getElementById('transactions-mobile-container');
   const emptyLedgerState = document.getElementById('empty-ledger-state');
   const txCountDisplay = document.getElementById('tx-count-display');
   const searchTransactionsInput = document.getElementById('search-transactions') as HTMLInputElement;
@@ -705,6 +799,9 @@ const { locale = 'en' } = Astro.props;
     if (currencySelector && currencySelector.value !== state.currency) {
       currencySelector.value = state.currency;
     }
+    if (currencySelectorMobile && currencySelectorMobile.value !== state.currency) {
+      currencySelectorMobile.value = state.currency;
+    }
 
     if (inputIncome && document.activeElement !== inputIncome) {
       inputIncome.value = state.income ? state.income.toString() : '';
@@ -804,76 +901,149 @@ const { locale = 'en' } = Astro.props;
       statSavingsRate.textContent = `${health.savingsRatePct}%`;
     }
 
-    // Financial Health Indicator — already computed above before the KPI cards.
+    // Financial Health Indicator — already computed above before the KPI cards (updates both Desktop and Mobile elements)
     if (healthScoreNumber) healthScoreNumber.textContent = health.score.toString();
-    if (healthTierText) {
-      if (activeLocale === 'fr') {
-        const tierFr: Record<string, string> = {
-          'Excellent': 'Excellent',
-          'Good': 'Bon',
-          'Caution': 'Vigilance',
-          'Financial Stress': 'Tension financière'
-        };
-        healthTierText.textContent = tierFr[health.tier] || health.tier;
-      } else {
-        healthTierText.textContent = health.tier;
-      }
+    if (healthScoreNumberMobile) healthScoreNumberMobile.textContent = health.score.toString();
+
+    let localizedTier = health.tier;
+    if (activeLocale === 'fr') {
+      const tierFr: Record<string, string> = {
+        'Excellent': 'Excellent',
+        'Good': 'Bon',
+        'Caution': 'Vigilance',
+        'Financial Stress': 'Tension financière'
+      };
+      localizedTier = tierFr[health.tier] || health.tier;
     }
+    if (healthTierText) healthTierText.textContent = localizedTier;
+    if (healthTierTextMobile) healthTierTextMobile.textContent = localizedTier;
+
     if (healthTierBadge) {
       healthTierBadge.style.backgroundColor = health.tierBg;
       healthTierBadge.style.color = health.tierColor;
       healthTierBadge.style.borderColor = health.tierBorder;
     }
+    if (healthTierBadgeMobile) {
+      healthTierBadgeMobile.style.backgroundColor = health.tierBg;
+      healthTierBadgeMobile.style.color = health.tierColor;
+      healthTierBadgeMobile.style.borderColor = health.tierBorder;
+    }
+
+    const circumference = 264;
+    const offset = circumference - (health.score / 100) * circumference;
     if (scoreCircleStroke) {
-      const circumference = 264;
-      const offset = circumference - (health.score / 100) * circumference;
       scoreCircleStroke.style.strokeDashoffset = offset.toString();
       scoreCircleStroke.style.stroke = health.tierColor;
     }
-    if (scoreSavingsRateLabel) scoreSavingsRateLabel.textContent = `${health.savingsRateScore} / 40 pts (${health.savingsRatePct}%)`;
-    if (barSavingsScore) barSavingsScore.style.width = `${(health.savingsRateScore / 40) * 100}%`;
-    if (scoreFixedCostLabel) scoreFixedCostLabel.textContent = `${health.fixedCostScore} / 40 pts (${health.fixedCostPct}%)`;
-    if (barFixedScore) barFixedScore.style.width = `${(health.fixedCostScore / 40) * 100}%`;
-    if (scoreBufferLabel) scoreBufferLabel.textContent = `${health.bufferScore} / 20 pts (${health.bufferPct}%)`;
-    if (barBufferScore) barBufferScore.style.width = `${(health.bufferScore / 20) * 100}%`;
+    // Desktop scoring bars & labels
+    const savingsText = `${health.savingsRateScore} / 40 pts (${health.savingsRatePct}%)`;
+    const savingsWidth = `${(health.savingsRateScore / 40) * 100}%`;
+    if (scoreSavingsRateLabel) scoreSavingsRateLabel.textContent = savingsText;
+    if (barSavingsScore) barSavingsScore.style.width = savingsWidth;
 
-    if (healthRecommendationsList) {
-      healthRecommendationsList.innerHTML = health.recommendations
-        .map((rec) => {
-          let localizedRec = rec;
-          if (activeLocale === 'fr') {
-            if (rec.includes('Set your monthly take-home income')) {
-              localizedRec = 'Renseignez vos revenus nets mensuels ci-dessus pour activer l\'évaluation personnalisée de votre santé financière.';
-            } else if (rec.includes('Log recurring expenses')) {
-              localizedRec = 'Enregistrez vos dépenses courantes (loyer, courses, transports) pour mesurer le poids de vos charges incompressibles.';
-            } else if (rec.includes('Fixed obligations take up')) {
-              const m = rec.match(/(\d+)%/);
-              const pct = m ? m[1] : '';
-              localizedRec = `Vos charges fixes absorbent ${pct}% de vos revenus. Réduisez vos abonnements, renégociez vos contrats d'assurance ou d'énergie pour alléger ce poste.`;
-            } else if (rec.includes('Outstanding fixed cost discipline')) {
-              const m = rec.match(/(\d+)%/);
-              const pct = m ? m[1] : '';
-              localizedRec = `Excellente maîtrise de vos charges fixes ! Vos dépenses essentielles ne représentent que ${pct}% de vos revenus, bien en dessous du seuil de vigilance.`;
-            } else if (rec.includes('Your current savings rate is')) {
-              const m = rec.match(/(\d+)%/);
-              const pct = m ? m[1] : '';
-              localizedRec = `Votre taux d'épargne actuel est de ${pct}%. Viser un objectif de 20% constitue un matelas de sécurité robuste face aux imprévus.`;
-            } else if (rec.includes('Solid savings momentum')) {
-              const m = rec.match(/(\d+)%/);
-              const pct = m ? m[1] : '';
-              localizedRec = `Très bonne dynamique d'épargne avec ${pct}%. Automatisez vos virements d'épargne le jour de votre paie pour pérenniser cette habitude.`;
-            } else if (rec.includes('Monthly expenses exceed income')) {
-              const m = rec.match(/(\d+)%/);
-              const pct = m ? m[1] : '';
-              localizedRec = `Vos dépenses mensuelles dépassent vos revenus de ${pct}%. Réduisez immédiatement les dépenses superflues pour éviter d'entamer vos réserves ou de vous endetter.`;
-            } else if (rec.includes('Healthy monthly cash surplus')) {
-              localizedRec = 'Excédent de trésorerie mensuel équilibré. Affectez ce disponible à votre épargne de précaution ou au remboursement de vos dettes.';
-            }
-          }
-          return `<div class="flex items-start gap-2"><span class="text-emerald-700 font-bold">•</span><span>${localizedRec}</span></div>`;
-        })
-        .join('');
+    const fixedText = `${health.fixedCostScore} / 40 pts (${health.fixedCostPct}%)`;
+    const fixedWidth = `${(health.fixedCostScore / 40) * 100}%`;
+    if (scoreFixedCostLabel) scoreFixedCostLabel.textContent = fixedText;
+    if (barFixedScore) barFixedScore.style.width = fixedWidth;
+
+    const bufferText = `${health.bufferScore} / 20 pts (${health.bufferPct}%)`;
+    const bufferWidth = `${(health.bufferScore / 20) * 100}%`;
+    if (scoreBufferLabel) scoreBufferLabel.textContent = bufferText;
+    if (barBufferScore) barBufferScore.style.width = bufferWidth;
+
+    // Mobile Multicolour Donut Segments
+    const donutC = 238.76;
+    const sScore = Math.max(0, health.savingsRateScore);
+    const fScore = Math.max(0, health.fixedCostScore);
+    const bScore = Math.max(0, health.bufferScore);
+
+    const arcSavings = (sScore / 100) * donutC;
+    const arcFixed = (fScore / 100) * donutC;
+    const arcBuffer = (bScore / 100) * donutC;
+
+    const donutGap = 3.5;
+
+    if (donutSegmentSavings) {
+      if (sScore > 0) {
+        const len = Math.max(0.1, arcSavings - donutGap);
+        donutSegmentSavings.style.display = '';
+        donutSegmentSavings.style.strokeDasharray = `${len} ${donutC - len}`;
+        donutSegmentSavings.style.strokeDashoffset = '0';
+      } else {
+        donutSegmentSavings.style.display = 'none';
+      }
     }
+
+    if (donutSegmentFixed) {
+      if (fScore > 0) {
+        const len = Math.max(0.1, arcFixed - donutGap);
+        donutSegmentFixed.style.display = '';
+        donutSegmentFixed.style.strokeDasharray = `${len} ${donutC - len}`;
+        donutSegmentFixed.style.strokeDashoffset = (-arcSavings).toString();
+      } else {
+        donutSegmentFixed.style.display = 'none';
+      }
+    }
+
+    if (donutSegmentBuffer) {
+      if (bScore > 0) {
+        const len = Math.max(0.1, arcBuffer - donutGap);
+        donutSegmentBuffer.style.display = '';
+        donutSegmentBuffer.style.strokeDasharray = `${len} ${donutC - len}`;
+        donutSegmentBuffer.style.strokeDashoffset = (-(arcSavings + arcFixed)).toString();
+      } else {
+        donutSegmentBuffer.style.display = 'none';
+      }
+    }
+
+    // Mobile Legend Values (Prominent calculated metrics)
+    if (mobileLegendSavingsVal) mobileLegendSavingsVal.textContent = `${Math.round(health.savingsRatePct)}%`;
+    if (mobileLegendFixedVal) mobileLegendFixedVal.textContent = `${Math.round(health.fixedCostPct)}%`;
+    if (mobileLegendBufferVal) mobileLegendBufferVal.textContent = `${Math.round(health.bufferPct)}%`;
+
+    // Mobile Category Progress Bars
+    if (mobileBarSavings) mobileBarSavings.style.width = `${(health.savingsRateScore / 40) * 100}%`;
+    if (mobileBarFixed) mobileBarFixed.style.width = `${(health.fixedCostScore / 40) * 100}%`;
+    if (mobileBarBuffer) mobileBarBuffer.style.width = `${(health.bufferScore / 20) * 100}%`;
+
+    const recsHtml = health.recommendations
+      .map((rec) => {
+        let localizedRec = rec;
+        if (activeLocale === 'fr') {
+          if (rec.includes('Set your monthly take-home income')) {
+            localizedRec = 'Renseignez vos revenus nets mensuels ci-dessus pour activer l\'évaluation personnalisée de votre santé financière.';
+          } else if (rec.includes('Log recurring expenses')) {
+            localizedRec = 'Enregistrez vos dépenses courantes (loyer, courses, transports) pour mesurer le poids de vos charges incompressibles.';
+          } else if (rec.includes('Fixed obligations take up')) {
+            const m = rec.match(/(\d+)%/);
+            const pct = m ? m[1] : '';
+            localizedRec = `Vos charges fixes absorbent ${pct}% de vos revenus. Réduisez vos abonnements, renégociez vos contrats d'assurance ou d'énergie pour alléger ce poste.`;
+          } else if (rec.includes('Outstanding fixed cost discipline')) {
+            const m = rec.match(/(\d+)%/);
+            const pct = m ? m[1] : '';
+            localizedRec = `Excellente maîtrise de vos charges fixes ! Vos dépenses essentielles ne représentent que ${pct}% de vos revenus, bien en dessous du seuil de vigilance.`;
+          } else if (rec.includes('Your current savings rate is')) {
+            const m = rec.match(/(\d+)%/);
+            const pct = m ? m[1] : '';
+            localizedRec = `Votre taux d'épargne actuel est de ${pct}%. Viser un objectif de 20% constitue un matelas de sécurité robuste face aux imprévus.`;
+          } else if (rec.includes('Solid savings momentum')) {
+            const m = rec.match(/(\d+)%/);
+            const pct = m ? m[1] : '';
+            localizedRec = `Très bonne dynamique d'épargne avec ${pct}%. Automatisez vos virements d'épargne le jour de votre paie pour pérenniser cette habitude.`;
+          } else if (rec.includes('Monthly expenses exceed income')) {
+            const m = rec.match(/(\d+)%/);
+            const pct = m ? m[1] : '';
+            localizedRec = `Vos dépenses mensuelles dépassent vos revenus de ${pct}%. Réduisez immédiatement les dépenses superflues pour éviter d'entamer vos réserves ou de vous endetter.`;
+          } else if (rec.includes('Healthy monthly cash surplus')) {
+            localizedRec = 'Excédent de trésorerie mensuel équilibré. Affectez ce disponible à votre épargne de précaution ou au remboursement de vos dettes.';
+          }
+        }
+        return `<div class="flex items-start gap-2"><span class="text-emerald-700 font-bold">•</span><span>${localizedRec}</span></div>`;
+      })
+      .join('');
+
+    if (healthRecommendationsList) healthRecommendationsList.innerHTML = recsHtml;
+    if (healthRecommendationsListMobile) healthRecommendationsListMobile.innerHTML = recsHtml;
 
     // Dynamic Smart Suggestions & Alternatives
     renderSmartSuggestions(catTotals, effectiveTotalIncome, netCashflow);
@@ -1816,9 +1986,9 @@ const { locale = 'en' } = Astro.props;
     });
   }
 
-  // --- 9. Ledger Table Renderer ---
+  // --- 9. Ledger Table & Mobile Cards Renderer ---
   function renderLedger() {
-    if (!transactionsTbody) return;
+    if (!transactionsTbody && !transactionsMobileContainer) return;
 
     const searchTerm = (searchTransactionsInput?.value || '').toLowerCase().trim();
     const filtered = state.transactions.filter(
@@ -1833,56 +2003,116 @@ const { locale = 'en' } = Astro.props;
     }
 
     if (filtered.length === 0) {
-      transactionsTbody.innerHTML = '';
+      if (transactionsTbody) transactionsTbody.innerHTML = '';
+      if (transactionsMobileContainer) transactionsMobileContainer.innerHTML = '';
       emptyLedgerState?.classList.remove('hidden');
       return;
     }
 
     emptyLedgerState?.classList.add('hidden');
 
-    transactionsTbody.innerHTML = filtered
-      .map(
-        (tx) => `
-      <tr class="hover:bg-slate-50 transition-colors">
-        <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
-        <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
-          ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
-        </td>
-        <td class="py-2 px-3 whitespace-nowrap">
-          ${tx.type === 'income'
-            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                💵 ${t('categories.Income', activeLocale)}
-              </span>`
-            : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
-              </span>`
-          }
-        </td>
-        <td class="py-2 px-3 whitespace-nowrap">
-          ${
-            tx.source === 'imported'
-              ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${t('ledger.sourceImported', activeLocale)}</span>`
-              : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${t('ledger.sourceManual', activeLocale)}</span>`
-          }
-        </td>
-        <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
-          ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
-        </td>
-        <td class="py-2 px-3 text-center">
-          <button
-            type="button"
-            data-delete-id="${tx.id}"
-            class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
-            title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
-            aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
-        </td>
-      </tr>
-    `
-      )
-      .join('');
+    // Desktop table rows
+    if (transactionsTbody) {
+      transactionsTbody.innerHTML = filtered
+        .map(
+          (tx) => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-2 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${tx.date}</td>
+          <td class="py-2 px-3 font-medium text-slate-900 max-w-[180px] truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+            ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
+          </td>
+          <td class="py-2 px-3 whitespace-nowrap">
+            ${tx.type === 'income'
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  💵 ${t('categories.Income', activeLocale)}
+                </span>`
+              : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                  ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
+                </span>`
+            }
+          </td>
+          <td class="py-2 px-3 whitespace-nowrap">
+            ${
+              tx.source === 'imported'
+                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-teal-50 text-teal-800 border border-teal-200">${t('ledger.sourceImported', activeLocale)}</span>`
+                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-slate-100 text-slate-600">${t('ledger.sourceManual', activeLocale)}</span>`
+            }
+          </td>
+          <td class="py-2 px-3 text-right font-mono font-bold ${tx.type === 'income' ? 'text-emerald-700' : 'text-slate-900'} whitespace-nowrap">
+            ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
+          </td>
+          <td class="py-2 px-3 text-center">
+            <button
+              type="button"
+              data-delete-id="${tx.id}"
+              class="btn-delete-tx text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+              title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+              aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+
+    // Mobile responsive transaction cards
+    if (transactionsMobileContainer) {
+      transactionsMobileContainer.innerHTML = filtered
+        .map(
+          (tx) => `
+        <div class="p-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-xs text-slate-900 dark:text-slate-100 truncate" title="${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}">
+                ${escapeHtml(getLocalizedDemoTxName(tx.name, activeLocale))}
+              </div>
+              <div class="flex items-center gap-1.5 mt-1">
+                ${tx.type === 'income'
+                  ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      💵 ${t('categories.Income', activeLocale)}
+                    </span>`
+                  : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                      ${CATEGORY_ICONS[tx.category] || '📦'} ${getLocalizedCategory(tx.category, activeLocale)}
+                    </span>`
+                }
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 shrink-0">
+              <div class="text-right">
+                <span class="font-mono text-sm font-bold ${tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'}">
+                  ${tx.type === 'income' ? '+' : ''}${formatMoney(tx.amount)}
+                </span>
+              </div>
+              <button
+                type="button"
+                data-delete-id="${tx.id}"
+                class="btn-delete-tx text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-md transition-colors cursor-pointer"
+                title="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+                aria-label="${activeLocale === 'fr' ? 'Supprimer la transaction' : 'Delete entry'}"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-100 dark:border-slate-800/60 font-mono">
+            <span>📅 ${tx.date}</span>
+            <span>
+              ${tx.source === 'imported'
+                ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">${t('ledger.sourceImported', activeLocale)}</span>`
+                : `<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">${t('ledger.sourceManual', activeLocale)}</span>`
+              }
+            </span>
+          </div>
+        </div>
+      `
+        )
+        .join('');
+    }
 
     document.querySelectorAll('.btn-delete-tx').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -1939,12 +2169,17 @@ const { locale = 'en' } = Astro.props;
   }
 
   // Currency
-  currencySelector?.addEventListener('change', () => {
-    state.currency = currencySelector.value;
+  function handleCurrencyChange(newCurrency: string) {
+    state.currency = newCurrency;
+    if (currencySelector && currencySelector.value !== newCurrency) currencySelector.value = newCurrency;
+    if (currencySelectorMobile && currencySelectorMobile.value !== newCurrency) currencySelectorMobile.value = newCurrency;
     saveStoredState({ currency: state.currency });
     renderAll();
     track('currency_changed', { currency: state.currency });
-  });
+  }
+
+  currencySelector?.addEventListener('change', () => handleCurrencyChange(currencySelector.value));
+  currencySelectorMobile?.addEventListener('change', () => handleCurrencyChange(currencySelectorMobile.value));
 
   // Income Input
   inputIncome?.addEventListener('input', () => {
@@ -1954,19 +2189,91 @@ const { locale = 'en' } = Astro.props;
     trackIncomeSet();
   });
 
-  // Income Slider
-  incomeSlider?.addEventListener('input', () => {
-    const val = parseFloat(incomeSlider.value) || 0;
+  // Income Slider Touch & Gesture Discrimination (Prevent accidental value jumps during vertical mobile scrolling)
+  let sliderTouchStartX = 0;
+  let sliderTouchStartY = 0;
+  let sliderTouchStartVal = '';
+  let isSliderVerticalScroll = false;
+  let isSliderHorizontalDrag = false;
+
+  const syncIncomeFromSliderValue = (sliderVal: number) => {
     if (state.frequency === 'monthly') {
-      state.income = val;
+      state.income = sliderVal;
     } else if (state.frequency === 'bi-weekly') {
-      state.income = Math.round((val * 12) / 26);
+      state.income = Math.round((sliderVal * 12) / 26);
     } else if (state.frequency === 'weekly') {
-      state.income = Math.round((val * 12) / 52);
+      state.income = Math.round((sliderVal * 12) / 52);
     }
     saveStoredState({ income: state.income });
     renderAll();
     trackIncomeSet();
+  };
+
+  if (incomeSlider) {
+    incomeSlider.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (e.pointerType === 'touch') {
+        sliderTouchStartX = e.clientX;
+        sliderTouchStartY = e.clientY;
+        sliderTouchStartVal = incomeSlider.value;
+        isSliderVerticalScroll = false;
+        isSliderHorizontalDrag = false;
+      }
+    }, { passive: true });
+
+    incomeSlider.addEventListener('touchstart', (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        sliderTouchStartX = e.touches[0].clientX;
+        sliderTouchStartY = e.touches[0].clientY;
+        sliderTouchStartVal = incomeSlider.value;
+        isSliderVerticalScroll = false;
+        isSliderHorizontalDrag = false;
+      }
+    }, { passive: true });
+
+    incomeSlider.addEventListener('touchmove', (e: TouchEvent) => {
+      if (e.touches.length !== 1 || isSliderHorizontalDrag) return;
+
+      const dx = Math.abs(e.touches[0].clientX - sliderTouchStartX);
+      const dy = Math.abs(e.touches[0].clientY - sliderTouchStartY);
+
+      // Vertical swipe gesture detected: user is scrolling the page vertically
+      if (dy > 6 && dy >= dx) {
+        isSliderVerticalScroll = true;
+        if (incomeSlider.value !== sliderTouchStartVal) {
+          incomeSlider.value = sliderTouchStartVal;
+          const originalVal = parseFloat(sliderTouchStartVal) || 0;
+          syncIncomeFromSliderValue(originalVal);
+        }
+      } else if (!isSliderVerticalScroll && dx > 8 && dx > dy) {
+        isSliderHorizontalDrag = true;
+      }
+    }, { passive: true });
+
+    const handleTouchEndOrCancel = () => {
+      if (isSliderVerticalScroll && incomeSlider.value !== sliderTouchStartVal) {
+        incomeSlider.value = sliderTouchStartVal;
+        const originalVal = parseFloat(sliderTouchStartVal) || 0;
+        syncIncomeFromSliderValue(originalVal);
+      }
+      isSliderVerticalScroll = false;
+      isSliderHorizontalDrag = false;
+    };
+
+    incomeSlider.addEventListener('touchend', handleTouchEndOrCancel, { passive: true });
+    incomeSlider.addEventListener('touchcancel', handleTouchEndOrCancel, { passive: true });
+    incomeSlider.addEventListener('pointercancel', handleTouchEndOrCancel, { passive: true });
+  }
+
+  // Income Slider
+  incomeSlider?.addEventListener('input', () => {
+    if (isSliderVerticalScroll) {
+      if (sliderTouchStartVal && incomeSlider.value !== sliderTouchStartVal) {
+        incomeSlider.value = sliderTouchStartVal;
+      }
+      return;
+    }
+    const val = parseFloat(incomeSlider.value) || 0;
+    syncIncomeFromSliderValue(val);
   });
 
   // Frequency Buttons
@@ -3067,6 +3374,7 @@ const { locale = 'en' } = Astro.props;
   // Reset Modal
   document.querySelectorAll('#btn-open-reset-modal, .btn-open-reset-modal').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (btn.closest('#bill-splitter-container')) return;
       resetConfirmModal?.classList.remove('hidden');
     });
   });
@@ -3503,6 +3811,7 @@ const { locale = 'en' } = Astro.props;
 
   const TAB_PARAM_MAP: Record<string, string> = {
     'tracker': 'live_tracker',
+    'split': 'bill_splitter',
     'templates': 'templates',
     'debt': 'debt_planner',
     'targets': 'budget_goals',
@@ -3518,6 +3827,7 @@ const { locale = 'en' } = Astro.props;
     } else if (tabId) {
       currentActiveTab = tabId;
     }
+    window.dispatchEvent(new CustomEvent('app-tab-changed', { detail: { tabId } }));
     tabButtons.forEach((btn) => {
       const target = btn.getAttribute('data-tab');
       const isCapsule = btn.classList.contains('capsule-tab-btn');
@@ -3556,6 +3866,13 @@ const { locale = 'en' } = Astro.props;
     });
   }
 
+  (window as any).switchTab = switchTab;
+  window.addEventListener('app-switch-tab', (e: any) => {
+    if (e.detail && e.detail.tabId) {
+      switchTab(e.detail.tabId);
+    }
+  });
+
   tabButtons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const tabId = btn.getAttribute('data-tab');
@@ -3573,11 +3890,18 @@ const { locale = 'en' } = Astro.props;
   });
 
   // --- Check URL Hash or Query Parameters for Tab & Preset Selection on Page Load ---
-  if (typeof window !== 'undefined' && window.location.hash === '#importer') {
-    switchTab('import');
-    setTimeout(() => {
-      (document.getElementById('importer') || document.getElementById('tab-view-import'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+  if (typeof window !== 'undefined') {
+    if (window.location.hash === '#importer') {
+      switchTab('import');
+      setTimeout(() => {
+        (document.getElementById('importer') || document.getElementById('tab-view-import'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else if (window.location.hash === '#split' || window.location.hash === '#bill-splitter') {
+      switchTab('split');
+      setTimeout(() => {
+        (document.getElementById('split-tool-anchor') || document.getElementById('tab-view-split'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   }
   // --- Check URL Query Parameters for Tab & Preset Selection on Page Load ---
   (function handleQueryDeepLinks() {
@@ -3595,6 +3919,9 @@ const { locale = 'en' } = Astro.props;
           'budget': 'tracker',
           'tracker': 'tracker',
           'live_tracker': 'tracker',
+          'split': 'split',
+          'bill-splitter': 'split',
+          'bill_splitter': 'split',
           'templates': 'templates',
           'import': 'import',
           'knowledge': 'knowledge'

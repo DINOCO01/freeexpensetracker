@@ -1,0 +1,639 @@
+---
+import { DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+
+interface Props {
+  locale?: SupportedLocale;
+  isStandalone?: boolean;
+  initialActiveTab?: string;
+}
+
+const {
+  locale = DEFAULT_LOCALE,
+  isStandalone = false,
+  initialActiveTab = 'tracker'
+} = Astro.props;
+
+const labels = {
+  tracker: 'Tracker',
+  split: 'Split',
+  templates: 'Templates',
+  debt: 'Debt',
+  goals: 'Goals',
+  more: 'More',
+};
+
+const activeIdx = initialActiveTab === 'split' ? 1 :
+                  initialActiveTab === 'templates' ? 2 :
+                  initialActiveTab === 'debt' ? 3 :
+                  initialActiveTab === 'targets' || initialActiveTab === 'goals' ? 4 :
+                  initialActiveTab === 'more' ? 5 : 0;
+---
+
+<!-- Mobile Liquid Glass Bottom Navigation Bar (sm:hidden) -->
+<nav
+  id="mobile-bottom-nav"
+  aria-label="Mobile Bottom Navigation"
+  class="no-print sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] select-none transition-all"
+  style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));"
+>
+  <div class="relative max-w-lg mx-auto px-1 pt-1.5 pb-0.5">
+    <!-- Active Pill Sliding Liquid Glass Indicator -->
+    <div
+      id="bottom-nav-active-pill"
+      class="absolute top-1.5 h-[50px] rounded-xl bg-emerald-500/15 dark:bg-emerald-400/20 border border-emerald-500/30 dark:border-emerald-400/30 transition-all duration-300 ease-out pointer-events-none shadow-xs"
+      style={`left: calc(${activeIdx} * (100% / 6)); width: calc(100% / 6);`}
+    ></div>
+
+    <!-- 6 Navigation Buttons Grid -->
+    <div
+      class="grid grid-cols-6 relative z-10"
+      id="bottom-nav-buttons-container"
+      data-is-standalone={isStandalone ? 'true' : 'false'}
+      data-initial-index={activeIdx}
+    >
+      <!-- 1. Tracker -->
+      {isStandalone ? (
+        <a
+          href="/?tab=tracker"
+          data-bottom-tab="tracker"
+          data-index="0"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 0 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Live Expense Tracker"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.tracker}</span>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-bottom-tab="tracker"
+          data-index="0"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 0 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Live Expense Tracker"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.tracker}</span>
+        </button>
+      )}
+
+      <!-- 2. Split (Bill Splitter) -->
+      <button
+        type="button"
+        data-bottom-tab="split"
+        data-index="1"
+        class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 1 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+        aria-label="Bill Splitter"
+      >
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span class="text-[10px] leading-tight truncate">{labels.split}</span>
+      </button>
+
+      <!-- 3. Templates -->
+      {isStandalone ? (
+        <a
+          href="/?tab=templates"
+          data-bottom-tab="templates"
+          data-index="2"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 2 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Financial Templates"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.templates}</span>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-bottom-tab="templates"
+          data-index="2"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 2 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Financial Templates"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.templates}</span>
+        </button>
+      )}
+
+      <!-- 4. Debt -->
+      {isStandalone ? (
+        <a
+          href="/?tab=debt"
+          data-bottom-tab="debt"
+          data-index="3"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 3 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Debt Planner"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.debt}</span>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-bottom-tab="debt"
+          data-index="3"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 3 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Debt Planner"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.debt}</span>
+        </button>
+      )}
+
+      <!-- 5. Goals -->
+      {isStandalone ? (
+        <a
+          href="/?tab=targets"
+          data-bottom-tab="targets"
+          data-index="4"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 4 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Budget and Goals"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.goals}</span>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-bottom-tab="targets"
+          data-index="4"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 4 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Budget and Goals"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.goals}</span>
+        </button>
+      )}
+
+      <!-- 6. More (Opens Bottom Sheet) -->
+      <button
+        type="button"
+        id="btn-bottom-nav-more"
+        data-bottom-tab="more"
+        data-index="5"
+        class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 5 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+        aria-label="More Menu"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+      >
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span class="text-[10px] leading-tight truncate">{labels.more}</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- More Menu Bottom Sheet Overlay -->
+<div
+  id="more-menu-backdrop"
+  class="no-print sm:hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden transition-opacity duration-200 opacity-0 pointer-events-none"
+  aria-hidden="true"
+></div>
+
+<div
+  id="more-menu-sheet"
+  role="dialog"
+  aria-modal="true"
+  aria-label="More Tools and Navigation"
+  aria-hidden="true"
+  class="no-print sm:hidden fixed inset-x-0 bottom-0 z-50 max-h-[85vh] bg-white dark:bg-slate-900 rounded-t-3xl border-t border-slate-200 dark:border-slate-800 shadow-2xl translate-y-full transition-transform duration-300 ease-out flex flex-col overflow-hidden hidden pointer-events-none"
+  style="padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));"
+>
+  <!-- Handle Bar -->
+  <div class="pt-3 pb-1 cursor-grab active:cursor-grabbing flex justify-center">
+    <div class="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-2.5 border-b border-slate-100 dark:border-slate-800">
+    <div class="flex items-center gap-2">
+      <span class="text-base">✨</span>
+      <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">More Tools & Resources</h3>
+    </div>
+    <button
+      type="button"
+      id="btn-close-more-sheet"
+      class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+      aria-label="Close More Menu"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+  </div>
+
+  <!-- Sheet Scrollable Content -->
+  <div class="overflow-y-auto px-5 py-4 space-y-4 no-scrollbar">
+    <!-- Primary Features in More -->
+    <div class="space-y-2">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tools & Features</p>
+
+      <!-- Knowledge & Guides -->
+      {isStandalone ? (
+        <a
+          href="/?tab=knowledge"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📚
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Knowledge & Guides</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Personal finance rules, 50/30/20 guides & budgeting tips</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-more-action="knowledge"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📚
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Knowledge & Guides</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Personal finance rules, 50/30/20 guides & budgeting tips</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      )}
+
+      <!-- Statement & Receipt Importer -->
+      {isStandalone ? (
+        <a
+          href="/?tab=import"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📥
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Universal Statement Importer</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Auto-parse bank statements (PDF, CSV, Excel & receipts)</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-more-action="import"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📥
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Universal Statement Importer</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Auto-parse bank statements (PDF, CSV, Excel & receipts)</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      )}
+
+      <!-- 62 Spreadsheet & Printable Templates -->
+      {isStandalone ? (
+        <a
+          href="/?tab=templates"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📋
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">62 Free Financial Templates</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Google Sheets, Excel & printable budgeting layouts</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-more-action="templates"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              📋
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">62 Free Financial Templates</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Google Sheets, Excel & printable budgeting layouts</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      )}
+
+      <!-- Bill Splitter -->
+      <button
+        type="button"
+        data-more-action="split"
+        class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+            ⚡
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Bill Splitter</div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Equally, itemized & multi-currency group expense sharing</div>
+          </div>
+        </div>
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+    </div>
+
+    <!-- Secondary Links Grid -->
+    <div class="space-y-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">About & Legal</p>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <a href="/about/" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/60 dark:border-slate-700/60 transition-colors">
+          ℹ️ About Us
+        </a>
+        <a href="/contact-us/" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/60 dark:border-slate-700/60 transition-colors">
+          ✉️ Contact
+        </a>
+        <a href="/privacy/" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/60 dark:border-slate-700/60 transition-colors">
+          🔒 Privacy Policy
+        </a>
+        <a href="/terms/" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/60 dark:border-slate-700/60 transition-colors">
+          📄 Terms of Service
+        </a>
+      </div>
+    </div>
+
+    <!-- Reset Data Button -->
+    <div class="pt-1">
+      <button
+        type="button"
+        class="btn-open-reset-modal w-full p-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+      >
+        <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <span>Reset All Saved Data</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function initMobileBottomNav() {
+    const nav = document.getElementById('mobile-bottom-nav');
+    const pill = document.getElementById('bottom-nav-active-pill');
+    const buttons = document.querySelectorAll('.bottom-nav-btn');
+    const moreBtn = document.getElementById('btn-bottom-nav-more');
+    const closeMoreBtn = document.getElementById('btn-close-more-sheet');
+    const sheet = document.getElementById('more-menu-sheet');
+    const backdrop = document.getElementById('more-menu-backdrop');
+    const moreActionButtons = document.querySelectorAll('[data-more-action]');
+    const container = document.getElementById('bottom-nav-buttons-container');
+
+    if (!nav || !pill || !container) return;
+
+    const isStandalone = container.getAttribute('data-is-standalone') === 'true';
+    const initialIndex = parseInt(container.getAttribute('data-initial-index') || '0', 10);
+
+    let activeIndex = initialIndex;
+
+    function updatePillPosition(index) {
+      if (index < 0 || index > 5) return;
+      activeIndex = index;
+      pill.style.left = `calc(${index} * (100% / 6))`;
+
+      buttons.forEach((btn, idx) => {
+        if (idx === index) {
+          btn.classList.add('active', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
+          btn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
+        } else {
+          btn.classList.remove('active', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
+          btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
+        }
+      });
+    }
+
+    // Tab Mapping: tabId -> index
+    const tabIndexMap = {
+      'tracker': 0,
+      'split': 1,
+      'bill-splitter': 1,
+      'bill_splitter': 1,
+      'templates': 2,
+      'debt': 3,
+      'targets': 4,
+      'goals': 4,
+      'knowledge': 5,
+      'import': 5
+    };
+
+    // Open More Sheet (Strictly only triggered on user tap)
+    function openMoreSheet() {
+      if (!sheet || !backdrop) return;
+      sheet.classList.remove('hidden', 'pointer-events-none');
+      sheet.setAttribute('aria-hidden', 'false');
+      backdrop.classList.remove('hidden', 'pointer-events-none');
+      backdrop.setAttribute('aria-hidden', 'false');
+
+      // Trigger reflow so browser registers removal of hidden before animating
+      void sheet.offsetHeight;
+
+      requestAnimationFrame(() => {
+        backdrop.classList.add('opacity-100');
+        sheet.classList.remove('translate-y-full');
+        sheet.classList.add('translate-y-0');
+        moreBtn?.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('overflow-hidden');
+      });
+    }
+
+    // Close More Sheet
+    function closeMoreSheet() {
+      if (!sheet || !backdrop) return;
+      sheet.classList.add('translate-y-full', 'pointer-events-none');
+      sheet.classList.remove('translate-y-0');
+      sheet.setAttribute('aria-hidden', 'true');
+      backdrop.classList.remove('opacity-100');
+      backdrop.classList.add('pointer-events-none');
+      backdrop.setAttribute('aria-hidden', 'true');
+      moreBtn?.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(() => {
+        sheet.classList.add('hidden');
+        backdrop.classList.add('hidden');
+      }, 300);
+    }
+
+    moreBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      openMoreSheet();
+    });
+
+    closeMoreBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeMoreSheet();
+    });
+
+    backdrop?.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeMoreSheet();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !sheet.classList.contains('hidden')) {
+        closeMoreSheet();
+      }
+    });
+
+    // Handle More Actions (Knowledge, Import, Templates, Split)
+    moreActionButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-more-action');
+        closeMoreSheet();
+        if (!action) return;
+
+        if (action === 'split') {
+          if (isStandalone) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+          }
+          if (typeof window.switchTab === 'function') {
+            window.switchTab('split');
+          } else {
+            window.dispatchEvent(new CustomEvent('app-switch-tab', { detail: { tabId: 'split' } }));
+          }
+          const target = document.getElementById('split-tool-anchor') || document.getElementById('tab-view-split');
+          target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+
+        if (typeof window.switchTab === 'function') {
+          window.switchTab(action);
+        } else {
+          window.dispatchEvent(new CustomEvent('app-switch-tab', { detail: { tabId: action } }));
+        }
+
+        if (action === 'knowledge') {
+          document.getElementById('tab-view-knowledge')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (action === 'import') {
+          (document.getElementById('importer') || document.getElementById('tab-view-import'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (action === 'templates') {
+          document.getElementById('tab-view-templates')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Close sheet when reset button inside sheet is clicked
+    const sheetResetBtn = sheet?.querySelector('.btn-open-reset-modal');
+    sheetResetBtn?.addEventListener('click', () => {
+      closeMoreSheet();
+      if (isStandalone) {
+        const bscResetModal = document.getElementById('modal-reset-confirm');
+        if (bscResetModal) {
+          bscResetModal.classList.remove('hidden');
+        }
+      }
+    });
+
+    // Handle Bottom Nav Tab Button Clicks
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const tab = btn.getAttribute('data-bottom-tab');
+        const idx = parseInt(btn.getAttribute('data-index') || '0', 10);
+
+        if (tab === 'more') {
+          return;
+        }
+
+        closeMoreSheet();
+
+        if (isStandalone) {
+          if (tab === 'split') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updatePillPosition(1);
+          }
+          // Other tabs are <a> tags leading to /?tab=..., let default navigation happen
+          return;
+        }
+
+        e.preventDefault();
+        updatePillPosition(idx);
+
+        if (tab) {
+          if (typeof window.switchTab === 'function') {
+            window.switchTab(tab);
+          } else {
+            window.dispatchEvent(new CustomEvent('app-switch-tab', { detail: { tabId: tab } }));
+          }
+
+          if (tab === 'tracker') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (tab === 'split') {
+            const splitAnchor = document.getElementById('split-tool-anchor') || document.getElementById('tab-view-split');
+            if (splitAnchor) {
+              splitAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          } else {
+            const targetView = document.getElementById(`tab-view-${tab}`);
+            targetView?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+
+    // Listen to tab changes from elsewhere in the app
+    window.addEventListener('app-tab-changed', (e) => {
+      if (e.detail && e.detail.tabId) {
+        if (e.detail.tabId !== 'knowledge' && e.detail.tabId !== 'import') {
+          closeMoreSheet();
+        }
+        const idx = tabIndexMap[e.detail.tabId];
+        if (typeof idx === 'number') {
+          updatePillPosition(idx);
+        }
+      }
+    });
+
+    // Explicitly enforce that sheet and backdrop start strictly closed
+    sheet.classList.add('hidden', 'translate-y-full', 'pointer-events-none');
+    sheet.classList.remove('translate-y-0');
+    sheet.setAttribute('aria-hidden', 'true');
+    backdrop.classList.add('hidden', 'pointer-events-none');
+    backdrop.classList.remove('opacity-100');
+    backdrop.setAttribute('aria-hidden', 'true');
+    moreBtn?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('overflow-hidden');
+
+    // Initialize pill position
+    updatePillPosition(initialIndex);
+  })();
+</script>

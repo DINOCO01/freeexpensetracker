@@ -245,7 +245,7 @@ html.dark footer {
 /* Buy Me a Coffee Floating Widget: mobile clearance above sticky bottom bar */
 @media (max-width: 639px) {
   #bmc-wbtn {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
     right: 14px !important;
     width: 48px !important;
     height: 48px !important;
@@ -254,10 +254,39 @@ html.dark footer {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
   }
   #bmc-iframe {
-    bottom: calc(134px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px)) !important;
     right: 12px !important;
     max-width: calc(100vw - 24px) !important;
   }
+  /* First-visit tooltip mobile positioning: above sticky bottom bar next to floating button */
+  #bmc-wbtn + div,
+  #bmc-tooltip {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 68px !important;
+    max-width: calc(100vw - 84px) !important;
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+/* Fallback for browsers that do not support backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  #mobile-bottom-nav {
+    background-color: #ffffff !important;
+  }
+  :is(.dark) #mobile-bottom-nav {
+    background-color: #090d16 !important;
+  }
+}
+
+/* Hide promotional tooltip permanently on subsequent visits */
+html.bmc-seen #bmc-wbtn + div,
+html.bmc-seen #bmc-tooltip {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 

@@ -79,7 +79,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
             {t('dashboard.monthlyEquivalent', locale)} <strong id="income-normalized-amount" class="text-slate-900 dark:text-slate-100 font-mono font-bold">$4,200</strong>
           </span>
         </div>
-        <div class="relative flex items-center">
+        <div class="relative flex items-center touch-pan-y" style="touch-action: pan-y;">
           <input
             type="range"
             id="income-range-slider"
@@ -87,7 +87,8 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
             max="500000"
             step="500"
             value="4200"
-            class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+            class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600 touch-pan-y"
+            style="touch-action: pan-y;"
           />
         </div>
         <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono">

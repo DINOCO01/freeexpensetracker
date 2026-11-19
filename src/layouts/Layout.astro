@@ -354,6 +354,72 @@ if (faqEntities.length > 0) {
       data-x_margin="18"
       data-y_margin="18"
     ></script>
+    <!-- Buy Me a Coffee Floating Widget Frequency & Dismissal Controller -->
+    <script is:inline>
+      (function() {
+        var STORAGE_KEY = 'bmc_message_seen';
+        var isSeen = false;
+        try {
+          isSeen = localStorage.getItem(STORAGE_KEY) === 'true';
+        } catch (e) {}
+
+        var bmcScript = document.querySelector('script[data-name="BMC-Widget"]');
+        if (isSeen) {
+          document.documentElement.classList.add('bmc-seen');
+          if (bmcScript) {
+            bmcScript.removeAttribute('data-message');
+            delete bmcScript.dataset.message;
+          }
+        }
+
+        function markSeen() {
+          try {
+            localStorage.setItem(STORAGE_KEY, 'true');
+          } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+          var wbtn = document.getElementById('bmc-wbtn');
+          if (wbtn) {
+            wbtn.addEventListener('click', function() {
+              markSeen();
+              document.documentElement.classList.add('bmc-seen');
+            });
+          }
+
+          if (!isSeen) {
+            var observer = new MutationObserver(function() {
+              var tooltip = document.querySelector('#bmc-wbtn + div');
+              if (tooltip) {
+                observer.disconnect();
+                tooltip.setAttribute('id', 'bmc-tooltip');
+                tooltip.style.cursor = 'pointer';
+                tooltip.title = 'Click to dismiss';
+                tooltip.addEventListener('click', function() {
+                  tooltip.style.opacity = '0';
+                  tooltip.style.visibility = 'hidden';
+                  tooltip.style.transform = 'scale(0.7)';
+                  tooltip.style.pointerEvents = 'none';
+                  markSeen();
+                  document.documentElement.classList.add('bmc-seen');
+                });
+                // After the promotional display concludes (5s), mark as seen
+                setTimeout(function() {
+                  markSeen();
+                  document.documentElement.classList.add('bmc-seen');
+                }, 5500);
+              }
+            });
+            observer.observe(document.body, { childList: true });
+
+            setTimeout(function() {
+              observer.disconnect();
+              markSeen();
+            }, 6000);
+          }
+        });
+      })();
+    </script>
     <!-- Activity-Based Promotional Popup: My Real Budget (rendered only on active tracker pages) -->
     {isTrackerPage && <ActivityPromotionPopup locale={locale} />}
   </body>

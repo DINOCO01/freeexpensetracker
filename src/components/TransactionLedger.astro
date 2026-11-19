@@ -9,7 +9,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+  <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
     <div>
       <div class="flex items-center gap-2">
         <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
@@ -28,7 +28,7 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
 
     <!-- Search & Export Actions -->
-    <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+    <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 w-full xl:w-auto">
       <!-- Search -->
       <div class="relative flex-1 sm:w-44 sm:flex-initial">
         <input
@@ -83,8 +83,8 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
     </div>
   </div>
 
-  <!-- Table Container -->
-  <div class="overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 dark:border-slate-800 rounded-xl">
+  <!-- Desktop Table Container -->
+  <div class="hidden sm:block overflow-x-auto max-h-[360px] overflow-y-auto border border-slate-200/80 dark:border-slate-800 rounded-xl">
     <table class="w-full min-w-[500px] text-left border-collapse text-xs">
       <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px] tracking-wider z-10">
         <tr>
@@ -100,14 +100,19 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
         <!-- Rendered via JS -->
       </tbody>
     </table>
+  </div>
 
-    <!-- Empty State -->
-    <div id="empty-ledger-state" class="hidden p-8 text-center space-y-2">
-      <div class="text-3xl">📝</div>
-      <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
-      <p class="text-[11px] text-slate-500 dark:text-slate-400">
-        {t('ledger.emptySubtitle', locale)}
-      </p>
-    </div>
+  <!-- Mobile Transaction Cards Container -->
+  <div id="transactions-mobile-container" class="sm:hidden space-y-2.5">
+    <!-- Rendered via JS -->
+  </div>
+
+  <!-- Empty State -->
+  <div id="empty-ledger-state" class="hidden p-8 text-center space-y-2">
+    <div class="text-3xl">📝</div>
+    <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{t('ledger.emptyTitle', locale)}</p>
+    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+      {t('ledger.emptySubtitle', locale)}
+    </p>
   </div>
 </div>

@@ -9,9 +9,9 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 const isEn = locale === 'en';
 ---
 
-<section class="space-y-3 sm:space-y-4">
+<section class="space-y-2 sm:space-y-4">
   <!-- Headline & Value Proposition -->
-  <div class="text-center max-w-2xl mx-auto space-y-2 sm:space-y-3 pt-1 sm:pt-2">
+  <div class="text-center max-w-2xl mx-auto space-y-1.5 sm:space-y-3 pt-0.5 sm:pt-2">
     <!-- Compact Badge -->
     <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
       <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse shrink-0"></span>
@@ -19,7 +19,7 @@ const isEn = locale === 'en';
     </div>
 
     <!-- Main Headline -->
-    <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-tight">
+    <h1 class="text-xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] leading-tight">
       {locale === 'en' ? (
         <span>Free Expense Tracker</span>
       ) : locale === 'fr' ? (
@@ -35,7 +35,7 @@ const isEn = locale === 'en';
     </h1>
 
     <!-- Shorter supporting line -->
-    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed px-2">
+    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-normal sm:leading-relaxed px-2">
       {isEn ? 'Take control of your money with our free monthly expense tracker: monitor income and spending, plan budgets, and download free financial templates.' : t('hero.description', locale)}
     </p>
   </div>
