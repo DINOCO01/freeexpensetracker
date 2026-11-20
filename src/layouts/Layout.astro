@@ -23,6 +23,9 @@ interface Props {
   faqSchema?: { question: string; answer: string }[];
   breadcrumbs?: { name: string; url: string }[];
   isTrackerPage?: boolean;
+  datePublished?: string;
+  dateModified?: string;
+  extraSchema?: any[];
 }
 
 const {
@@ -35,6 +38,9 @@ const {
   faqSchema,
   breadcrumbs,
   isTrackerPage = false,
+  datePublished = '2026-01-15',
+  dateModified = '2026-11-20',
+  extraSchema = [],
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -64,8 +70,19 @@ const ogLocaleMap: Record<SupportedLocale, string> = {
 };
 const ogLocale = ogLocaleMap[locale] || 'en_US';
 
-// JSON-LD Structured Data: WebApplication, WebSite, Organization, BreadcrumbList, and localized FAQPage
+// JSON-LD Structured Data: Person, WebApplication, WebSite, Organization, BreadcrumbList, and localized FAQPage
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://freexpensetracker.com/about/#person",
+  "name": "Prince Upadhyay",
+  "url": "https://freexpensetracker.com/about/",
+  "jobTitle": "Creator & Financial Tool Developer",
+  "description": "CA Intermediate student building transparent, privacy-first personal finance and budgeting tools."
+};
+
 const structuredData = [
+  personSchema,
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -75,6 +92,20 @@ const structuredData = [
     "operatingSystem": "All",
     "browserRequirements": "Requires JavaScript. Requires HTML5.",
     "description": metaDescription,
+    "author": {
+      "@type": "Person",
+      "@id": "https://freexpensetracker.com/about/#person",
+      "name": "Prince Upadhyay",
+      "url": "https://freexpensetracker.com/about/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "@id": "https://freexpensetracker.com/about/#person",
+      "name": "Prince Upadhyay",
+      "url": "https://freexpensetracker.com/about/"
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -96,12 +127,7 @@ const structuredData = [
     "@type": "WebSite",
     "name": t('meta.siteName', locale),
     "url": canonical,
-    "description": metaDescription,
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": `${siteUrl}/?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    "description": metaDescription
   },
   {
     "@context": "https://schema.org",
@@ -131,6 +157,10 @@ const structuredData = [
         ]
   }
 ];
+
+if (extraSchema && extraSchema.length > 0) {
+  structuredData.push(...extraSchema);
+}
 
 const isHomepage = Astro.url.pathname === '/' || /^\/[a-z]{2}\/?$/.test(Astro.url.pathname);
 const faqEntities = faqSchema && faqSchema.length > 0

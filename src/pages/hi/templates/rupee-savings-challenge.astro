@@ -83,6 +83,37 @@ const breadcrumbs = [
   { name: 'टेम्पलेट्स', url: '/templates/' },
   { name: '₹50,000 बचत चुनौती', url: '/hi/templates/rupee-savings-challenge/' }
 ];
+
+const digitalDocSchema = {
+  "@context": "https://schema.org",
+  "@type": ["DigitalDocument", "SoftwareApplication"],
+  "name": "52-सप्ताह ₹50,000 बचत चुनौती 2027",
+  "description": "साल 2027 में ₹50,000 बचाने के लिए मुफ्त 52-सप्ताह बचत चुनौती एक्सेल शीट और प्रिंट करने योग्य पीडीएफ।",
+  "url": "https://freexpensetracker.com/hi/templates/rupee-savings-challenge/",
+  "downloadUrl": "https://freexpensetracker.com/templates/21_IN_Rupee_Savings_Challenge.xlsx",
+  "fileFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "INR"
+  },
+  "author": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "datePublished": "2026-02-15",
+  "dateModified": "2026-11-20"
+};
 ---
 
 <Layout
@@ -92,6 +123,9 @@ const breadcrumbs = [
   canonicalUrl="/hi/templates/rupee-savings-challenge/"
   breadcrumbs={breadcrumbs}
   faqSchema={faqList}
+  datePublished="2026-02-15"
+  dateModified="2026-11-20"
+  extraSchema={[digitalDocSchema]}
 >
   <Navbar currentLocale="hi" />
 
@@ -125,6 +159,16 @@ const breadcrumbs = [
       <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
         मुफ्त 52-सप्ताह ₹50,000 बचत चुनौती (2027)
       </h1>
+
+      <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <span>निर्माता: <a href="/about/" class="text-emerald-700 hover:underline font-semibold">Prince Upadhyay</a></span>
+        <span>·</span>
+        <span>अंतिम अपडेट: 20 नवंबर 2026</span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-700 bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-3 sm:p-4 leading-relaxed font-normal">
+        <strong>52-सप्ताह ₹50,000 बचत चुनौती</strong> Microsoft Excel और Google Sheets के लिए एक पूरी तरह से निःशुल्क स्प्रेडशीट टेम्पलेट है। यह स्वचालित सूत्रों, दृश्य प्रगति ट्रैकिंग और व्यावहारिक साप्ताहिक लक्ष्यों के साथ बिना किसी खाते या विज्ञापन के 100% निजी डाउनलोड के लिए उपलब्ध है।
+      </p>
 
       <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
         52-सप्ताह की ₹50,000 बचत चुनौती एक अत्यंत व्यावहारिक और प्रेरक व्यक्तिगत वित्त योजना है। पहले सप्ताह में मात्र ₹250 से शुरुआत करके, क्रमशः ₹350, ₹500, और ₹1,000 प्रति सप्ताह की बचत करते हुए आप 2027 के अंत तक पूरे ₹50,000 का फंड आसानी से सुरक्षित कर सकते हैं।

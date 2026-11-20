@@ -63,14 +63,14 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Ring-fence large annual goals, holiday gifts, and property taxes.' }
   ],
   '52-week-savings-challenge': [
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a durable 3 to 6-month cash reserve for unexpected life events.' },
-    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted savings buckets for irregular and seasonal expenses.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds from each paycheck directly into your savings goals.' }
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Step up to a $5,000 cash cushion with graduated weekly deposits.' },
+    { slug: '10000-savings-challenge', title: '$10,000 Savings Challenge', desc: 'Target five-figure cash security with our ambitious annual challenge.' },
+    { slug: 'biweekly-savings-challenge', title: 'Biweekly Savings Challenge', desc: 'Align your savings deposits with your 26 biweekly paychecks.' }
   ],
   'sinking-fund-planner': [
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Channel disciplined weekly deposits into your annual sinking funds.' },
     { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build an extra $1,378 cash cushion with progressive weekly deposits.' },
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect your sinking funds with a baseline 3 to 6-month safety net.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Sync sinking fund contributions with your regular paycheck cycle.' }
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect your sinking funds with a baseline 3 to 6-month safety net.' }
   ],
   'debt-snowball': [
     { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Prioritize highest-interest APR debts first to save maximum total interest.' },
@@ -98,9 +98,9 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Review historical spending categories and identify cost leaks.' }
   ],
   'emergency-fund-planner': [
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Fund a foundational $5,000 emergency safety cushion over 52 weeks.' },
     { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Jumpstart your starter emergency fund by saving $1,378 in one year.' },
-    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per paycheck directly into your emergency savings.' }
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' }
   ],
   'financial-dashboard': [
     { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Break down categorized spending trends feeding your financial dashboard.' },
@@ -119,6 +119,50 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, due dates, and autopay tracking.' },
   { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Eliminate consumer debt with behavioral momentum.' }
 ];
+
+const digitalDocSchema = {
+  "@context": "https://schema.org",
+  "@type": ["DigitalDocument", "SoftwareApplication"],
+  "name": template.h1,
+  "description": template.metaDescription,
+  "url": canonicalUrl,
+  "downloadUrl": `https://freexpensetracker.com${downloadUrl}`,
+  "fileFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "datePublished": "2026-02-15",
+  "dateModified": "2026-11-20"
+};
+
+const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to Use the ${template.h1}`,
+  "description": `Step-by-step instructions on setting up and using the ${template.h1} for Excel and Google Sheets.`,
+  "step": template.howToUse.map((step, idx) => ({
+    "@type": "HowToStep",
+    "position": idx + 1,
+    "name": step.step,
+    "text": `${step.title}: ${step.desc}`
+  }))
+} : null;
 ---
 
 <Layout
@@ -126,6 +170,9 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   description={template.metaDescription}
   canonicalUrl={canonicalUrl}
   faqSchema={template.faq}
+  datePublished="2026-02-15"
+  dateModified="2026-11-20"
+  extraSchema={[digitalDocSchema, howToSchema].filter(Boolean)}
   breadcrumbs={[
     { name: 'Home', url: '/' },
     { name: 'Templates', url: '/templates/' },
@@ -164,6 +211,16 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
         {template.h1}
       </h1>
+
+      <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <span>Built by <a href="/about/" class="text-emerald-700 hover:underline font-semibold">Prince Upadhyay</a></span>
+        <span>·</span>
+        <span>Updated November 20, 2026</span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-700 bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-3 sm:p-4 leading-relaxed font-normal">
+        The <strong>{template.h1}</strong> is a free, pre-formatted spreadsheet for Microsoft Excel and Google Sheets designed to organize, calculate, and automate your personal finances. It features verified formulas, visual category charts, and customizable tracking columns, available for instant private download with zero paywalls, no advertisements, and no account registration.
+      </p>
 
       <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
         {template.overview}
@@ -465,6 +522,97 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
           </div>
         </article>
       </>
+    )}
+
+    {/* SPECIALIZED METHODOLOGY: Debt Avalanche */}
+    {template.slug === 'debt-avalanche' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Methodology &amp; Calculation
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            How the Debt Avalanche Method Works
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            The mathematically optimal strategy to minimize total lifetime interest paid.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+            The Avalanche Principle
+          </h3>
+          <p>
+            The debt avalanche method lists all outstanding debts in descending order of Annual Percentage Rate (APR), from highest interest rate to lowest interest rate, regardless of balance size. You make minimum contract payments on every debt while directing every available dollar of surplus cash flow toward the loan with the single highest interest rate. Once that high-APR balance reaches zero, you roll its entire payment into the next highest interest rate account.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            3-Step Worked Numerical Example
+          </h3>
+          <p>
+            Suppose you have three consumer debts and a total monthly debt budget of $500:
+          </p>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 font-mono text-xs text-slate-800">
+            <div>1. <strong>Credit Card</strong>: $2,400 balance at <strong>19.9% APR</strong> ($85 monthly minimum)</div>
+            <div>2. <strong>Auto Loan</strong>: $7,000 balance at <strong>6.5% APR</strong> ($210 monthly minimum)</div>
+            <div>3. <strong>Medical Bill</strong>: $600 balance at <strong>0% APR</strong> ($50 monthly minimum)</div>
+          </div>
+          <p>
+            Combined contractual minimums equal $345 ($85 + $210 + $50), leaving $155 in surplus payoff cash.
+          </p>
+          <ul class="space-y-2 list-disc list-inside">
+            <li><strong>Step 1 (Attack High APR)</strong>: Direct $240/month ($85 minimum + $155 surplus) to the 19.9% credit card while paying minimums on the others. The card is eliminated in approximately 11 months, saving hundreds in compound interest.</li>
+            <li><strong>Step 2 (Roll Forward to Auto Loan)</strong>: Roll the liberated $240 into the 6.5% auto loan ($210 minimum + $240 = $450/month).</li>
+            <li><strong>Step 3 (Eliminate Final Balance)</strong>: Once the auto loan is cleared, apply the full $500 monthly budget to the 0% medical bill, completing the debt-free journey with maximum total interest savings.</li>
+          </ul>
+        </div>
+      </section>
+    )}
+
+    {/* SPECIALIZED METHODOLOGY: Debt-to-Income Calculator */}
+    {template.slug === 'debt-to-income-calculator' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Calculation Methodology
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            How Debt-to-Income (DTI) Is Calculated
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Understand how mortgage lenders, banks, and financial institutions measure your borrowing capacity.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+            The Exact DTI Formula
+          </h3>
+          <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/90 text-center font-mono font-semibold text-emerald-950 text-sm sm:text-base">
+            DTI Ratio (%) = (Total Monthly Debt Payments ÷ Gross Monthly Income) × 100
+          </div>
+          <p>
+            <strong>Gross monthly income</strong> is your total monthly earnings before taxes and payroll deductions. <strong>Total monthly debt payments</strong> include mandatory minimum recurring obligations such as rent/mortgage, auto loan installments, student loans, and minimum credit card payments. Living expenses like groceries and utilities are excluded from DTI.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            3-Step Worked Numerical Example
+          </h3>
+          <ul class="space-y-2 list-disc list-inside">
+            <li><strong>Step 1 (Sum Monthly Debts)</strong>: $1,000 rent/mortgage + $300 auto loan + $200 student loan = <strong>$1,500 total monthly debt payments</strong>.</li>
+            <li><strong>Step 2 (Establish Gross Income)</strong>: Gross pre-tax monthly income = <strong>$5,000 per month</strong> ($60,000 annual salary).</li>
+            <li><strong>Step 3 (Calculate DTI)</strong>: ($1,500 ÷ $5,000) × 100 = <strong>30% DTI Ratio</strong>.</li>
+          </ul>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+            <p class="font-bold text-slate-900">Benchmark Interpretation:</p>
+            <p>• <strong>Under 36% (Healthy)</strong>: Preferred by conventional mortgage lenders with manageable debt load.</p>
+            <p>• <strong>36% – 43% (Moderate)</strong>: Acceptable for most loans but limits flexibility during emergencies.</p>
+            <p>• <strong>Above 43% (High Risk)</strong>: Exceeds standard Qualified Mortgage thresholds and signals potential borrowing strain.</p>
+          </div>
+        </div>
+      </section>
     )}
 
     {/* SPECIALIZED DEEP-DIVE: Student Loan Planner */}

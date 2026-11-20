@@ -1,5 +1,5 @@
 # robots.txt for https://freexpensetracker.com
-# Allow all legitimate search engines to crawl public content
+# Allow all legitimate search engines and AI answer engines to crawl public content
 
 User-agent: *
 Allow: /
@@ -7,25 +7,53 @@ Disallow: /404
 Disallow: /500
 Disallow: /404.html
 Disallow: /500.html
+Disallow: /cdn-cgi/
 
 # Major Search Engine Crawlers
 User-agent: Googlebot
 Allow: /
+Disallow: /cdn-cgi/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /cdn-cgi/
 
 User-agent: Slurp
 Allow: /
+Disallow: /cdn-cgi/
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /cdn-cgi/
 
 User-agent: Baiduspider
 Allow: /
+Disallow: /cdn-cgi/
 
 User-agent: YandexBot
 Allow: /
+Disallow: /cdn-cgi/
+
+# AI Answer Engines & Search Bots
+User-agent: GPTBot
+Allow: /
+Disallow: /cdn-cgi/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /cdn-cgi/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /cdn-cgi/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /cdn-cgi/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /cdn-cgi/
 
 # Sitemap Location
 Sitemap: https://freexpensetracker.com/sitemap.xml

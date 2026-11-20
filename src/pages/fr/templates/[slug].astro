@@ -63,9 +63,19 @@ const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc:
     { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Sécurisez votre foyer avec une réserve de précaution solide.' }
   ],
   '52-week-savings-challenge': [
-    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Calculez 3 à 6 mois de dépenses de sécurité et suivez vos paliers de précaution.' },
-    { slug: 'sinking-fund-planner', title: 'Planificateur Fonds Dédiés', desc: 'Provisionnez vos dépenses prévisibles (vacances, impôts, révisions) sans impacter votre trésorerie.' },
-    { slug: 'paycheck-budget', title: 'Budget par Salaire', desc: 'Allouez chaque euro de votre salaire net dès son encaissement avec le budget base zéro.' }
+    { slug: '5000-savings-challenge', title: 'Défi Épargne 5 000 $', desc: 'Passez au palier supérieur pour accumuler 5 000 $ en 52 semaines.' },
+    { slug: '10000-savings-challenge', title: 'Défi Épargne 10 000 $', desc: 'Passez au niveau supérieur avec un calendrier d\'épargne annuel de 10 000 $.' },
+    { slug: 'biweekly-savings-challenge', title: 'Défi Épargne Bihebdomadaire', desc: 'Calquez vos dépôts d\'épargne sur vos 26 versements de paie annuels.' }
+  ],
+  'emergency-fund-planner': [
+    { slug: '5000-savings-challenge', title: 'Défi Épargne 5 000 $', desc: 'Constituez votre fonds d\'urgence de base de 5 000 $ grâce à une progression structurée.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Accumulez 1 378 € d\'épargne en 52 semaines grâce à des dépôts graduels.' },
+    { slug: 'sinking-fund-planner', title: 'Planificateur Épargne Ciblée', desc: 'Provisionnez vos dépenses futures prévisibles pour éviter les chocs de trésorerie.' }
+  ],
+  'sinking-fund-planner': [
+    { slug: '5000-savings-challenge', title: 'Défi Épargne 5 000 $', desc: 'Provisionnez vos objectifs d\'épargne annuelle avec une progression hebdomadaire claire.' },
+    { slug: '52-week-savings-challenge', title: 'Défi Épargne 52 Semaines', desc: 'Créez une routine d\'épargne hebdomadaire automatique pour vos objectifs annuels.' },
+    { slug: 'emergency-fund-planner', title: 'Planificateur Fonds d\'Urgence', desc: 'Constituez 3 à 6 mois de charges fixes pour sécuriser vos imprévus.' }
   ],
   'debt-snowball': [
     { slug: 'debt-avalanche', title: 'Feuille Dette Avalanche', desc: 'Priorisez le taux d\'intérêt le plus élevé en premier pour économiser un maximum d\'intérêts.' },
@@ -114,6 +124,50 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   { slug: 'monthly-bill-tracker', title: 'Suivi Mensuel des Factures', desc: 'Centralisez factures récurrentes, échéances et prélèvements automatiques.' },
   { slug: 'debt-snowball', title: 'Remboursement Boule de Neige', desc: 'Éliminez vos emprunts avec la méthode d\'accélération boule de neige.' }
 ];
+
+const digitalDocSchema = {
+  "@context": "https://schema.org",
+  "@type": ["DigitalDocument", "SoftwareApplication"],
+  "name": template.h1,
+  "description": template.metaDescription,
+  "url": canonicalUrl,
+  "downloadUrl": `https://freexpensetracker.com${downloadUrl}`,
+  "fileFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "author": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "@id": "https://freexpensetracker.com/about/#person",
+    "name": "Prince Upadhyay",
+    "url": "https://freexpensetracker.com/about/"
+  },
+  "datePublished": "2026-02-15",
+  "dateModified": "2026-11-20"
+};
+
+const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `Comment utiliser le modèle ${template.h1}`,
+  "description": `Instructions pas à pas pour configurer et utiliser le modèle ${template.h1} sous Excel et Google Sheets.`,
+  "step": template.howToUse.map((step, idx) => ({
+    "@type": "HowToStep",
+    "position": idx + 1,
+    "name": step.step,
+    "text": `${step.title} : ${step.desc}`
+  }))
+} : null;
 ---
 
 <Layout
@@ -122,6 +176,9 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   canonicalUrl={canonicalUrl}
   currentLocale="fr"
   faqSchema={template.faq}
+  datePublished="2026-02-15"
+  dateModified="2026-11-20"
+  extraSchema={[digitalDocSchema, howToSchema].filter(Boolean)}
 >
   <Navbar currentLocale="fr" />
 
@@ -155,6 +212,16 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
       <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight font-['Outfit',sans-serif]">
         {template.h1}
       </h1>
+
+      <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <span>Créé par <a href="/about/" class="text-emerald-700 hover:underline font-semibold">Prince Upadhyay</a></span>
+        <span>·</span>
+        <span>Mis à jour le 20 novembre 2026</span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-700 bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-3 sm:p-4 leading-relaxed font-normal">
+        Le modèle <strong>{template.h1}</strong> est une feuille de calcul gratuite pour Microsoft Excel (.xlsx) et Google Sheets conçue pour organiser, calculer et automatiser vos finances personnelles. Il comprend des formules préprogrammées vérifiées, des tableaux clairs et un suivi personnalisable, téléchargeable immédiatement en toute confidentialité sans inscription, sans publicité et sans paiement.
+      </p>
 
       <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
         {template.overview}
@@ -409,6 +476,194 @@ const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
         <div class="space-y-2">
           <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Ordre d'Extinction des Dettes (Boule de Neige) :</h4>
           <div id="calc-timeline-list" class="space-y-1.5 text-xs text-slate-700"></div>
+        </div>
+      </section>
+    )}
+
+    {/* SECTION SPÉCIALISÉE: Dette Avalanche */}
+    {template.slug === 'debt-avalanche' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Méthodologie &amp; Calculs
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            Fonctionnement de la Méthode Dette Avalanche
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            La stratégie mathématiquement optimale pour minimiser le coût total des intérêts bancaires.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+            Le Principe de l'Avalanche Financière
+          </h3>
+          <p>
+            La méthode avalanche classe l'ensemble de vos crédits par ordre décroissant de Taux Annuel Effectif Global (TAEG), du taux le plus coûteux au taux le plus bas, sans tenir compte du montant du capital restant. Vous versez les mensualités minimales obligatoires sur chaque contrat, tout en concentrant chaque euro disponible de trésorerie sur l'emprunt au taux d'intérêt le plus prohibitif. Dès que ce crédit numéro 1 est soldé, vous transférez la totalité de sa mensualité vers le taux immédiatement inférieur.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            Exemple Chiffré en 3 Étapes
+          </h3>
+          <p>
+            Supposons trois crédits avec un budget de remboursement mensuel total de 500 € :
+          </p>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 font-mono text-xs text-slate-800">
+            <div>1. <strong>Crédit Revolving</strong> : 2 400 € de capital à <strong>19,9 % TAEG</strong> (mensualité minimum de 85 €)</div>
+            <div>2. <strong>Prêt Automobile</strong> : 7 000 € de capital à <strong>6,5 % TAEG</strong> (mensualité minimum de 210 €)</div>
+            <div>3. <strong>Facture Médicale / Découvert</strong> : 600 € à <strong>0 % d'intérêt</strong> (mensualité minimum de 50 €)</div>
+          </div>
+          <p>
+            Le cumul des mensualités minimales est de 345 € (85 € + 210 € + 50 €), laissant un surplus mensuel d'accélération de 155 €.
+          </p>
+          <ul class="space-y-2 list-disc list-inside">
+            <li><strong>Étape 1 (Attaque du taux à 19,9 %)</strong> : Vous allouez 240 €/mois (85 € + 155 €) sur le crédit revolving. La dette est éliminée en 11 mois seulement, évitant des centaines d'euros d'agios bancaires.</li>
+            <li><strong>Étape 2 (Report sur le prêt auto)</strong> : Vous basculez les 240 € libérés sur le prêt automobile à 6,5 % (210 € + 240 € = 450 €/mois).</li>
+            <li><strong>Étape 3 (Extinction finale)</strong> : Le prêt auto soldé, vous consacrez la totalité des 500 € au solde à 0 %, atteignant la liberté financière avec le coût d'intérêts le plus bas possible.</li>
+          </ul>
+        </div>
+      </section>
+    )}
+
+    {/* SECTION SPÉCIALISÉE: Taux d'Endettement (DTI) */}
+    {template.slug === 'debt-to-income-calculator' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Méthodologie Bancaire &amp; Réglementation
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            Calcul du Taux d'Endettement et Normes d'Octroi
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Comprendre précisément comment les banques et courtiers évaluent votre solvabilité financière.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif]">
+            La Formule Officielle du Taux d'Endettement
+          </h3>
+          <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/90 text-center font-mono font-semibold text-emerald-950 text-sm sm:text-base">
+            Taux d'Endettement (%) = (Total des Mensualités de Crédit ÷ Revenus Bruts Mensuels) × 100
+          </div>
+          <p>
+            Les <strong>revenus pris en compte</strong> regroupent les salaires nets imposables ou bruts réguliers, les bénéfices non commerciaux stables et une quote-part (70 % à 80 %) des loyers perçus. Les <strong>mensualités de crédit</strong> incluent les échéances de prêt immobilier, prêts travaux, crédits auto et pensions versées.
+          </p>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 font-['Outfit',sans-serif] pt-2">
+            Exemple Numérique Concret
+          </h3>
+          <ul class="space-y-2 list-disc list-inside">
+            <li><strong>Charges de crédits mensuelles</strong> : 1 000 € crédit logement + 300 € prêt automobile + 200 € prêt personnel = <strong>1 500 € / mois</strong>.</li>
+            <li><strong>Revenu mensuel du foyer</strong> : <strong>5 000 € par mois</strong> (soit 60 000 € annuels).</li>
+            <li><strong>Calcul du taux</strong> : (1 500 € ÷ 5 000 €) × 100 = <strong>30 % de taux d'endettement</strong>.</li>
+          </ul>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+            <p class="font-bold text-slate-900">Grille d'Interprétation Bancaire :</p>
+            <p>• <strong>Inférieur à 33 % (Optimal)</strong> : Conforme aux recommandations strictes du Haut Conseil de Stabilité Financière (HCSF) pour l'obtention des meilleurs taux de crédit.</p>
+            <p>• <strong>Entre 33 % et 35 % (Zone Limite)</strong> : Plafond réglementaire standard toléré avec un reste à vivre confortable.</p>
+            <p>• <strong>Supérieur à 35 % (Risque de Refus)</strong> : Risque de blocage du dossier bancaire nécessitant un désendettement préalable ou un allongement de durée.</p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* SECTION SPÉCIALISÉE: Défi 5 000 $ */}
+    {template.slug === '5000-savings-challenge' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Calendrier &amp; Progression
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            Structure du Défi Épargne 5 000 $ en 4 Trimestres
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Un échelonnement progressif de 20 $ à 173 $ par semaine pour sécuriser 5 000 $ sans à-coups.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-bold text-emerald-700 block">Trimestre 1 (Sem. 1 à 13)</span>
+            <p class="font-semibold text-slate-900">20 $ &rarr; 56 $ / semaine</p>
+            <p class="text-slate-500 text-[11px]">Cumul trimestriel : <strong>494 $</strong>. Démarrage en douceur pour ancrer l'habitude financière.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-bold text-teal-700 block">Trimestre 2 (Sem. 14 à 26)</span>
+            <p class="font-semibold text-slate-900">59 $ &rarr; 95 $ / semaine</p>
+            <p class="text-slate-500 text-[11px]">Cumul trimestriel : <strong>1 001 $</strong> (Total : 1 495 $). Première grande étape franchie avant l'été.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-bold text-sky-700 block">Trimestre 3 (Sem. 27 à 39)</span>
+            <p class="font-semibold text-slate-900">98 $ &rarr; 134 $ / semaine</p>
+            <p class="text-slate-500 text-[11px]">Cumul trimestriel : <strong>1 508 $</strong> (Total : 3 003 $). Cap symbolique des 3 000 $ dépassé.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-bold text-indigo-700 block">Trimestre 4 (Sem. 40 à 52)</span>
+            <p class="font-semibold text-slate-900">137 $ &rarr; 173 $ / semaine</p>
+            <p class="text-slate-500 text-[11px]">Cumul trimestriel : <strong>1 997 $</strong> (Total final : <strong>5 000 $</strong>). Victoire et sérénité financière absolue.</p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* SECTION SPÉCIALISÉE: Défi 10 000 $ */}
+    {template.slug === '10000-savings-challenge' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Plan d'Action Ambitieux
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            Feuille de Route pour Accumuler 10 000 $ en 52 Semaines
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Les clés méthodologiques pour tenir le rythme et franchir le palier transformateur des cinq chiffres.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
+              <span class="font-bold text-emerald-800 text-sm block">1. Automatisation Bancaire</span>
+              <p class="text-xs text-slate-600">Planifiez un virement récurrent vers votre livret de réserve dès le lendemain de votre paie pour sanctuariser l'épargne.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
+              <span class="font-bold text-emerald-800 text-sm block">2. Chasse aux Dépenses Fuites</span>
+              <p class="text-xs text-slate-600">Réduisez les abonnements inutiles et les repas à l'extérieur pour dégager les 150 $ à 250 $ hebdomadaires du second semestre.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
+              <span class="font-bold text-emerald-800 text-sm block">3. Revenus Complémentaires</span>
+              <p class="text-xs text-slate-600">Injectez primes, ventes d'objets inutilisés ou missions d'appoint pour valider les semaines les plus exigeantes en toute tranquillité.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* SECTION SPÉCIALISÉE: Défi Bihebdomadaire */}
+    {template.slug === 'biweekly-savings-challenge' && (
+      <section class="bg-white border-2 border-emerald-500/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wide">
+            Rythme de Paie Calibré
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 font-['Outfit',sans-serif] mt-1">
+            Les Avantages du Défi Bihebdomadaire sur 26 Cycles
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Pourquoi synchroniser votre épargne avec vos jours de paie garantit 100 % de succès.
+          </p>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p>
+            Rémunéré toutes les deux semaines, vous bénéficiez de <strong>26 versements de salaire par an</strong> (et non 24). Ce calendrier d'épargne fait coïncider chaque effort financier avec l'arrivée exacte de vos fonds, appliquant le principe d'or : <em>« Payez-vous en premier »</em>. En démarrant à 50 $ au versement 1 et en progressant régulièrement jusqu'à 338 $ au versement 26, vous économisez 5 000 $ sans jamais puiser dans vos réserves les semaines sans rentrée d'argent.
+          </p>
         </div>
       </section>
     )}

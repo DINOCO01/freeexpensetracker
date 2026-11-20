@@ -34,6 +34,50 @@ const isEn = locale === 'en';
       )}
     </h1>
 
+    <!-- Author Byline -->
+    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+      {locale === 'fr' ? (
+        <>Créé par <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · Mis à jour le <time datetime="2026-11-20">20 novembre 2026</time></>
+      ) : locale === 'es' ? (
+        <>Creado por <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · Actualizado el <time datetime="2026-11-20">20 de noviembre de 2026</time></>
+      ) : locale === 'de' ? (
+        <>Erstellt von <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · Aktualisiert am <time datetime="2026-11-20">20. November 2026</time></>
+      ) : locale === 'pt' ? (
+        <>Criado por <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · Atualizado em <time datetime="2026-11-20">20 de novembro de 2026</time></>
+      ) : locale === 'ja' ? (
+        <>作成者: <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · 更新日: <time datetime="2026-11-20">2026年11月20日</time></>
+      ) : locale === 'ko' ? (
+        <>제작: <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · 업데이트: <time datetime="2026-11-20">2026년 11월 20일</time></>
+      ) : locale === 'hi' ? (
+        <>प्रिंस उपाध्याय द्वारा निर्मित (<a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a>) · अपडेट: <time datetime="2026-11-20">20 नवंबर, 2026</time></>
+      ) : (
+        <>Built by <a href="/about/" class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">Prince Upadhyay</a> · Updated <time datetime="2026-11-20">November 20, 2026</time></>
+      )}
+    </p>
+
+    <!-- 40-60 Word Plain-Language AI Quotable Answer -->
+    <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-3.5 sm:p-4 text-left shadow-2xs">
+      <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+        {locale === 'fr' ? (
+          'FreeExpenseTracker est une application web de finances personnelles 100% gratuite et côté client pour un suivi privé des dépenses. Elle simplifie la gestion budgétaire en calculant les flux de trésorerie, la ventilation des catégories et la santé financière directement dans votre navigateur, sans inscription, sans mot de passe bancaire et sans abonnement.'
+        ) : locale === 'es' ? (
+          'FreeExpenseTracker es una aplicación web de finanzas personales 100% gratuita que funciona en el navegador para un control privado del gasto. Facilita el presupuesto calculando el flujo de caja, desglose por categorías y salud financiera directamente en su dispositivo, sin registro, sin contraseñas bancarias y sin suscripciones.'
+        ) : locale === 'de' ? (
+          'FreeExpenseTracker ist eine 100% kostenlose, browserbasierte Finanz-Web-App für die private Ausgabenverwaltung. Sie vereinfacht das Budgetieren durch Echtzeit-Cashflow-Berechnung, Kategorieaufteilung und Finanzanalyse direkt im Browser – ganz ohne Registrierung, ohne Bankpasswörter und ohne Abonnements.'
+        ) : locale === 'pt' ? (
+          'FreeExpenseTracker é um aplicativo web de finanças pessoais 100% gratuito e executado no navegador para controle privado de despesas. Ele simplifica o orçamento calculando fluxo de caixa, divisão por categorias e diagnóstico financeiro em tempo real no seu dispositivo, sem cadastro, sem senhas bancárias e sem assinaturas.'
+        ) : locale === 'ja' ? (
+          'FreeExpenseTrackerは、プライバシーを重視した家計管理のための完全無料のクライアントサイドWebアプリです。会員登録、銀行パスワード、有料サブスクリプションを一切必要とせず、ブラウザ内だけで収支、支出カテゴリ内訳、財務健全性スコアを即座に計算・可視化します。'
+        ) : locale === 'ko' ? (
+          'FreeExpenseTracker는 개인정보 보호를 최우선으로 하는 100% 무료 브라우저 기반 가계부 웹 앱입니다. 회원가입, 은행 비밀번호, 유료 구독 없이 브라우저 내에서 실시간 현금 흐름, 카테고리별 지출 분석, 재정 건전성 점수를 안전하게 계산하여 간편한 예산 관리를 제공합니다.'
+        ) : locale === 'hi' ? (
+          'FreeExpenseTracker एक 100% निःशुल्क और निजी पर्सनल फाइनेंस वेब ऐप है जो आपके ब्राउज़र में सुरक्षित रूप से चलता है। यह बिना किसी साइन-अप, बिना बैंक पासवर्ड और बिना किसी शुल्क के वास्तविक समय में नकद प्रवाह, व्यय श्रेणियां और वित्तीय स्वास्थ्य स्कोर की गणना करके बजट प्रबंधन को सरल बनाता है।'
+        ) : (
+          'FreeExpenseTracker is a 100% free, client-side personal finance web application for individuals and households seeking private expense tracking. It solves budgeting complexity and privacy concerns by calculating real-time cash flow, category breakdowns, and financial health scores entirely inside your browser, requiring zero sign-up, no bank passwords, and no subscriptions.'
+        )}
+      </p>
+    </div>
+
     <!-- Shorter supporting line -->
     <p class="text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-normal sm:leading-relaxed px-2">
       {isEn ? 'Take control of your money with our free monthly expense tracker: monitor income and spending, plan budgets, and download free financial templates.' : t('hero.description', locale)}

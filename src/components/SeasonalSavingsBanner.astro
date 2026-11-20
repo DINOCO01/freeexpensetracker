@@ -46,6 +46,33 @@ const copy = isFr
     <p class="text-xs text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
       {copy.body}
     </p>
+    <div class="pt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 flex-wrap">
+      {isFr ? (
+        <>
+          <span class="text-emerald-700 dark:text-emerald-400 font-semibold">Paliers populaires :</span>
+          <a href="/fr/templates/5000-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">Défi 5 000 $</a>
+          <span>·</span>
+          <a href="/fr/templates/10000-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">Défi 10 000 $</a>
+          <span>·</span>
+          <a href="/fr/templates/biweekly-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">Défi Bihebdomadaire</a>
+        </>
+      ) : (
+        <>
+          <span class="text-emerald-700 dark:text-emerald-400 font-semibold">Popular Milestones:</span>
+          <a href="/templates/5000-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">$5,000 Challenge</a>
+          <span>·</span>
+          <a href="/templates/10000-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">$10,000 Challenge</a>
+          <span>·</span>
+          <a href="/templates/biweekly-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">Biweekly (26 Paychecks)</a>
+          {locale === 'hi' && (
+            <>
+              <span>·</span>
+              <a href="/hi/templates/rupee-savings-challenge/" class="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold">₹50,000 चुनौती</a>
+            </>
+          )}
+        </>
+      )}
+    </div>
   </div>
 
   <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">

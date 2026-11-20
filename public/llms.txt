@@ -1,12 +1,16 @@
 # FreeExpenseTracker.com — LLM Discovery Guide
 
-> FreeExpenseTracker.com is a privacy-first, 100% free web application and personal finance template library designed for everyday budgeting, debt payoff modeling, and systematic savings challenges.
+> FreeExpenseTracker.com is a privacy-first, 100% free web application and personal finance template library designed for everyday budgeting, debt payoff modeling, group bill splitting, and systematic savings challenges.
 
 ## Canonical Domain
 https://freexpensetracker.com/
 
+## Author & Creator
+- **Created by**: Prince Upadhyay, a CA Intermediate student passionate about building accessible, transparent, and mathematically rigorous personal finance tools.
+- **About Page**: https://freexpensetracker.com/about/
+
 ## Overview & Architecture
-- **Client-Side Storage**: User transaction ledgers, income simulations, and budget allocations run entirely within client-side browser memory (`localStorage`). No transaction rows, account numbers, or bank credentials are ever transmitted to or stored on external database servers.
+- **Client-Side Storage**: User transaction ledgers, income simulations, and budget allocations run entirely within client-side browser memory (`IndexedDB` and `localStorage`). No transaction rows, account numbers, or bank credentials are ever transmitted to or stored on external database servers.
 - **Zero Logins or Required Accounts**: Every tool, live planner, and spreadsheet download is completely accessible without registration, email capture, or recurring subscriptions.
 - **Google Analytics (GA4)**: Standard privacy-preserving site usage metrics (page views, interactions, device/browser metadata) are collected under measurement ID `G-XR6MG2FM4M`. No financial records, personal identification, or transaction dollar amounts are ever dispatched to analytics.
 
@@ -25,6 +29,10 @@ https://freexpensetracker.com/
 4. **Target & Budget Planning**:
    - 50/30/20 budget allocation model (Needs, Wants, Savings).
    - Milestone savings goal visualizer with monthly contribution planning.
+5. **Multi-Currency Bill Splitter** (https://freexpensetracker.com/bill-splitter/):
+   - Equal splits, custom fixed amounts, and itemized restaurant dish allocation with proportional tax and tip distribution using the Largest Remainder Method.
+   - Trip / Group Split mode with greedy debt simplification algorithm settling multi-person debts in the minimum possible transactions (at most N-1 transfers).
+   - Real-time WhatsApp summary sharing and support for 10 global currencies.
 
 ## Financial Template & Spreadsheet Library
 All workbooks are provided in standard, unlocked `.xlsx` format (compatible with Microsoft Excel and Google Sheets) and accompanied by dedicated online guides and printable PDF charts:
@@ -52,10 +60,10 @@ All workbooks are provided in standard, unlocked `.xlsx` format (compatible with
 
 ## Core Public Pages
 - **Homepage**: https://freexpensetracker.com/
+- **Bill Splitter**: https://freexpensetracker.com/bill-splitter/ — Multi-currency group meal and trip expense calculator.
 - **Templates Directory**: https://freexpensetracker.com/templates/
-- **About Us**: https://freexpensetracker.com/about-us/
+- **About**: https://freexpensetracker.com/about/ — Creator information, background, mission, and privacy architecture.
 - **Contact Us**: https://freexpensetracker.com/contact-us/
 - **Privacy Policy**: https://freexpensetracker.com/privacy-policy/
 - **Terms & Conditions**: https://freexpensetracker.com/terms-and-conditions/
 - **XML Sitemap**: https://freexpensetracker.com/sitemap.xml
-

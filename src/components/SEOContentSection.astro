@@ -134,6 +134,14 @@ const isEn = locale === 'en';
         <p class="text-xs text-slate-600 pt-1">
           To calculate your total financial picture, download our pre-configured <a href="/templates/13_US_Net_Worth_Tracker.xlsx" download="13_US_Net_Worth_Tracker.xlsx" class="text-emerald-700 hover:text-emerald-800 underline font-medium">net worth excel template</a> or model payoffs with the <a href="#tab-view-debt" class="text-emerald-700 hover:text-emerald-800 underline font-medium">Debt Snowball and Avalanche Planner</a>.
         </p>
+        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-xs sm:text-sm text-slate-700 space-y-1.5 mt-3">
+          <p class="font-bold text-slate-900 flex items-center gap-1.5">
+            <span>🎯</span> Structured Annual Savings Challenges
+          </p>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Building a lasting cash buffer is easier with defined weekly milestones. Depending on your savings target, track your journey using our dedicated spreadsheets: start with the classic <a href="/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">52-Week Savings Challenge</a> ($1,378 baseline ladder), scale up to the <a href="/templates/5000-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">$5,000 Savings Challenge</a> to establish a starter emergency fund, target five-figure financial security with the <a href="/templates/10000-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">$10,000 Savings Challenge</a>, or match your deposit rhythm to your payroll calendar with the <a href="/templates/biweekly-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">Biweekly Savings Challenge</a>.
+          </p>
+        </div>
       </section>
 
       <!-- Section 5: Expense Tracker Templates: Web App vs Google Sheets vs Excel -->
@@ -419,6 +427,18 @@ const isEn = locale === 'en';
           </li>
         </ul>
       </section>
+
+      {/* French Savings Challenges Highlight */}
+      {locale === 'fr' && (
+        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 text-xs sm:text-sm text-slate-700 space-y-1.5">
+          <p class="font-bold text-slate-900 flex items-center gap-1.5">
+            <span>🎯</span> Défis Annuels d'Épargne Structurés
+          </p>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Constituer une réserve financière devient beaucoup plus simple avec des étapes hebdomadaires claires. Selon votre objectif, suivez votre progression avec nos feuilles de calcul dédiées : le <a href="/fr/templates/52-week-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">Défi Épargne 52 Semaines</a> classique (1 378 €), le <a href="/fr/templates/5000-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">Défi Épargne 5 000 $</a> pour votre fonds d'urgence, l'ambitieux <a href="/fr/templates/10000-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">Défi Épargne 10 000 $</a> pour vos projets d'envergure, ou le <a href="/fr/templates/biweekly-savings-challenge/" class="text-emerald-700 hover:text-emerald-800 underline font-semibold">Défi Épargne Bihebdomadaire</a> synchronisé avec 26 cycles de paie.
+          </p>
+        </div>
+      )}
 
       <!-- Footer CTA -->
       <footer class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-3">

@@ -3,32 +3,32 @@
 
 export const BILL_SPLITTER_FAQS = [
   {
-    question: "Can I split uneven or itemized bills?",
-    answer: "Yes. In Itemized Split mode, you can add individual dishes, drinks, or items with their exact prices and assign them to specific people or mark them as shared among everyone. The calculator calculates individual subtotals, allocates tax and tips proportionally based on consumption, and ensures no one overpays."
+    question: "How do I split a bill with different amounts?",
+    answer: "Use the Itemized Split mode to enter each item and assign it to specific individuals or mark it as shared. The tool computes individual subtotals and proportionally allocates shared taxes and tips based on each person's consumption."
   },
   {
     question: "How does the bill splitter handle taxes and tips for shared items?",
-    answer: "Taxes and tips are distributed proportionally using the Largest Remainder Method (Hare-Niemeyer method). Rather than splitting taxes equally (which unfairly charges someone who only ordered a side salad), tax and tip are allocated based on each person's share of the food subtotal. Any minor-unit rounding fractions are distributed deterministically so the sum of individual shares exactly matches the bill total to the exact cent or paisa."
+    answer: "Taxes and tips are distributed proportionally using the Largest Remainder Method based on each person's share of the food subtotal. Any minor-unit rounding fractions are balanced deterministically so the sum of individual shares exactly equals the bill total."
   },
   {
-    question: "Is this bill splitter really 100% free with no sign-up?",
-    answer: "Yes, completely free. There are no accounts, no subscriptions, no paywalls, and no advertisements. Everything runs directly in your web browser using client-side JavaScript, ensuring 100% privacy and lightning-fast speed."
+    question: "Is FreeExpenseTracker Bill Splitter free, and do I need to create an account?",
+    answer: "Yes, it is 100% free with no account registration, subscriptions, or advertisements. All calculations run client-side in your browser, keeping your expense numbers completely private."
   },
   {
-    question: "How does the group debt simplification algorithm work?",
-    answer: "In Trip / Group Split mode, our debt simplification engine uses a greedy min-cash-flow algorithm. It calculates each participant's net balance (total money paid minus fair share owed). It then iteratively matches the person who owes the most (largest debtor) with the person who is owed the most (largest creditor). This settles all debts with the absolute minimum number of peer-to-peer transfers, reducing what could be dozens of confusing payments down to at most N-1 transactions."
+    question: "How does group debt simplification work for trips?",
+    answer: "In Trip mode, the tool calculates each person's net balance (amount paid minus fair share owed) and runs a greedy minimum-cash-flow algorithm. It pairs the largest debtor with the largest creditor, settling all group debts in at most N-1 total transfers."
   },
   {
-    question: "Can I use different currencies like USD, EUR, INR, or JPY?",
-    answer: "Yes! FreeExpenseTracker Bill Splitter supports 10 major global currencies: INR (₹), USD ($), EUR (€), GBP (£), CAD ($), AUD ($), SGD ($), AED (AED), CHF (CHF), and JPY (¥). Zero-decimal currencies like Japanese Yen (¥) are automatically handled without decimals, and Indian Rupees follow lakh and crore formatting standards."
+    question: "Which currencies are supported?",
+    answer: "The calculator supports 10 global currencies including INR (₹), USD ($), EUR (€), GBP (£), CAD ($), AUD ($), SGD ($), AED, CHF, and JPY (¥). Zero-decimal currencies like JPY are automatically rounded to whole numbers without decimal places."
   },
   {
-    question: "Will my data be saved if I refresh the page?",
-    answer: "Yes. Your active mode, currency, participants, items, and expenses are automatically saved to your browser's private local storage (bs_v1). You can safely refresh the tab or revisit the page later without losing your calculations. You can clear your data anytime using the 'Reset All' button."
+    question: "Will my calculations be saved if I refresh the page?",
+    answer: "Yes, your active split mode, currency, participants, items, and expenses are automatically saved to your browser's private local storage. You can refresh or revisit the tab anytime without losing progress, or reset data with the 'Reset All' button."
   },
   {
     question: "How do I share the calculated split with my friends?",
-    answer: "You can click 'Share via WhatsApp' to instantly open a pre-filled message in WhatsApp, tap 'Copy Breakdown' to paste the itemized receipt summary into iMessage, SMS, or Slack, or use the native 'Share' button on mobile devices."
+    answer: "Click 'Share via WhatsApp' to open a pre-filled summary in WhatsApp, tap 'Copy Breakdown' to paste the receipt into messages or Slack, or use your mobile device's native share menu."
   }
 ];
 ---

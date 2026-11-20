@@ -297,4 +297,54 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
       </div>
     </div>
   </div>
+
+  <!-- Educational Methodology & Calculation Examples -->
+  <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 space-y-4">
+    <div class="flex items-center gap-2">
+      <span class="text-sm">📐</span>
+      <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-['Outfit',sans-serif]">
+        How It Works & Calculation Methodologies
+      </h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>❄️</span>
+          <span>Debt Snowball Method</span>
+        </div>
+        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <strong>Methodology:</strong> Prioritizes extinguishing the lowest outstanding principal balance first while paying minimums on others.
+        </p>
+        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+          <strong>Worked Example:</strong> Debts of ₹5,000, ₹15,000, and ₹30,000. All extra payments target the ₹5,000 balance first for quick motivational momentum.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>⚡</span>
+          <span>Debt Avalanche Method</span>
+        </div>
+        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <strong>Methodology:</strong> Prioritizes the account with the highest interest rate (APR) first to mathematically minimize total lifetime interest.
+        </p>
+        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+          <strong>Worked Example:</strong> Debts at 12%, 18%, and 9% APR. All extra payments target the 18% APR account first, saving the maximum total interest.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <span>📊</span>
+          <span>Debt-to-Income (DTI) Ratio</span>
+        </div>
+        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <strong>Formula:</strong> <code class="font-mono text-slate-800 dark:text-slate-200 font-semibold">DTI = (Monthly Debt ÷ Gross Income) × 100</code>
+        </p>
+        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+          <strong>Worked Example:</strong> ₹15,000 monthly debt payments ÷ ₹60,000 gross monthly income = <strong>25% DTI</strong> (healthy borrowing tier).
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

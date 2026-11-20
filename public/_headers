@@ -48,3 +48,24 @@ https://freexpensetracker.pages.dev*
 
 /templates/15_US_Monthly_Spending_Analyzer.xlsx
   X-Robots-Tag: noindex
+
+/templates/16_US_Monthly_Bill_Tracker.xlsx
+  X-Robots-Tag: noindex
+
+/templates/17_US_52_Week_Savings_Challenge.xlsx
+  X-Robots-Tag: noindex
+
+/templates/18_US_5000_Savings_Challenge.xlsx
+  X-Robots-Tag: noindex
+
+/templates/19_US_10000_Savings_Challenge.xlsx
+  X-Robots-Tag: noindex
+
+/templates/20_US_Biweekly_Savings_Challenge.xlsx
+  X-Robots-Tag: noindex
+
+/templates/21_IN_Rupee_Savings_Challenge.xlsx
+  X-Robots-Tag: noindex
+
+/templates/*.pdf
+  X-Robots-Tag: noindex
