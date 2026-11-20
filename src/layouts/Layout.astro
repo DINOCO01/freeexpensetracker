@@ -178,20 +178,18 @@ if (faqEntities.length > 0) {
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XR6MG2FM4M"></script>
     <script is:inline>
+      (function(){
+        var p = new URLSearchParams(location.search);
+        if (p.get('internal') === '1') localStorage.setItem('fet_internal', '1');
+        if (p.get('internal') === '0') localStorage.removeItem('fet_internal');
+        window.__fetInternal = localStorage.getItem('fet_internal') === '1';
+      })();
+
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      try {
-        var isDebug = new URLSearchParams(window.location.search).get('debug_mode') === '1';
-        if (isDebug) {
-          gtag('config', 'G-XR6MG2FM4M', { debug_mode: true });
-        } else {
-          gtag('config', 'G-XR6MG2FM4M');
-        }
-      } catch (_) {
-        gtag('config', 'G-XR6MG2FM4M');
-      }
+      gtag('config', 'G-XR6MG2FM4M', window.__fetInternal ? { traffic_type: 'internal' } : {});
     </script>
     
     <!-- Primary SEO Meta Tags -->
