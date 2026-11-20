@@ -67,5 +67,20 @@ https://freexpensetracker.pages.dev*
 /templates/21_IN_Rupee_Savings_Challenge.xlsx
   X-Robots-Tag: noindex
 
+/templates/5000-Savings-Challenge-2027.pdf
+  X-Robots-Tag: noindex
+
+/templates/10000-Savings-Challenge-2027.pdf
+  X-Robots-Tag: noindex
+
+/templates/52-Week-Savings-Challenge-2027.pdf
+  X-Robots-Tag: noindex
+
+/templates/Biweekly-Savings-Challenge-2027.pdf
+  X-Robots-Tag: noindex
+
+/templates/Rupee-Savings-Challenge-2027.pdf
+  X-Robots-Tag: noindex
+
 /templates/*.pdf
   X-Robots-Tag: noindex
