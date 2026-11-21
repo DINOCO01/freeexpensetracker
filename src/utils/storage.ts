@@ -58,7 +58,8 @@ export const STORAGE_KEYS = {
   CURRENCY: 'fet_currency_v4',
   TRANSACTIONS: 'fet_transactions_v4',
   DEBTS: 'fet_debts_v4',
-  GOALS: 'fet_goals_v4'
+  GOALS: 'fet_goals_v4',
+  USER_HAS_SAVED: 'fet_user_has_saved_v1'
 };
 
 export interface AppState {
@@ -272,6 +273,67 @@ export function clearAllStoredData(): void {
     });
   } catch (e) {
     console.error('Failed to clear storage:', e);
+  }
+}
+
+/**
+ * Check if the user has saved their own financial data (transactions, debts, goals).
+ * Distinguishes genuine user-saved data from initial or restored sample data.
+ */
+export function hasUserSavedData(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (localStorage.getItem(STORAGE_KEYS.USER_HAS_SAVED) === 'true') {
+      return true;
+    }
+
+    // Check for existing users who already saved data before this flag was introduced
+    const rawTx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+    if (rawTx) {
+      const txs = JSON.parse(rawTx);
+      if (Array.isArray(txs) && txs.length > 0) {
+        const sampleIds = new Set(['tx-1', 'tx-2', 'tx-3', 'tx-4', 'tx-5', 'tx-6']);
+        const isOnlySampleData = txs.length === 6 && txs.every((t: any) => t && sampleIds.has(t.id));
+        if (!isOnlySampleData) {
+          localStorage.setItem(STORAGE_KEYS.USER_HAS_SAVED, 'true');
+          return true;
+        }
+      }
+    }
+
+    const rawDebts = localStorage.getItem(STORAGE_KEYS.DEBTS);
+    if (rawDebts) {
+      const debts = JSON.parse(rawDebts);
+      if (Array.isArray(debts) && debts.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.USER_HAS_SAVED, 'true');
+        return true;
+      }
+    }
+
+    const rawGoals = localStorage.getItem(STORAGE_KEYS.GOALS);
+    if (rawGoals) {
+      const goals = JSON.parse(rawGoals);
+      if (Array.isArray(goals) && goals.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.USER_HAS_SAVED, 'true');
+        return true;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Mark that the user has successfully saved their own financial data.
+ */
+export function markUserHasSavedData(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEYS.USER_HAS_SAVED, 'true');
+  } catch (e) {
+    console.error('Failed to set user_has_saved flag:', e);
   }
 }
 

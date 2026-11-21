@@ -289,4 +289,11 @@ html.bmc-seen #bmc-tooltip {
   pointer-events: none !important;
 }
 
+/* Ensure mobile content clears fixed mobile-bottom-nav and safe-area-inset */
+@media (max-width: 639px) {
+  footer.no-print {
+    padding-bottom: max(6.5rem, calc(5.5rem + env(safe-area-inset-bottom, 0px))) !important;
+  }
+}
+
 

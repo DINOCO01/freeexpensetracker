@@ -6,7 +6,6 @@ import Footer from '../../components/Footer.astro';
 import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
 import BillSplitterGuide from '../../components/bill-splitter/BillSplitterGuide.astro';
 import BillSplitterFAQ, { BILL_SPLITTER_FAQS } from '../../components/bill-splitter/BillSplitterFAQ.astro';
-import MobileBottomNav from '../../components/MobileBottomNav.astro';
 import { getCanonicalUrl } from '../../utils/canonical';
 
 const pageTitle = "Free Bill Splitter Calculator (No Sign-Up)";
@@ -74,7 +73,4 @@ const breadcrumbs = [
   </main>
 
   <Footer />
-
-  <!-- Mobile Bottom Liquid Glass Navigation Bar -->
-  <MobileBottomNav isStandalone={true} initialActiveTab="split" />
 </Layout>

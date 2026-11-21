@@ -27,7 +27,6 @@ import ResetModal from '../components/ResetModal.astro';
 import GoalContributionModal from '../components/GoalContributionModal.astro';
 import DebtPaymentModal from '../components/DebtPaymentModal.astro';
 import TransactionHistoryModal from '../components/TransactionHistoryModal.astro';
-import MobileBottomNav from '../components/MobileBottomNav.astro';
 import { t, type SupportedLocale, getLocaleDefaultCurrency } from '../locales';
 
 interface Props {
@@ -59,11 +58,20 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   <Navbar currentLocale={locale} />
 
   <main class="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-5 sm:space-y-8 pb-28 sm:pb-8">
-    <!-- Hero Header & Value Proposition -->
-    <TrackingChoiceHero locale={locale} />
+    <!-- Hero Header & Value Proposition (Desktop & Tablet only; on mobile, relocated to About Us & Knowledge) -->
+    <div class="hidden sm:block">
+      <TrackingChoiceHero locale={locale} />
+    </div>
+
+    <!-- Semantic Accessible Heading for Mobile (0px visual footprint so tracker opens immediately) -->
+    <h1 class="sr-only sm:hidden">{locale === 'fr' ? t('hero.h1', locale) : 'Free Expense Tracker'}</h1>
 
     {/* Prepared December 2026 seasonal banner (disabled by default via src/config/promotions.ts) */}
-    {SEASONAL_PROMOTIONS.enableDecember2026SavingsPromo && <SeasonalSavingsBanner locale={locale} />}
+    {SEASONAL_PROMOTIONS.enableDecember2026SavingsPromo && (
+      <div class="hidden sm:block">
+        <SeasonalSavingsBanner locale={locale} />
+      </div>
+    )}
 
     <!-- Navigation Tab Bar -->
     <TabNav locale={locale} />
@@ -183,20 +191,22 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       <CompetitiveEdge locale={locale} />
     </section>
 
-    <!-- Comprehensive On-Page SEO Educational & Explanatory Guide (800-1200 words) -->
-    <section id="section-seo-guide" class="pt-6">
-      <SEOContentSection locale={locale} />
-    </section>
+    <!-- Comprehensive On-Page SEO Educational Guide, Budget CTA, and FAQ Section -->
+    <!-- On desktop/tablet (sm:), always visible at the bottom of the page -->
+    <!-- On mobile (<sm), relocated into Knowledge & Guides destination (visible only when Knowledge tab is active) -->
+    <div id="homepage-informational-content" class="space-y-6 hidden sm:block">
+      <section id="section-seo-guide" class="pt-6">
+        <SEOContentSection locale={locale} />
+      </section>
 
-    <!-- Contextual Cross-Link: My Real Budget -->
-    <section id="section-budget-cta" class="pt-2">
-      <MyRealBudgetCTA locale={locale} />
-    </section>
+      <section id="section-budget-cta" class="pt-2">
+        <MyRealBudgetCTA locale={locale} />
+      </section>
 
-    <!-- SEO-Friendly Interactive FAQ Section with JSON-LD Schema -->
-    <section id="section-faq" class="pt-2">
-      <FAQSection locale={locale} />
-    </section>
+      <section id="section-faq" class="pt-2">
+        <FAQSection locale={locale} />
+      </section>
+    </div>
   </main>
 
   <!-- Global SEO Footer -->
@@ -234,9 +244,6 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   <GoalContributionModal locale={locale} />
   <DebtPaymentModal locale={locale} />
   <TransactionHistoryModal locale={locale} />
-
-  <!-- Mobile Bottom Liquid Glass Navigation -->
-  <MobileBottomNav locale={locale} />
 </Layout>
 
 <script>
@@ -273,6 +280,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     saveDebtsStorage,
     saveGoalsStorage,
     clearAllStoredData,
+    hasUserSavedData,
+    markUserHasSavedData,
     downloadBackupFile,
     validateBackupPayload,
     restoreFromBackupPayload,
@@ -647,6 +656,46 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const inputDebtRate = document.getElementById('input-debt-rate') as HTMLInputElement;
   const inputDebtMinimum = document.getElementById('input-debt-minimum') as HTMLInputElement;
 
+  // Mobile Debt Management Elements
+  const mobileStratAvalanche = document.getElementById('mobile-strat-avalanche');
+  const mobileStratSnowball = document.getElementById('mobile-strat-snowball');
+  const mobileStratFoir = document.getElementById('mobile-strat-foir');
+  const mobileDebtModelPanel = document.getElementById('mobile-debt-model-panel');
+  const mobileModelIcon = document.getElementById('mobile-model-icon');
+  const mobileModelTitle = document.getElementById('mobile-model-title');
+  const mobileModelBadge = document.getElementById('mobile-model-badge');
+  const mobileModelDesc = document.getElementById('mobile-model-desc');
+  const mobileModelExampleText = document.getElementById('mobile-model-example-text');
+  const mobileModelDetails = document.getElementById('mobile-model-details');
+  const mobileModelAdvantage = document.getElementById('mobile-model-advantage');
+  const mobileModelAdvisory = document.getElementById('mobile-model-advisory');
+  const btnMobileModelReadMore = document.getElementById('btn-mobile-model-read-more');
+  const labelMobileModelReadMore = document.getElementById('label-mobile-model-read-more');
+  const iconMobileModelReadMore = document.getElementById('icon-mobile-model-read-more');
+  const formAddDebtMobile = document.getElementById('form-add-debt-mobile') as HTMLFormElement | null;
+  const inputDebtNameMobile = document.getElementById('input-debt-name-mobile') as HTMLInputElement | null;
+  const inputDebtBalanceMobile = document.getElementById('input-debt-balance-mobile') as HTMLInputElement | null;
+  const inputDebtRateMobile = document.getElementById('input-debt-rate-mobile') as HTMLInputElement | null;
+  const inputDebtMinimumMobile = document.getElementById('input-debt-minimum-mobile') as HTMLInputElement | null;
+  const debtsMobileList = document.getElementById('debts-mobile-list');
+  const activeStrategyPillMobile = document.getElementById('active-strategy-pill-mobile');
+  const mobileStatTotalDebt = document.getElementById('mobile-stat-total-debt');
+  const mobileDebtItemCount = document.getElementById('mobile-debt-item-count');
+  const mobileStatTotalEmi = document.getElementById('mobile-stat-total-emi');
+  const mobileStatDtiRatio = document.getElementById('mobile-stat-dti-ratio');
+  const mobileStatDtiTier = document.getElementById('mobile-stat-dti-tier');
+  const mobileStatDebtFreeDate = document.getElementById('mobile-stat-debt-free-date');
+  const mobileStatDebtMonthsLeft = document.getElementById('mobile-stat-debt-months-left');
+  const mobileStatInterestSaved = document.getElementById('mobile-stat-interest-saved');
+  const mobileDebtExtraSlider = document.getElementById('mobile-debt-extra-slider') as HTMLInputElement | null;
+  const mobileInputDebtExtraNumber = document.getElementById('mobile-input-debt-extra-number') as HTMLInputElement | null;
+  const mobileDebtRolloverBanner = document.getElementById('mobile-debt-rollover-banner');
+  const mobileContainerPaidDebts = document.getElementById('mobile-container-paid-debts');
+  const mobileCountPaidDebts = document.getElementById('mobile-count-paid-debts');
+  const mobilePaidDebtsList = document.getElementById('mobile-paid-debts-list');
+
+  let expandedDebtId: string | null = null;
+
   // Debt Payment Modal & Rollover Elements
   const debtPaymentModal = document.getElementById('debt-payment-modal');
   const btnCloseDebtPaymentModal = document.getElementById('btn-close-debt-payment-modal');
@@ -679,6 +728,9 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const efundMonthlyOutflow = document.getElementById('efund-monthly-outflow');
   const targetEfund3mo = document.getElementById('target-efund-3mo');
   const targetEfund6mo = document.getElementById('target-efund-6mo');
+  const mobileEfundMonthlyOutflow = document.getElementById('mobile-efund-monthly-outflow');
+  const mobileTargetEfund3mo = document.getElementById('mobile-target-efund-3mo');
+  const mobileTargetEfund6mo = document.getElementById('mobile-target-efund-6mo');
   const goalsContainer = document.getElementById('goals-container');
   const formAddGoal = document.getElementById('form-add-goal') as HTMLFormElement;
   const inputGoalName = document.getElementById('input-goal-name') as HTMLInputElement;
@@ -686,6 +738,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const inputGoalCurrent = document.getElementById('input-goal-current') as HTMLInputElement;
   const inputGoalMonthly = document.getElementById('input-goal-monthly') as HTMLInputElement;
   const btnScrollToAddGoal = document.getElementById('btn-scroll-to-add-goal');
+  const mobileBtnScrollToAddGoal = document.getElementById('mobile-btn-scroll-to-add-goal');
 
   // Goal Contribution Modal Elements
   const goalContributionModal = document.getElementById('goal-contribution-modal');
@@ -770,6 +823,25 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   const btnCancelReset = document.getElementById('btn-cancel-reset');
   const btnConfirmResetBlank = document.getElementById('btn-confirm-reset-blank');
   const btnRestoreSample = document.getElementById('btn-restore-sample');
+  const resetModalOptionsBox = document.getElementById('reset-modal-options-box');
+
+  function syncRestoreSampleVisibility() {
+    const hasSaved = hasUserSavedData();
+    if (btnRestoreSample) {
+      if (hasSaved) {
+        btnRestoreSample.classList.add('hidden');
+      } else {
+        btnRestoreSample.classList.remove('hidden');
+      }
+    }
+    if (resetModalOptionsBox) {
+      if (hasSaved) {
+        resetModalOptionsBox.classList.add('hidden');
+      } else {
+        resetModalOptionsBox.classList.remove('hidden');
+      }
+    }
+  }
 
   // Tabs
   const tabButtons = document.querySelectorAll('.tab-btn');
@@ -825,6 +897,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
 
   // --- 5. Render All Modules ---
   function renderAll() {
+    syncRestoreSampleVisibility();
     const monthlyIncome = getMonthlyIncome();
     const currSymbol = getCurrencySymbol();
 
@@ -1412,32 +1485,53 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
 
     if (statTotalDebt) statTotalDebt.textContent = formatMoney(totalDebtAmount);
     if (debtItemCount) debtItemCount.textContent = activeDebts.length.toString();
+    if (mobileStatTotalDebt) mobileStatTotalDebt.textContent = formatMoney(totalDebtAmount);
+    if (mobileDebtItemCount) mobileDebtItemCount.textContent = activeDebts.length.toString();
+    if (mobileStatTotalEmi) mobileStatTotalEmi.textContent = formatMoney(totalMinimums);
 
     // Zero-debt empty state handling (Fix empty-state behavior per requirements)
     if (activeDebts.length === 0) {
+      if (mobileStatTotalEmi) mobileStatTotalEmi.textContent = formatMoney(0);
       if (statDtiRatio) statDtiRatio.textContent = '0%';
+      if (mobileStatDtiRatio) mobileStatDtiRatio.textContent = '0%';
       if (statDtiTier) {
         statDtiTier.textContent = activeLocale === 'fr' ? 'Aucune dette active' : 'No active debt';
         statDtiTier.className = 'text-[11px] text-slate-500 dark:text-slate-400 font-semibold';
       }
+      if (mobileStatDtiTier) {
+        mobileStatDtiTier.textContent = activeLocale === 'fr' ? 'Aucune dette' : 'No active debt';
+        mobileStatDtiTier.className = 'text-[10px] text-slate-500 dark:text-slate-400 font-semibold';
+      }
       if (statDebtFreeDate) statDebtFreeDate.textContent = '—';
+      if (mobileStatDebtFreeDate) mobileStatDebtFreeDate.textContent = '—';
       if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = '—';
+      if (mobileStatDebtMonthsLeft) mobileStatDebtMonthsLeft.textContent = '—';
       if (statInterestSaved) statInterestSaved.textContent = formatMoney(0);
+      if (mobileStatInterestSaved) mobileStatInterestSaved.textContent = formatMoney(0);
       if (debtExtraSlider) debtExtraSlider.disabled = true;
+      if (mobileDebtExtraSlider) mobileDebtExtraSlider.disabled = true;
       if (inputDebtExtraNumber) {
         inputDebtExtraNumber.disabled = true;
         inputDebtExtraNumber.title = activeLocale === 'fr' ? 'Ajoutez une dette pour activer les paiements supplémentaires.' : 'Add a debt account to enable extra payments.';
       }
+      if (mobileInputDebtExtraNumber) {
+        mobileInputDebtExtraNumber.disabled = true;
+      }
     } else {
       if (debtExtraSlider) debtExtraSlider.disabled = false;
+      if (mobileDebtExtraSlider) mobileDebtExtraSlider.disabled = false;
       if (inputDebtExtraNumber) {
         inputDebtExtraNumber.disabled = false;
         inputDebtExtraNumber.title = '';
+      }
+      if (mobileInputDebtExtraNumber) {
+        mobileInputDebtExtraNumber.disabled = false;
       }
 
       // FOIR / Debt-to-Income
       const dtiRatio = monthlyIncome > 0 ? Math.round((totalMinimums / monthlyIncome) * 100) : 0;
       if (statDtiRatio) statDtiRatio.textContent = `${dtiRatio}%`;
+      if (mobileStatDtiRatio) mobileStatDtiRatio.textContent = `${dtiRatio}%`;
       if (statDtiTier) {
         if (dtiRatio <= 40) {
           statDtiTier.textContent = activeLocale === 'fr' ? 'Niveau maîtrisé (<40%)' : 'Comfortable Range (<40%)';
@@ -1448,6 +1542,18 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         } else {
           statDtiTier.textContent = activeLocale === 'fr' ? 'Taux d\'endettement élevé (>50%)' : 'High Debt Burden (>50%)';
           statDtiTier.className = 'text-[11px] text-rose-600 dark:text-rose-400 font-semibold';
+        }
+      }
+      if (mobileStatDtiTier) {
+        if (dtiRatio <= 40) {
+          mobileStatDtiTier.textContent = activeLocale === 'fr' ? 'Niveau maîtrisé (<40%)' : 'Comfortable (<40%)';
+          mobileStatDtiTier.className = 'text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold';
+        } else if (dtiRatio <= 50) {
+          mobileStatDtiTier.textContent = activeLocale === 'fr' ? 'Endettement modéré (40–50%)' : 'Moderate (40–50%)';
+          mobileStatDtiTier.className = 'text-[10px] text-amber-600 dark:text-amber-400 font-semibold';
+        } else {
+          mobileStatDtiTier.textContent = activeLocale === 'fr' ? 'Taux élevé (>50%)' : 'High Burden (>50%)';
+          mobileStatDtiTier.className = 'text-[10px] text-rose-600 dark:text-rose-400 font-semibold';
         }
       }
 
@@ -1474,16 +1580,25 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       const dateFormatted = futureDate.toLocaleDateString(dateLocale, { month: 'short', year: 'numeric' });
 
       if (statDebtFreeDate) statDebtFreeDate.textContent = totalDebtAmount > 0 ? dateFormatted : '—';
+      if (mobileStatDebtFreeDate) mobileStatDebtFreeDate.textContent = totalDebtAmount > 0 ? dateFormatted : '—';
       if (statDebtMonthsLeft) statDebtMonthsLeft.textContent = totalDebtAmount > 0 ? `${monthsToPayoff} ${t('debt.months', activeLocale)}` : '—';
+      if (mobileStatDebtMonthsLeft) mobileStatDebtMonthsLeft.textContent = totalDebtAmount > 0 ? `${monthsToPayoff} ${t('debt.months', activeLocale)}` : '—';
       if (statInterestSaved) statInterestSaved.textContent = formatMoney(interestSaved);
+      if (mobileStatInterestSaved) mobileStatInterestSaved.textContent = formatMoney(interestSaved);
     }
 
     if (extraPaymentLabel) extraPaymentLabel.textContent = formatMoney(extraMonthlyDebtPayment);
     if (inputDebtExtraNumber && document.activeElement !== inputDebtExtraNumber) {
       inputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
     }
+    if (mobileInputDebtExtraNumber && document.activeElement !== mobileInputDebtExtraNumber) {
+      mobileInputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
     if (debtExtraSlider) {
       debtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
+    }
+    if (mobileDebtExtraSlider) {
+      mobileDebtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
     }
 
     // Active strategy pill
@@ -1494,6 +1609,16 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         activeStrategyPill.textContent = t('advisor.snowballPill', activeLocale);
       } else {
         activeStrategyPill.textContent = t('advisor.foirPill', activeLocale);
+      }
+    }
+
+    if (activeStrategyPillMobile) {
+      if (debtStrategy === 'avalanche') {
+        activeStrategyPillMobile.textContent = activeLocale === 'fr' ? 'Avalanche (Taux le plus élevé)' : 'Avalanche (Highest Interest First)';
+      } else if (debtStrategy === 'snowball') {
+        activeStrategyPillMobile.textContent = activeLocale === 'fr' ? 'Boule de neige (Plus petit solde)' : 'Snowball (Smallest Balance First)';
+      } else {
+        activeStrategyPillMobile.textContent = activeLocale === 'fr' ? 'Stratégie équilibrée (Trésorerie)' : 'Balanced Strategy (Proportional Cash Flow)';
       }
     }
 
@@ -1546,6 +1671,49 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
           </div>
         </div>
       `;
+    }
+
+    // Dynamic Mobile Model Panel
+    if (mobileDebtModelPanel) {
+      let icon = '⚡';
+      let title = t('debt.avalancheTitle', activeLocale);
+      let badge = activeLocale === 'fr' ? 'Taux max' : 'Highest APR';
+      let desc = t('debt.avalancheDesc', activeLocale);
+      let example = activeLocale === 'fr'
+        ? 'Dettes à 18 %, 12 % et 8 % TAEG. Les paiements supplémentaires ciblent le solde à 18 % en premier pour minimiser les frais d\'intérêts.'
+        : 'Debts at 18%, 12%, and 8% APR. Extra payments attack the 18% account first to eliminate the highest interest cost.';
+      let adv = t('advisor.avalancheAdvantage', activeLocale);
+      let advText = t('advisor.avalancheAdvisory', activeLocale);
+
+      if (debtStrategy === 'snowball') {
+        icon = '❄️';
+        title = t('debt.snowballTitle', activeLocale);
+        badge = activeLocale === 'fr' ? 'Plus petit solde' : 'Lowest Balance';
+        desc = t('debt.snowballDesc', activeLocale);
+        example = activeLocale === 'fr'
+          ? 'Soldes de 500 €, 2 500 € et 7 000 €. Tous les remboursements supplémentaires ciblent le solde de 500 € en premier pour une victoire rapide.'
+          : 'Debts of $500, $2,500, and $7,000. All extra payments target the $500 balance first for a fast initial payoff and psychological momentum.';
+        adv = t('advisor.snowballAdvantage', activeLocale);
+        advText = t('advisor.snowballAdvisory', activeLocale);
+      } else if (debtStrategy === 'foir') {
+        icon = '🚀';
+        title = t('debt.customTitle', activeLocale);
+        badge = activeLocale === 'fr' ? 'Soulagement trésorerie' : 'Cash Flow Relief';
+        desc = t('debt.customDesc', activeLocale);
+        example = activeLocale === 'fr'
+          ? 'Mensualités de 450 €, 200 € et 150 €. Éliminer le prêt à 450 €/mois en premier libère un maximum de trésorerie disponible chaque mois.'
+          : 'Monthly EMIs of $450/mo, $200/mo, and $150/mo. Clearing the $450/mo obligation first frees up the most cash each month.';
+        adv = t('advisor.foirAdvantage', activeLocale);
+        advText = t('advisor.foirAdvisory', activeLocale);
+      }
+
+      if (mobileModelIcon) mobileModelIcon.textContent = icon;
+      if (mobileModelTitle) mobileModelTitle.textContent = title;
+      if (mobileModelBadge) mobileModelBadge.textContent = badge;
+      if (mobileModelDesc) mobileModelDesc.textContent = desc;
+      if (mobileModelExampleText) mobileModelExampleText.textContent = example;
+      if (mobileModelAdvantage) mobileModelAdvantage.textContent = adv;
+      if (mobileModelAdvisory) mobileModelAdvisory.textContent = advText;
     }
 
     // Payment Rollover Planning Banner (Section 7)
@@ -1602,7 +1770,51 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       }
     }
 
-    // Empty state without debts
+    // Mobile Rollover Banner
+    if (mobileDebtRolloverBanner) {
+      if (sortedDebts.length > 0 && (freedMonthlyEMI > 0 || extraMonthlyDebtPayment > 0)) {
+        const topDebt = sortedDebts[0];
+        const extraForTop = extraMonthlyDebtPayment + freedMonthlyEMI;
+        const totalPlannedForTop = topDebt.monthlyEMI + extraForTop;
+
+        mobileDebtRolloverBanner.classList.remove('hidden');
+        mobileDebtRolloverBanner.innerHTML = activeLocale === 'fr' ? `
+          <div class="space-y-2">
+            <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🚀</span> Cible prioritaire : <span class="text-emerald-700 dark:text-emerald-400 font-extrabold">${escapeHtml(topDebt.name)}</span>
+            </div>
+            <div class="text-[11px] text-slate-600 dark:text-slate-300">
+              ${freedMonthlyEMI > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(freedMonthlyEMI)}/mois</strong> libérés + ` : ''}
+              ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mois</strong> d'apport` : `${formatMoney(0)} d'apport`}
+              reportés sur votre cible.
+            </div>
+            <div class="flex items-center justify-between font-mono text-[11px] bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/70 shadow-2xs">
+              <span class="text-slate-600 dark:text-slate-400 text-[10px]">Total prévu :</span>
+              <span class="font-extrabold text-emerald-700 dark:text-emerald-400">${formatMoney(totalPlannedForTop)}/mois</span>
+            </div>
+          </div>
+        ` : `
+          <div class="space-y-2">
+            <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🚀</span> Payoff Target: <span class="text-emerald-700 dark:text-emerald-400 font-extrabold">${escapeHtml(topDebt.name)}</span>
+            </div>
+            <div class="text-[11px] text-slate-600 dark:text-slate-300">
+              ${freedMonthlyEMI > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(freedMonthlyEMI)}/mo</strong> freed + ` : ''}
+              ${extraMonthlyDebtPayment > 0 ? `<strong class="text-emerald-700 dark:text-emerald-400">${formatMoney(extraMonthlyDebtPayment)}/mo</strong> extra` : `${formatMoney(0)} extra`}
+              rolled into top target.
+            </div>
+            <div class="flex items-center justify-between font-mono text-[11px] bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/70 shadow-2xs">
+              <span class="text-slate-600 dark:text-slate-400 text-[10px]">Total Planned:</span>
+              <span class="font-extrabold text-emerald-700 dark:text-emerald-400">${formatMoney(totalPlannedForTop)}/mo</span>
+            </div>
+          </div>
+        `;
+      } else {
+        mobileDebtRolloverBanner.classList.add('hidden');
+      }
+    }
+
+    // Empty state without debts (Desktop Table)
     if (sortedDebts.length === 0) {
       debtsTbody.innerHTML = `
         <tr>
@@ -1698,7 +1910,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         .join('');
     }
 
-    // Render Paid Off Accounts Section (Section 6)
+    // Render Paid Off Accounts Section (Desktop Table)
     if (containerPaidDebts && paidDebtsTbody) {
       if (paidDebts.length > 0) {
         containerPaidDebts.classList.remove('hidden');
@@ -1754,23 +1966,230 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       }
     }
 
-    // Attach Event Listeners to Debt Table Buttons
+    // ==========================================
+    // Render Mobile Expandable Liabilities Ledger
+    // ==========================================
+    if (debtsMobileList) {
+      if (sortedDebts.length === 0) {
+        debtsMobileList.innerHTML = `
+          <div class="py-8 text-center text-xs text-slate-500 dark:text-slate-400 p-4 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 space-y-1.5">
+            <div class="text-2xl">${paidDebts.length > 0 ? '🎉' : '📋'}</div>
+            <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">
+              ${paidDebts.length > 0
+                ? (activeLocale === 'fr' ? 'Toutes les dettes sont remboursées !' : 'All Recorded Debts are Paid Off!')
+                : (activeLocale === 'fr' ? 'Aucune dette en cours' : 'No Active Loans or Debts Recorded')}
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 text-[11px]">
+              ${paidDebts.length > 0
+                ? (activeLocale === 'fr'
+                    ? 'Félicitations ! Vous avez soldé tous vos crédits en cours.'
+                    : 'Congratulations! You have cleared all your active loan accounts.')
+                : (activeLocale === 'fr'
+                    ? 'Ajoutez votre première dette ci-dessus pour voir votre plan prioritaire.'
+                    : 'Add your first loan or debt obligation above to see your prioritized payoff order.')}
+            </p>
+          </div>
+        `;
+      } else {
+        debtsMobileList.innerHTML = sortedDebts
+          .map((d, index) => {
+            let reasonTag = '';
+            if (index === 0) {
+              if (debtStrategy === 'avalanche') {
+                const label = activeLocale === 'fr' ? 'Taux max' : 'Top Rate';
+                reasonTag = `<span class="text-[9px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded ml-1">${label}</span>`;
+              } else if (debtStrategy === 'snowball') {
+                const label = activeLocale === 'fr' ? 'Plus petit solde' : 'Smallest Balance';
+                reasonTag = `<span class="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded ml-1">${label}</span>`;
+              } else {
+                const label = activeLocale === 'fr' ? 'Mensualité max' : 'Highest EMI';
+                reasonTag = `<span class="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded ml-1">${label}</span>`;
+              }
+            }
+
+            const isExpanded = expandedDebtId === d.id;
+            const history = d.paymentHistory || [];
+            const historyCount = history.length;
+
+            return `
+              <div class="mobile-loan-card border ${isExpanded ? 'border-emerald-500/70 dark:border-emerald-600/70 shadow-xs ring-1 ring-emerald-500/30' : 'border-slate-200 dark:border-slate-800'} rounded-xl bg-white dark:bg-slate-900 transition-all overflow-hidden" data-debt-id="${d.id}">
+                <!-- Collapsed Loan Header / Summary (Click to expand) -->
+                <div class="mobile-loan-header p-3.5 cursor-pointer flex flex-col gap-2 select-none" role="button" tabindex="0" aria-expanded="${isExpanded ? 'true' : 'false'}">
+                  <!-- First Row: Priority number, Tag, Loan Name, and Right-aligned Chevron -->
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5 min-w-0">
+                      <span class="font-mono text-xs font-bold text-emerald-800 dark:text-emerald-400 shrink-0">#${index + 1}</span>
+                      ${reasonTag}
+                      <span class="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm truncate">${escapeHtml(d.name)}</span>
+                    </div>
+                    <!-- Right-aligned chevron -->
+                    <div class="shrink-0 p-1 text-slate-400">
+                      <svg class="w-4 h-4 transition-transform duration-200 chevron-icon ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Second Row: Principal, APR, EMI with subtle dividers -->
+                  <div class="flex items-center gap-2.5 text-xs font-mono">
+                    <span class="font-bold text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm">${formatMoney(d.currentOutstandingPrincipal)}</span>
+                    <span class="text-slate-300 dark:text-slate-700 select-none">|</span>
+                    <span class="text-rose-600 dark:text-rose-400 font-semibold text-xs">${d.interestRate}% APR</span>
+                    <span class="text-slate-300 dark:text-slate-700 select-none">|</span>
+                    <span class="text-slate-600 dark:text-slate-300 text-xs">${formatMoney(d.monthlyEMI)}${activeLocale === 'fr' ? '/mois' : '/mo'}</span>
+                  </div>
+                </div>
+
+                <!-- Expanded Loan Details Section (Visible only when expanded) -->
+                <div class="mobile-loan-expanded ${isExpanded ? '' : 'hidden'} border-t border-slate-100 dark:border-slate-800 p-3.5 bg-slate-50/70 dark:bg-slate-800/40 space-y-3.5 text-xs">
+                  <!-- Full Loan Breakdown -->
+                  <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                    <div class="p-2 rounded-lg bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80">
+                      <span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-sans font-bold">${t('debt.currentPrincipal', activeLocale)}</span>
+                      <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(d.currentOutstandingPrincipal)}</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80">
+                      <span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-sans font-bold">Original Principal</span>
+                      <span class="font-bold text-slate-700 dark:text-slate-300">${formatMoney(d.originalPrincipal)}</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80">
+                      <span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-sans font-bold">${t('debt.interestRate', activeLocale)}</span>
+                      <span class="font-bold text-rose-600 dark:text-rose-400">${d.interestRate}% APR</span>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80">
+                      <span class="text-slate-400 dark:text-slate-500 block text-[9px] uppercase font-sans font-bold">${t('debt.minPayment', activeLocale)}</span>
+                      <span class="font-bold text-slate-800 dark:text-slate-200">${formatMoney(d.monthlyEMI)}${activeLocale === 'fr' ? '/mois' : '/mo'}</span>
+                    </div>
+                  </div>
+
+                  <!-- Recorded Payment History List -->
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                      <span>Payment History (${historyCount})</span>
+                      ${historyCount > 0 ? `<button type="button" data-history-debt-id="${d.id}" class="btn-history-debt text-emerald-700 dark:text-emerald-400 hover:underline text-[10px] font-semibold cursor-pointer">View All</button>` : ''}
+                    </div>
+                    ${historyCount === 0 ? `
+                      <p class="text-[11px] text-slate-400 dark:text-slate-500 italic p-2 rounded-lg bg-white dark:bg-slate-900/60 border border-dashed border-slate-200 dark:border-slate-800 text-center">
+                        No payments recorded yet for this account.
+                      </p>
+                    ` : `
+                      <div class="divide-y divide-slate-200 dark:divide-slate-700/60 border border-slate-200 dark:border-slate-700/80 rounded-lg bg-white dark:bg-slate-900/90 overflow-hidden text-[11px] font-mono">
+                        ${history.slice(-3).reverse().map(p => `
+                          <div class="p-2 flex items-center justify-between gap-2">
+                            <div>
+                              <span class="text-slate-800 dark:text-slate-200 font-semibold block">${formatDateDisplay(p.date)}</span>
+                              <span class="text-slate-400 text-[10px] font-sans">Prin: ${formatMoney(p.principalPaid)} | Int: ${formatMoney(p.interestPaid)}</span>
+                            </div>
+                            <span class="font-bold text-emerald-700 dark:text-emerald-400">${formatMoney(p.totalPayment)}</span>
+                          </div>
+                        `).join('')}
+                      </div>
+                    `}
+                  </div>
+
+                  <!-- Primary Action Button: Dedicated Add Payment / Record Payment -->
+                  <button
+                    type="button"
+                    data-record-payment-id="${d.id}"
+                    class="btn-record-debt-payment w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>💳</span>
+                    <span>${activeLocale === 'fr' ? 'Enregistrer un versement' : 'Add Payment / Record Payment'}</span>
+                  </button>
+
+                  <!-- Secondary Actions -->
+                  <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <button
+                      type="button"
+                      data-delete-debt-id="${d.id}"
+                      class="btn-delete-debt text-slate-400 hover:text-rose-600 text-[11px] font-medium p-1 flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      <span>${activeLocale === 'fr' ? 'Supprimer' : 'Delete Loan'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        // Wire accordion toggle on mobile loan headers
+        debtsMobileList.querySelectorAll('.mobile-loan-header').forEach((hdr) => {
+          hdr.addEventListener('click', () => {
+            const card = hdr.closest('.mobile-loan-card');
+            const dId = card?.getAttribute('data-debt-id');
+            if (!dId) return;
+            expandedDebtId = expandedDebtId === dId ? null : dId;
+            renderDebtManagement(monthlyIncome);
+          });
+        });
+      }
+    }
+
+    // Render Mobile Paid Off Accounts Section
+    if (mobileContainerPaidDebts && mobilePaidDebtsList) {
+      if (paidDebts.length > 0) {
+        mobileContainerPaidDebts.classList.remove('hidden');
+        if (mobileCountPaidDebts) mobileCountPaidDebts.textContent = paidDebts.length.toString();
+        mobilePaidDebtsList.innerHTML = paidDebts
+          .map((d) => `
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-2 text-xs">
+              <div>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 mb-1">
+                  ${activeLocale === 'fr' ? '✓ Soldé' : '✓ Paid Off'}
+                </span>
+                <span class="font-bold text-slate-900 dark:text-slate-100 block">${escapeHtml(d.name)}</span>
+                <span class="text-[10px] text-slate-500 font-mono">Original: ${formatMoney(d.originalPrincipal)}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  data-reopen-debt-id="${d.id}"
+                  class="btn-reopen-debt text-slate-400 hover:text-emerald-600 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                  title="Reopen account"
+                  aria-label="Reopen account"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+                <button
+                  type="button"
+                  data-delete-debt-id="${d.id}"
+                  class="btn-delete-debt text-slate-400 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                  title="Delete account"
+                  aria-label="Delete account"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </div>
+          `)
+          .join('');
+      } else {
+        mobileContainerPaidDebts.classList.add('hidden');
+      }
+    }
+
+    // Attach Event Listeners to Debt Table and Card Buttons
     document.querySelectorAll('.btn-record-debt-payment').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-record-payment-id');
         if (id) openDebtPaymentModal(id, false);
       });
     });
 
     document.querySelectorAll('.btn-history-debt').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-history-debt-id');
         if (id) openDebtPaymentModal(id, true);
       });
     });
 
     document.querySelectorAll('.btn-delete-debt').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-delete-debt-id');
         if (!id) return;
         debts = debts.filter((d) => d.id !== id);
@@ -1780,7 +2199,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     });
 
     document.querySelectorAll('.btn-reopen-debt').forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-reopen-debt-id');
         const debt = debts.find((d) => d.id === id);
         if (!debt) return;
@@ -1809,6 +2229,10 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (efundMonthlyOutflow) efundMonthlyOutflow.textContent = `${formatMoney(totalMonthlyExpenses)}/mo`;
     if (targetEfund3mo) targetEfund3mo.textContent = formatMoney(totalMonthlyExpenses * 3);
     if (targetEfund6mo) targetEfund6mo.textContent = formatMoney(totalMonthlyExpenses * 6);
+
+    if (mobileEfundMonthlyOutflow) mobileEfundMonthlyOutflow.textContent = `${formatMoney(totalMonthlyExpenses)}/mo`;
+    if (mobileTargetEfund3mo) mobileTargetEfund3mo.textContent = formatMoney(totalMonthlyExpenses * 3);
+    if (mobileTargetEfund6mo) mobileTargetEfund6mo.textContent = formatMoney(totalMonthlyExpenses * 6);
 
     // Render Active Goals
     if (!goalsContainer) return;
@@ -1908,43 +2332,46 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
                 : 'text-slate-500 dark:text-slate-400';
 
             return `
-              <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 p-2 space-y-1.5">
-                <div class="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono border-b border-slate-200/60 dark:border-slate-800 pb-1">
-                  <span class="font-bold text-slate-800 dark:text-slate-200">${formatMonthYear(m)}</span>
-                  <div class="flex items-center gap-1.5 sm:gap-2">
+              <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 p-2.5 sm:p-2 space-y-2 sm:space-y-1.5">
+                <!-- Month Header Table Summary -->
+                <div class="flex items-center justify-between gap-1 text-xs sm:text-[10px] sm:font-mono border-b border-slate-200/60 dark:border-slate-800 pb-1.5 sm:pb-1">
+                  <span class="font-semibold sm:font-bold text-slate-800 dark:text-slate-200">${formatMonthYear(m)}</span>
+                  <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[10px]">
                     <span class="text-slate-500 dark:text-slate-400">${activeLocale === 'fr' ? 'Prévu :' : 'Plan:'} ${formatMoney(monthPlanned)}</span>
-                    <span class="font-bold text-slate-900 dark:text-slate-100">${activeLocale === 'fr' ? 'Réalisé :' : 'Actual:'} ${formatMoney(monthActual)}</span>
+                    <span class="font-semibold sm:font-bold text-slate-900 dark:text-slate-100">${activeLocale === 'fr' ? 'Réalisé :' : 'Actual:'} ${formatMoney(monthActual)}</span>
                     <span class="${diffClass}">(${diffText})</span>
                   </div>
                 </div>
-                <div class="divide-y divide-slate-200/40 dark:divide-slate-800 font-mono text-[10px]">
+
+                <!-- Aligned Entries Financial Table -->
+                <div class="divide-y divide-slate-200/50 dark:divide-slate-800 text-xs sm:text-[10px] sm:font-mono">
                   ${monthEntries
                     .map(
                       (c) => `
-                    <div class="flex items-center justify-between py-1 px-0.5">
-                      <span class="text-slate-600 dark:text-slate-300 font-medium">${formatDateDisplay(c.date || c.month)}</span>
+                    <div class="flex items-center justify-between py-1.5 sm:py-1 px-0.5">
+                      <span class="text-slate-600 dark:text-slate-300 font-normal sm:font-medium">${formatDateDisplay(c.date || c.month)}</span>
                       <div class="flex items-center gap-2">
-                        <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(c.actual)}</span>
-                        <div class="flex items-center gap-0.5">
+                        <span class="font-semibold sm:font-bold font-mono text-slate-900 dark:text-slate-100">${formatMoney(c.actual)}</span>
+                        <div class="flex items-center gap-1 sm:gap-0.5">
                           <button
                             type="button"
                             data-edit-contrib-id="${c.id}"
                             data-goal-id="${g.id}"
-                            class="btn-edit-contrib text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 p-0.5 rounded transition-colors cursor-pointer"
+                            class="btn-edit-contrib text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 p-1 sm:p-0.5 rounded transition-colors cursor-pointer"
                             title="${activeLocale === 'fr' ? `Modifier le versement (${formatDateDisplay(c.date || c.month)})` : `Edit contribution (${formatDateDisplay(c.date || c.month)})`}"
                             aria-label="${activeLocale === 'fr' ? 'Modifier le versement' : 'Edit contribution'}"
                           >
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                           </button>
                           <button
                             type="button"
                             data-delete-contrib-id="${c.id}"
                             data-goal-id="${g.id}"
-                            class="btn-delete-contrib text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-0.5 rounded transition-colors cursor-pointer"
+                            class="btn-delete-contrib text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 sm:p-0.5 rounded transition-colors cursor-pointer"
                             title="${activeLocale === 'fr' ? 'Supprimer le versement' : 'Remove contribution'}"
                             aria-label="${activeLocale === 'fr' ? 'Supprimer le versement' : 'Remove contribution'}"
                           >
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <svg class="w-3.5 h-3.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                           </button>
                         </div>
                       </div>
@@ -1959,12 +2386,13 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
           .join('');
 
         return `
-        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between">
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3.5 sm:space-y-3 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between">
           <div class="space-y-3">
+            <!-- Goal Header -->
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate pr-2" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</h4>
+              <h4 class="text-sm sm:text-xs font-semibold sm:font-bold text-slate-900 dark:text-slate-100 truncate pr-2" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</h4>
               <div class="flex items-center gap-1.5 shrink-0">
-                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                <span class="text-[11px] sm:text-[10px] sm:font-mono font-semibold sm:font-bold px-2 py-0.5 rounded-full sm:rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                   ${pct}% ${activeLocale === 'fr' ? 'atteint' : 'Done'}
                 </span>
                 <button
@@ -1981,25 +2409,48 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
               </div>
             </div>
 
-            <div class="space-y-1">
-              <div class="flex justify-between items-baseline text-xs font-mono">
-                <span class="font-bold text-slate-900 dark:text-slate-100">${formatMoney(totalSaved)}</span>
-                <span class="text-slate-500 dark:text-slate-400">${activeLocale === 'fr' ? 'Cible :' : 'Target:'} ${formatMoney(g.target)}</span>
+            <!-- Financial Information Rows with Consistent Hierarchy & Spacing -->
+            <div class="space-y-2 sm:space-y-1 pt-0.5 sm:pt-0">
+              <!-- Primary Row: Current Saved (Prominent & Bold) vs Target (Neatly aligned right) -->
+              <div class="flex justify-between items-baseline">
+                <div>
+                  <span class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium block sm:hidden">
+                    ${activeLocale === 'fr' ? 'Épargne actuelle' : 'Current Savings'}
+                  </span>
+                  <div class="text-lg sm:text-xs font-bold sm:font-mono text-slate-900 dark:text-slate-100">
+                    ${formatMoney(totalSaved)}
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs sm:text-xs sm:font-mono text-slate-500 dark:text-slate-400">
+                    ${activeLocale === 'fr' ? 'Cible :' : 'Target:'} <span class="font-semibold sm:font-normal text-slate-800 dark:text-slate-200">${formatMoney(g.target)}</span>
+                  </span>
+                </div>
               </div>
-              <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                <span>${activeLocale === 'fr' ? 'Restant :' : 'Remaining:'} <strong class="text-slate-700 dark:text-slate-300 font-semibold">${formatMoney(remaining)}</strong></span>
-                <span>${activeLocale === 'fr' ? 'Départ :' : 'Starting:'} ${formatMoney(startingAmount)}</span>
+
+              <!-- Secondary Row: Remaining (Readable without competing) vs Starting (Neatly aligned right) -->
+              <div class="flex justify-between items-center text-xs sm:text-[10px] text-slate-500 dark:text-slate-400 sm:font-mono">
+                <div>
+                  <span>${activeLocale === 'fr' ? 'Restant :' : 'Remaining:'}</span>
+                  <span class="font-medium text-slate-700 dark:text-slate-300 ml-1">${formatMoney(remaining)}</span>
+                </div>
+                <div class="text-right">
+                  <span>${activeLocale === 'fr' ? 'Départ :' : 'Starting:'}</span>
+                  <span class="text-slate-600 dark:text-slate-400 ml-1">${formatMoney(startingAmount)}</span>
+                </div>
               </div>
             </div>
 
-            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden my-1 sm:my-0">
               <div class="bg-emerald-600 h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
 
-            <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+            <!-- Standardized Plan, Actual, Monthly & Remaining Duration -->
+            <div class="space-y-1.5 sm:space-y-1 pt-2 sm:pt-1 border-t border-slate-100 dark:border-slate-800 text-xs sm:text-[11px] text-slate-500 dark:text-slate-400 sm:font-mono">
               <div class="flex justify-between items-center">
                 <span class="flex items-center gap-1">
-                  ${activeLocale === 'fr' ? 'Prévu :' : 'Plan:'} +${formatMoney(g.monthly)}${activeLocale === 'fr' ? '/mois' : '/mo'}
+                  ${activeLocale === 'fr' ? 'Prévu :' : 'Plan:'} <span class="font-medium text-slate-800 dark:text-slate-200">+${formatMoney(g.monthly)}${activeLocale === 'fr' ? '/mois' : '/mo'}</span>
                   <button
                     type="button"
                     data-edit-plan-goal-id="${g.id}"
@@ -2007,42 +2458,42 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
                     title="${activeLocale === 'fr' ? 'Modifier l\'allocation mensuelle prévue' : 'Edit planned monthly allocation'}"
                     aria-label="${activeLocale === 'fr' ? 'Modifier l\'allocation mensuelle prévue' : 'Edit planned monthly allocation'}"
                   >
-                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <svg class="w-3 h-3 sm:w-2.5 sm:h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                   </button>
                 </span>
                 <span class="font-medium text-slate-700 dark:text-slate-300">${plannedProjectionText}</span>
               </div>
               ${actualProjectionText ? `
-              <div class="flex justify-between items-center text-[10px]">
+              <div class="flex justify-between items-center text-xs sm:text-[10px]">
                 <span class="text-slate-400">${activeLocale === 'fr' ? 'Réalisé :' : 'Actual:'}</span>
                 <span class="font-medium text-emerald-800 dark:text-emerald-300">${actualProjectionText}</span>
               </div>
               ` : ''}
             </div>
 
-            <!-- Contribution Action -->
+            <!-- Contribution Action Button -->
             <button
               type="button"
               data-open-contrib-goal-id="${g.id}"
-              class="btn-open-contrib-modal w-full text-xs font-semibold py-1.5 px-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+              class="btn-open-contrib-modal w-full text-xs font-semibold py-2 sm:py-1.5 px-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
               <span>${activeLocale === 'fr' ? 'Enregistrer un versement' : 'Record Contribution'}</span>
             </button>
 
-            <!-- Compact Contribution History Section -->
+            <!-- Clean Tabular Contribution History Section -->
             ${contributions.length > 0 ? `
-            <details class="text-[11px] border border-slate-200/70 dark:border-slate-800 rounded-xl p-2 bg-slate-50/60 dark:bg-slate-850/60 group">
-              <summary class="cursor-pointer font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between select-none text-[11px]">
+            <details class="text-xs sm:text-[11px] border border-slate-200/70 dark:border-slate-800 rounded-xl p-2.5 sm:p-2 bg-slate-50/60 dark:bg-slate-850/60 group">
+              <summary class="cursor-pointer font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between select-none text-xs sm:text-[11px]">
                 <span>${activeLocale === 'fr' ? `Historique des versements (${contributions.length} ${contributions.length === 1 ? 'saisie' : 'saisies'})` : `Contribution History (${contributions.length} ${contributions.length === 1 ? 'entry' : 'entries'})`}</span>
                 <span class="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
               </summary>
-              <div class="mt-2 space-y-2">
+              <div class="mt-2.5 sm:mt-2 space-y-2">
                 ${historyHtml}
               </div>
             </details>
             ` : `
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 text-center py-0.5">
+            <div class="text-xs sm:text-[10px] text-slate-500 dark:text-slate-400 text-center py-1 sm:py-0.5">
               ${activeLocale === 'fr' ? 'Aucun versement enregistré pour l\'instant' : 'No actual contributions recorded yet'}
             </div>
             `}
@@ -2594,6 +3045,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       state.transactions.shift();
       return;
     }
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
 
     const usedMethod = expenseLoggerMethod;
     track('expense_added', {
@@ -2884,6 +3337,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         inputRestoreJson.value = '';
         return;
       }
+      markUserHasSavedData();
+      syncRestoreSampleVisibility();
 
       // Reload in-memory state
       state = loadStoredState();
@@ -2912,26 +3367,39 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     }
   });
 
-  // Debt Strategy Buttons (Vertical Tabs)
+  // Debt Strategy Buttons (Vertical Tabs on Desktop, Segmented Tabs on Mobile)
   function updateDebtStratButtons() {
     const stratConfigs = [
-      { id: 'avalanche', btn: btnStratAvalanche },
-      { id: 'snowball', btn: btnStratSnowball },
-      { id: 'foir', btn: btnStratFoir }
+      { id: 'avalanche', btn: btnStratAvalanche, mobBtn: mobileStratAvalanche },
+      { id: 'snowball', btn: btnStratSnowball, mobBtn: mobileStratSnowball },
+      { id: 'foir', btn: btnStratFoir, mobBtn: mobileStratFoir }
     ];
 
-    stratConfigs.forEach(({ id, btn }) => {
-      if (!btn) return;
+    stratConfigs.forEach(({ id, btn, mobBtn }) => {
       const isSelected = debtStrategy === id;
-      btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-      const badge = btn.querySelector('.strat-badge');
+      if (btn) {
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        const badge = btn.querySelector('.strat-badge');
 
-      if (isSelected) {
-        btn.className = 'debt-strat-btn active w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 dark:border-emerald-500 text-emerald-950 dark:text-emerald-200 shadow-2xs';
-        if (badge) badge.classList.remove('hidden');
-      } else {
-        btn.className = 'debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 hover:bg-slate-100/80 dark:bg-slate-800/60 dark:hover:bg-slate-800 dark:border-slate-700 text-slate-700 dark:text-slate-300';
-        if (badge) badge.classList.add('hidden');
+        if (isSelected) {
+          btn.className = 'debt-strat-btn active w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 dark:border-emerald-500 text-emerald-950 dark:text-emerald-200 shadow-2xs';
+          if (badge) badge.classList.remove('hidden');
+        } else {
+          btn.className = 'debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 hover:bg-slate-100/80 dark:bg-slate-800/60 dark:hover:bg-slate-800 dark:border-slate-700 text-slate-700 dark:text-slate-300';
+          if (badge) badge.classList.add('hidden');
+        }
+      }
+
+      if (mobBtn) {
+        mobBtn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        const tag = mobBtn.querySelector('.model-tag');
+        if (isSelected) {
+          mobBtn.className = 'mobile-debt-strat-btn active text-center py-2 px-1 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-2xs border border-emerald-500/30 cursor-pointer flex flex-col items-center justify-center gap-0.5';
+          if (tag) tag.className = 'model-tag inline-block text-[9px] font-semibold tracking-tight px-1.5 py-0.5 rounded bg-emerald-100/70 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 leading-none mt-0.5';
+        } else {
+          mobBtn.className = 'mobile-debt-strat-btn text-center py-2 px-1 rounded-xl text-xs font-medium transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent cursor-pointer flex flex-col items-center justify-center gap-0.5';
+          if (tag) tag.className = 'model-tag inline-block text-[9px] font-semibold tracking-tight px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400 leading-none mt-0.5';
+        }
       }
     });
   }
@@ -2954,10 +3422,61 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     renderDebtManagement(getMonthlyIncome());
   });
 
+  mobileStratAvalanche?.addEventListener('click', () => {
+    debtStrategy = 'avalanche';
+    updateDebtStratButtons();
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  mobileStratSnowball?.addEventListener('click', () => {
+    debtStrategy = 'snowball';
+    updateDebtStratButtons();
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  mobileStratFoir?.addEventListener('click', () => {
+    debtStrategy = 'foir';
+    updateDebtStratButtons();
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  // Mobile Model Explanation "Read More" Toggle
+  btnMobileModelReadMore?.addEventListener('click', () => {
+    if (!mobileModelDetails) return;
+    const isExpanded = !mobileModelDetails.classList.contains('hidden');
+    if (isExpanded) {
+      mobileModelDetails.classList.add('hidden');
+      btnMobileModelReadMore.setAttribute('aria-expanded', 'false');
+      if (labelMobileModelReadMore) labelMobileModelReadMore.textContent = activeLocale === 'fr' ? 'En savoir plus' : 'Read More';
+      if (iconMobileModelReadMore) iconMobileModelReadMore.classList.remove('rotate-180');
+    } else {
+      mobileModelDetails.classList.remove('hidden');
+      btnMobileModelReadMore.setAttribute('aria-expanded', 'true');
+      if (labelMobileModelReadMore) labelMobileModelReadMore.textContent = activeLocale === 'fr' ? 'Moins de détails' : 'Show Less';
+      if (iconMobileModelReadMore) iconMobileModelReadMore.classList.add('rotate-180');
+    }
+  });
+
   debtExtraSlider?.addEventListener('input', () => {
     extraMonthlyDebtPayment = parseFloat(debtExtraSlider.value) || 0;
+    if (mobileDebtExtraSlider) mobileDebtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
     if (inputDebtExtraNumber && document.activeElement !== inputDebtExtraNumber) {
       inputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
+    if (mobileInputDebtExtraNumber && document.activeElement !== mobileInputDebtExtraNumber) {
+      mobileInputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  mobileDebtExtraSlider?.addEventListener('input', () => {
+    extraMonthlyDebtPayment = parseFloat(mobileDebtExtraSlider?.value || '0') || 0;
+    if (debtExtraSlider) debtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
+    if (inputDebtExtraNumber && document.activeElement !== inputDebtExtraNumber) {
+      inputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
+    if (mobileInputDebtExtraNumber && document.activeElement !== mobileInputDebtExtraNumber) {
+      mobileInputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
     }
     renderDebtManagement(getMonthlyIncome());
   });
@@ -2968,10 +3487,31 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (debtExtraSlider) {
       debtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
     }
+    if (mobileDebtExtraSlider) {
+      mobileDebtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
+    }
+    if (mobileInputDebtExtraNumber && document.activeElement !== mobileInputDebtExtraNumber) {
+      mobileInputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
     renderDebtManagement(getMonthlyIncome());
   });
 
-  // Add Debt Form (Allows 0 to 100,000,000 without errors)
+  mobileInputDebtExtraNumber?.addEventListener('input', () => {
+    const val = parseFloat(mobileInputDebtExtraNumber?.value || '0') || 0;
+    extraMonthlyDebtPayment = Math.min(100000000, Math.max(0, val));
+    if (debtExtraSlider) {
+      debtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
+    }
+    if (mobileDebtExtraSlider) {
+      mobileDebtExtraSlider.value = Math.min(500000, extraMonthlyDebtPayment).toString();
+    }
+    if (inputDebtExtraNumber && document.activeElement !== inputDebtExtraNumber) {
+      inputDebtExtraNumber.value = extraMonthlyDebtPayment.toString();
+    }
+    renderDebtManagement(getMonthlyIncome());
+  });
+
+  // Add Debt Form (Desktop)
   formAddDebt?.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = inputDebtName.value.trim();
@@ -3009,11 +3549,63 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       debts.pop();
     }
     if (!savedDebt) return;
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     trackFormComplete('debt_entry', { form_type: 'debt' });
     inputDebtName.value = '';
     inputDebtBalance.value = '';
     inputDebtRate.value = '';
     inputDebtMinimum.value = '';
+    renderAll();
+    showContextualFeedback(document.getElementById('tab-view-debt'));
+  });
+
+  // Add Debt Form (Mobile)
+  formAddDebtMobile?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!inputDebtNameMobile || !inputDebtBalanceMobile || !inputDebtRateMobile || !inputDebtMinimumMobile) return;
+    const name = inputDebtNameMobile.value.trim();
+    const balance = parseFloat(inputDebtBalanceMobile.value);
+    const rate = parseFloat(inputDebtRateMobile.value) || 0;
+    const minimum = parseFloat(inputDebtMinimumMobile.value);
+
+    if (!name) return;
+    if (isNaN(balance) || balance < 0 || balance > 100000000) return;
+    if (isNaN(minimum) || minimum < 0 || minimum > 100000000) return;
+    if (isNaN(rate) || rate < 0 || rate > 100) return;
+
+    const isPaid = balance <= 0;
+    debts.push({
+      id: `debt-${Date.now()}`,
+      name,
+      debtName: name,
+      originalPrincipal: balance,
+      currentOutstandingPrincipal: balance,
+      balance,
+      interestRate: rate,
+      rate,
+      monthlyEMI: minimum,
+      minimum,
+      paymentHistory: [],
+      active: !isPaid,
+      paidOff: isPaid
+    });
+
+    let savedDebt = false;
+    try {
+      saveDebtsStorage(debts);
+      savedDebt = true;
+    } catch (_) {
+      debts.pop();
+    }
+    if (!savedDebt) return;
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
+    trackFormComplete('debt_entry', { form_type: 'debt' });
+    inputDebtNameMobile.value = '';
+    inputDebtBalanceMobile.value = '';
+    inputDebtRateMobile.value = '';
+    inputDebtMinimumMobile.value = '';
     renderAll();
     showContextualFeedback(document.getElementById('tab-view-debt'));
   });
@@ -3425,6 +4017,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       goals.pop();
     }
     if (!savedGoal) return;
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     trackFormComplete('savings_goal', { form_type: 'goal' });
     inputGoalName.value = '';
     inputGoalTarget.value = '';
@@ -3435,6 +4029,12 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   });
 
   btnScrollToAddGoal?.addEventListener('click', () => {
+    const el = document.getElementById('section-add-goal');
+    el?.scrollIntoView({ behavior: 'smooth' });
+    inputGoalName?.focus();
+  });
+
+  mobileBtnScrollToAddGoal?.addEventListener('click', () => {
     const el = document.getElementById('section-add-goal');
     el?.scrollIntoView({ behavior: 'smooth' });
     inputGoalName?.focus();
@@ -3761,6 +4361,7 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
   document.querySelectorAll('#btn-open-reset-modal, .btn-open-reset-modal').forEach((btn) => {
     btn.addEventListener('click', () => {
       if (btn.closest('#bill-splitter-container')) return;
+      syncRestoreSampleVisibility();
       resetConfirmModal?.classList.remove('hidden');
     });
   });
@@ -3948,6 +4549,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (!pendingImportResult) return;
     state.transactions = [...pendingImportResult.transactions];
     saveStoredState({ transactions: state.transactions });
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     closeImportModal();
     renderAll();
     switchTab('tracker');
@@ -3961,6 +4564,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (!pendingImportResult) return;
     state.transactions = [...pendingImportResult.transactions, ...state.transactions];
     saveStoredState({ transactions: state.transactions });
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     closeImportModal();
     renderAll();
     switchTab('tracker');
@@ -4168,6 +4773,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (!pendingTabImportResult) return;
     state.transactions = [...pendingTabImportResult.transactions];
     saveStoredState({ transactions: state.transactions });
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     renderAll();
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
@@ -4180,6 +4787,8 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
     if (!pendingTabImportResult) return;
     state.transactions = [...pendingTabImportResult.transactions, ...state.transactions];
     saveStoredState({ transactions: state.transactions });
+    markUserHasSavedData();
+    syncRestoreSampleVisibility();
     renderAll();
     switchTab('tracker');
     const anchor = document.getElementById('live-tool-anchor');
@@ -4250,7 +4859,29 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
         view.classList.add('hidden');
       }
     });
+
+    // Mobile Knowledge & Guides: show relocated informational SEO content on mobile only when Knowledge tab is active
+    const infoContent = document.getElementById('homepage-informational-content');
+    if (infoContent) {
+      if (tabId === 'knowledge' || window.innerWidth >= 640) {
+        infoContent.classList.remove('hidden');
+      } else {
+        infoContent.classList.add('hidden');
+      }
+    }
   }
+
+  // Handle window resizing between mobile and desktop/tablet viewports
+  window.addEventListener('resize', () => {
+    const infoContent = document.getElementById('homepage-informational-content');
+    if (infoContent) {
+      if (currentActiveTab === 'knowledge' || window.innerWidth >= 640) {
+        infoContent.classList.remove('hidden');
+      } else {
+        infoContent.classList.add('hidden');
+      }
+    }
+  });
 
   (window as any).switchTab = switchTab;
   window.addEventListener('app-switch-tab', (e: any) => {
@@ -4494,6 +5125,162 @@ const currencyLabel = currencyLabels[locale] || 'Change Currency';
       track('template_sheet_opened', { template_name: tmplName });
     });
   });
+
+  // --- Functional Template Tracking Integration ---
+  const SAVINGS_TEMPLATES: Record<string, { name: string; target: number; current: number; monthly: number }> = {
+    '52-week-savings-challenge': { name: '52-Week Challenge', target: 1378, current: 0, monthly: 115 },
+    '5000-savings-challenge': { name: '$5,000 Savings Challenge', target: 5000, current: 0, monthly: 417 },
+    '10000-savings-challenge': { name: '$10,000 Savings Challenge', target: 10000, current: 0, monthly: 833 },
+    'biweekly-savings-challenge': { name: 'Biweekly Savings Challenge', target: 2600, current: 0, monthly: 217 },
+    'emergency-fund': { name: 'Emergency Reserve Fund', target: 15000, current: 2500, monthly: 500 },
+    'emergency-fund-planner': { name: 'Emergency Reserve Fund', target: 15000, current: 2500, monthly: 500 },
+    'sinking-fund': { name: 'Sinking Fund (Annual Reserve)', target: 3000, current: 500, monthly: 250 },
+    'sinking-fund-planner': { name: 'Sinking Fund (Annual Reserve)', target: 3000, current: 500, monthly: 250 },
+    '401k-retirement': { name: '401(k) Retirement Portfolio', target: 50000, current: 5000, monthly: 1000 },
+    '401k-retirement-planner': { name: '401(k) Retirement Portfolio', target: 50000, current: 5000, monthly: 1000 },
+    'roth-ira': { name: 'Roth IRA Annual Target', target: 7000, current: 1000, monthly: 583 },
+    'roth-ira-planner': { name: 'Roth IRA Annual Target', target: 7000, current: 1000, monthly: 583 },
+    'net-worth': { name: 'Net Worth Milestone', target: 100000, current: 15000, monthly: 1500 }
+  };
+
+  const DEBT_TEMPLATES: Record<string, { name: string; balance: number; rate: number; minimum: number; strategy: 'snowball' | 'avalanche' | 'hybrid' }> = {
+    'debt-snowball': { name: 'Credit Card (Lowest Balance)', balance: 2500, rate: 19.9, minimum: 75, strategy: 'snowball' },
+    'debt-avalanche': { name: 'High-Interest Loan', balance: 8000, rate: 24.5, minimum: 220, strategy: 'avalanche' },
+    'debt-to-income': { name: 'Personal Loan', balance: 5000, rate: 12.0, minimum: 150, strategy: 'snowball' },
+    'student-loan': { name: 'Federal Student Loan', balance: 25000, rate: 5.5, minimum: 275, strategy: 'avalanche' },
+    'student-loan-planner': { name: 'Federal Student Loan', balance: 25000, rate: 5.5, minimum: 275, strategy: 'avalanche' },
+    'auto-loan': { name: 'Auto Loan', balance: 18000, rate: 6.2, minimum: 350, strategy: 'avalanche' },
+    'auto-loan-calculator': { name: 'Auto Loan', balance: 18000, rate: 6.2, minimum: 350, strategy: 'avalanche' },
+    'mortgage-planner': { name: 'Home Mortgage', balance: 250000, rate: 6.8, minimum: 1650, strategy: 'avalanche' }
+  };
+
+  window.addEventListener('app-track-template', ((e: CustomEvent<any>) => {
+    const detail = e.detail;
+    if (!detail) return;
+    const templateId = detail.id || '';
+    const category = detail.category || '';
+
+    // A. Savings Templates -> Targets / Goals tracking interface
+    if (category === 'catSavings' || SAVINGS_TEMPLATES[templateId] || templateId.includes('savings') || templateId.includes('fund') || templateId.includes('retirement') || templateId.includes('ira')) {
+      switchTab('targets');
+      const cfg = SAVINGS_TEMPLATES[templateId] || {
+        name: detail.name || 'Savings Goal',
+        target: 5000,
+        current: 0,
+        monthly: 250
+      };
+
+      if (inputGoalName) inputGoalName.value = cfg.name;
+      if (inputGoalTarget) inputGoalTarget.value = String(cfg.target);
+      if (inputGoalCurrent) inputGoalCurrent.value = String(cfg.current);
+      if (inputGoalMonthly) inputGoalMonthly.value = String(cfg.monthly);
+
+      const existingIndex = goals.findIndex(g => g.name.toLowerCase() === cfg.name.toLowerCase());
+      if (existingIndex === -1) {
+        goals.push({
+          id: 'goal_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          name: cfg.name,
+          target: cfg.target,
+          current: cfg.current,
+          initialAmount: cfg.current,
+          monthly: cfg.monthly,
+          contributions: []
+        });
+        saveGoalsStorage(goals);
+        renderAll();
+      }
+
+      setTimeout(() => {
+        const el = document.getElementById('section-add-goal') || document.getElementById('tab-view-targets');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        inputGoalTarget?.focus();
+      }, 50);
+      return;
+    }
+
+    // B. Debt Templates -> Debt Proforma & Strategy interface
+    if (category === 'catDebt' || DEBT_TEMPLATES[templateId] || templateId.includes('debt') || templateId.includes('loan') || templateId.includes('mortgage')) {
+      switchTab('debt');
+      const cfg = DEBT_TEMPLATES[templateId] || {
+        name: detail.name || 'Personal Loan',
+        balance: 5000,
+        rate: 12.0,
+        minimum: 150,
+        strategy: 'snowball'
+      };
+
+      if (cfg.strategy === 'snowball') {
+        const btnSnow = document.getElementById('btn-strat-snowball');
+        const btnMobSnow = document.getElementById('mobile-btn-strat-snowball');
+        if (btnSnow && typeof btnSnow.click === 'function') btnSnow.click();
+        if (btnMobSnow && typeof btnMobSnow.click === 'function') btnMobSnow.click();
+      } else {
+        const btnAva = document.getElementById('btn-strat-avalanche');
+        const btnMobAva = document.getElementById('mobile-btn-strat-avalanche');
+        if (btnAva && typeof btnAva.click === 'function') btnAva.click();
+        if (btnMobAva && typeof btnMobAva.click === 'function') btnMobAva.click();
+      }
+
+      if (inputDebtName) inputDebtName.value = cfg.name;
+      if (inputDebtBalance) inputDebtBalance.value = String(cfg.balance);
+      if (inputDebtRate) inputDebtRate.value = String(cfg.rate);
+      if (inputDebtMinimum) inputDebtMinimum.value = String(cfg.minimum);
+
+      if (inputDebtNameMobile) inputDebtNameMobile.value = cfg.name;
+      if (inputDebtBalanceMobile) inputDebtBalanceMobile.value = String(cfg.balance);
+      if (inputDebtRateMobile) inputDebtRateMobile.value = String(cfg.rate);
+      if (inputDebtMinimumMobile) inputDebtMinimumMobile.value = String(cfg.minimum);
+
+      const existingIndex = debts.findIndex(d => d.name.toLowerCase() === cfg.name.toLowerCase());
+      if (existingIndex === -1 && cfg.balance > 0) {
+        debts.push({
+          id: 'debt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          name: cfg.name,
+          balance: cfg.balance,
+          rate: cfg.rate,
+          minimum: cfg.minimum,
+          active: true,
+          paidOff: false,
+          payments: []
+        });
+        saveDebtsStorage(debts);
+        renderAll();
+      }
+
+      setTimeout(() => {
+        const el = document.getElementById('tab-view-debt');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+      return;
+    }
+
+    // C. Budget / Cashflow / Expenses -> Live Tracker interface
+    switchTab('tracker');
+    if (templateId === 'paycheck-budget') {
+      const inputInc = document.getElementById('input-income') as HTMLInputElement | null;
+      if (inputInc) {
+        inputInc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputInc.focus();
+      }
+    } else if (templateId === 'subscription-audit') {
+      if (selectItemCategory) selectItemCategory.value = 'Utilities';
+      if (inputItemName) inputItemName.value = 'Streaming Subscription';
+      if (inputItemAmount) inputItemAmount.value = '15.99';
+      inputItemAmount?.focus();
+    } else if (templateId === 'monthly-bill-tracker') {
+      if (selectItemCategory) selectItemCategory.value = 'Utilities';
+      if (inputItemName) inputItemName.value = 'Monthly Utility Bill';
+      if (inputItemAmount) inputItemAmount.value = '120';
+      inputItemAmount?.focus();
+    } else {
+      inputItemName?.focus();
+    }
+
+    setTimeout(() => {
+      const anchor = document.getElementById('live-tool-anchor') || document.getElementById('tab-view-tracker');
+      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }) as EventListener);
 
   // --- Contextual Feedback Flow ---
   function showContextualFeedback(targetContainer: HTMLElement | null) {

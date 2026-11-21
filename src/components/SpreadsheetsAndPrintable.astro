@@ -390,9 +390,9 @@ const slugMap: Record<string, string> = {
         return (
           <div
             data-category={tmpl.categoryKey}
-            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-4 group"
+            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-3 sm:gap-4 group"
           >
-            <div class="space-y-2.5">
+            <div class="space-y-2 sm:space-y-2.5">
               <div class="flex items-center justify-between gap-2">
                 <span class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${catColor.bg} ${catColor.text} ${catColor.border}`}>
                   <span>{tmpl.categoryIcon}</span>
@@ -404,7 +404,7 @@ const slugMap: Record<string, string> = {
               </div>
 
               <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                   <a
                     href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                     class="hover:underline focus:outline-none"
@@ -412,24 +412,75 @@ const slugMap: Record<string, string> = {
                     {t(tmpl.nameKey, locale)}
                   </a>
                 </h3>
-                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                <p class="hidden sm:block text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                   {t(tmpl.descKey, locale)}
                 </p>
               </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+            <!-- Mobile Compact Action Row (<sm): Primary Green 'Download' + Secondary Outlined 'Track Now' -->
+            <div class="sm:hidden flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
               <a
                 href={`/templates/${tmpl.fileName}`}
                 download={tmpl.fileName}
-                class="w-full inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                class="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 shadow-2xs transition-colors cursor-pointer shrink-0"
                 aria-label={`Download ${t(tmpl.nameKey, locale)} Excel Template`}
               >
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                <span>{t('templates.btnDownloadExcel', locale)}</span>
+                <span>Download</span>
               </a>
+              <button
+                type="button"
+                data-track-template
+                data-template-id={tmpl.id}
+                data-template-name={t(tmpl.nameKey, locale)}
+                data-template-type="excel"
+                data-template-category={tmpl.categoryKey}
+                data-template-icon={tmpl.categoryIcon}
+                data-template-file={tmpl.fileName}
+                data-template-size={tmpl.fileSize}
+                class="btn-track-template flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 dark:bg-emerald-950/30 transition-colors shadow-2xs shrink-0 cursor-pointer"
+                aria-label={`Track ${t(tmpl.nameKey, locale)} Now in Tracker`}
+              >
+                <span>Track Now</span>
+              </button>
+            </div>
+
+            <!-- Desktop & Tablet Action Block (sm: and up) -->
+            <div class="hidden sm:block pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+              <div class="flex items-center gap-2">
+                <a
+                  href={`/templates/${tmpl.fileName}`}
+                  download={tmpl.fileName}
+                  class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                  aria-label={`Download ${t(tmpl.nameKey, locale)} Excel Template`}
+                >
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span>{t('templates.btnDownloadExcel', locale)}</span>
+                </a>
+                <button
+                  type="button"
+                  data-track-template
+                  data-template-id={tmpl.id}
+                  data-template-name={t(tmpl.nameKey, locale)}
+                  data-template-type="excel"
+                  data-template-category={tmpl.categoryKey}
+                  data-template-icon={tmpl.categoryIcon}
+                  data-template-file={tmpl.fileName}
+                  data-template-size={tmpl.fileSize}
+                  class="btn-track-template flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 dark:bg-emerald-950/30 transition-colors shadow-2xs cursor-pointer"
+                  aria-label={`Track ${t(tmpl.nameKey, locale)} Now in Tracker`}
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Track Now</span>
+                </button>
+              </div>
               <a
                 href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                 class="w-full inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline pt-0.5"
@@ -452,9 +503,9 @@ const slugMap: Record<string, string> = {
         return (
           <div
             data-category={tmpl.categoryKey}
-            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-4 group"
+            class="template-card-item bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700/70 hover:shadow-sm transition-all flex flex-col justify-between gap-3 sm:gap-4 group"
           >
-            <div class="space-y-2.5">
+            <div class="space-y-2 sm:space-y-2.5">
               <div class="flex items-center justify-between gap-2">
                 <span class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${catColor.bg} ${catColor.text} ${catColor.border}`}>
                   <span>{tmpl.categoryIcon}</span>
@@ -466,7 +517,7 @@ const slugMap: Record<string, string> = {
               </div>
 
               <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
                   <a
                     href={locale === 'fr' ? `/fr/templates/${slugMap[tmpl.id] || tmpl.id}/` : (locale === 'hi' && tmpl.id === '52-week-savings-challenge') ? `/hi/templates/rupee-savings-challenge/` : `/templates/${slugMap[tmpl.id] || tmpl.id}/`}
                     class="hover:underline focus:outline-none"
@@ -474,26 +525,77 @@ const slugMap: Record<string, string> = {
                     {t(tmpl.nameKey, locale)}
                   </a>
                 </h3>
-                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                <p class="hidden sm:block text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
                   {t(tmpl.descKey, locale)}
                 </p>
               </div>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+            <!-- Mobile Compact Action Row (<sm): Primary Green 'Download' (Make a copy) + Secondary Outlined 'Track Now' -->
+            <div class="sm:hidden flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
               <a
                 href={tmpl.googleSheetsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-template-name={tmpl.id}
-                class="btn-open-google-sheets w-full inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                class="btn-open-google-sheets flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 shadow-2xs transition-colors cursor-pointer shrink-0"
                 aria-label={`Open ${t(tmpl.nameKey, locale)} in Google Sheets`}
               >
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-                <span>{t('templates.btnOpenSheets', locale)}</span>
+                <span>Download</span>
               </a>
+              <button
+                type="button"
+                data-track-template
+                data-template-id={tmpl.id}
+                data-template-name={t(tmpl.nameKey, locale)}
+                data-template-type="sheets"
+                data-template-category={tmpl.categoryKey}
+                data-template-icon={tmpl.categoryIcon}
+                data-template-url={tmpl.googleSheetsUrl}
+                class="btn-track-template flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 dark:bg-emerald-950/30 transition-colors shadow-2xs shrink-0 cursor-pointer"
+                aria-label={`Track ${t(tmpl.nameKey, locale)} Now in Tracker`}
+              >
+                <span>Track Now</span>
+              </button>
+            </div>
+
+            <!-- Desktop & Tablet Action Block (sm: and up) -->
+            <div class="hidden sm:block pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+              <div class="flex items-center gap-2">
+                <a
+                  href={tmpl.googleSheetsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-template-name={tmpl.id}
+                  class="btn-open-google-sheets flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs hover:shadow-xs transition-colors cursor-pointer"
+                  aria-label={`Open ${t(tmpl.nameKey, locale)} in Google Sheets`}
+                >
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  <span>{t('templates.btnOpenSheets', locale)}</span>
+                </a>
+                <button
+                  type="button"
+                  data-track-template
+                  data-template-id={tmpl.id}
+                  data-template-name={t(tmpl.nameKey, locale)}
+                  data-template-type="sheets"
+                  data-template-category={tmpl.categoryKey}
+                  data-template-icon={tmpl.categoryIcon}
+                  data-template-url={tmpl.googleSheetsUrl}
+                  class="btn-track-template flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 bg-emerald-50/60 hover:bg-emerald-100/80 dark:bg-emerald-950/30 transition-colors shadow-2xs cursor-pointer"
+                  aria-label={`Track ${t(tmpl.nameKey, locale)} Now in Tracker`}
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Track Now</span>
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -603,6 +705,26 @@ const slugMap: Record<string, string> = {
       btn.addEventListener('click', () => {
         const targetCat = btn.getAttribute('data-category-filter') || 'all';
         applyCategoryFilter(targetCat);
+      });
+    });
+
+    // Mobile Track Now: Opens the selected template's working experience inside Tracker without navigating away
+    const trackButtons = document.querySelectorAll<HTMLButtonElement>('.btn-track-template');
+    trackButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute('data-template-id') || '';
+        const name = btn.getAttribute('data-template-name') || '';
+        const type = btn.getAttribute('data-template-type') || 'excel';
+        const category = btn.getAttribute('data-template-category') || 'catBudget';
+        const icon = btn.getAttribute('data-template-icon') || '📊';
+        const file = btn.getAttribute('data-template-file') || '';
+        const url = btn.getAttribute('data-template-url') || '';
+
+        // Dispatch in-app tracking event (handled by MainApp to route to Goals, Debt, or Tracker)
+        window.dispatchEvent(new CustomEvent('app-track-template', {
+          detail: { id, name, type, category, icon, file, url }
+        }));
       });
     });
   }

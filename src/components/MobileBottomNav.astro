@@ -22,6 +22,8 @@ const labels = {
   more: 'More',
 };
 
+const basePrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
+
 const activeIdx = initialActiveTab === 'split' ? 1 :
                   initialActiveTab === 'templates' ? 2 :
                   initialActiveTab === 'debt' ? 3 :
@@ -54,7 +56,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- 1. Tracker -->
       {isStandalone ? (
         <a
-          href="/?tab=tracker"
+          href={`${basePrefix}/?tab=tracker`}
           data-bottom-tab="tracker"
           data-index="0"
           class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 0 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
@@ -81,23 +83,38 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       )}
 
       <!-- 2. Split (Bill Splitter) -->
-      <button
-        type="button"
-        data-bottom-tab="split"
-        data-index="1"
-        class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 1 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
-        aria-label="Bill Splitter"
-      >
-        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-        </svg>
-        <span class="text-[10px] leading-tight truncate">{labels.split}</span>
-      </button>
+      {isStandalone ? (
+        <a
+          href={`${basePrefix}/?tab=split`}
+          data-bottom-tab="split"
+          data-index="1"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 1 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Bill Splitter"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.split}</span>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-bottom-tab="split"
+          data-index="1"
+          class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 1 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
+          aria-label="Bill Splitter"
+        >
+          <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <span class="text-[10px] leading-tight truncate">{labels.split}</span>
+        </button>
+      )}
 
       <!-- 3. Templates -->
       {isStandalone ? (
         <a
-          href="/?tab=templates"
+          href={`${basePrefix}/?tab=templates`}
           data-bottom-tab="templates"
           data-index="2"
           class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 2 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
@@ -126,7 +143,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- 4. Debt -->
       {isStandalone ? (
         <a
-          href="/?tab=debt"
+          href={`${basePrefix}/?tab=debt`}
           data-bottom-tab="debt"
           data-index="3"
           class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 3 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
@@ -155,7 +172,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- 5. Goals -->
       {isStandalone ? (
         <a
-          href="/?tab=targets"
+          href={`${basePrefix}/?tab=targets`}
           data-bottom-tab="targets"
           data-index="4"
           class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer no-underline ${activeIdx === 4 ? 'active text-emerald-700 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'}`}
@@ -247,7 +264,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- Knowledge & Guides -->
       {isStandalone ? (
         <a
-          href="/?tab=knowledge"
+          href={`${basePrefix}/?tab=knowledge`}
           class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
         >
           <div class="flex items-center gap-3 min-w-0">
@@ -283,7 +300,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- Statement & Receipt Importer -->
       {isStandalone ? (
         <a
-          href="/?tab=import"
+          href={`${basePrefix}/?tab=import`}
           class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
         >
           <div class="flex items-center gap-3 min-w-0">
@@ -319,7 +336,7 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       <!-- 62 Spreadsheet & Printable Templates -->
       {isStandalone ? (
         <a
-          href="/?tab=templates"
+          href={`${basePrefix}/?tab=templates`}
           class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
         >
           <div class="flex items-center gap-3 min-w-0">
@@ -353,22 +370,40 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       )}
 
       <!-- Bill Splitter -->
-      <button
-        type="button"
-        data-more-action="split"
-        class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
-            ⚡
+      {isStandalone ? (
+        <a
+          href={`${basePrefix}/?tab=split`}
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group no-underline"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              ⚡
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Bill Splitter</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Equally, itemized & multi-currency group expense sharing</div>
+            </div>
           </div>
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Bill Splitter</div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Equally, itemized & multi-currency group expense sharing</div>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-more-action="split"
+          class="w-full flex items-center justify-between p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 dark:bg-slate-800/60 dark:hover:bg-emerald-950/40 border border-slate-200/80 dark:border-slate-700/80 transition-all text-left cursor-pointer group"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition-transform">
+              ⚡
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Bill Splitter</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Equally, itemized & multi-currency group expense sharing</div>
+            </div>
           </div>
-        </div>
-        <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-      </button>
+          <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      )}
     </div>
 
     <!-- Secondary Links Grid -->
@@ -421,6 +456,17 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
     const initialIndex = parseInt(container.getAttribute('data-initial-index') || '0', 10);
 
     let activeIndex = initialIndex;
+
+    // If on homepage with ?tab=... query param, synchronize initial pill position
+    if (!isStandalone && window.location.search) {
+      try {
+        const p = new URLSearchParams(window.location.search);
+        const t = p.get('tab');
+        if (t && typeof tabIndexMap[t] === 'number') {
+          activeIndex = tabIndexMap[t];
+        }
+      } catch (e) {}
+    }
 
     function updatePillPosition(index) {
       if (index < 0 || index > 5) return;
@@ -511,6 +557,13 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
       }
     });
 
+    // Close sheet when tapping any link inside sheet
+    sheet?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeMoreSheet();
+      });
+    });
+
     // Handle More Actions (Knowledge, Import, Templates, Split)
     moreActionButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -574,10 +627,11 @@ const activeIdx = initialActiveTab === 'split' ? 1 :
         closeMoreSheet();
 
         if (isStandalone) {
-          if (tab === 'split') {
+          if (tab === 'split' && window.location.pathname.includes('/bill-splitter')) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
             updatePillPosition(1);
+            return;
           }
           // Other tabs are <a> tags leading to /?tab=..., let default navigation happen
           return;

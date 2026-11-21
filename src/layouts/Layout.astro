@@ -12,6 +12,7 @@ import {
 import { getCanonicalUrl, SITE_URL } from '../utils/canonical';
 import ActivityPromotionPopup from '../components/ActivityPromotionPopup.astro';
 import PwaInstallPrompt from '../components/PwaInstallPrompt.astro';
+import MobileBottomNav from '../components/MobileBottomNav.astro';
 
 interface Props {
   title?: string;
@@ -23,6 +24,8 @@ interface Props {
   faqSchema?: { question: string; answer: string }[];
   breadcrumbs?: { name: string; url: string }[];
   isTrackerPage?: boolean;
+  activeTab?: string;
+  hideBottomNav?: boolean;
   datePublished?: string;
   dateModified?: string;
   extraSchema?: any[];
@@ -38,6 +41,8 @@ const {
   faqSchema,
   breadcrumbs,
   isTrackerPage = false,
+  activeTab,
+  hideBottomNav = false,
   datePublished = '2026-01-15',
   dateModified = '2026-11-20',
   extraSchema = [],
@@ -69,6 +74,27 @@ const ogLocaleMap: Record<SupportedLocale, string> = {
   ko: 'ko_KR'
 };
 const ogLocale = ogLocaleMap[locale] || 'en_US';
+
+// Determine active bottom navigation tab & standalone mode
+const pathname = Astro.url.pathname;
+let detectedActiveTab = 'more';
+if (isTrackerPage || pathname === '/' || /^\/[a-z]{2}\/?$/.test(pathname)) {
+  detectedActiveTab = 'tracker';
+} else if (pathname.includes('/bill-splitter')) {
+  detectedActiveTab = 'split';
+} else if (pathname.includes('/templates')) {
+  detectedActiveTab = 'templates';
+} else if (pathname.includes('/debt')) {
+  detectedActiveTab = 'debt';
+} else if (pathname.includes('/goals') || pathname.includes('/targets')) {
+  detectedActiveTab = 'goals';
+} else {
+  // Contact Us, About Us, Privacy Policy, Terms & Conditions, 404, etc.
+  detectedActiveTab = 'more';
+}
+
+const currentActiveTab = activeTab || detectedActiveTab;
+const isStandaloneNav = !isTrackerPage;
 
 // JSON-LD Structured Data: Person, WebApplication, WebSite, Organization, BreadcrumbList, and localized FAQPage
 const personSchema = {
@@ -482,5 +508,13 @@ if (faqEntities.length > 0) {
     {isTrackerPage && <ActivityPromotionPopup locale={locale} />}
     <!-- Smart PWA Installation Promotion (Desktop floating card & Mobile bottom sheet) -->
     <PwaInstallPrompt locale={locale} />
+    <!-- Shared Mobile Liquid Glass Bottom Navigation Bar (sm:hidden) -->
+    {!hideBottomNav && (
+      <MobileBottomNav
+        locale={locale}
+        isStandalone={isStandaloneNav}
+        initialActiveTab={currentActiveTab}
+      />
+    )}
   </body>
 </html>

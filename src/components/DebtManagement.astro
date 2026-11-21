@@ -1,5 +1,5 @@
 ---
-import { t, DEFAULT_LOCALE, type SupportedLocale } from '../locales';
+import { t, DEFAULT_LOCALE, type SupportedLocale } from "../locales";
 
 interface Props {
   locale?: SupportedLocale;
@@ -9,210 +9,731 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
 ---
 
 <div class="space-y-6">
-  <!-- Debt Header & Strategy Controls -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
-    <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
-      <div class="flex items-center gap-2">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
-          <span>💳</span> {t('debt.title', locale)}
-        </h2>
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
-          {t('debt.badge', locale)}
-        </span>
-      </div>
-      <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
-        {t('debt.subtitle', locale)}
-      </p>
-    </div>
-
-    <!-- Financial Payoff Models: Vertical Tabs Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-      <!-- Left Column: Vertical Tabs Selector (md:col-span-5) -->
-      <div class="md:col-span-5 flex flex-col gap-2" role="tablist" aria-label="Debt payoff financial models">
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5 flex items-center justify-between">
-          <span>{t('debt.modelsHeading', locale)}</span>
-          <span class="text-[10px] font-normal text-slate-500 dark:text-slate-400 lowercase">{t('debt.modelsSub', locale)}</span>
-        </div>
-
-        <!-- Vertical Tab 1: Avalanche -->
-        <button
-          type="button"
-          id="btn-strat-avalanche"
-          data-strategy="avalanche"
-          role="tab"
-          aria-selected="true"
-          class="debt-strat-btn active w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 dark:border-emerald-600 text-emerald-950 dark:text-emerald-200 shadow-2xs"
-        >
-          <div class="w-8 h-8 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
-            ⚡
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.avalancheTitle', locale)}</span>
-              <span class="strat-badge px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.avalancheSub', locale)}</p>
-            <div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium mt-1">{t('debt.avalancheDesc', locale)}</div>
-          </div>
-        </button>
-
-        <!-- Vertical Tab 2: Snowball -->
-        <button
-          type="button"
-          id="btn-strat-snowball"
-          data-strategy="snowball"
-          role="tab"
-          aria-selected="false"
-          class="debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-        >
-          <div class="w-8 h-8 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
-            ❄️
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.snowballTitle', locale)}</span>
-              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.snowballSub', locale)}</p>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{t('debt.snowballDesc', locale)}</div>
-          </div>
-        </button>
-
-        <!-- Vertical Tab 3: Cash Flow / FOIR Relief -->
-        <button
-          type="button"
-          id="btn-strat-foir"
-          data-strategy="foir"
-          role="tab"
-          aria-selected="false"
-          class="debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-        >
-          <div class="w-8 h-8 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
-            🚀
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">{t('debt.customTitle', locale)}</span>
-              <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">{t('debt.activeBadge', locale)}</span>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">{t('debt.customSub', locale)}</p>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">{t('debt.customDesc', locale)}</div>
-          </div>
-        </button>
-      </div>
-
-      <!-- Right Column: Dynamic Model Recommendation & Details Card (md:col-span-7) -->
-      <div class="md:col-span-7 flex flex-col">
-        <div id="debt-strategy-recommendation" class="h-full p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-950 dark:text-emerald-200 flex flex-col justify-between space-y-3">
-          <div class="flex items-start gap-2.5">
-            <span class="text-lg shrink-0">💡</span>
-            <div>
-              <strong class="text-slate-900 dark:text-slate-100 block font-bold">{t('debt.avalancheTitle', locale)}</strong>
-              <p class="text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed text-[11px] sm:text-xs">
-                {t('debt.avalancheDesc', locale)}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4 Debt KPI Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.totalDebt', locale)}</div>
-        <div id="stat-total-debt" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">$0</div>
-        <div class="text-[11px] text-slate-600 dark:text-slate-400"><span id="debt-item-count">0</span> {t('debt.accounts', locale)}</div>
-      </div>
-
-      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.monthlyEmi', locale)}</div>
-        <div id="stat-dti-ratio" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">0%</div>
-        <div id="stat-dti-tier" class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{t('debt.emptyDebts', locale)}</div>
-      </div>
-
-      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.debtFreeTime', locale)}</div>
-        <div id="stat-debt-free-date" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">—</div>
-        <div id="stat-debt-months-left" class="text-[11px] text-slate-600 dark:text-slate-400">0 {t('debt.months', locale)}</div>
-      </div>
-
-      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
-        <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">{t('debt.interestSaved', locale)}</div>
-        <div id="stat-interest-saved" class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400">$0</div>
-        <div class="text-[11px] text-slate-600 dark:text-slate-400">{t('debt.vsMinimums', locale)}</div>
-      </div>
-    </div>
-
-    <!-- Extra Payment Slider & Direct Input -->
-    <div class="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 space-y-3">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-        <span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          {t('debt.acceleratePayoff', locale)}
-        </span>
+  <!-- ========================================================
+       DESKTOP & TABLET VIEW (sm:block, hidden on mobile <640px)
+       Pixel-for-pixel 100% preserved layout and IDs
+       ======================================================== -->
+  <div id="desktop-tablet-debt-view" class="hidden sm:block space-y-6">
+    <!-- Debt Header & Strategy Controls -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
         <div class="flex items-center gap-2">
-          <span class="text-slate-500 dark:text-slate-400 text-[11px]">{t('debt.monthlyExtra', locale)}:</span>
-          <div class="relative w-36 sm:w-44">
-            <span class="currency-label absolute left-2.5 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">$</span>
-            <input
-              type="number"
-              id="input-debt-extra-number"
-              min="0"
-              max="100000000"
-              step="any"
-              value="0"
-              placeholder="0"
-              class="w-full text-xs font-mono font-bold pl-6 pr-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 text-emerald-900 dark:text-emerald-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            />
-          </div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
+            <span>💳</span> {t("debt.title", locale)}
+          </h2>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
+            {t("debt.badge", locale)}
+          </span>
         </div>
-      </div>
-      <input
-        type="range"
-        id="debt-extra-payment-slider"
-        min="0"
-        max="500000"
-        step="1000"
-        value="0"
-        class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-      />
-    </div>
-  </div>
-
-  <!-- Debt Entry Form & Active Debt List -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-    <!-- Form: Add Debt -->
-    <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-      <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
-          <span>➕</span> {t('debt.addDebtTitle', locale)}
-        </h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-          {t('debt.addDebtSubtitle', locale)}
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          {t("debt.subtitle", locale)}
         </p>
       </div>
 
-      <form id="form-add-debt" class="space-y-3">
+      <!-- Financial Payoff Models: Vertical Tabs Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+        <!-- Left Column: Vertical Tabs Selector (md:col-span-5) -->
+        <div
+          class="md:col-span-5 flex flex-col gap-2"
+          role="tablist"
+          aria-label="Debt payoff financial models"
+        >
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0.5 flex items-center justify-between">
+            <span>{t("debt.modelsHeading", locale)}</span>
+            <span class="text-[10px] font-normal text-slate-500 dark:text-slate-400 lowercase">
+              {t("debt.modelsSub", locale)}
+            </span>
+          </div>
+
+          <!-- Vertical Tab 1: Avalanche -->
+          <button
+            type="button"
+            id="btn-strat-avalanche"
+            data-strategy="avalanche"
+            role="tab"
+            aria-selected="true"
+            class="debt-strat-btn active w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-500 dark:border-emerald-600 text-emerald-950 dark:text-emerald-200 shadow-2xs"
+          >
+            <div class="w-8 h-8 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
+              ⚡
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">
+                  {t("debt.avalancheTitle", locale)}
+                </span>
+                <span class="strat-badge px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">
+                  {t("debt.activeBadge", locale)}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">
+                {t("debt.avalancheSub", locale)}
+              </p>
+              <div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium mt-1">
+                {t("debt.avalancheDesc", locale)}
+              </div>
+            </div>
+          </button>
+
+          <!-- Vertical Tab 2: Snowball -->
+          <button
+            type="button"
+            id="btn-strat-snowball"
+            data-strategy="snowball"
+            role="tab"
+            aria-selected="false"
+            class="debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+          >
+            <div class="w-8 h-8 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
+              ❄️
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">
+                  {t("debt.snowballTitle", locale)}
+                </span>
+                <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">
+                  {t("debt.activeBadge", locale)}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">
+                {t("debt.snowballSub", locale)}
+              </p>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">
+                {t("debt.snowballDesc", locale)}
+              </div>
+            </div>
+          </button>
+
+          <!-- Vertical Tab 3: Cash Flow / FOIR Relief -->
+          <button
+            type="button"
+            id="btn-strat-foir"
+            data-strategy="foir"
+            role="tab"
+            aria-selected="false"
+            class="debt-strat-btn w-full text-left p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-100/80 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+          >
+            <div class="w-8 h-8 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-base shrink-0 mt-0.5">
+              🚀
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold font-['Outfit',sans-serif] text-slate-900 dark:text-slate-100 strat-title">
+                  {t("debt.customTitle", locale)}
+                </span>
+                <span class="strat-badge hidden px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200">
+                  {t("debt.activeBadge", locale)}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1 strat-subtitle">
+                {t("debt.customSub", locale)}
+              </p>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1">
+                {t("debt.customDesc", locale)}
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Right Column: Dynamic Model Recommendation & Details Card (md:col-span-7) -->
+        <div class="md:col-span-7 flex flex-col">
+          <div
+            id="debt-strategy-recommendation"
+            class="h-full p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-950 dark:text-emerald-200 flex flex-col justify-between space-y-3"
+          >
+            <div class="flex items-start gap-2.5">
+              <span class="text-lg shrink-0">💡</span>
+              <div>
+                <strong class="text-slate-900 dark:text-slate-100 block font-bold">
+                  {t("debt.avalancheTitle", locale)}
+                </strong>
+                <p class="text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed text-[11px] sm:text-xs">
+                  {t("debt.avalancheDesc", locale)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Debt KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.totalDebt", locale)}
+          </div>
+          <div
+            id="stat-total-debt"
+            class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100"
+          >
+            $0
+          </div>
+          <div class="text-[11px] text-slate-600 dark:text-slate-400">
+            <span id="debt-item-count">0</span> {t("debt.accounts", locale)}
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.monthlyEmi", locale)}
+          </div>
+          <div
+            id="stat-dti-ratio"
+            class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-slate-100"
+          >
+            0%
+          </div>
+          <div
+            id="stat-dti-tier"
+            class="text-[11px] text-slate-500 dark:text-slate-400 font-semibold"
+          >
+            {t("debt.emptyDebts", locale)}
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.debtFreeTime", locale)}
+          </div>
+          <div
+            id="stat-debt-free-date"
+            class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400"
+          >
+            —
+          </div>
+          <div
+            id="stat-debt-months-left"
+            class="text-[11px] text-slate-600 dark:text-slate-400"
+          >
+            0 {t("debt.months", locale)}
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-1">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.interestSaved", locale)}
+          </div>
+          <div
+            id="stat-interest-saved"
+            class="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400"
+          >
+            $0
+          </div>
+          <div class="text-[11px] text-slate-600 dark:text-slate-400">
+            {t("debt.vsMinimums", locale)}
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra Payment Slider & Direct Input -->
+      <div class="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <svg
+              class="w-4 h-4 text-emerald-700 dark:text-emerald-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              ></path>
+            </svg>
+            {t("debt.acceleratePayoff", locale)}
+          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 dark:text-slate-400 text-[11px]">
+              {t("debt.monthlyExtra", locale)}:
+            </span>
+            <div class="relative w-36 sm:w-44">
+              <span class="currency-label absolute left-2.5 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                $
+              </span>
+              <input
+                type="number"
+                id="input-debt-extra-number"
+                min="0"
+                max="100000000"
+                step="any"
+                value="0"
+                placeholder="0"
+                class="w-full text-xs font-mono font-bold pl-6 pr-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 text-emerald-900 dark:text-emerald-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="debt-extra-payment-slider"
+          min="0"
+          max="500000"
+          step="1000"
+          value="0"
+          class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+        />
+      </div>
+    </div>
+
+    <!-- Debt Entry Form & Active Debt List -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Form: Add Debt -->
+      <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
+            <span>➕</span> {t("debt.addDebtTitle", locale)}
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            {t("debt.addDebtSubtitle", locale)}
+          </p>
+        </div>
+
+        <form id="form-add-debt" class="space-y-3">
+          <div>
+            <label
+              for="input-debt-name"
+              class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {t("debt.debtName", locale)}
+            </label>
+            <input
+              type="text"
+              id="input-debt-name"
+              required
+              placeholder={t("debt.debtNamePlaceholder", locale)}
+              class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label
+                for="input-debt-balance"
+                class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+              >
+                {t("debt.currentPrincipal", locale)} (
+                <span class="currency-label font-mono">$</span>)
+              </label>
+              <input
+                type="number"
+                id="input-debt-balance"
+                required
+                min="0"
+                max="100000000"
+                step="any"
+                placeholder="e.g. 250000"
+                class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-bold font-mono placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label
+                for="input-debt-rate"
+                class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+              >
+                {t("debt.interestRate", locale)}
+              </label>
+              <input
+                type="number"
+                id="input-debt-rate"
+                required
+                min="0"
+                max="100"
+                step="any"
+                placeholder="e.g. 12.5"
+                class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-bold font-mono placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="input-debt-minimum"
+              class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {t("debt.minPayment", locale)} (
+              <span class="currency-label font-mono">$</span>)
+            </label>
+            <input
+              type="number"
+              id="input-debt-minimum"
+              required
+              min="0"
+              max="100000000"
+              step="any"
+              placeholder="e.g. 8500"
+              class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-bold font-mono placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+          >
+            {t("debt.btnAddDebt", locale)}
+          </button>
+        </form>
+      </div>
+
+      <!-- Active Debts Table -->
+      <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+              {t("debt.debtListTitle", locale)}
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              {t("debt.debtListSubtitle", locale)}
+            </p>
+          </div>
+          <span
+            id="active-strategy-pill"
+            class="self-start sm:self-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+          >
+            {t("debt.avalancheTitle", locale)}
+          </span>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+          <table class="w-full min-w-[520px] text-left text-xs">
+            <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
+              <tr>
+                <th class="py-2.5 px-3">{t("debt.thPriority", locale)}</th>
+                <th class="py-2.5 px-3">{t("debt.debtName", locale)}</th>
+                <th class="py-2.5 px-3 text-right">
+                  {t("debt.currentPrincipal", locale)}
+                </th>
+                <th class="py-2.5 px-3 text-right">
+                  {t("debt.interestRate", locale)}
+                </th>
+                <th class="py-2.5 px-3 text-right">
+                  {t("debt.minPayment", locale)}
+                </th>
+                <th class="py-2.5 px-3 text-center">
+                  {t("debt.thActions", locale)}
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="debts-tbody"
+              class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300"
+            >
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Methodology & Calculation Examples -->
+    <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="text-sm">📐</span>
+        <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-['Outfit',sans-serif]">
+          How It Works & Calculation Methodologies
+        </h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+          <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <span>❄️</span>
+            <span>Debt Snowball Method</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <strong>Methodology:</strong> Prioritizes extinguishing the lowest
+            outstanding principal balance first while paying minimums on others.
+          </p>
+          <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+            <strong>Worked Example:</strong> Debts of ₹5,000, ₹15,000, and
+            ₹30,000. All extra payments target the ₹5,000 balance first for
+            quick motivational momentum.
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+          <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <span>⚡</span>
+            <span>Debt Avalanche Method</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <strong>Methodology:</strong> Prioritizes the account with the
+            highest interest rate (APR) first to mathematically minimize total
+            lifetime interest.
+          </p>
+          <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+            <strong>Worked Example:</strong> Debts at 12%, 18%, and 9% APR. All
+            extra payments target the 18% APR account first, saving the maximum
+            total interest.
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
+          <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <span>📊</span>
+            <span>Debt-to-Income (DTI) Ratio</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <strong>Formula:</strong>{" "}
+            <code class="font-mono text-slate-800 dark:text-slate-200 font-semibold">
+              DTI = (Monthly Debt ÷ Gross Income) × 100
+            </code>
+          </p>
+          <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+            <strong>Worked Example:</strong> ₹15,000 monthly debt payments ÷
+            ₹60,000 gross monthly income = <strong>25% DTI</strong> (healthy
+            borrowing tier).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MOBILE VIEW (sm:hidden, visible ONLY on mobile <640px)
+       New reorganized layout per UX specifications:
+       1. Debt heading & introduction
+       2. Financial Models segmented selector (Avalanche, Snowball, Balanced)
+       3. Selected model explanation with collapsed Read More
+       4. Add Loan or Debt Obligation form
+       5. Active Liabilities Ledger (compact expandable loan cards)
+       6. KPI overview & Payoff Acceleration
+       7. Paid off accounts & methodology
+       ======================================================== -->
+  <div id="mobile-debt-view" class="sm:hidden space-y-5">
+    <!-- 1. Debt Header & Introduction -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-4">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
+            <span>💳</span> {t("debt.title", locale)}
+          </h2>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">
+            {t("debt.badge", locale)}
+          </span>
+        </div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+          {locale === "fr"
+            ? "Planifiez, comparez et remboursez vos prêts et dettes plus rapidement. Choisissez un modèle ci-dessous pour afficher votre plan personnalisé."
+            : "Plan, compare and pay off your loans and debts faster. Choose a model below to see a personalized payoff plan."}
+        </p>
+      </div>
+
+      <!-- 2. Financial Models Segmented Selector -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span>{t("debt.modelsHeading", locale)}</span>
+          <span class="text-[10px] font-normal lowercase">
+            {t("debt.modelsSub", locale)}
+          </span>
+        </div>
+        <div
+          class="grid grid-cols-3 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 gap-1.5"
+          role="tablist"
+          aria-label="Mobile Debt payoff models"
+        >
+          <button
+            type="button"
+            id="mobile-strat-avalanche"
+            data-strategy="avalanche"
+            role="tab"
+            aria-selected="true"
+            class="mobile-debt-strat-btn active text-center py-2 px-1 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-2xs border border-emerald-500/30 cursor-pointer flex flex-col items-center justify-center gap-0.5"
+          >
+            <span class="block text-[11px] sm:text-xs font-bold leading-tight">
+              {t("debt.avalancheTitle", locale)}
+            </span>
+            <span class="model-tag inline-block text-[9px] font-semibold tracking-tight px-1.5 py-0.5 rounded bg-emerald-100/70 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 leading-none mt-0.5">
+              {locale === "fr"
+                ? "Coût d'intérêt réduit"
+                : "Lower Interest Cost"}
+            </span>
+          </button>
+          <button
+            type="button"
+            id="mobile-strat-snowball"
+            data-strategy="snowball"
+            role="tab"
+            aria-selected="false"
+            class="mobile-debt-strat-btn text-center py-2 px-1 rounded-xl text-xs font-medium transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent cursor-pointer flex flex-col items-center justify-center gap-0.5"
+          >
+            <span class="block text-[11px] sm:text-xs font-bold leading-tight">
+              {t("debt.snowballTitle", locale)}
+            </span>
+            <span class="model-tag inline-block text-[9px] font-semibold tracking-tight px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400 leading-none mt-0.5">
+              {locale === "fr" ? "Progrès plus rapide" : "Faster Progress"}
+            </span>
+          </button>
+          <button
+            type="button"
+            id="mobile-strat-foir"
+            data-strategy="foir"
+            role="tab"
+            aria-selected="false"
+            class="mobile-debt-strat-btn text-center py-2 px-1 rounded-xl text-xs font-medium transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent cursor-pointer flex flex-col items-center justify-center gap-0.5"
+          >
+            <span class="block text-[11px] sm:text-xs font-bold leading-tight">
+              {t("debt.customTitle", locale)}
+            </span>
+            <span class="model-tag inline-block text-[9px] font-semibold tracking-tight px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400 leading-none mt-0.5">
+              {locale === "fr" ? "Équilibre des deux" : "Mix of Both"}
+            </span>
+          </button>
+        </div>
+
+        <!-- 3. Dynamic Model Explanation Card with Read More Toggle -->
+        <div
+          id="mobile-debt-model-panel"
+          class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-2.5"
+        >
+          <div class="flex items-start gap-2">
+            <span id="mobile-model-icon" class="text-base shrink-0 mt-0.5">
+              ⚡
+            </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1">
+                <span
+                  id="mobile-model-title"
+                  class="font-bold text-slate-900 dark:text-slate-100 text-xs"
+                >
+                  {t("debt.avalancheTitle", locale)}
+                </span>
+                <span
+                  id="mobile-model-badge"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-200/60 dark:bg-emerald-800/80 text-emerald-900 dark:text-emerald-200 shrink-0"
+                >
+                  Highest APR
+                </span>
+              </div>
+              <p
+                id="mobile-model-desc"
+                class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed"
+              >
+                {t("debt.avalancheDesc", locale)}
+              </p>
+            </div>
+          </div>
+
+          <!-- Numerical Example Box -->
+          <div
+            id="mobile-model-example"
+            class="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200/70 dark:border-emerald-800/50 text-[11px] text-slate-700 dark:text-slate-300 space-y-0.5"
+          >
+            <strong class="text-emerald-800 dark:text-emerald-300 block font-semibold text-[10px] uppercase tracking-wider">
+              Example:
+            </strong>
+            <p
+              id="mobile-model-example-text"
+              class="text-slate-600 dark:text-slate-400"
+            >
+              Debts at 18%, 12%, and 8% APR. Extra payments attack the 18%
+              account first to eliminate the highest interest cost.
+            </p>
+          </div>
+
+          <!-- Expandable Read More Section (Collapsed by default) -->
+          <div
+            id="mobile-model-details"
+            class="hidden pt-2 border-t border-emerald-200/60 dark:border-emerald-800/50 space-y-2 text-[11px]"
+          >
+            <div class="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200/70 dark:border-emerald-800/50 space-y-0.5">
+              <strong class="text-slate-800 dark:text-slate-200 block font-semibold">
+                Core Advantage:
+              </strong>
+              <span
+                id="mobile-model-advantage"
+                class="text-slate-600 dark:text-slate-400"
+              >
+                Mathematically minimizes total lifetime interest paid.
+              </span>
+            </div>
+            <div class="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200/70 dark:border-emerald-800/50 space-y-0.5">
+              <strong class="text-slate-800 dark:text-slate-200 block font-semibold">
+                Strategic Advisory:
+              </strong>
+              <span
+                id="mobile-model-advisory"
+                class="text-slate-600 dark:text-slate-400"
+              >
+                Requires consistency since large high-APR balances take time to
+                clear, but yields maximum savings.
+              </span>
+            </div>
+          </div>
+
+          <!-- Read More Button -->
+          <div class="text-right">
+            <button
+              type="button"
+              id="btn-mobile-model-read-more"
+              aria-expanded="false"
+              class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 inline-flex items-center gap-1 cursor-pointer"
+            >
+              <span id="label-mobile-model-read-more">Read More</span>
+              <svg
+                id="icon-mobile-model-read-more"
+                class="w-3 h-3 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Add Loan or Debt Obligation Form -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3.5">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-2.5">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif] flex items-center gap-2">
+          <span>➕</span> {t("debt.addDebtTitle", locale)}
+        </h3>
+        <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+          {t("debt.addDebtSubtitle", locale)}
+        </p>
+      </div>
+
+      <form id="form-add-debt-mobile" class="space-y-3">
+        <!-- Debt Name (Full Width) -->
         <div>
-          <label for="input-debt-name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('debt.debtName', locale)}</label>
+          <label
+            for="input-debt-name-mobile"
+            class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+          >
+            {t("debt.debtName", locale)}
+          </label>
           <input
             type="text"
-            id="input-debt-name"
+            id="input-debt-name-mobile"
             required
-            placeholder={t('debt.debtNamePlaceholder', locale)}
+            placeholder={t("debt.debtNamePlaceholder", locale)}
             class="block w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-800 font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-emerald-600 focus:outline-none"
           />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- 2 Columns: Principal Balance and Interest Rate (Side by Side) -->
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label for="input-debt-balance" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              {t('debt.currentPrincipal', locale)} (<span class="currency-label font-mono">$</span>)
+            <label
+              for="input-debt-balance-mobile"
+              class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {t("debt.currentPrincipal", locale)} (
+              <span class="currency-label font-mono">$</span>)
             </label>
             <input
               type="number"
-              id="input-debt-balance"
+              id="input-debt-balance-mobile"
               required
               min="0"
               max="100000000"
@@ -223,10 +744,15 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
           </div>
 
           <div>
-            <label for="input-debt-rate" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('debt.interestRate', locale)}</label>
+            <label
+              for="input-debt-rate-mobile"
+              class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {t("debt.interestRate", locale)} (% APR)
+            </label>
             <input
               type="number"
-              id="input-debt-rate"
+              id="input-debt-rate-mobile"
               required
               min="0"
               max="100"
@@ -237,13 +763,18 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
           </div>
         </div>
 
+        <!-- Mandatory Minimum EMI (Full Width) -->
         <div>
-          <label for="input-debt-minimum" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {t('debt.minPayment', locale)} (<span class="currency-label font-mono">$</span>)
+          <label
+            for="input-debt-minimum-mobile"
+            class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+          >
+            {t("debt.minPayment", locale)} (
+            <span class="currency-label font-mono">$</span>)
           </label>
           <input
             type="number"
-            id="input-debt-minimum"
+            id="input-debt-minimum-mobile"
             required
             min="0"
             max="100000000"
@@ -253,97 +784,218 @@ const { locale = DEFAULT_LOCALE } = Astro.props;
           />
         </div>
 
+        <!-- Add / Save Loan Button (Full Width) -->
         <button
           type="submit"
-          class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+          class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer mt-1"
         >
-          {t('debt.btnAddDebt', locale)}
+          {t("debt.btnAddDebt", locale)}
         </button>
       </form>
     </div>
 
-    <!-- Active Debts Table -->
-    <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+    <!-- 5. Active Liabilities Ledger (Compact Expandable Loan Cards) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
         <div>
-          <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
-            {t('debt.debtListTitle', locale)}
+          <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+            {t("debt.debtListTitle", locale)}
           </h3>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-            {t('debt.debtListSubtitle', locale)}
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+            {t("debt.debtListSubtitle", locale)}
           </p>
         </div>
-        <span id="active-strategy-pill" class="self-start sm:self-auto px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-          {t('debt.avalancheTitle', locale)}
-        </span>
+        <div class="pt-0.5">
+          <span
+            id="active-strategy-pill-mobile"
+            class="inline-block whitespace-nowrap px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-2xs"
+          >
+            Avalanche (Highest Interest First)
+          </span>
+        </div>
       </div>
 
-      <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-        <table class="w-full min-w-[520px] text-left text-xs">
-          <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[10px]">
-            <tr>
-              <th class="py-2.5 px-3">{t('debt.thPriority', locale)}</th>
-              <th class="py-2.5 px-3">{t('debt.debtName', locale)}</th>
-              <th class="py-2.5 px-3 text-right">{t('debt.currentPrincipal', locale)}</th>
-              <th class="py-2.5 px-3 text-right">{t('debt.interestRate', locale)}</th>
-              <th class="py-2.5 px-3 text-right">{t('debt.minPayment', locale)}</th>
-              <th class="py-2.5 px-3 text-center">{t('debt.thActions', locale)}</th>
-            </tr>
-          </thead>
-          <tbody id="debts-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-            <!-- Dynamically populated via JS -->
-          </tbody>
-        </table>
+      <!-- Expandable Mobile Debts List Container -->
+      <div id="debts-mobile-list" class="space-y-2.5">
+        <!-- Dynamically populated via JS with expandable accordion cards -->
       </div>
     </div>
-  </div>
 
-  <!-- Educational Methodology & Calculation Examples -->
-  <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 space-y-4">
-    <div class="flex items-center gap-2">
-      <span class="text-sm">📐</span>
-      <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-['Outfit',sans-serif]">
-        How It Works & Calculation Methodologies
-      </h3>
+    <!-- 6. Payoff Overview & Metrics (Five Tiles) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-['Outfit',sans-serif]">
+          Payoff Overview & Metrics
+        </h4>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <!-- Tile 1: Total Outstanding Principal -->
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-0.5">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.totalDebt", locale)}
+          </div>
+          <div
+            id="mobile-stat-total-debt"
+            class="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-slate-100"
+          >
+            $0
+          </div>
+          <div class="text-[10px] text-slate-600 dark:text-slate-400">
+            <span id="mobile-debt-item-count">0</span>{" "}
+            {t("debt.accounts", locale)}
+          </div>
+        </div>
+
+        <!-- Tile 2: Total Monthly Mandatory Payments (Currency only, no %) -->
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-0.5">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.monthlyEmi", locale)}
+          </div>
+          <div
+            id="mobile-stat-total-emi"
+            class="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-slate-100"
+          >
+            $0
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+            All active debts
+          </div>
+        </div>
+
+        <!-- Tile 3: EMI-to-Income Ratio -->
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-0.5">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            EMI-to-Income Ratio
+          </div>
+          <div
+            id="mobile-stat-dti-ratio"
+            class="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-slate-100"
+          >
+            0%
+          </div>
+          <div
+            id="mobile-stat-dti-tier"
+            class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold"
+          >
+            {t("debt.emptyDebts", locale)}
+          </div>
+        </div>
+
+        <!-- Tile 4: Estimated Debt Freedom -->
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-0.5">
+          <div class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+            {t("debt.debtFreeTime", locale)}
+          </div>
+          <div
+            id="mobile-stat-debt-free-date"
+            class="text-base sm:text-lg font-bold font-mono text-emerald-700 dark:text-emerald-400"
+          >
+            —
+          </div>
+          <div
+            id="mobile-stat-debt-months-left"
+            class="text-[10px] text-slate-600 dark:text-slate-400"
+          >
+            0 {t("debt.months", locale)}
+          </div>
+        </div>
+
+        <!-- Tile 5: Interest Savings vs Minimums (spanning full width) -->
+        <div class="col-span-2 p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between">
+          <div class="space-y-0.5">
+            <div class="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300">
+              {t("debt.interestSaved", locale)}
+            </div>
+            <div class="text-[10px] text-slate-600 dark:text-slate-400">
+              {t("debt.vsMinimums", locale)}
+            </div>
+          </div>
+          <div
+            id="mobile-stat-interest-saved"
+            class="text-lg sm:text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400"
+          >
+            $0
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
-        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <span>❄️</span>
-          <span>Debt Snowball Method</span>
-        </div>
-        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-          <strong>Methodology:</strong> Prioritizes extinguishing the lowest outstanding principal balance first while paying minimums on others.
-        </p>
-        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
-          <strong>Worked Example:</strong> Debts of ₹5,000, ₹15,000, and ₹30,000. All extra payments target the ₹5,000 balance first for quick motivational momentum.
-        </p>
+
+    <!-- 7. Accelerate Payoff: Extra Monthly Contribution -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-['Outfit',sans-serif] flex items-center gap-1.5">
+          <svg
+            class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            ></path>
+          </svg>
+          Accelerate Payoff: Extra Monthly Contribution
+        </h4>
       </div>
 
-      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
-        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <span>⚡</span>
-          <span>Debt Avalanche Method</span>
+      <div class="p-3.5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 space-y-2.5">
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <span class="text-slate-600 dark:text-slate-300 text-[11px] font-medium">
+            {t("debt.monthlyExtra", locale)}:
+          </span>
+          <div class="relative w-32">
+            <span class="currency-label absolute left-2 top-1.5 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+              $
+            </span>
+            <input
+              type="number"
+              id="mobile-input-debt-extra-number"
+              min="0"
+              max="100000000"
+              step="any"
+              value="0"
+              placeholder="0"
+              class="w-full text-xs font-mono font-bold pl-5 pr-2 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 text-emerald-900 dark:text-emerald-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+          </div>
         </div>
-        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-          <strong>Methodology:</strong> Prioritizes the account with the highest interest rate (APR) first to mathematically minimize total lifetime interest.
-        </p>
-        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
-          <strong>Worked Example:</strong> Debts at 12%, 18%, and 9% APR. All extra payments target the 18% APR account first, saving the maximum total interest.
-        </p>
+        <input
+          type="range"
+          id="mobile-debt-extra-slider"
+          min="0"
+          max="500000"
+          step="100"
+          value="0"
+          class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+        />
       </div>
+    </div>
 
-      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1.5">
-        <div class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-          <span>📊</span>
-          <span>Debt-to-Income (DTI) Ratio</span>
-        </div>
-        <p class="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-          <strong>Formula:</strong> <code class="font-mono text-slate-800 dark:text-slate-200 font-semibold">DTI = (Monthly Debt ÷ Gross Income) × 100</code>
-        </p>
-        <p class="text-[11px] text-emerald-800 dark:text-emerald-300 font-mono bg-emerald-50/80 dark:bg-emerald-950/50 p-1.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
-          <strong>Worked Example:</strong> ₹15,000 monthly debt payments ÷ ₹60,000 gross monthly income = <strong>25% DTI</strong> (healthy borrowing tier).
-        </p>
+    <!-- 7. Mobile Payment Rollover Planning Banner -->
+    <div
+      id="mobile-debt-rollover-banner"
+      class="hidden p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/80 text-xs shadow-2xs"
+    >
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- 8. Mobile Paid Off Accounts Section -->
+    <div
+      id="mobile-container-paid-debts"
+      class="hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs space-y-3"
+    >
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+          <span>🎉</span> Paid Off Accounts (
+          <span id="mobile-count-paid-debts">0</span>)
+        </h4>
+      </div>
+      <div id="mobile-paid-debts-list" class="space-y-2">
+        <!-- Populated via JS -->
       </div>
     </div>
   </div>
