@@ -22,15 +22,8 @@ const labels = {
   more: "More",
 };
 
-<<<<<<< HEAD
 const basePrefix = locale === DEFAULT_LOCALE ? '' : `/${locale}`;
 
-const activeIdx = initialActiveTab === 'split' ? 1 :
-                  initialActiveTab === 'templates' ? 2 :
-                  initialActiveTab === 'debt' ? 3 :
-                  initialActiveTab === 'targets' || initialActiveTab === 'goals' ? 4 :
-                  initialActiveTab === 'more' ? 5 : 0;
-=======
 const activeIdx =
   initialActiveTab === "split"
     ? 1
@@ -43,7 +36,6 @@ const activeIdx =
           : initialActiveTab === "more"
             ? 5
             : 0;
->>>>>>> fix_track_now_experience
 ---
 
 <!-- Mobile Liquid Glass Bottom Navigation Bar (sm:hidden) -->
@@ -122,7 +114,6 @@ const activeIdx =
       )}
 
       <!-- 2. Split (Bill Splitter) -->
-<<<<<<< HEAD
       {isStandalone ? (
         <a
           href={`${basePrefix}/?tab=split`}
@@ -150,30 +141,6 @@ const activeIdx =
           <span class="text-[10px] leading-tight truncate">{labels.split}</span>
         </button>
       )}
-=======
-      <button
-        type="button"
-        data-bottom-tab="split"
-        data-index="1"
-        class={`bottom-nav-btn flex flex-col items-center justify-center py-1 px-0.5 rounded-xl min-h-[50px] transition-colors cursor-pointer ${activeIdx === 1 ? "active text-emerald-700 dark:text-emerald-400 font-bold" : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium"}`}
-        aria-label="Bill Splitter"
-      >
-        <svg
-          class="w-5 h-5 mb-0.5 shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          ></path>
-        </svg>
-        <span class="text-[10px] leading-tight truncate">{labels.split}</span>
-      </button>
->>>>>>> fix_track_now_experience
 
       <!-- 3. Templates -->
       {isStandalone ? (
@@ -634,7 +601,6 @@ const activeIdx =
               <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Equally, itemized & multi-currency group expense sharing</div>
             </div>
           </div>
-<<<<<<< HEAD
           <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </a>
       ) : (
@@ -655,31 +621,6 @@ const activeIdx =
           <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
       )}
-=======
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
-              Bill Splitter
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-              Equally, itemized & multi-currency group expense sharing
-            </div>
-          </div>
-        </div>
-        <svg
-          class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0 ml-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          ></path>
-        </svg>
-      </button>
->>>>>>> fix_track_now_experience
     </div>
 
     <!-- Secondary Links Grid -->
@@ -964,11 +905,7 @@ const activeIdx =
         closeMoreSheet();
 
         if (isStandalone) {
-<<<<<<< HEAD
           if (tab === 'split' && window.location.pathname.includes('/bill-splitter')) {
-=======
-          if (tab === "split") {
->>>>>>> fix_track_now_experience
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
             updatePillPosition(1);
