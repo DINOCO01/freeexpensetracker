@@ -1,8 +1,8 @@
 export const fr = {
   meta: {
     siteName: "Free Expense Tracker",
-    title: "Tracker de dépenses gratuit – Suivi de budget sans inscription",
-    description: "Tracker de dépenses gratuit et complet pour votre gestion de budget : suivi des dépenses sans inscription, modèles et données privées 100% sécurisées.",
+    title: "Tracker de dépenses gratuit – Suivi de budget sans compte",
+    description: "Suivez vos dépenses gratuitement, sans inscription ni compte bancaire. Vos données restent sur votre appareil. Modèles Excel inclus.",
     keywords: "tracker depenses gratuit, suivi des dépenses, gestion de budget, application de suivi des dépenses, modèle de budget gratuit, suivi des dépenses personnelles, feuille excel budget gratuite, modèle google sheets dépenses"
   },
   nav: {
