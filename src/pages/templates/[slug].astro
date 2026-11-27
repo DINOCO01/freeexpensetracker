@@ -47,77 +47,133 @@ const appTargetUrl = TEMPLATE_APP_TARGETS[template.slug] || '/?tab=tracker';
 
 // Related templates mapping for internal link architecture
 const RELATED_TEMPLATES_MAP: Record<string, { slug: string; title: string; desc: string }[]> = {
-  'biweekly-savings-challenge': [
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'The classic weekly progressive ladder saving $1,378 in one year.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds from each biweekly paycheck into bills, spending, and savings.' },
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Channel your biweekly savings into a dedicated 3 to 6-month cash cushion.' }
-  ],
-  '5000-savings-challenge': [
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build foundational savings discipline saving $1,378 in one year.' },
-    { slug: '10000-savings-challenge', title: '$10,000 Savings Challenge', desc: 'Step up to five-figure cash security with our ambitious annual challenge.' },
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Calculate and fund your essential 3 to 6-month safety net.' }
-  ],
-  '10000-savings-challenge': [
-    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Achieve a realistic $5,000 milestone with gradual weekly contributions.' },
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Start small with the classic progressive ladder saving $1,378.' },
-    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Ring-fence large annual goals, holiday gifts, and property taxes.' }
-  ],
-  '52-week-savings-challenge': [
-    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Step up to a $5,000 cash cushion with graduated weekly deposits.' },
-    { slug: '10000-savings-challenge', title: '$10,000 Savings Challenge', desc: 'Target five-figure cash security with our ambitious annual challenge.' },
-    { slug: 'biweekly-savings-challenge', title: 'Biweekly Savings Challenge', desc: 'Align your savings deposits with your 26 biweekly paychecks.' }
-  ],
-  'sinking-fund-planner': [
-    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Channel disciplined weekly deposits into your annual sinking funds.' },
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build an extra $1,378 cash cushion with progressive weekly deposits.' },
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect your sinking funds with a baseline 3 to 6-month safety net.' }
+  'paycheck-budget': [
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Automate a $1,378 annual savings goal using weekly progressive deposits.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a 3 to 6-month living expense cash safety net.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track recurring monthly bills, calendar due dates, and autopay status.' },
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Consolidate monthly cash flow, savings rate, and net worth in one workbook.' }
   ],
   'debt-snowball': [
     { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Prioritize highest-interest APR debts first to save maximum total interest.' },
     { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Assess your borrowing health and calculate front-end and back-end DTI.' },
-    { slug: 'student-loan-planner', title: 'Student Loan Planner', desc: 'Model extra monthly payments and accelerated payoff schedules.' }
+    { slug: 'student-loan-planner', title: 'Student Loan Planner', desc: 'Model extra monthly payments and accelerated payoff schedules.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds from each paycheck to accelerate your debt snowball.' }
+  ],
+  'debt-avalanche': [
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Knock out smallest balances first to build lasting financial momentum.' },
+    { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Calculate front-end and back-end DTI ratios for loan applications.' },
+    { slug: 'student-loan-planner', title: 'Student Loan Planner', desc: 'Model extra principal contributions toward education loans.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Organize debt payments and recurring bills by calendar due date.' }
+  ],
+  'debt-to-income-calculator': [
+    { slug: 'mortgage-planner', title: 'Mortgage Planner', desc: 'Estimate monthly P&I, property taxes, and borrowing affordability.' },
+    { slug: 'auto-loan-calculator', title: 'Auto Loan Calculator', desc: 'Check monthly car payments and finance charges before buying.' },
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Lower your DTI ratio faster by systematically eliminating debts.' },
+    { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Reduce high-interest debt payments to improve loan eligibility.' }
   ],
   'student-loan-planner': [
     { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Knock out smallest balances first to build lasting financial momentum.' },
+    { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Attack highest-APR student loans first for maximum interest savings.' },
     { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Track your total debt obligations against gross monthly earnings.' },
-    { slug: 'debt-avalanche', title: 'Debt Avalanche Spreadsheet', desc: 'Attack highest-APR loans first for maximum lifetime interest savings.' }
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Set aside dedicated student loan payments each pay period.' }
   ],
-  'monthly-bill-tracker': [
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate net income per paycheck deposit before spending occurs.' },
-    { slug: 'subscription-audit', title: 'Subscription Audit Worksheet', desc: 'Audit recurring digital subscriptions, streaming services, and bills.' },
-    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Categorize spending by merchant and detect budget leaks.' }
+  'auto-loan-calculator': [
+    { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Ensure auto financing fits comfortably within lender DTI guidelines.' },
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Incorporate new auto loans into an active debt repayment plan.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track auto insurance and recurring monthly car payments.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Save in advance for down payments, repairs, and vehicle insurance.' }
   ],
-  'paycheck-budget': [
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Automate a $1,378 annual savings goal using weekly progressive deposits.' },
-    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Build a 3 to 6-month living expense cash safety net.' },
-    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track recurring monthly bills, calendar due dates, and autopay status.' }
+  'mortgage-planner': [
+    { slug: 'debt-to-income-calculator', title: 'Debt-to-Income Calculator', desc: 'Verify front-end and back-end DTI ratios before applying for a mortgage.' },
+    { slug: 'net-worth-tracker', title: 'Net Worth Tracker', desc: 'Track home equity and amortization growth against total assets.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Set aside monthly cash for property taxes and home maintenance.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Manage mortgage escrow, utility bills, and insurance due dates.' }
   ],
-  'subscription-audit': [
-    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, payment deadlines, and auto-debit amounts.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Plan every dollar per pay cycle with take-home pay and fixed bills.' },
-    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Review historical spending categories and identify cost leaks.' }
+  '401k-retirement-planner': [
+    { slug: 'roth-ira-planner', title: 'Roth IRA Growth Planner', desc: 'Forecast tax-free compound returns alongside employer 401(k) accounts.' },
+    { slug: 'net-worth-tracker', title: 'Net Worth Tracker', desc: 'Track overall retirement investment growth across all assets.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Maintain an emergency cash cushion so retirement funds remain untouched.' },
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Monitor your monthly savings rate and cash flow surplus in one view.' }
+  ],
+  'roth-ira-planner': [
+    { slug: '401k-retirement-planner', title: '401(k) Retirement Planner', desc: 'Simulate company match and pre-tax growth alongside your Roth IRA.' },
+    { slug: 'net-worth-tracker', title: 'Net Worth Tracker', desc: 'Watch tax-free investment growth boost your long-term net worth.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect investments with a 3 to 6-month liquid cash reserve.' },
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Optimize your monthly savings rate to max out annual contributions.' }
   ],
   'emergency-fund-planner': [
     { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Fund a foundational $5,000 emergency safety cushion over 52 weeks.' },
     { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Jumpstart your starter emergency fund by saving $1,378 in one year.' },
-    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' }
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Organize targeted reserves for predictable future expenses.' },
+    { slug: 'biweekly-savings-challenge', title: 'Biweekly Savings Challenge', desc: 'Automate emergency savings transfers from 26 biweekly paychecks.' }
+  ],
+  'subscription-audit': [
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, payment deadlines, and auto-debit amounts.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Plan every dollar per pay cycle with take-home pay and fixed bills.' },
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Review historical spending categories and identify cost leaks.' },
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Reinvest subscription savings directly into positive monthly cash flow.' }
+  ],
+  'sinking-fund-planner': [
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Protect your sinking funds with a baseline 3 to 6-month safety net.' },
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Channel disciplined weekly deposits into your annual sinking funds.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build an extra $1,378 cash cushion with progressive weekly deposits.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track irregular and recurring bill schedules with ease.' }
+  ],
+  'net-worth-tracker': [
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Track daily transactions, cash flow surplus, and savings rates.' },
+    { slug: '401k-retirement-planner', title: '401(k) Retirement Planner', desc: 'Forecast long-term growth of company retirement assets.' },
+    { slug: 'roth-ira-planner', title: 'Roth IRA Growth Planner', desc: 'Simulate tax-free compound interest over multi-decade horizons.' },
+    { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Accelerate net worth growth by systematically eliminating liabilities.' }
   ],
   'financial-dashboard': [
-    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Break down categorized spending trends feeding your financial dashboard.' },
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Channel positive monthly cash flow into a structured $1,378 savings ladder.' },
-    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Assign every dollar from net take-home pay to expenses and savings goals.' }
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Break down categorized spending trends feeding your dashboard.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Assign every dollar from net take-home pay to expenses and savings.' },
+    { slug: 'net-worth-tracker', title: 'Net Worth Tracker', desc: 'Convert monthly cash flow surplus into long-term net worth growth.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Manage recurring payment obligations and avoid missed bill dates.' }
   ],
   'monthly-spending-analyzer': [
-    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Consolidate monthly cash flow, savings rate, and net worth in one workbook.' },
-    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Redirect trimmed discretionary spending into weekly automated deposits.' },
-    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Plan ahead for annual bills, car maintenance, and seasonal travel costs.' }
+    { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Consolidate monthly cash flow, savings rate, and net worth.' },
+    { slug: 'subscription-audit', title: 'Subscription Audit Sheet', desc: 'Audit recurring subscriptions and cancel unused memberships.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds per pay cycle based on analyzed spending history.' },
+    { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Track regular fixed bills alongside analyzed variable spending.' }
+  ],
+  'monthly-bill-tracker': [
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate net income per paycheck deposit before spending occurs.' },
+    { slug: 'subscription-audit', title: 'Subscription Audit Worksheet', desc: 'Audit recurring digital subscriptions, streaming services, and bills.' },
+    { slug: 'monthly-spending-analyzer', title: 'Monthly Spending Analyzer', desc: 'Categorize spending by merchant and detect budget leaks.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Set aside monthly installments for large semi-annual or annual bills.' }
+  ],
+  '52-week-savings-challenge': [
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Step up to a $5,000 cash cushion with graduated weekly deposits.' },
+    { slug: '10000-savings-challenge', title: '$10,000 Savings Challenge', desc: 'Target five-figure cash security with our ambitious annual challenge.' },
+    { slug: 'biweekly-savings-challenge', title: 'Biweekly Savings Challenge', desc: 'Align your savings deposits with your 26 biweekly paychecks.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Channel your challenge savings into a 3 to 6-month safety buffer.' }
+  ],
+  '5000-savings-challenge': [
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Build foundational savings discipline saving $1,378 in one year.' },
+    { slug: '10000-savings-challenge', title: '$10,000 Savings Challenge', desc: 'Step up to five-figure cash security with our ambitious annual challenge.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Calculate and fund your essential 3 to 6-month safety net.' },
+    { slug: 'biweekly-savings-challenge', title: 'Biweekly Savings Challenge', desc: 'Match savings contributions directly to your biweekly pay cycle.' }
+  ],
+  '10000-savings-challenge': [
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Achieve a realistic $5,000 milestone with gradual weekly contributions.' },
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'Start small with the classic progressive ladder saving $1,378.' },
+    { slug: 'sinking-fund-planner', title: 'Sinking Fund Planner', desc: 'Ring-fence large annual goals, holiday gifts, and property taxes.' },
+    { slug: 'net-worth-tracker', title: 'Net Worth Tracker', desc: 'Watch your $10,000 cash reserve elevate your overall net worth.' }
+  ],
+  'biweekly-savings-challenge': [
+    { slug: '52-week-savings-challenge', title: '52-Week Savings Challenge', desc: 'The classic weekly progressive ladder saving $1,378 in one year.' },
+    { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Allocate funds from each biweekly paycheck into bills, spending, and savings.' },
+    { slug: 'emergency-fund-planner', title: 'Emergency Fund Planner', desc: 'Channel your biweekly savings into a dedicated 3 to 6-month cash cushion.' },
+    { slug: '5000-savings-challenge', title: '$5,000 Savings Challenge', desc: 'Step up to a $5,000 goal across structured deposit periods.' }
   ]
 };
 
 const relatedTemplates = RELATED_TEMPLATES_MAP[template.slug] || [
   { slug: 'paycheck-budget', title: 'Paycheck Budget Spreadsheet', desc: 'Plan every dollar per pay cycle with take-home pay and fixed bills.' },
   { slug: 'monthly-bill-tracker', title: 'Monthly Bill Tracker', desc: 'Centralize recurring bills, due dates, and autopay tracking.' },
-  { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Eliminate consumer debt with behavioral momentum.' }
+  { slug: 'debt-snowball', title: 'Debt Snowball Spreadsheet', desc: 'Eliminate consumer debt with behavioral momentum.' },
+  { slug: 'financial-dashboard', title: 'Financial Dashboard', desc: 'Consolidate monthly cash flow, savings rate, and net worth.' }
 ];
 
 const digitalDocSchema = {
@@ -977,6 +1033,36 @@ const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
           </a>
         </div>
 
+        <!-- Related Financial Templates (Immediately before FAQ) -->
+        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5 text-slate-900">
+              <span class="text-xl">🔗</span>
+              <h3 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+                Related Financial Templates
+              </h3>
+            </div>
+            <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
+              View All Templates &rarr;
+            </a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {relatedTemplates.map((rel) => (
+              <a
+                href={`/templates/${rel.slug}/`}
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
+              >
+                <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
+                  {rel.title}
+                </div>
+                <p class="text-[11px] text-slate-600 leading-snug">
+                  {rel.desc}
+                </p>
+              </a>
+            ))}
+          </div>
+        </section>
+
         <!-- H2 #6: FAQ -->
         <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
           <div class="flex items-center gap-2.5 text-slate-900">
@@ -995,36 +1081,6 @@ const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
                   {item.answer}
                 </p>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <!-- Related Financial Templates (H3 to keep strict 6-H2 outline) -->
-        <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5 text-slate-900">
-              <span class="text-xl">🔗</span>
-              <h3 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
-                Related Financial Templates
-              </h3>
-            </div>
-            <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
-              View All Templates &rarr;
-            </a>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {relatedTemplates.map((rel) => (
-              <a
-                href={`/templates/${rel.slug}/`}
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
-              >
-                <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
-                  {rel.title}
-                </div>
-                <p class="text-[11px] text-slate-600 leading-snug">
-                  {rel.desc}
-                </p>
-              </a>
             ))}
           </div>
         </section>
@@ -1165,6 +1221,36 @@ const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
       </a>
     </div>
 
+    <!-- Related Financial Templates Internal Links (Immediately before FAQ) -->
+    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5 text-slate-900">
+          <span class="text-xl">🔗</span>
+          <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
+            Related Financial Templates
+          </h2>
+        </div>
+        <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
+          View All Templates &rarr;
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {relatedTemplates.map((rel) => (
+          <a
+            href={`/templates/${rel.slug}/`}
+            class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
+          >
+            <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
+              {rel.title}
+            </div>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              {rel.desc}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
     <!-- Section 5: Frequently Asked Questions -->
     <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
       <div class="flex items-center gap-2.5 text-slate-900">
@@ -1186,36 +1272,6 @@ const howToSchema = template.howToUse && template.howToUse.length > 0 ? {
         ))}
       </div>
     </section>
-
-    <!-- Related Financial Templates Internal Links -->
-    <section class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5 text-slate-900">
-          <span class="text-xl">🔗</span>
-          <h2 class="text-lg sm:text-xl font-bold font-['Outfit',sans-serif]">
-            Related Financial Templates
-          </h2>
-        </div>
-        <a href="/templates/" class="text-xs font-semibold text-emerald-700 hover:underline">
-          View All Templates &rarr;
-        </a>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {relatedTemplates.map((rel) => (
-          <a
-            href={`/templates/${rel.slug}/`}
-            class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition-all group space-y-1 block"
-          >
-            <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-emerald-800 transition-colors">
-              {rel.title}
-            </div>
-        <p class="text-[11px] text-slate-600 leading-snug">
-          {rel.desc}
-        </p>
-      </a>
-    ))}
-  </div>
-</section>
       </>
     )}
 
