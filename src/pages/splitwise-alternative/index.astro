@@ -1,0 +1,263 @@
+---
+// src/pages/splitwise-alternative/index.astro
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
+import MobileBottomNav from '../../components/MobileBottomNav.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+
+const pageTitle = "Free Splitwise Alternative – No Sign-Up, No Limits";
+const pageDescription = "Split expenses instantly without creating an account or tracking limits. Free, no sign-up, works offline.";
+const canonical = getCanonicalUrl('/splitwise-alternative/');
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Bill Splitter', url: '/bill-splitter/' },
+  { name: 'Splitwise Alternative', url: '/splitwise-alternative/' }
+];
+
+export const SPLITWISE_ALT_FAQS = [
+  {
+    question: "Why use an in-browser bill splitter instead of downloading a native app?",
+    answer: "A browser-based calculator eliminates the friction of forcing every friend or roommate to download an app, create an account, verify an email, or remember passwords. Anyone can open the link in Safari, Chrome, or Firefox and calculate splits in seconds with zero installation required."
+  },
+  {
+    question: "Does this tool impose any daily or monthly limits on splitting bills?",
+    answer: "No. FreeExpenseTracker Bill Splitter imposes zero daily, weekly, or monthly usage limits. You can split as many bills, add as many participants, and calculate as many itemized or trip expenses as you need without encountering artificial caps or paywalls."
+  },
+  {
+    question: "Where is my financial and expense data stored?",
+    answer: "All calculation inputs, participant names, and expense records are stored entirely on your local device using your browser's localStorage. No financial data, receipts, or contact information are ever transmitted to or stored on our external servers."
+  },
+  {
+    question: "Can I share expense summaries with friends who do not use the tool?",
+    answer: "Yes. Our tool generates standard plain-text summaries that can be copied directly to your clipboard or shared into WhatsApp with a single tap. Your friends receive a clear, readable text message showing exact amounts and who to pay, without needing to visit the website."
+  }
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonical}
+  breadcrumbs={breadcrumbs}
+  faqSchema={SPLITWISE_ALT_FAQS}
+  noHreflang={true}
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 pb-28 sm:pb-12">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Home</a>
+      <span>/</span>
+      <a href="/bill-splitter/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Bill Splitter</a>
+      <span>/</span>
+      <span class="text-slate-900 dark:text-slate-100 font-semibold" aria-current="page">Splitwise Alternative</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-3 text-center max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>100% Free · No Sign-Up · Zero Daily Limits · On-Device Privacy</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+        A Free Splitwise Alternative with No Account
+      </h1>
+
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+        Browser-Based Simplicity · No Account Required · Works Offline · Instant WhatsApp Sharing
+      </p>
+
+      <!-- AI Quotable Answer -->
+      <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-4 text-left shadow-2xs">
+        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          FreeExpenseTracker is an open, private web-based expense splitter designed for users who want to calculate equal, itemized, or multi-day trip splits without creating an account or downloading an application. It provides unlimited calculations, stores data exclusively on your device, works offline, and shares clear payment breakdowns instantly via WhatsApp.
+        </p>
+      </div>
+
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+        Split rent, groceries, dinners, and group travel without forcing friends to register or install an app. Fast, private, and 100% free with zero restrictions.
+      </p>
+    </header>
+
+    <!-- Interactive Bill Splitter Tool (Opens directly in Even Split mode) -->
+    <BillSplitterApp initialMode="even" />
+
+    <!-- Educational Financial & Product Guide -->
+    <article class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
+      <header class="border-b border-slate-100 dark:border-slate-800 pb-5 space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>⚡</span>
+          <span>Frictionless Group Expense Management</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          Why Choose a Browser-Based, No-Sign-Up Expense Splitter?
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          A modern, privacy-first approach to sharing everyday costs with roommates, colleagues, and travel buddies.
+        </p>
+      </header>
+
+      <!-- Section 1: The Advantages of Account-Free Splitting -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Eliminating Account and App Download Barriers
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Sharing everyday expenses among friends, roommates, and family should be simple and fast. However, traditional group budgeting tools often introduce substantial friction: every member must download a smartphone application, register a personal account, verify phone numbers or email addresses, and accept third-party tracking terms just to settle a casual dinner or utility bill.
+        </p>
+        <p class="text-sm leading-relaxed">
+          Our browser-based bill splitter takes the opposite approach. Built as a lightweight, client-side web application, it operates immediately upon opening the page. There are no registration forms, no passwords to create, no marketing newsletters to decline, and zero installation barriers.
+        </p>
+      </section>
+
+      <!-- Section 2: Core Characteristics of Our Tool -->
+      <section class="space-y-4">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Core Architectural Principles
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🚫</span>
+              <strong class="text-slate-900 dark:text-slate-100 text-sm">No Accounts or Passwords</strong>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Launch the tool in your browser and start calculating immediately. No personal email, phone number, or login credentials are required.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">♾️</span>
+              <strong class="text-slate-900 dark:text-slate-100 text-sm">No Usage Limits</strong>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Perform as many expense calculations, add as many group members, and split as many bills as you need with zero restrictions.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🔒</span>
+              <strong class="text-slate-900 dark:text-slate-100 text-sm">On-Device Data Storage</strong>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              All participant names, amounts, and choices are stored locally in your browser's localStorage. Data is never transmitted to external databases.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">✈️</span>
+              <strong class="text-slate-900 dark:text-slate-100 text-sm">Works Offline</strong>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              The calculator runs via pure client-side JavaScript. Once loaded, you can split bills without an active internet connection.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Worked Example -->
+      <section class="space-y-4">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Worked Example: Roommates Splitting Monthly Shared Expenses
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Consider three roommates—Priya, Rahul, and Ankit—sharing an apartment. At the end of the month, Priya pays the combined high-speed internet and communal household supply invoices totaling <strong>₹3,750</strong> (₹1,800 broadband + ₹1,950 shared household groceries and cleaning supplies).
+        </p>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+          <p class="font-bold text-slate-900 dark:text-slate-100 text-sm">How the Calculation Unfolds:</p>
+          <ul class="list-disc pl-4 space-y-1 text-slate-600 dark:text-slate-400">
+            <li><strong>Total Invoice:</strong> ₹3,750.00 paid upfront by Priya.</li>
+            <li><strong>Even 3-Way Division:</strong> ₹3,750.00 ÷ 3 = <strong>₹1,250.00</strong> per roommate.</li>
+            <li><strong>Settlement Plan:</strong> Rahul owes Priya ₹1,250.00; Ankit owes Priya ₹1,250.00. Priya receives ₹2,500.00 total.</li>
+          </ul>
+        </div>
+
+        <p class="text-sm leading-relaxed">
+          Priya enters ₹3,750 into the Even Split tool, specifies 3 people, and selects "Share via WhatsApp". In under fifteen seconds, a structured message is sent to their household group chat. Neither Rahul nor Ankit had to install any software, create an account, or log in to see what they owed.
+        </p>
+      </section>
+
+      <!-- Section 4: Practical Collaboration Tips -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          When to Use Even Split vs. Itemized vs. Trip Modes
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Our calculator includes three modes tailored for different situations:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          <li><strong>Even Split:</strong> Perfect for uniform expenses like rent, utilities, taxi fares, or shared household supplies divided equally.</li>
+          <li><strong>Itemized Split:</strong> Best for dining out when people ordered dishes at different price points and tax/tip must be distributed proportionally.</li>
+          <li><strong>Trip Split:</strong> Designed for vacations where multiple travelers paid for different expenses (flights, lodging, fuel, meals) and debt simplification is needed to minimize transfers.</li>
+        </ul>
+      </section>
+    </article>
+
+    <!-- Frequently Asked Questions -->
+    <section class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>❓</span>
+          <span>Common Questions</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          Frequently Asked Questions About Our Free Splitter
+        </h2>
+      </div>
+
+      <div class="space-y-4">
+        {SPLITWISE_ALT_FAQS.map((faq) => (
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+            <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross-links to other calculators -->
+    <section class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 sm:p-8 space-y-4">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Other Helpful Group Splitting Tools
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a
+          href="/split-bill-tax-tip/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            🧾 Split Bill with Tax &amp; Tip &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Calculate fair restaurant shares with proportional tax and tip distribution for itemized meals.
+          </p>
+        </a>
+        <a
+          href="/trip-expense-splitter/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            🏖️ Trip Expense Splitter &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Settle multi-day travel, Airbnb, gas, and vacation costs between friends with minimal transfers.
+          </p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <MobileBottomNav isStandalone={true} initialActiveTab="split" />
+</Layout>

@@ -26,6 +26,7 @@ interface Props {
   datePublished?: string;
   dateModified?: string;
   extraSchema?: any[];
+  noHreflang?: boolean;
 }
 
 const {
@@ -41,6 +42,7 @@ const {
   datePublished = '2026-01-15',
   dateModified = '2026-11-20',
   extraSchema = [],
+  noHreflang = false,
 } = Astro.props;
 
 const locale = getLocale(currentLocale);
@@ -54,8 +56,8 @@ const siteUrl = SITE_URL;
 const canonical = getCanonicalUrl(canonicalUrl || Astro.url.pathname, locale);
 const ogImageUrl = `${siteUrl}/web-app-manifest-512x512.png`;
 
-// Hreflang links for SEO (omitted for noindex pages)
-const hreflangLinks = noindex ? [] : getAllHreflangLinks(Astro.url.pathname, siteUrl);
+// Hreflang links for SEO (omitted for noindex pages or pages with noHreflang)
+const hreflangLinks = (noindex || noHreflang) ? [] : getAllHreflangLinks(Astro.url.pathname, siteUrl);
 
 // Locale mappings for Open Graph
 const ogLocaleMap: Record<SupportedLocale, string> = {
@@ -240,7 +242,7 @@ if (faqEntities.length > 0) {
     <meta name="theme-color" content="#0f766e" />
 
     <!-- Multilingual Alternate Hreflang Tags & x-default -->
-    {!noindex && hreflangLinks.map((link) => (
+    {!noindex && !noHreflang && hreflangLinks.map((link) => (
       <link rel="alternate" hreflang={link.hreflang} href={link.href} />
     ))}
 

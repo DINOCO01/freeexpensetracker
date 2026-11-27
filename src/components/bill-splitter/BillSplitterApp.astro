@@ -1,9 +1,16 @@
 ---
 // src/components/bill-splitter/BillSplitterApp.astro
 import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
+
+interface Props {
+  initialMode?: 'even' | 'itemized' | 'trip';
+}
+
+const { initialMode } = Astro.props;
+const defaultMode = initialMode || 'even';
 ---
 
-<div id="bill-splitter-container" class="max-w-xl mx-auto space-y-6 pb-24 sm:pb-8">
+<div id="bill-splitter-container" data-initial-mode={initialMode} class="max-w-xl mx-auto space-y-6 pb-24 sm:pb-8">
   <!-- Main Calculator Card (Splitkaro-inspired single focused container) -->
   <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-4 sm:p-7 shadow-sm space-y-6">
     
@@ -45,9 +52,13 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
         type="button"
         id="tab-btn-even"
         role="tab"
-        aria-selected="true"
+        aria-selected={defaultMode === 'even' ? 'true' : 'false'}
         aria-controls="mode-panel-even"
-        class="mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700 cursor-pointer"
+        class={`mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm transition-all cursor-pointer ${
+          defaultMode === 'even'
+            ? 'font-bold shadow-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700'
+            : 'font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+        }`}
       >
         <span>⚡</span>
         <span>Even Split</span>
@@ -56,9 +67,13 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
         type="button"
         id="tab-btn-itemized"
         role="tab"
-        aria-selected="false"
+        aria-selected={defaultMode === 'itemized' ? 'true' : 'false'}
         aria-controls="mode-panel-itemized"
-        class="mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 cursor-pointer"
+        class={`mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm transition-all cursor-pointer ${
+          defaultMode === 'itemized'
+            ? 'font-bold shadow-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700'
+            : 'font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+        }`}
       >
         <span>📋</span>
         <span>Itemized</span>
@@ -67,9 +82,13 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
         type="button"
         id="tab-btn-trip"
         role="tab"
-        aria-selected="false"
+        aria-selected={defaultMode === 'trip' ? 'true' : 'false'}
         aria-controls="mode-panel-trip"
-        class="mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 cursor-pointer"
+        class={`mode-tab-btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm transition-all cursor-pointer ${
+          defaultMode === 'trip'
+            ? 'font-bold shadow-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700'
+            : 'font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+        }`}
       >
         <span>🏖️</span>
         <span>Trip Split</span>
@@ -79,7 +98,7 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
     <!-- ========================================================================= -->
     <!-- MODE 1: EVEN SPLIT -->
     <!-- ========================================================================= -->
-    <section id="mode-panel-even" role="tabpanel" aria-labelledby="tab-btn-even" class="space-y-5">
+    <section id="mode-panel-even" role="tabpanel" aria-labelledby="tab-btn-even" class={`space-y-5 ${defaultMode === 'even' ? '' : 'hidden'}`}>
       <!-- Total Bill Input -->
       <div>
         <label for="input-even-bill" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
@@ -292,7 +311,7 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
     <!-- ========================================================================= -->
     <!-- MODE 2: ITEMIZED SPLIT -->
     <!-- ========================================================================= -->
-    <section id="mode-panel-itemized" role="tabpanel" aria-labelledby="tab-btn-itemized" class="hidden space-y-5">
+    <section id="mode-panel-itemized" role="tabpanel" aria-labelledby="tab-btn-itemized" class={`space-y-5 ${defaultMode === 'itemized' ? '' : 'hidden'}`}>
       <!-- Unassigned Items Warning Banner -->
       <div id="itemized-unassigned-alert" class="hidden p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
         <span class="text-base shrink-0">⚠️</span>
@@ -508,7 +527,7 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
     <!-- ========================================================================= -->
     <!-- MODE 3: TRIP / GROUP EXPENSE SPLIT -->
     <!-- ========================================================================= -->
-    <section id="mode-panel-trip" role="tabpanel" aria-labelledby="tab-btn-trip" class="hidden space-y-5">
+    <section id="mode-panel-trip" role="tabpanel" aria-labelledby="tab-btn-trip" class={`space-y-5 ${defaultMode === 'trip' ? '' : 'hidden'}`}>
       <!-- Group Members Manager -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
@@ -2226,5 +2245,6 @@ import { BILL_SPLITTER_CURRENCIES } from '../../utils/bill-splitter/money';
 
   // Initial startup
   initEventListeners();
-  switchMode(state.mode || 'even');
+  const configuredInitialMode = document.getElementById('bill-splitter-container')?.getAttribute('data-initial-mode') as 'even' | 'itemized' | 'trip' | null;
+  switchMode(configuredInitialMode || state.mode || 'even');
 </script>

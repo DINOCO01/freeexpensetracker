@@ -1,0 +1,288 @@
+---
+// src/pages/split-bill-tax-tip/index.astro
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
+import MobileBottomNav from '../../components/MobileBottomNav.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+
+const pageTitle = "Split Bill with Tax and Tip Calculator – Free, No Sign-Up";
+const pageDescription = "Split restaurant bills fairly with tax, tip and individual items. Free, no sign-up, works offline.";
+const canonical = getCanonicalUrl('/split-bill-tax-tip/');
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Bill Splitter', url: '/bill-splitter/' },
+  { name: 'Split Bill with Tax and Tip', url: '/split-bill-tax-tip/' }
+];
+
+export const TAX_TIP_FAQS = [
+  {
+    question: "How does proportional tax and tip splitting work?",
+    answer: "Proportional splitting calculates each diner's percentage share of the pre-tax food subtotal and applies that exact percentage to the total tax and tip. If your food accounted for 20% of the food order, you pay exactly 20% of the tax and 20% of the tip, ensuring no one subsidizes other diners' larger orders."
+  },
+  {
+    question: "Why is an equal split unfair when someone does not order drinks?",
+    answer: "Alcoholic beverages, mocktails, and specialty coffees carry high price tags. When a bill is divided equally, diners who only ordered tap water or inexpensive entrees end up paying for other guests' drinks, tax, and associated tips. Itemized splitting ensures non-drinkers only pay for what they consumed."
+  },
+  {
+    question: "Can I enter tip as a fixed currency amount instead of a percentage?",
+    answer: "Yes. Our calculator lets you toggle between percentage tip mode (such as 10%, 15%, or 18%) and fixed cash tip amounts in your chosen currency. Both modes allocate the gratuity proportionally across each person's individual items."
+  },
+  {
+    question: "How do I share the itemized breakdown with my dining group?",
+    answer: "Once items, tax, and tip are entered, click 'Share via WhatsApp' or 'Copy Summary'. The tool generates a formatted text breakdown itemizing each person's subtotal, tax share, tip share, and final total, ready to paste directly into your group chat."
+  }
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonical}
+  breadcrumbs={breadcrumbs}
+  faqSchema={TAX_TIP_FAQS}
+  noHreflang={true}
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 pb-28 sm:pb-12">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Home</a>
+      <span>/</span>
+      <a href="/bill-splitter/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Bill Splitter</a>
+      <span>/</span>
+      <span class="text-slate-900 dark:text-slate-100 font-semibold" aria-current="page">Split Bill with Tax &amp; Tip</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-3 text-center max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>Itemized Restaurant Calculator · Proportional Tax &amp; Gratuity</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+        Split a Bill with Tax and Tip
+      </h1>
+
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+        Client-Side Private · Proportional Tax &amp; Tip Distribution · Instant WhatsApp Sharing
+      </p>
+
+      <!-- AI Quotable Answer -->
+      <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-4 text-left shadow-2xs">
+        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Splitting a restaurant bill with tax and tip requires allocating taxes and gratuities proportionally based on each diner's individual subtotal. Our free calculator lets you assign specific dishes and beverages to diners, enter the overall bill tax and tip, and instantly computes fair individual totals without forced equal splits or complex manual arithmetic.
+        </p>
+      </div>
+
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+        Never argue over shared dining bills again. Enter individual meals, apply your receipt's sales tax or GST and tip percentage, and get an exact, transparent breakdown for every friend.
+      </p>
+    </header>
+
+    <!-- Interactive Bill Splitter Tool (Opens directly in Itemized mode) -->
+    <BillSplitterApp initialMode="itemized" />
+
+    <!-- Educational Financial & Math Guide -->
+    <article class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
+      <header class="border-b border-slate-100 dark:border-slate-800 pb-5 space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>🧾</span>
+          <span>Dining Finance Guide</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          How to Split Restaurant Bills Fairly with Tax and Tip
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          Why equal splits cause dining friction, how proportional mathematical weighting works, and a complete worked example.
+        </p>
+      </header>
+
+      <!-- Section 1: The Problem with Equal Splits -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Why Equal Splitting at Restaurants is Inherently Unfair
+        </h3>
+        <p class="text-sm leading-relaxed">
+          When dining out in a group, dividing the final receipt total evenly by the number of people seems convenient, but it regularly produces friction. In almost every group meal, individual orders vary widely: some friends order premium steaks, appetizers, and multiple alcoholic cocktails, while others order a light pasta or salad with tap water.
+        </p>
+        <p class="text-sm leading-relaxed">
+          When the bill arrives with 5% or 18% sales tax (or GST) plus a 10% to 20% gratuity, a naive equal split penalizes the modest spender twice: they pay for food they did not eat, and they pay the associated taxes and tips on those expensive dishes. Proportional itemized splitting eliminates this awkwardness by ensuring that each person's share of tax and tip matches their exact percentage of the pre-tax food subtotal.
+        </p>
+      </section>
+
+      <!-- Section 2: How to Use the Itemized Calculator -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          How to Use the Itemized Bill Splitter
+        </h3>
+        <ol class="list-decimal pl-5 space-y-2 text-sm leading-relaxed">
+          <li><strong>Add Your Diners:</strong> Input the names of everyone at the table in the participant list.</li>
+          <li><strong>Log Menu Items:</strong> Enter each dish, beverage, or appetizer and select who consumed it. Shared appetizers can be split among multiple selected people.</li>
+          <li><strong>Input Tax &amp; Tip:</strong> Enter the receipt's tax rate (or fixed tax amount) and your planned tip percentage.</li>
+          <li><strong>Review &amp; Share:</strong> The calculator instantly displays each diner's net subtotal, proportional tax share, proportional tip share, and final owed amount. Copy the text or send it directly to your WhatsApp group.</li>
+        </ol>
+      </section>
+
+      <!-- Section 3: Worked Example -->
+      <section class="space-y-4">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Worked Example: 4 Friends with Different Orders and No-Drinkers
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Consider a realistic dinner where four friends—Alice, Bob, Charlie, and David—dine together at a restaurant. Their pre-tax food and drink subtotal comes to <strong>₹2,400</strong>, subject to <strong>5% GST</strong> and a <strong>10% tip</strong>.
+        </p>
+
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-2xl">
+          <table class="w-full text-xs text-left min-w-[500px]">
+            <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-2.5 px-3">Diner</th>
+                <th class="py-2.5 px-3">Order Details</th>
+                <th class="py-2.5 px-3">Subtotal</th>
+                <th class="py-2.5 px-3">Subtotal %</th>
+                <th class="py-2.5 px-3">5% Tax</th>
+                <th class="py-2.5 px-3">10% Tip</th>
+                <th class="py-2.5 px-3 text-right">Fair Total</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Alice</td>
+                <td class="py-2.5 px-3">Main course + Cocktails</td>
+                <td class="py-2.5 px-3 font-mono">₹650.00</td>
+                <td class="py-2.5 px-3 font-mono">27.08%</td>
+                <td class="py-2.5 px-3 font-mono">₹32.50</td>
+                <td class="py-2.5 px-3 font-mono">₹65.00</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-right text-emerald-700 dark:text-emerald-400">₹747.50</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Bob</td>
+                <td class="py-2.5 px-3">Main course + Wine</td>
+                <td class="py-2.5 px-3 font-mono">₹650.00</td>
+                <td class="py-2.5 px-3 font-mono">27.08%</td>
+                <td class="py-2.5 px-3 font-mono">₹32.50</td>
+                <td class="py-2.5 px-3 font-mono">₹65.00</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-right text-emerald-700 dark:text-emerald-400">₹747.50</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Charlie</td>
+                <td class="py-2.5 px-3">Main course + Craft Beer</td>
+                <td class="py-2.5 px-3 font-mono">₹650.00</td>
+                <td class="py-2.5 px-3 font-mono">27.08%</td>
+                <td class="py-2.5 px-3 font-mono">₹32.50</td>
+                <td class="py-2.5 px-3 font-mono">₹65.00</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-right text-emerald-700 dark:text-emerald-400">₹747.50</td>
+              </tr>
+              <tr class="bg-emerald-50/40 dark:bg-emerald-950/20">
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">David</td>
+                <td class="py-2.5 px-3">Main course only (No drinks)</td>
+                <td class="py-2.5 px-3 font-mono font-bold">₹450.00</td>
+                <td class="py-2.5 px-3 font-mono">18.75%</td>
+                <td class="py-2.5 px-3 font-mono">₹22.50</td>
+                <td class="py-2.5 px-3 font-mono">₹45.00</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-right text-emerald-700 dark:text-emerald-400">₹517.50</td>
+              </tr>
+              <tr class="font-bold bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100">
+                <td class="py-2.5 px-3" colspan="2">Total Bill Calculation</td>
+                <td class="py-2.5 px-3 font-mono">₹2,400.00</td>
+                <td class="py-2.5 px-3 font-mono">100.0%</td>
+                <td class="py-2.5 px-3 font-mono">₹120.00</td>
+                <td class="py-2.5 px-3 font-mono">₹240.00</td>
+                <td class="py-2.5 px-3 font-mono text-right text-slate-900 dark:text-slate-100">₹2,760.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+          <p class="font-bold text-slate-900 dark:text-slate-100">The Mathematical Difference:</p>
+          <ul class="list-disc pl-4 space-y-1 text-slate-600 dark:text-slate-400">
+            <li><strong>Equal 4-Way Split:</strong> ₹2,760 ÷ 4 = <strong>₹690.00</strong> per person. Under an equal split, David is unfairly forced to pay ₹690.00, overpaying by <strong>₹172.50</strong> to subsidize the alcoholic drinks of the other three guests.</li>
+            <li><strong>Proportional Itemized Split:</strong> David's food is 18.75% of the pre-tax total (₹450 ÷ ₹2,400). David pays ₹450 + (18.75% × ₹120 tax = ₹22.50) + (18.75% × ₹240 tip = ₹45.00) = <strong>₹517.50</strong>. Alice, Bob, and Charlie pay ₹747.50 each. Everyone pays exactly their rightful share.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Section 4: Practical Tips for Smooth Restaurant Splitting -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Practical Tips for Smooth Restaurant Splitting
+        </h3>
+        <p class="text-sm leading-relaxed">
+          To ensure an effortless bill settlement at the table, keep these best practices in mind:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          <li><strong>Snap a Photo of the Receipt:</strong> Take a quick picture of the detailed paper bill so you have the subtotal, tax line items, and item names readily available.</li>
+          <li><strong>Clarify Shared Starters:</strong> When ordering communal appetizers (like nachos, wings, or bread baskets), note who participated so their cost is divided only among those who ate them.</li>
+          <li><strong>Check Service Charges:</strong> Some restaurants automatically include an 8% to 12% service charge in the subtotal. Verify whether gratuity is already factored into your bill to avoid double tipping.</li>
+        </ul>
+      </section>
+    </article>
+
+    <!-- Frequently Asked Questions -->
+    <section class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>❓</span>
+          <span>Common Questions</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          Frequently Asked Questions About Splitting Bills with Tax &amp; Tip
+        </h2>
+      </div>
+
+      <div class="space-y-4">
+        {TAX_TIP_FAQS.map((faq) => (
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+            <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross-links to other calculators -->
+    <section class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 sm:p-8 space-y-4">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Other Helpful Group Splitting Tools
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a
+          href="/trip-expense-splitter/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            🏖️ Trip Expense Splitter &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Settle multi-day travel, Airbnb, gas, and vacation costs between friends with minimal transfers.
+          </p>
+        </a>
+        <a
+          href="/splitwise-alternative/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            ⚡ Free Splitwise Alternative &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Split everyday expenses without downloading apps, creating accounts, or hitting daily limits.
+          </p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <MobileBottomNav isStandalone={true} initialActiveTab="split" />
+</Layout>

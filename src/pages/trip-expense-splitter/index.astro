@@ -1,0 +1,284 @@
+---
+// src/pages/trip-expense-splitter/index.astro
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import BillSplitterApp from '../../components/bill-splitter/BillSplitterApp.astro';
+import MobileBottomNav from '../../components/MobileBottomNav.astro';
+import { getCanonicalUrl } from '../../utils/canonical';
+
+const pageTitle = "Trip Expense Splitter – Settle Group Costs, No App";
+const pageDescription = "Track and settle shared trip expenses between friends without an app. Free, no sign-up, works offline.";
+const canonical = getCanonicalUrl('/trip-expense-splitter/');
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Bill Splitter', url: '/bill-splitter/' },
+  { name: 'Trip Expense Splitter', url: '/trip-expense-splitter/' }
+];
+
+export const TRIP_SPLIT_FAQS = [
+  {
+    question: "What is debt simplification and how does it reduce trip payment transfers?",
+    answer: "Debt simplification is an algorithmic settlement method that calculates each person's overall net balance (total money paid minus total fair share owed). Instead of having everyone pay back every individual person for each meal or fuel stop, the algorithm pairs debtors directly with creditors. This reduces dozens of messy peer-to-peer payments down to the absolute mathematical minimum number of transfers."
+  },
+  {
+    question: "Can an expense be shared by only a subset of travelers?",
+    answer: "Yes. In our Trip Split mode, when you log an expense, you can check or uncheck individual participants. For example, if only two out of five friends went to a museum or rented surfboards, you can select only those two travelers. The expense is divided exclusively between them without affecting the other travelers' balances."
+  },
+  {
+    question: "Do my travel friends need to install an app or create an account?",
+    answer: "No. FreeExpenseTracker Trip Splitter runs 100% in your mobile or desktop web browser. No one needs to download an application from an app store, register with an email address, or verify a phone number. You can generate a formatted settlement report and share it instantly via WhatsApp or text message."
+  },
+  {
+    question: "Is our trip expense data saved if my phone loses internet connection?",
+    answer: "Yes. All trip participants, logged expenses, and currency choices are stored locally on your device in your browser's local storage. You can continue adding expenses on remote roads, flights, or mountain campsites with zero cell reception, and your data remains intact."
+  }
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonical}
+  breadcrumbs={breadcrumbs}
+  faqSchema={TRIP_SPLIT_FAQS}
+  noHreflang={true}
+>
+  <Navbar />
+
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-8 sm:space-y-12 pb-28 sm:pb-12">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Home</a>
+      <span>/</span>
+      <a href="/bill-splitter/" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">Bill Splitter</a>
+      <span>/</span>
+      <span class="text-slate-900 dark:text-slate-100 font-semibold" aria-current="page">Trip Expense Splitter</span>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="space-y-3 text-center max-w-2xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span>Group Travel &amp; Vacation Budgeting · Minimum Cash Transfers</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+        Trip and Group Expense Splitter
+      </h1>
+
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+        No App Required · Client-Side Private · Automatic Debt Simplification · Instant WhatsApp Sharing
+      </p>
+
+      <!-- AI Quotable Answer -->
+      <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-4 text-left shadow-2xs">
+        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          FreeExpenseTracker Trip Expense Splitter simplifies multi-day group vacations, road trips, and shared lodging by tracking who paid for what and computing the minimum number of reimbursement transfers needed to settle all accounts. It operates entirely in your web browser with zero app installs, zero account logins, and complete offline privacy.
+        </p>
+      </div>
+
+      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+        Going on a weekend getaway, road trip, or international vacation with friends? Keep track of hotels, rental cars, fuel, groceries, and dining effortlessly without arguing about money at the end of the trip.
+      </p>
+    </header>
+
+    <!-- Interactive Bill Splitter Tool (Opens directly in Trip Split mode) -->
+    <BillSplitterApp initialMode="trip" />
+
+    <!-- Educational Financial & Math Guide -->
+    <article class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8 text-slate-700 dark:text-slate-300 leading-relaxed font-sans">
+      <header class="border-b border-slate-100 dark:border-slate-800 pb-5 space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>🏖️</span>
+          <span>Travel Finance Guide</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          How to Manage and Settle Shared Trip Expenses Seamlessly
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          Overcome group vacation accounting headaches with smart debt simplification and zero app friction.
+        </p>
+      </header>
+
+      <!-- Section 1: The Challenge of Group Travel Expenses -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          The Chaos of Vacation Group Accounting
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Group travel is one of the most rewarding experiences in life, but managing shared finances can quickly become frustrating. Over a three-day or week-long trip, different members pay for different things at different times: one person books the Airbnb, another pays for the car rental and gas, someone else picks up the grocery tab, and others buy snacks or drinks along the way.
+        </p>
+        <p class="text-sm leading-relaxed">
+          Without an organized tracking system, friends end up with a tangled web of informal debts where person A owes person B ₹1,200, person B owes person C ₹800, and person C owes person A ₹1,500. Calculating who owes whom at the end of a trip leads to confusion, forgotten receipts, and delayed payments.
+        </p>
+      </section>
+
+      <!-- Section 2: How the Trip Splitter Works -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          How to Track Your Trip in Three Steps
+        </h3>
+        <ol class="list-decimal pl-5 space-y-2 text-sm leading-relaxed">
+          <li><strong>Add Travel Buddies:</strong> Enter the names of everyone on the trip. You can customize participants at any time.</li>
+          <li><strong>Log Shared Expenses:</strong> For every booking, fuel stop, or dinner, enter the amount, select who paid, and check off who benefited from the expense.</li>
+          <li><strong>Generate Instant Settlement:</strong> The tool automatically calculates the exact net balance of every traveler and presents a minimal transfer plan. Share the final summary with one tap on WhatsApp.</li>
+        </ol>
+      </section>
+
+      <!-- Section 3: Worked Example -->
+      <section class="space-y-4">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Worked Example: 4 Friends on a Weekend Road Trip
+        </h3>
+        <p class="text-sm leading-relaxed">
+          Four friends—Alex, Maya, Sam, and Rohan—take a 3-day weekend road trip. Throughout the getaway, they make three major collective expenditures totaling <strong>₹20,000</strong>:
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1 text-xs">
+            <span class="font-bold text-slate-900 dark:text-slate-100">🏡 Vacation Rental: ₹12,000</span>
+            <p class="text-slate-600 dark:text-slate-400">Paid upfront by Alex. Shared equally among all 4 travelers.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1 text-xs">
+            <span class="font-bold text-slate-900 dark:text-slate-100">⛽ Car Rental &amp; Fuel: ₹4,800</span>
+            <p class="text-slate-600 dark:text-slate-400">Paid upfront by Maya. Shared equally among all 4 travelers.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1 text-xs">
+            <span class="font-bold text-slate-900 dark:text-slate-100">🛒 Groceries &amp; Meals: ₹3,200</span>
+            <p class="text-slate-600 dark:text-slate-400">Paid upfront by Sam. Shared equally among all 4 travelers.</p>
+          </div>
+        </div>
+
+        <p class="text-sm leading-relaxed">
+          Rohan did not pay for any upfront bookings. With total shared costs at <strong>₹20,000</strong>, each person's equal share is <strong>₹5,000</strong> (₹20,000 ÷ 4). Here is how net balances and debt simplification resolve the trip:
+        </p>
+
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-2xl">
+          <table class="w-full text-xs text-left min-w-[500px]">
+            <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-2.5 px-3">Traveler</th>
+                <th class="py-2.5 px-3">Amount Paid</th>
+                <th class="py-2.5 px-3">Fair Share</th>
+                <th class="py-2.5 px-3">Net Balance</th>
+                <th class="py-2.5 px-3 text-right">Settlement Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr class="bg-emerald-50/40 dark:bg-emerald-950/20">
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Alex</td>
+                <td class="py-2.5 px-3 font-mono">₹12,000.00</td>
+                <td class="py-2.5 px-3 font-mono">₹5,000.00</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-emerald-700 dark:text-emerald-400">+₹7,000.00</td>
+                <td class="py-2.5 px-3 text-right font-bold text-emerald-700 dark:text-emerald-400">Gets back ₹7,000.00</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Maya</td>
+                <td class="py-2.5 px-3 font-mono">₹4,800.00</td>
+                <td class="py-2.5 px-3 font-mono">₹5,000.00</td>
+                <td class="py-2.5 px-3 font-mono text-rose-600 dark:text-rose-400">-₹200.00</td>
+                <td class="py-2.5 px-3 text-right font-medium text-slate-700 dark:text-slate-300">Pays ₹200.00 to Alex</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Sam</td>
+                <td class="py-2.5 px-3 font-mono">₹3,200.00</td>
+                <td class="py-2.5 px-3 font-mono">₹5,000.00</td>
+                <td class="py-2.5 px-3 font-mono text-rose-600 dark:text-rose-400">-₹1,800.00</td>
+                <td class="py-2.5 px-3 text-right font-medium text-slate-700 dark:text-slate-300">Pays ₹1,800.00 to Alex</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">Rohan</td>
+                <td class="py-2.5 px-3 font-mono">₹0.00</td>
+                <td class="py-2.5 px-3 font-mono">₹5,000.00</td>
+                <td class="py-2.5 px-3 font-mono text-rose-600 dark:text-rose-400">-₹5,000.00</td>
+                <td class="py-2.5 px-3 text-right font-medium text-slate-700 dark:text-slate-300">Pays ₹5,000.00 to Alex</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+          <p class="font-bold text-slate-900 dark:text-slate-100">The Power of Minimal Transfers:</p>
+          <p>
+            Without debt simplification, 4 people would need 6 separate payments to settle individual receipts. With our algorithm, <strong>exactly 3 transfers</strong> settle the entire weekend trip: Rohan pays Alex ₹5,000, Sam pays Alex ₹1,800, and Maya pays Alex ₹200. Alex receives ₹7,000, and every single traveler reaches a zero balance.
+          </p>
+        </div>
+      </section>
+
+      <!-- Section 4: Practical Advice for Travel Groups -->
+      <section class="space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+          Practical Tips for Stress-Free Travel Splitting
+        </h3>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          <li><strong>Log Daily, Not at the End:</strong> Enter costs at the end of each evening. Memory fades rapidly after several days of sightseeing.</li>
+          <li><strong>Keep Currency Consistent:</strong> If traveling internationally, select your target reporting currency (such as USD, EUR, or INR) and convert foreign currency totals consistently before logging.</li>
+          <li><strong>Exclude Non-Participants:</strong> If someone skips an excursion or dinner, remember to uncheck their name for that specific line item so they aren't billed for activities they missed.</li>
+        </ul>
+      </section>
+    </article>
+
+    <!-- Frequently Asked Questions -->
+    <section class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span>❓</span>
+          <span>Common Questions</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight font-['Outfit',sans-serif]">
+          Frequently Asked Questions About Group Trip Splitting
+        </h2>
+      </div>
+
+      <div class="space-y-4">
+        {TRIP_SPLIT_FAQS.map((faq) => (
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+            <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+              {faq.question}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              {faq.answer}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Cross-links to other calculators -->
+    <section class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 sm:p-8 space-y-4">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-['Outfit',sans-serif]">
+        Other Helpful Group Splitting Tools
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a
+          href="/split-bill-tax-tip/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            🧾 Split Bill with Tax &amp; Tip &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Calculate fair restaurant shares with proportional tax and tip distribution for itemized meals.
+          </p>
+        </a>
+        <a
+          href="/splitwise-alternative/"
+          class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition-colors group block space-y-1"
+        >
+          <div class="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+            ⚡ Free Splitwise Alternative &rarr;
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Split everyday expenses without downloading apps, creating accounts, or hitting daily limits.
+          </p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <MobileBottomNav isStandalone={true} initialActiveTab="split" />
+</Layout>
